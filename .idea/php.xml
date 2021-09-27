@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PhpIncludePathManager">
-    <include_path>
-      <path value="$PROJECT_DIR$/rabbitmq/vendor/psr/log" />
-      <path value="$PROJECT_DIR$/rabbitmq/vendor/php-amqplib/php-amqplib" />
-      <path value="$PROJECT_DIR$/rabbitmq/vendor/paragonie/random_compat" />
-      <path value="$PROJECT_DIR$/rabbitmq/vendor/phpseclib/phpseclib" />
-      <path value="$PROJECT_DIR$/rabbitmq/vendor/composer" />
-      <path value="$PROJECT_DIR$/rabbitmq/vendor/paragonie/constant_time_encoding" />
-      <path value="$PROJECT_DIR$/rabbitmq/vendor/monolog/monolog" />
-      <path value="$PROJECT_DIR$/3-rabbitmq/vendor/composer" />
-      <path value="$PROJECT_DIR$/3-rabbitmq/vendor/paragonie/random_compat" />
-      <path value="$PROJECT_DIR$/3-rabbitmq/vendor/psr/log" />
-      <path value="$PROJECT_DIR$/3-rabbitmq/vendor/phpseclib/phpseclib" />
-      <path value="$PROJECT_DIR$/3-rabbitmq/vendor/paragonie/constant_time_encoding" />
-      <path value="$PROJECT_DIR$/3-rabbitmq/vendor/monolog/monolog" />
-      <path value="$PROJECT_DIR$/3-rabbitmq/vendor/php-amqplib/php-amqplib" />
-    </include_path>
-  </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7.2">
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.0">
     <option name="suggestChangeDefaultLanguageLevel" value="false" />
   </component>
 </project>

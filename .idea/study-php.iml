@@ -2,13 +2,10 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/3-rabbitmq/vendor/composer" />
-      <excludeFolder url="file://$MODULE_DIR$/3-rabbitmq/vendor/paragonie/random_compat" />
-      <excludeFolder url="file://$MODULE_DIR$/3-rabbitmq/vendor/psr/log" />
-      <excludeFolder url="file://$MODULE_DIR$/3-rabbitmq/vendor/phpseclib/phpseclib" />
-      <excludeFolder url="file://$MODULE_DIR$/3-rabbitmq/vendor/paragonie/constant_time_encoding" />
-      <excludeFolder url="file://$MODULE_DIR$/3-rabbitmq/vendor/monolog/monolog" />
-      <excludeFolder url="file://$MODULE_DIR$/3-rabbitmq/vendor/php-amqplib/php-amqplib" />
+      <sourceFolder url="file://$MODULE_DIR$/2-composer/app" isTestSource="false" packagePrefix="App\" />
+      <sourceFolder url="file://$MODULE_DIR$/2-composer/src" isTestSource="false" packagePrefix="Acme\" />
+      <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

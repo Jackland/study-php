@@ -9,6 +9,9 @@ require_once 'vendor/autoload.php';
 
 use Acme\view;
 use App\name;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+
 //"Fuyunnan\\Study\\": "src/",
 
 view::getView();
@@ -19,8 +22,8 @@ setTime();
 echo PHP_EOL;
 
 
-//$log = new Monolog\Logger('name');
-//$log->pushHandler(new Monolog\Handler\StreamHandler('app.log', Monolog\Logger::WARNING));
-//$log->warning('Foo testing');
-//$log->error('Bar testing bar');
-//echo 'success';
+$log = new Logger('name');
+$log->pushHandler(new StreamHandler('app_ccc.log', Logger::WARNING));
+$log->warning('Foo testing');
+$log->error('Bar testing bar');
+echo 'success';
