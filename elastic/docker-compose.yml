@@ -1,0 +1,42 @@
+version: '3'
+services:
+  elasticsearch:
+    image: jaysontree/es:v1.0
+    container_name: es
+    networks:
+    - net-es
+    # volumes:
+    # - ./data/:/usr/share/elasticsearch/data　　
+    #这里将elasticsearch的数据文件映射本地，以保证下次如果删除了容器还有数据
+    environment:
+    - discovery.type=single-node
+    ports:
+    - "9200:9200"
+  elastichd:
+    image: containerize/elastichd:latest
+    container_name: es-hd
+    networks:
+      - net-es
+    ports:
+      - "9800:9800"
+    depends_on:
+      - "elasticsearch"
+    links:
+      - "elasticsearch:es"
+  kibana:
+    image: kibana:7.13.0
+    container_name: kibana
+    networks:
+      - net-es
+    # volumes:
+    #   - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - "5601:5601"
+    depends_on:
+      - "elasticsearch"
+    links:
+      - "elasticsearch:es"
+#这里要注意，es和eshd要在相同网络才能被links
+networks:
+  net-es:
+    external: false

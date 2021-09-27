@@ -1,0 +1,87 @@
+version: "3"
+services:
+  mysql:
+    #build: ./mysql
+    image: mysql:5.7
+    ports:
+    - "3306:3306"
+    container_name: mysql
+    restart: always
+    volumes:
+    - ./mysql/data:/var/lib/mysql
+    - ./mysql/etc/my.cnf:/etc/mysql/conf.d/my.cnf
+    #设置时区
+    - ./common/etc/localtime:/etc/localtime
+    #设置软件安装源
+    - ./common/etc/apt/sources.list:/etc/apt/sources.list
+    environment:
+    - MYSQL_USER=admin
+    - MYSQL_PASSWORD=123456
+    - MYSQL_ROOT_PASSWORD=123456
+  redis:
+    #build: ./redis
+    image: redis:5.0
+    container_name: redis
+    restart: always
+    ports:
+    - "6379:6379"
+    volumes:
+    - ./redis/etc/redis.conf:/usr/local/etc/redis/redis.conf
+    - ./redis/data:/data
+    - ./common/etc/localtime:/etc/localtime
+    - ./common/etc/apt/sources.list:/etc/apt/sources.list
+  php:
+    image: jaysontree/php-fpm:v1.0
+    # image: jaysontree/php:v7.4.1
+    # image: php:7.2-fpm
+    container_name: php
+    restart: always
+    ports:
+    # - "12000-12100:12000-12100"
+    - "9000-9010:9000-9010"
+    - "9501:9501"
+    links:
+    - "mysql"
+    - "redis"
+    depends_on:
+    - redis
+    - mysql
+    volumes:
+    - ./php/conf.d:/usr/local/etc/php/conf.d
+    - ./php/www.conf:/usr/local/etc/php-fpm.d/www.conf
+    - ../code:/var/www/html
+    - ./supervisor/etc/supervisord.conf:/etc/supervisor/supervisord.conf
+    - ./supervisor/etc/conf.d:/etc/supervisor/conf.d/
+  nginx:
+    #build: ./nginx
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+    - "80:80"
+    - "8000-8080:8000-8080"
+    - "443:443"
+    links:
+    - "php"
+    depends_on:
+    - php
+    volumes:
+    - ./nginx/etc/nginx.conf:/etc/nginx/nginx.conf
+    - ./nginx/etc/conf.d:/etc/nginx/conf.d
+    - ./nginx/log:/var/log/nginx
+    - ../code:/var/www/html
+    - ./common/etc/localtime:/etc/localtime
+    - ./common/etc/apt/sources.list:/etc/apt/sources.list
+  consul:
+    image: consul:latest
+    container_name: consul
+    restart: always
+    ports:
+    - "8500:8500"
+    links:
+    - "php"
+    depends_on:
+    - php
+    volumes:
+    - ./common/etc/localtime:/etc/localtime
+    - ./common/etc/apt/sources.list:/etc/apt/sources.list

@@ -1,0 +1,22 @@
+{
+    "name": "root/rabbitmq",
+    "description": "rabbitmq 的测试vendor 包",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Root\\Rabbitmq\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "fu seabirds",
+            "email": "121@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "monolog/monolog": "2.0.*",
+        "php-amqplib/php-amqplib": ">=3.0"
+    }
+}
