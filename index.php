@@ -1,8 +1,8 @@
 <?php
-$pdo = new PDO('mysql:host=mysql;dbname=admin', 'root', '123456');
-$statement = $pdo->query("SELECT * from cate where id=".$_GET['id']);
-$row = $statement->fetch(PDO::FETCH_ASSOC);
-var_dump($row) ;
+//$pdo = new PDO('mysql:host=mysql;dbname=admin', 'root', '123456');
+//$statement = $pdo->query("SELECT * from cate where id=".$_GET['id']);
+//$row = $statement->fetch(PDO::FETCH_ASSOC);
+//var_dump($row) ;
 echo  1111;
 
 
