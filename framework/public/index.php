@@ -15,7 +15,6 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 
 //注册时间和路由
 with(new Illuminate\Events\EventServiceProvider($app))->register();
-
 with(new Illuminate\Routing\RoutingServiceProvider($app))->register();
 
 

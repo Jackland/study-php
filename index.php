@@ -4,7 +4,7 @@
 //$row = $statement->fetch(PDO::FETCH_ASSOC);
 //var_dump($row) ;
 echo  1111;
-
+new redis();
 
 class A{
     public function say()

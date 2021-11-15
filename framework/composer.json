@@ -1,0 +1,19 @@
+{
+  "name": "frame/seabirds",
+  "type": "project",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",
+      "System\\": "system/"
+    }
+  },
+  "minimum-stability": "dev",
+  "require": {
+    "illuminate/routing": "*",
+    "illuminate/events": "*",
+    "illuminate/database": "*",
+    "illuminate/view": "*",
+    "illuminate/log": "*"
+  }
+}
