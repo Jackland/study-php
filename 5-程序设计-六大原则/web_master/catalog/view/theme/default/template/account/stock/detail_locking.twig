@@ -1,0 +1,70 @@
+<div id="lockGoodsPanel">
+  <div class="table-header table-fixed-title">
+    <table class="table">
+      <tr>
+        <th class="lock-reason">{{ text_block_reason }}</th>
+        <th class="bill-type text-center">{{ text_invoice_type }}</th>
+        <th class="bill-id text-center">{{ text_invoice_id }}</th>
+        <th class="lock-qty text-center">{{ text_blocked_qty }}</th>
+        <th class="lock-to-pay text-center">
+          {{ text_storage_fee_to_be_paid }}
+          <i class="giga icon-V10-wenhaotishi house-ques-icon "
+             data-toggle="tooltip" title=""
+             data-original-title="{{ text_storage_fee_tips }}">
+          </i>
+        </th>
+      </tr>
+    </table>
+  </div>
+  <div class="table-body">
+    {% if list is not empty %}
+      <table class="table table-hover">
+        {% for k,detail in list %}
+          <tr>
+            <td class="lock-reason">
+              <span>{{ block_type_enum[detail.block_type]|default('') }}</span>
+            </td>
+            <td class="bill-type text-center">{{ block_reason_enum[detail.reason_type]|default('') }}</td>
+            <td class="bill-id text-center">
+              {% if detail.relate_url %}
+                <a onclick="parent.open('{{ detail.relate_url }}')"
+                   class="link-color">{{ detail.relate_id }}</a>
+              {% else %}
+                {{ detail.relate_id }}
+              {% endif %}
+            </td>
+            <td class="lock-qty text-center">{{ detail.qty }}</td>
+            <td class="lock-to-pay text-center inner-detail-table">
+              {% if  detail.need_pay >= 0 %}
+                {% if detail.need_pay > 0 %}
+                  <a href="javascript:void(0);"
+                     data-toggle="popover-html"
+                     data-placement="top"
+                     data-html='{% include 'yzcTheme/template/account/sales_order/fee_order_popover/fee.twig' %}'
+                     class="gray-color"
+                     title>
+                    {{ detail.need_pay|formatPrice(currency) }}
+                    <i class="giga icon-sidebar-unfold download-cart"></i>
+                  </a>
+                {% else %}
+                  {{ detail.need_pay|formatPrice(currency) }}
+                {% endif %}
+              {% else %}
+                {{ text_na }}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <div class="order-row text-center">
+        {{ text_no_records }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+<script>
+  $(function () {
+    initPopover();
+  })
+</script>

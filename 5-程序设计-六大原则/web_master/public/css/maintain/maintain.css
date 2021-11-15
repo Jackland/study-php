@@ -1,0 +1,79 @@
+@font-face {
+  font-family: orisHelveticaBold;
+  src: url(/public/fonts/number/HelveticaCondensedBold.ttf), url(/public/fonts/number/HelveticaNeueLTStd-Bd.otf);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #e5ecf4;
+  font-family: Arial, "Roboto", Helvetica, serif;
+}
+
+.show-content{
+  width:800px ;
+  margin: 5% auto;
+  text-align: center;
+}
+
+.content2{
+  margin: 40px auto;
+}
+
+.content2 .title{
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.content2 .tip-title{
+  font-size: 24px;
+  margin: 16px auto;
+}
+
+.contact-service{
+  font-size: 18px;
+  line-height: 30px;
+  margin-top: 30px;
+}
+
+.contact-service .customer-service{
+  color: #004BD8;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.contact-service .customer-service:hover{
+  color: #ff6600;
+}
+
+.none{
+  display: none;
+}
+
+.countdown-timer{
+  display: flex;
+  justify-content: center;
+}
+
+.countdown-timer .countdown{
+  width: 80px;
+  height: 80px;
+  background: #304258;
+  border-radius: 4px;
+  color: #fff;
+  position: relative;
+  margin: 0 10px;
+}
+
+.countdown-timer .countdown .time-unit{
+  width: 100%;
+  font-size: 14px;
+  color: #A2BBC9;
+  position: absolute;
+  bottom: 6px;
+}
+
+.countdown-timer .countdown .time-num{
+  font-family: orisHelveticaBold;
+  font-size: 48px;
+  font-weight: bold;
+}

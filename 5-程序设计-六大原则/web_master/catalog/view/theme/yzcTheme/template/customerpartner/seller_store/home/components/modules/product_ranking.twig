@@ -1,0 +1,255 @@
+{% trans_default_category 'catalog/view/customerpartner/seller_store/home/index' %}
+{# @file 产品排名 #}
+
+{{ css([
+  'static/customerpartner/seller_store/home/components/modules/product_ranking.css'
+]) }}
+
+<script type="text/x-template" id="product-ranking-module">
+  <div class="ranking-module-container" v-loading="loading">
+    {# 首次进入显示骨架图 #}
+    <div v-if="isInit" class="ranking-preview-container"> 
+       <div class="bests-module">
+        <div class="warning-back"></div>
+        <img class="w1200" src="{{ asset('static/customerpartner/seller_store/home/images/blanks/product-ranking.png') }}">
+      </div>
+    </div>
+    {# 编辑后内容显示模块 #}
+    <div v-else class="ranking-preview-container">
+      <div class="bests-module m20-b">
+        <div class="common-title" v-if="data.title_show">Best Sellers</div>
+        <div class="sub-title" v-if="data.title_sub">${data.title_sub}</div>
+        <div class="warning-back" v-if="data.title_show"></div>
+        <div class="w1200 module-flex bests-content">
+          <div class="bests-item" v-for="(product,index) of data.products">
+            <div class="left-image">
+              <img :src="product.image">
+              {# 设置角标 #}
+              <div v-if="data.display_value.sales_ranking" class="left-jb" :class="'jb' + index"> ${index+1} </div>
+            </div>
+            <div class="right-content">
+              <div class="text-small break-all pos-top-img" v-if="product.sku">Item Code:&nbsp;${product.sku}<span v-html="product.tags"></span></div>
+              <div v-if="product.price" class="p3-t">
+                <span>
+                  <span class="module-bigf" v-html="product.price"></span>
+                  <span class="module-grey p2-l">/Unit</span>
+                </span>
+              </div>
+              <div class="text-small" v-if="product.qty">Qty Available:&nbsp;${product.qty}</div>
+              <div v-if="product.complex_transaction" class="tag-content p8-tb">
+                <div v-for="complex of product.complex_transaction"><i class="giga icon-duihao_10"></i>${complex}</div>
+              </div>
+              <div class="cart" v-if="data.display_value.cart_tip"><i class="giga icon-gouwuche-fuben"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# 编辑弹窗部分 #}
+    <div>
+      <el-dialog class="ranking-module-modal module-modal ele ele-modal" :class="{'active-modal': showEdit}" title="{{__('产品排名设置')}}" :visible="showEdit" :close-on-click-modal="false"
+        @close="closeEdit" append-to-body destory-on-close modal-append-to-body="false" width="800px"> 
+        <div class="content-container">
+          <div class="module-modal-tip">
+            <ul>
+              <li>
+                {{__('本模块适用于热销产品排名展示，产品由系统按近:num1天销量选取。', {num1: '30'})}}
+              </li>
+              <li>
+                {{__('最多可显示:num2个产品。', {num2:'<strong>9</strong>'})}}
+              </li>
+            </ul>
+          </div>
+          <div class="module-edit-container">
+            <el-tabs v-model="activeTab" class="ele ele-tabs">
+              <el-tab-pane label="{{__('显示设置')}}" name="">
+                <div class="module-form-body ele ele-form scrollable-container">  
+                  <el-form :model="model" ref="form" rules="rules" class="ranking-form" label-width="145px">
+                    <el-form-item label="{{__('显示标题')}}" class="radio-form-item">
+                      <el-radio-group v-model="model.title_show" class="ele ele-radio-group">
+                        <el-radio :label="1">{{__('显示')}}</el-radio>
+                        <el-radio :label="0">{{__('不显示')}}</el-radio>
+                      </el-radio-group>
+                    </el-form-item>
+                    <el-form-item v-if="model.title_show" label="{{__('主标题')}}" class="radio-form-item lform">
+                      <el-input value="Best Sellers" disabled class="disabled-input"></el-input>
+                    </el-form-item>
+                    <el-form-item v-if="model.title_show" label="{{__('副标题')}}" class="radio-form-item lform">
+                      <el-input v-model="model.title_sub" maxlength="60" class="ele ele-input-limit"
+                        show-word-limit resize="none" placeholder="{{ __('请输入') }}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="{{__('产品数量')}}" class="radio-form-item sform">
+                      <el-select v-model="model.count">
+                        <el-option label="{{__(':num个产品', {num: 3})}}" :value="3"></el-option>
+                        <el-option label="{{__(':num个产品', {num: 6})}}" :value="6"></el-option>
+                        <el-option label="{{__(':num个产品', {num: 9})}}" :value="9"></el-option>
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item label="{{__('显示内容')}}" prop="display" class="radio-form-item ele ele-form-item-required">
+                      <el-checkbox-group v-model="model.display" class="ele ele-checkbox-group">
+                        <el-checkbox v-for="i in displayOptions" :disabled="i.value == 'item_code' || i.value == 'price'" :label="i.value">${i.label}</el-checkbox>
+                      </el-checkbox-group>
+                    </el-form-item>
+                  </el-form>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+        </div>
+        <template slot="footer">
+          <div class="ele ele-btn ele-btn-group">
+            <el-button class="oper-btn" @click="closeEdit">{{__('取消')}}</el-button>
+            <el-button class="oper-btn" type="primary" @click="saveEdit" :loading="btnLoading">{{__('保存')}}</el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </div>
+  </div>
+</script>
+<script>
+  const DISPLAY_OPTIONS = [
+    {label:"Item Code", value:"item_code", disabled: true},
+    {label:"{{__('价格')}}", value:"price" , disabled: true},
+    {label:"{{__('上架数量')}}", value:"qty_available"},
+    {label:"{{__('复杂交易')}}", value:"complex_transaction"},
+    {label:"{{__('排名')}}", value:"sales_ranking"},
+    {label:"{{__('购物车角标')}}", value:"cart_tip"},
+  ]
+  Vue.component('product-ranking', {
+    template: '#product-ranking-module',
+    delimiters: ['${', '}'],
+    props: {
+      data: {
+        type: Object,
+        default: () => ({})
+      }
+    },
+    data: () => {
+      return {
+        showEdit: false,
+        activeTab: '',
+        loading: false, // 加载动画
+        btnLoading: false,
+        axios: null,
+        //表单对象
+        model: {
+          title_show: 1,
+          title_sub: '',
+          count: 6,
+          display: []
+        }, 
+        rules: {
+          display: {required: true, trigger: 'blur'},
+        }, //表单验证规则
+        displayOptions: DISPLAY_OPTIONS,
+      }
+    },
+    watch: {
+      showEdit: {
+        immediate: true,
+        handler: function(res) {
+          this.$nextTick(function() {
+            this.initDefault(this.data)
+            let height = $(".active-modal.module-modal .el-dialog__body").height() - $(".active-modal .module-modal-tip").height();
+            $(".active-modal .module-edit-container").height(height);
+          })
+        }
+      },
+    },
+    computed: {
+      isInit() {
+        return jQuery.isEmptyObject(this.data)
+      },
+    },
+    created() {
+      this.axios = axios.create({});
+    },
+    methods: {
+      /**
+      * 编辑时初始化默认值
+      */
+      initDefault(data) {
+        let that = this;
+        if(!jQuery.isEmptyObject(data)) {
+          this.model = {
+            title_show: data.title_show,
+            title_sub: data.title_sub,
+            count: data.count,
+            display: []
+          }
+          for (let k of Object.keys(data.display_value)) {
+            if (data.display_value[k]){
+              this.model.display.push(k)
+            }
+          }
+        } else {
+          this.model.display = [];
+          this.displayOptions.map(function(d) {
+            that.model.display.push(d.value);
+          })
+        }
+      },
+
+      /**
+      * 编辑操作
+      */
+      handleEdit() {
+        this.showEdit = true;
+      },
+
+      closeEdit() {
+        this.clearModal();
+        this.showEdit = false;
+      },
+
+      //清空弹窗
+      clearModal() {
+        this.model = {
+          title_show: 1,
+          title_sub: '',
+          count: 6,
+          display: []
+        }
+      },
+
+      //保存弹窗按钮
+      saveEdit() {
+        this.$refs['form'].validate((valid) => {
+          let that = this;
+          if(valid) {
+            let data = { 
+              type: MODULE_TYPE.PRODUCT_RANK,
+              data: {
+                title_show: this.model.title_show,
+                title_sub: this.model.title_sub,
+                count: this.model.count,
+                display_value: {}
+              }
+            }
+            this.displayOptions.map(function(d) {
+              if(that.model.display.includes(d.value)){
+                data.data.display_value[d.value] = 1;
+              } else {
+                data.data.display_value[d.value] = 0;
+              }
+            });
+            that.btnLoading = false;
+            that.axios.post(API.MODULE_SAVE, data).then(res => {
+              if(res.data.code == 200) {
+                that.closeEdit();
+                that.$emit("set-module", _.cloneDeep(res.data.data));
+              } else {
+                that.$message({...ALERT_OPTION, message: res.data.msg});
+              }
+              that.btnLoading = false;
+            }).catch(err => {
+              that.$message.error(err);
+              that.btnLoading = false;
+            })
+          }
+        })
+      },
+    }
+  })
+</script>

@@ -1,0 +1,1054 @@
+<script src="catalog/view/javascript/jquery/jquery-2.1.1.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+<script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+<link href="catalog/view/theme/yzcTheme/stylesheet/font_demo/iconfont.css" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=Open+Sans:400,400i,300,700" rel="stylesheet" type="text/css"/>
+<link type="text/css" href="/public/fonts/giga/iconfont.css?v={{ app_version }}" rel="stylesheet">{#B2B页面改版 图标字体#}
+<link href="catalog/view/theme/yzcTheme/stylesheet/stylesheet.css?v={{ app_version }}" rel="stylesheet">
+<link href="public/css/common/common.css?v={{ app_version }}" rel="stylesheet">
+<link href="catalog/view/theme/yzcTheme/stylesheet/app.css?v={{ app_version }}" rel="stylesheet">
+<link rel="icon" href="data:;base64,=">
+
+<link href="catalog/view/javascript/diyUpload/file_upload/css/iconfont.css" rel="stylesheet" type="text/css"/>
+<link href="catalog/view/javascript/diyUpload/file_upload/css/fileUpload.css" rel="stylesheet" type="text/css">
+<link href="public/css/buyer/account/corderImportEuropeWayfair.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="catalog/view/javascript/diyUpload/file_upload/js/fileUploadWalmart.js"></script>
+<style>
+  .invoice-label{
+    margin-left: 40px;
+  }
+  .yzc_layer .layui-layer-content{
+    word-break: break-word;
+  }
+</style>
+<form enctype="multipart/form-data" id="form-upload">
+  <div class="modal-body">
+    <div id="column1">
+      <i class="fa fa-info-circle text-warning"></i>User Notice
+      <a class="btn " role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
+         aria-controls="collapseExample">
+        <i class="fa fa-angle-double-down"></i>
+      </a>
+      <div class="collapse" id="collapseExample">
+        <div class="well">
+          <ul>
+            <li>If the product is a combo product, please upload the shipping label for each sub-item and fill in the
+              corresponding tracking numbers.
+            </li>
+            <li>Before submitting, please make sure the tracking number and Order ID are consistent with those in
+              preview picture of uploaded Label.
+            </li>
+            <li>If you don't upload Manifest, the order status will still be Check Label which means it cannot be purchased or shipped</li>
+            <li class="text-danger">If your third-party selling platform (Wayfair) provides you with the commercial invoices,
+              please download them and upload them to the designated area on the Marketplace.
+              You shall bear the corresponding consequences if delayed logistics information is caused by
+              the failure to upload the commercial invoices in time or the mistake of uploading the wrong commercial invoices.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="file_str" name="file_str" value="">
+    <input type="hidden" id="file_num" name="file_num" value=0>
+    <input type="hidden" id="edit_first" name="edit_first" value={{ edit_first }}>
+    <div id="column2">
+      {% for order in upload_file_info %}
+      <div class="order">
+        <div class="content">
+          <div style="float: left;width: 100%;background: #E2EAFA;padding: 0 5px">
+            <div class="flex-start col-sm-5">
+              <input type="hidden" id="order_id" name='order_id' value={{ order.id }}>
+              <span class="name mr20">Sales Order ID:</span>
+              <span class="order_value">{{ order.order_id }}</span>
+              {% if edit_first == 1 %}
+                <span id="{{ order.id }}_span" class="order_value">(0/{{ order.total_file_amount }})</span>
+              {% else %}
+                <span id="{{ order.id }}_span" class="order_value">({{ order.total_file_amount }}
+                  /{{ order.total_file_amount }})</span>
+              {% endif %}
+            </div>
+
+            <div class="col-sm-7 flex-layout" style="height:35px;">
+                <div>Manifest:</div>
+                <div class="text-ellipsis flex-layout">
+                  <a class="pointer link" onclick="getManifestPdf(this)" mean="{{ order.deal_file_path }}">
+                    {{ order.file_name }}
+                  </a>
+                  {% if  order.deal_file_path is empty %}
+                    <i class="giga icon-gantanhaojinggao text-danger pointer text-size-normal"
+                       data-toggle="tooltip" data-placement="right" data-container="#form-upload"
+                       data-original-title="No connected Manifest file to this order, Please click Manifest Management in sales order page. Or it may impact your shipment."
+                    ></i>
+                  {% endif %}
+                </div>
+            </div>
+          </div>
+          {% for children in order.childrenList %}
+            {% if not children.is_combo %}
+              <div class="list">
+                <div class="item">
+                  <div  style="margin-left: 40px">
+                    <div class="col-sm-3 flex-start">
+                      <span class="name mr20">{{ text_item_code }}:</span>
+                      <span class="value">{{ children.item_code }}</span>
+                    </div>
+                    <div class="col-sm-1 flex-start">
+                      <span class="name mr20">{{ text_qty }}: </span>
+                      <span class="value">{{ children.qty }}</span>
+                    </div>
+                    <div class="col-sm-2 flex-start">
+                      <span class="name mr20">Weight:</span>
+                      <span class="value">{{ (children['weight']*0.4535924)|number_format(2, '.', '') }} kg</span>
+                    </div>
+                    <div class="col-sm-4 flex-start">
+                      <span class="name mr20">{{ text_ship_method }}: </span>
+                      <span class="value " title="{{ children.ship_method_code }}">{{ children.ship_method_code }}</span>
+                    </div>
+                  </div>
+                </div>
+                {% set k = 1 %}
+                {% for detail in children.combo_info %}
+                  <div class="detail flex-start">
+                    <div class="num">{{ k }}</div>
+                    <div class="upload-file-content">
+                      <div class="la name mr20"> Shipping Label:</div>
+                      {% if edit_first %}
+                        <div id="{{ detail.container_id }}" class="fileUploadContent " style="height:35px;"></div>
+                        <div class="text-ellipsis" style="width:30%;" id="{{ detail.container_id }}_pdf_show"></div>
+                      {% else %}
+                        <div id="{{ detail.container_id }}" class="fileUploadContent " style="height:35px;display: none"></div>
+                        <div class="text-ellipsis flex-layout" style="width:30%;" id="{{ detail.container_id }}_pdf_show">
+                          <a class="link pointer text-ellipsis label-file" onclick="getCommonLabelPdf(this)"
+                             mean="{{ detail.deal_file_path }}">{{ detail.file_name }}</a>
+                          <i class="fa fa-times-circle-o text-danger text-size-normal pointer ml-04"
+                             mean='{{ detail.container_id }}' onclick="changeCommonLabelStatus(this)"></i>
+                        </div>
+                      {% endif %}
+                    </div>
+                    <p class="flex-start"><span class="name mr20">Tracking Number:</span>
+
+                        {% if order.tracking_number_method == 0 %}
+                          <input type="text" id="{{ detail.container_id }}_tracking_number"
+                                 name="{{ detail.container_id }}_tracking_number"
+                                 onblur="pushTrackingNumber(this)"
+                                 value="{{ detail.tracking_id }}"
+                                 class="value track-val">
+                        {% else %}
+                          <span id="{{ detail.container_id }}_tracking_number_show"
+                                name="{{ detail.container_id }}_tracking_number_show"
+                                class="value mr20 track-val">{{ detail.tracking_id }}
+                          </span>
+                          <input type="hidden" id="{{ detail.container_id }}_tracking_number"
+                                 name="{{ detail.container_id }}_tracking_number"
+                                 value="{{ detail.tracking_id }}"
+                                 class="value track-val">
+                        {% endif %}
+
+                    </p>
+                    {% if home_pick_commercial_invoice %}
+                      <div class="upload-file-content">
+                        <div class="la name mr20 invoice-label">Commercial Invoice:</div>
+                        {% if edit_first or detail.commercial_invoice_file_name is null %}
+                          <div id="{{ detail.container_id }}_invoice" class="fileUploadContent " style="height:35px;"></div>
+                          <div class="text-ellipsis"  style="width:30%;" id="{{ detail.container_id }}_invoice_pdf_show"></div>
+                        {% else %}
+                          <div id="{{ detail.container_id }}_invoice" class="fileUploadContent " style="height:35px;display: none"></div>
+                          <div class="text-ellipsis flex-layout" style="width:30%;" id="{{ detail.container_id }}_invoice_pdf_show">
+                            <a class="pointer link text-ellipsis invoice-file" onclick="getCommonLabelPdf(this)"
+                               mean="{{ detail.commercial_invoice_file_path }}">{{ detail.commercial_invoice_file_name }}</a>
+                            <i class="fa fa-times-circle-o text-danger pointer text-size-normal ml-04"
+                               mean='{{ detail.container_id }}_invoice' onclick="changeCommonLabelStatus(this)"></i>
+                          </div>
+                      {% endif %}
+                    </div>
+                    {% endif  %}
+                  </div>
+                  <div class="img_show flex-layout" id="{{ detail.container_id }}_show"
+                    {% if edit_first %}
+                      style="display: none"
+                    {% endif %}
+                  >
+                    <div class="name">Preview:</div>
+                    <div class="orderId-img flex1">
+                      <span style="float: left;overflow: hidden" class="name"> Order ID: </span>
+                      <img src="{{ detail.order_id_img  }}" style="height:25px;margin-left: 2%;margin-top:10px;width: 30%">
+                    </div>
+                    <div class="name weight-img flex1">
+                      <span style="float: left;overflow: hidden"> Weight: </span>
+                      <img src="{{ detail.weight_img }}" style="height:25px;margin-left: 2%;width: 40%">
+                    </div>
+                    <div class="name trackNum-img flex1">
+                      <span style="color:#938593;float: left;overflow: hidden"> Tracking Number:</span>
+                      <img src="{{ detail.tracking_number_img }}" style="height:25px;margin-left: 2%;width: 40%;">
+                    </div>
+                  </div>
+                  {% set k = k + 1 %}
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="list">
+                <div class="item">
+
+                  <div style="width: 40px;float: left;height: 1px"></div>
+                  <div>
+                    <div class="col-sm-3 flex-start">
+                      <span class="name mr20">{{ text_item_code }}:</span>
+                      <span class="value">{{ children.item_code }}
+                        {{ image_icon_url }}
+                      </span>
+                    </div>
+                    <div class="col-sm-1 flex-start">
+                      <span class="name mr20">{{ text_qty }}:</span>
+                      <span class="value">{{ children.qty }}</span>
+                    </div>
+                    <div class="col-sm-6 flex-start">
+                      <span class="name mr20">{{ text_ship_method }}:</span>
+                      <span class="value " title="{{ children.ship_method_code }}">{{ children.ship_method_code }}</span>
+                    </div>
+                    <div class="col-sm-2"></div>
+                  </div>
+                </div>
+              </div>
+              {% for detail in children.combo_info %}
+                <div class="list">
+                  <div class="item">
+                    <div style="margin-left: 40px">
+                      <div class="col-sm-3 flex-start">
+                        <span class="name mr20">{{ text_subitem_code }}:</span>
+                        <span class="value ">{{ detail.sku }}</span></div>
+                      <div class="col-sm-1 flex-start">
+                        <span class="name mr20">QTY:</span>
+                        <span class="value ">{{ detail.qty }}</span>
+                      </div>
+                      <div class="col-sm-2 flex-start">
+                        <span class="name mr20">Weight:</span>
+                        <span class="value ">{{ (detail['weight']*0.4535924)|number_format(2, '.', '') }} kg</span>
+                      </div>
+                      <div class="col-sm-2"></div>
+                    </div>
+                  </div>
+                  {% set k = 1 %}
+                  {% for line in detail.line %}
+                    <div class="detail flex-start">
+                      <div class="num">{{ k }}</div>
+                      <div class="upload-file-content">
+                        <div class="la name mr20"> Shipping Label:</div>
+                        {% if edit_first %}
+                          <div id="{{ line.container_id }}" class="fileUploadContent " style="height:35px;"></div>
+                          <div class="text-ellipsis" style="width:30%;" id="{{ line.container_id }}_pdf_show"></div>
+                        {% else %}
+                          <div id="{{ line.container_id }}" class="fileUploadContent " style="height:35px;display: none"></div>
+                          <div class="text-ellipsis flex-layout" style="width:30%;" id="{{ line.container_id }}_pdf_show">
+                            <a class="pointer link text-ellipsis label-file" onclick="getCommonLabelPdf(this)"
+                               mean="{{ line.deal_file_path }}">{{ line.file_name }}</a>
+                            <i class="fa fa-times-circle-o text-danger text-size-normal pointer"
+                               mean='{{ line.container_id }}' onclick="changeCommonLabelStatus(this)"></i>
+                          </div>
+                        {% endif %}
+                      </div>
+                      <p class="flex-start"><span class="name mr20">Tracking Number:</span>
+                        {% if order.tracking_number_method == 0 %}
+                          <input type="text" id="{{ line.container_id }}_tracking_number"
+                                 name="{{ line.container_id }}_tracking_number"
+                                 onblur="pushTrackingNumber(this)"
+                                 value="{{ line.tracking_id }}"
+                                 class="value track-val">
+                        {% else %}
+                          <span id="{{ line.container_id }}_tracking_number_show"
+                                name="{{ line.container_id }}_tracking_number_show"
+                                class="value mr20 track-val">{{ line.tracking_id }}
+                          </span>
+                          <input type="hidden" id="{{ line.container_id }}_tracking_number"
+                                 name="{{ line.container_id }}_tracking_number"
+                                 value="{{ line.tracking_id }}"
+                                 class="value track-val">
+                        {% endif %}
+                      </p>
+                      {% if home_pick_commercial_invoice %}
+                        <div class="upload-file-content">
+                          <div class="la name mr20 invoice-label">Commercial Invoice:</div>
+                          {% if edit_first or line.commercial_invoice_file_name is null %}
+                            <div id="{{ line.container_id }}_invoice" class="fileUploadContent " style="height:35px;"></div>
+                            <div class="text-ellipsis" style="width:30%;" id="{{ line.container_id }}_invoice_pdf_show"></div>
+                          {% else %}
+                            <div id="{{ line.container_id }}_invoice" class="fileUploadContent " style="height:35px;display: none"></div>
+                            <div class="text-ellipsis" style="width:30%;" id="{{ line.container_id }}_invoice_pdf_show">
+                              <a class="pointer link invoice-file" style="display: inline-block;max-width: 80%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;vertical-align: middle;"
+                                 onclick="getCommonLabelPdf(this)"
+                                 mean="{{ line.commercial_invoice_file_path }}">{{ line.commercial_invoice_file_name }}</a>
+                              <i class="fa fa-times-circle-o text-danger text-size-normal pointer"
+                                 mean='{{ line.container_id }}_invoice' onclick="changeCommonLabelStatus(this)"></i>
+                            </div>
+                          {% endif %}
+                        </div>
+                      {% endif %}
+                    </div>
+                    <div class="img_show flex-layout" id="{{ line.container_id }}_show"
+                      {% if edit_first %}
+                        style="display: none"
+                      {% endif %}
+                    >
+                      <div class="name">Preview:</div>
+                      <div class="orderId-img flex1">
+                        <span style="float: left;overflow: hidden" class="name"> Order ID: </span>
+                        <img src="{{ line.order_id_img  }}" style="height:25px;margin-left: 2%;margin-top:10px;width: 30%">
+                      </div>
+                      <div class="name weight-img flex1">
+                        <span style="float: left;overflow: hidden"> Weight: </span>
+                        <img src="{{ line.weight_img }}" style="height:25px;margin-left: 2%;width: 40%">
+                      </div>
+                      <div class="name trackNum-img flex1">
+                        <span style="color:#938593;float: left;overflow: hidden"> Tracking Number:</span>
+                        <img src="{{ line.tracking_number_img }}" style="height:25px;margin-left: 2%;width: 40%;">
+                      </div>
+                    </div>
+                    {% set k = k + 1 %}
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="modal-footer-wayfair">
+      <button type="button" class="oris-button" onclick="checkInputInfo()" id="submitModal" name="sub">SUBMIT</button>
+      <button type="button" class="oris-button oris-button-default" onclick="cancelAction()" id="btnClose" data-dismiss="modal">CANCEL
+      </button>
+    </div>
+</form>
+
+<script>
+  $("[data-toggle='tooltip']").tooltip();
+  var submit_flag = 1;
+  var wayfair_common_label = [];  // 存放上传的label
+  var wayfair_commercial_invoice = [];  // 存放上传的商业发票
+  var js_auxiliary_information = '{{ js_auxiliary_information }}';
+  var json = eval('(' + js_auxiliary_information + ')');
+  var golab_verify_file_name = '{{ verify_file_name }}';
+  var golab_verify_arr = eval('(' + golab_verify_file_name + ')');
+  var tracking_number_list = {};
+  var order_info_list = {};
+  var tracking_number_method = '{{ upload_file_info[0]['tracking_number_method'] }}';
+  {% for order in upload_file_info %}
+      order_info_list['{{ order.id }}'] = '{{ order.order_id }}';
+  {% endfor %}
+  $(function () {
+    // User Notice
+    $(".btn i").click(function () {
+      $(this).toggleClass('fa-angle-double-down');
+      $(this).toggleClass('fa-angle-double-up');
+    });
+
+    // 渲染上传按钮
+    $.each(json.container_id_list.id_list, function (idx, obj) {
+      var labelName = obj;  // id_list 为上传label的id
+      var commercialInvoice = obj+'_invoice';  // 上传商业发票的id
+      // var name = obj;
+      {% if edit_first == 0 %}
+        wayfair_common_label[labelName] = golab_verify_arr['common_label'][labelName];
+        tracking_number_list[labelName] = golab_verify_arr['tracking_number'][labelName];
+        wayfair_commercial_invoice[commercialInvoice] = golab_verify_arr['commercial_invoice'][labelName];
+      {% else %}
+        wayfair_common_label[labelName] = '';
+        tracking_number_list[labelName] = '';
+        wayfair_commercial_invoice[commercialInvoice] = '';  //商业发票
+      {% endif %}
+
+      var wfu_label = new WpFileUpload(labelName);
+      var wfu_commercialInvoice = new WpFileUpload(commercialInvoice);
+
+      var check_url = '{{ dropship_file_check_url }}';
+      var receive_url = '{{ dropship_file_deal_url }}';
+      // 上传的参数
+      function getData(uploadObj){
+        let data = {
+          "uploadUrl": receive_url + '&container_id=' + uploadObj.uploadId,//上传文件信息地址
+          "progressUrl": check_url + '&container_id=' + uploadObj.uploadId,//获取进度信息地址，可选，注意需要返回的data格式如下（{bytesRead: 102516060, contentLength: 102516060, items: 1, percent: 100, startTime: 1489223136317, useTime: 2767}）
+          "scheduleStandard": true,
+          "showProgressNum": true,
+          "autoCommit": true,
+          "showSummerProgress": true,
+          "maxFileNumber": 1,
+          "ismultiple": false,
+          "showFileItemProgress": false, //"是否显示单文件进度条，默认显示"
+          "beforeUpload": function (uploadObj) {// 在上传前面执行的回调函数
+            return getUploadFileByOrder(uploadObj);
+          },
+          "onUpload": function () {// 在上传之后
+            afterUploadFile(uploadObj)
+          }
+        };
+        return data
+      }
+      wfu_label.initUpload(getData(wfu_label));
+      wfu_commercialInvoice.initUpload(getData(wfu_commercialInvoice));
+    });
+
+  });
+
+  //提交按钮是否启用
+  function isSubmit(id) {
+    $("#"+id).removeClass('loading-file');
+    if ($("#form-upload").find('.loading-file').length < 1){
+      $("#submitModal").removeAttr('disabled');
+    }
+  }
+
+  // 上传前的校验
+  function getUploadFileByOrder(wfu) {
+    $("#submitModal").attr('disabled','disabled');
+    var file_str = $('#file_str').val();
+    var id = wfu.uploadId;
+    $("#"+id).addClass('loading-file');
+    $("#"+id).addClass('loading-file')
+    var file_name = wfu.fileList[0].name.replace(/\s*/g,"");
+    var file_size = wfu.fileList[0].size;
+
+    if( wfu.fileList[0]['type'] !== 'application/pdf'){
+      layerMsg('Please upload a file in PDF format.');
+      isSubmit(id);
+      return false;
+    }
+    if( file_size > 1024*1024  || file_size == 0){
+      layerMsg('Please upload a PDF file not exceeding 1MB.');
+      isSubmit(id);
+      return false;
+    }
+    var edit_flag = '{{ edit_first }}';
+    // is_special 1 为全不校验， 0 为不校验
+    if (wfu.uploadId.indexOf('invoice') > 0){
+      //上传的为商业发票
+      //判断是否上传了同名文件
+      for(let key in wayfair_commercial_invoice){
+        if(file_name == wayfair_commercial_invoice[key]) {
+          layerMsg('Commercial invoices with duplicated file names are not allowed to be uploaded for sales orders on this page. Please upload again.');
+          isSubmit(id);
+          return false;
+        }
+      }
+      for(let key in wayfair_common_label){
+        if(file_name == wayfair_common_label[key]) {
+          layerMsg('The commercial invoices name is a duplicate of the label name '+ file_name +'. Please upload again.');
+          isSubmit(id);
+          return false;
+        }
+      }
+      wayfair_commercial_invoice[id] = '';
+    }else{
+      // 上传的为label
+      //判断是否上传了同名文件
+      for(let key in wayfair_common_label){
+        if(file_name == wayfair_common_label[key]) {
+          layerMsg('Labels with duplicated file names are not allowed to be uploaded for sales orders on this page. Please upload again.');
+          isSubmit(id);
+          return false;
+        }
+      }
+      for(let key in wayfair_commercial_invoice){
+        if(file_name == wayfair_commercial_invoice[key]) {
+          layerMsg('The label name is a duplicate of the commercial invoice name '+ file_name +'. Please upload again.');
+          isSubmit(id);
+          return false;
+        }
+      }
+      wayfair_common_label[id] = '';
+    }
+    return true;
+  }
+
+  //上传后校验
+  function afterUploadFile(wfu) {
+    if (wfu.resultData.error == 0) {
+      //文件成功上传
+      let intervalId = setInterval(function () {
+        var percent = $('#' + wfu.uploadId + ' .progress').children().eq(0).html();
+        if (percent == '99%') {
+          clearInterval(intervalId);
+          // 验证
+          if (wfu.uploadId.indexOf('invoice') > 0){
+            //上传的为商业发票
+            var pdf_show = '#' + wfu.uploadId + '_pdf_show';
+            $(pdf_show).empty();
+            var info = '<a class="link invoice-file pointer"  title="' + wfu.resultData.data.file_name + '" onclick="getCommonLabelPdf(this)" mean="' + wfu.resultData.data.deal_file_path + '" >' + wfu.resultData.data.file_name + '</a>';
+            $(pdf_show).html(info);
+            $(pdf_show).show();
+            // 更新（将上传的商业发票存在数组中）
+            wayfair_commercial_invoice[wfu.uploadId] = wfu.fileList[0].name.replace(/\s*/g,"");
+          }else{
+            if (wfu.resultData.data.tracking_number){
+              var key = wfu.uploadId;
+              var value = wfu.resultData.data.tracking_number;
+              //判断tracking是否重复
+              var list={ key:value};
+              let flag = this.verifyTrackingNumber(list);
+              if (flag !== '0' && flag !== '1') {
+                // label重复，弹框确认
+                let index = parent.layer.confirm(flag, {
+                  title: 'Message',
+                  skin: 'yzc_layer', //样式类名
+                  btn: ['Yes', 'No'],
+                  type:1,
+                  cancel: function () {
+                    $('#' + wfu.uploadId + ' .cleanFileBt').trigger('click');
+                    isSubmit(wfu.uploadId);
+                    parent.layer.closeAll('loading');
+                  }
+                }, function () {
+                  uploadLabel(wfu);
+                  parent.layer.close(index);
+                  parent.layer.closeAll('loading');
+                },function () {
+                  $('#' + wfu.uploadId + ' .cleanFileBt').trigger('click');
+                  isSubmit(wfu.uploadId);
+                  parent.layer.closeAll('loading');
+                });
+              }else{
+                  uploadLabel(wfu);
+                  isSubmit(wfu.uploadId);
+              }
+            }else {
+              uploadLabel(wfu);
+            }
+          }
+          let uploadId = wfu.uploadId;
+          let subberProgress = $("#" + uploadId + " .subberProgress .progress>div");
+          // 格式化数据
+          percentNum = '100%';
+          // 设置长度
+          subberProgress.css("width", percentNum);
+          // 是否显示值
+          subberProgress.html(percentNum);
+          isSubmit(uploadId);
+        }
+      }, 500);
+    } else {
+      let intervalId = setInterval(function () {
+        var percent = $('#' + wfu.uploadId + ' .progress').children().eq(0).html();
+        if (percent == '99%') {
+          clearInterval(intervalId);
+          layerMsg(wfu.resultData.msg);
+          $('#' + wfu.uploadId + ' .cleanFileBt').trigger('click');
+          isSubmit(wfu.uploadId);
+        }
+      }, 500);
+    }
+  }
+  //上传label
+  function uploadLabel(wfu) {
+    var file_str = $('#file_str').val();
+    var id = wfu.uploadId;
+    var file_name = wfu.fileList[0].name.replace(/\s*/g,"");
+    file_str += id + ':' + file_name + ';';
+    $('#file_str').val(file_str);
+    var id = wfu.uploadId + '_show';
+    $('#' + id).find('.orderId-img').children('img').attr("src", wfu.resultData.data.order_id_img);
+    $('#' + id).find('.weight-img').children('img').attr("src", wfu.resultData.data.weight_img);
+    $('#' + id).find('.trackNum-img').children('img').attr("src", wfu.resultData.data.tracking_number_img);
+    $('#' + id).show();
+
+    //tracking number 更改
+    var tracking_number_id = wfu.uploadId + '_tracking_number';
+    if(wfu.resultData.data.tracking_number){
+      tracking_number_list[wfu.uploadId] = wfu.resultData.data.tracking_number;
+      $('#' + tracking_number_id).val(wfu.resultData.data.tracking_number);
+    }
+    $('#' + tracking_number_id + '_show').html(wfu.resultData.data.tracking_number);
+
+    //将上传的文件在页面上展示出来
+    var pdf_show = '#' + wfu.uploadId + '_pdf_show';
+    $(pdf_show).empty();
+    var info = '<a class="link label-file pointer" title="' + wfu.resultData.data.file_name + '" onclick="getCommonLabelPdf(this)" mean="' + wfu.resultData.data.deal_file_path + '" >' + wfu.resultData.data.file_name + '</a>';
+    $(pdf_show).html(info);
+    $(pdf_show).show();
+
+    // 更新（将上传的label存在数组中）
+    wayfair_common_label[wfu.uploadId] = wfu.fileList[0].name.replace(/\s*/g,"");
+    {% if edit_first == 1 %}
+    calcOrderInfo(wfu.uploadId);
+    {% else %}
+    calcOrderInfoByEdit(wfu.uploadId);
+    {% endif %}
+  }
+  function getcleanFile(wfu) {
+    //代表此pdf 删除
+    //后端删除
+    var uploadId = wfu.uploadId;
+    var verify = uploadId.split('_')[1];
+    var file_name = wfu.fileList[0].name.replace(/\s*/g,"");;
+    var id = uploadId + '_show';
+    var pdf_show = uploadId + '_pdf_show';
+    $('#' + pdf_show).empty();
+    var del_url = '{{ dropship_file_unlink }}';
+    var order_id = uploadId.split('_')[0];
+    if (uploadId.indexOf('invoice') > 0){
+      for(let key in wayfair_commercial_invoice){
+        if (key==uploadId){
+          $.ajax({
+            url: del_url,
+            type: 'post',
+            dataType: 'json',
+            //                async:false,
+            data: {'container_id': uploadId},
+            success: function (res) {
+              wayfair_commercial_invoice[wfu.uploadId] ='';
+            }
+          })
+        }
+      }
+    }else {
+      $('#' + id).find('.orderId-img').children('img').attr("src", '');
+      $('#' + id).find('.weight-img').children('img').attr("src", '');
+      $('#' + id).find('.trackNum-img').children('img').attr("src", '');
+      $('#' + id).hide();
+      var tracking_number_id = uploadId + '_tracking_number';
+      $('#' + tracking_number_id).val(null);
+      $('#' + tracking_number_id + '_show').html(null);
+      var file_str = $('#file_str').val();
+      var file_arr = file_str.split(';');
+      $.each(file_arr, function (idx, obj) {
+        if (obj != null && obj != '') {
+          var i = obj.split(':');
+          if (i[0] == uploadId) {
+            var key = obj + ';';
+            //ajax 软删除文件
+            $.ajax({
+              url: del_url,
+              type: 'post',
+              dataType: 'json',
+              //                async:false,
+              data: {'container_id': uploadId},
+              success: function (res) {
+                wayfair_common_label[uploadId] = '';
+                tracking_number_list[uploadId] = '';
+                file_str = file_str.replace(key, '');
+                $('#file_str').val(file_str);
+                //判断是否可以check
+                {% if edit_first == 1 %}
+                calcOrderInfo(uploadId);
+                {% else %}
+                calcOrderInfoByEdit(uploadId);
+                {% endif %}
+              }
+            })
+          }
+        }
+      });
+    }
+
+
+
+
+  }
+  function getManifestPdf(obj) {
+    var url = $(obj).attr('mean');
+    var upload_info = 'Manifest';
+    parent.layer.open({
+      type: 2,
+      offset: ['150px', '380px'],
+      area: ['700px', '400px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar: false,
+      content: url,
+    });
+  }
+  function getCommonLabelPdf(obj) {
+    var url = $(obj).attr('mean');
+    if ($(obj).hasClass('invoice-file')){
+      var upload_info = 'Commercial Invoice';
+    }else{
+      var upload_info = 'Common Label';
+    }
+    parent.layer.open({
+      type: 2,
+      offset: ['150px', '380px'],
+      area: ['700px', '400px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar: false,
+      content: url,
+
+    });
+
+  }
+
+  function layerMsg(message, time = 2000) {
+    parent.layer.msg(message, {time: time});
+  }
+  function calcOrderInfo(uploadId) {
+    //多少个订单被选中
+    //已上传的文件个数
+    //订单是否需要被选中
+    var file_str = $('#file_str').val();
+    var order_id = uploadId.split('_')[0];
+    count = 0;
+    // label上传的部分
+    var file_arr = file_str.split(';');
+    $.each(file_arr, function (idx, obj) {
+      if (obj != null && obj != '') {
+        var i = obj.split(':');
+        if (i[0].indexOf(order_id) == 0) {
+          count++;
+        }
+      }
+    });
+    var num = json['container_id_list'][order_id]['count'];
+    // 更改显示数量
+    var edit_flag = '{{ edit_first }}';
+    if (edit_flag == 1) {
+      var order_span = '#' + order_id + '_span';
+      var span_str = '(' + count + '/' + num + ')';
+      $(order_span).html(span_str);
+    }
+  }
+  //获取重复的pdf的名称
+  function duplicates(arr) {
+    var result = [];
+    for (var i = 0; i < arr.length; i++) {
+      if ($.inArray(arr[i], result) === -1) {
+        result.push(arr[i]);
+      } else {
+        return arr[i];
+      }
+    }
+    return result;
+  }
+
+  //关闭弹窗
+  function cancelAction() {
+    var index = parent.layer.getFrameIndex(window.name);
+    parent.layer.close(index);
+  }
+
+  //提交
+  function checkInputInfo() {
+    $('#btnClose').attr('disabled', 'disabled');
+    var edit_flag = '{{ edit_first }}';
+    if (edit_flag == 1) {
+      var file_str = $('#file_str').val();
+    }else{
+      var file_str = '';
+      for(let ks  in wayfair_common_label){
+        if(wayfair_common_label[ks]){
+          file_str += ks + ':' + wayfair_common_label[ks] + ';'
+        }
+      }
+      file_str = file_str.substring(0,file_str.lastIndexOf(';'));
+      $('#file_str').val(file_str);
+    }
+
+    var file_name = [];
+    var order_id = $('#order_id').val();
+    if (edit_flag == 1) {
+        //首次提交
+        var child_list = json['container_id_list'][order_id]['child_list'];
+        for (var i = 0; i < child_list.length; i++) {
+          if (file_str.indexOf(child_list[i]) == -1) {
+            layerMsg('{{ error_file_fill }}');
+            $('#btnClose').attr('disabled', false);
+            input_flag = 0;
+            return false;
+          }
+        }
+    } else {
+      //验证wayfair_common_label全部为填写状态
+      //验证文件是否是重复的
+      var tmp = '';
+      $.each(json.container_id_list.id_list, function (idx, obj) {
+        if (wayfair_common_label[obj] == null || wayfair_common_label[obj] == '') {
+          layerMsg('{{ error_file_fill }}');
+          $('#btnClose').attr('disabled', false);
+          submit_flag = 0;
+          return false;
+        }
+
+        if (wayfair_common_label[obj] != null && wayfair_common_label[obj] != '') {
+          tmp += wayfair_common_label[obj] + ',';
+        }
+      });
+      if (submit_flag == 0) {
+        $('#btnClose').attr('disabled', false);
+        submit_flag = 1;
+        return false;
+      }
+    }
+    //验证label和商业发票有没有重复
+    var labelVal =[];
+    var invoiceVal = [];
+    var invoiceItem = [];
+
+    for(let key in wayfair_common_label){
+      labelVal.push(wayfair_common_label[key]);
+    }
+    labelVal = labelVal.sort();
+    for(var i = 0; i < labelVal.length - 1; i++) {
+      if (labelVal[i]=='' || labelVal[i]==null){
+        labelVal.splice(i,1);
+        i= i-1;
+      }
+    }
+    for(var i = 0; i < labelVal.length - 1; i++) {
+      if(labelVal.length > 1 && labelVal[i] == labelVal[i + 1]) {
+        layerMsg('Labels with duplicated file names are not allowed to be uploaded for sales orders on this page. Please upload again.');
+        return false;
+      }
+    }
+
+    for(let key in wayfair_commercial_invoice){
+      let invoiceValItem={
+        name:key,
+        value:wayfair_commercial_invoice[key]
+      }
+      invoiceItem.push(invoiceValItem)
+      invoiceVal.push(wayfair_commercial_invoice[key])
+    }
+    invoiceVal = invoiceVal.sort();
+    for(var i = 0; i < invoiceVal.length-1; i++) {
+      if (invoiceVal[i]==''||invoiceVal[i]==null){
+        invoiceVal.splice(i,1);
+        i= i-1;
+      }
+    }
+    for(var i = 0; i < invoiceVal.length-1; i++) {
+      if(invoiceVal.length > 1 && invoiceVal[i] == invoiceVal[i + 1]) {
+        layerMsg('Commercial invoices with duplicated file names are not allowed to be uploaded for sales orders on this page. Please upload again.');
+        return false;
+      }
+    }
+
+    var allFiles = labelVal.concat(invoiceVal).sort();
+    for(var i = 0; i < allFiles.length-1; i++) {
+      if (allFiles[i]==''||allFiles[i]==null){
+        allFiles.splice(i,1);
+        i= i-1;
+      }
+    }
+    for(var i = 0; i < allFiles.length-1; i++) {
+      if(allFiles[i] == allFiles[i + 1]) {
+        layerMsg('The label name is a duplicate of the commercial invoice name '+ allFiles[i] +'. Please upload again.');
+        return false;
+      }
+    }
+
+    //验证tracking
+    handleLabelFlag(tracking_number_list, invoiceItem);
+  }
+  // 验证tracking
+  function verifyTrackingNumber(list) {
+    // 1. common label 验证过，所以不再校验是否有tracking number
+    // 2. ajax 验证 tracking
+    var flag = '1';
+    var order_id = $('#order_id').val();
+    $.ajax({
+      url: 'index.php?route=account/customer_order/verifyEuropeWayfairTrackingNumber',
+      type: 'post',
+      data: {tracking_number:list,'order_id':order_id},
+      dataType: 'json',
+      async: false,
+      beforeSend: function () {
+        parent.layer.load(1);
+      },
+      success: function (json) {
+        parent.layer.closeAll('loading');
+        if(json.error == 1){
+          flag = json.result;
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        flag = '0'; // 上传错误
+        parent.layer.closeAll('loading');
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+    return flag;
+  }
+
+  function handleLabelFlag(list, invoiceItem) {
+
+    let that = this;
+    that.handleConfirmSubmit(invoiceItem, list);
+
+  }
+  function handleConfirmSubmit(invoiceItem, list) {
+    let result = true;
+    // 验证 运单号和文件是否全部填写
+    var tracking_number_verify = {};
+    $.each(json.container_id_list.id_list, function (idx, obj) {
+      if (list[obj] == null || list[obj] == '') {
+        layerMsg('{{ error_file_fill }}');
+        result = false;
+        return false;
+      }
+
+      if (tracking_number_list[obj] == null || tracking_number_list[obj] == '') {
+        layerMsg('{{ error_tracking_number_fill }}');
+        result = false;
+        return false;
+      }
+
+      if (list[obj] != null && list[obj] != '') {
+        var t = obj.split('_');
+        var t_name = list[obj];
+        if(tracking_number_verify.hasOwnProperty(t_name)){
+          tracking_number_verify[t_name].push({order_id:t[0],line_id:t[2]});
+        }else{
+          tracking_number_verify[t_name] = [];
+          tracking_number_verify[t_name].push({order_id:t[0],line_id:t[2]});
+        }
+      }
+    });
+
+    if (!result){
+      return
+    }
+
+    // 验证tracking的格式
+    var isSubmit = true;
+    var idxList ='';
+    var orderIdList='';
+    $.each(tracking_number_verify, function (idx, obj) {
+      if(obj.length > 1){
+        isSubmit = false;
+        //102561 一个订单上传的所有label，tracking都可以重复，但是不同的订单不可以。
+        var order_id_exist=[];
+        order_id_exist.push(obj[0]['order_id']);
+        for(let i = 1; i < obj.length; i++){
+          if (idxList.indexOf(idx) < 0){
+            idxList += idx+', ';
+          }
+          orderIdList += order_info_list[obj[i]['order_id']] + ', ';
+        }
+      }
+    });
+    if (!isSubmit){
+      idxList=idxList.substring(0,idxList.lastIndexOf(','));
+      orderIdList=orderIdList.substring(0,orderIdList.lastIndexOf(','));
+      var error = 'The tracking number('+ idxList +') is a duplicate of the sales order (' + orderIdList + '). Do you wish to confirm continuing the uploading of this label?';
+      // label重复，弹框确认
+      let index = parent.layer.confirm(error, {
+        title: 'Message',
+        skin: 'yzc_layer', //样式类名
+        btn: ['Yes', 'No'],
+        type:1,
+        cancel: function () {
+          result = false;
+          fileSubmit(result,invoiceItem);
+        }
+      }, function () {
+        fileSubmit(result,invoiceItem);
+        parent.layer.close(index);
+        parent.layer.closeAll('loading');
+      },function () {
+        result = false;
+        fileSubmit(result,invoiceItem);
+      });
+    }
+    if (isSubmit){
+      fileSubmit(result,invoiceItem);
+    }
+  }
+
+  function fileSubmit(result,invoiceItem){
+    if(!result){
+      $('#btnClose').attr('disabled', false);
+      submit_flag = 1;
+      return false;
+    }
+    var data = $('#form-upload').serializeArray();
+    data = data.concat(invoiceItem);
+    //ajax 提交
+    $.ajax({
+      url: '{{ dropship_file_submit }}',
+      type: 'post',
+      data: data,
+      async: false,
+      beforeSend: function () {
+        $("#submitModal").attr('disabled','disabled');
+        parent.layer.load(1);
+      },
+      success: function (json) {
+        parent.layer.closeAll('loading');
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        layerMsg(json.msg, 2000);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+
+  function calcOrderInfoByEdit(uploadId) {
+    //多少个订单被选中
+    //已上传的文件个数
+    //订单是否需要被选中
+    var order_id = uploadId.split('_')[0];
+    count = 0;
+    // label上传的部分
+    $.each(json.container_id_list.id_list, function (idx, obj) {
+      if (wayfair_common_label[obj] != null && wayfair_common_label[obj] != '') {
+        if (obj.indexOf(order_id) == 0) {
+          count++;
+        }
+      }
+    });
+    var num = json['container_id_list'][order_id]['count'];
+    // 更改显示数量
+    var order_span = '#' + order_id + '_span';
+    var span_str = '(' + count + '/' + num + ')';
+    $(order_span).html(span_str);
+  }
+  // 更改store label状态
+  function changeCommonLabelStatus(obj) {
+    var common_label_id = $(obj).attr('mean');
+    if (common_label_id.indexOf('invoice') > 0){
+      var confirm_tips = 'Are you sure to delete this commercial invoice?';
+    }else{
+      var confirm_tips = 'Are you sure to delete this shipping label?';
+    }
+
+    parent.layer.confirm(confirm_tips, {
+      title: 'Message',
+      skin: 'yzc_layer', //样式类名
+      btn: ['Yes', 'No'],
+      yes: function (index) {
+        if (common_label_id.indexOf('invoice') > 0){
+          wayfair_commercial_invoice[common_label_id] = '';
+        }else{
+          wayfair_common_label[common_label_id] = '';
+          $('#' + common_label_id + '_tracking_number_show').html(null);
+          $('#' + common_label_id + '_tracking_number').val(null);
+          calcOrderInfoByEdit(common_label_id);
+        }
+
+        //展示小图消失，上传控件展示
+        $(obj).parent().hide();
+         $(obj).prev().empty();
+        $(obj).parent().prev().show();
+        $('#' + common_label_id + '_show').hide();
+        parent.layer.close(index);
+      },
+      end: function () {
+
+      }
+    });
+  }
+
+  function pushTrackingNumber(obj) {
+      var input_id = $(obj).attr('id');
+      input_id = input_id.replace('_tracking_number', '');
+      tracking_number_list[input_id] = $.trim($(obj).val());
+  }
+
+
+
+</script>

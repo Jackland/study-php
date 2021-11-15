@@ -1,0 +1,848 @@
+{{ header }}
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<link href="catalog/view/theme/yzcTheme/stylesheet/rma/rma.css?v={{ app_version }}" rel="stylesheet">
+<script src="catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/magnific/magnific-popup.css" type="text/css" rel="stylesheet"/>
+<style>
+    .ram-images-show {
+        display: inline-block;
+        width: 33.33333333333%;
+        float: left;
+        padding: 10px;
+    }
+
+    .btn-show-more, .btn-show-more:focus {
+        background-color: #ecedef;
+        color: #242424;
+        border-width: 0;
+        width: 28px;
+        height: 28px;
+        text-align: center;
+        line-height: 28px;
+    }
+
+    .btn-show-more:hover {
+        background: #333;
+        color: #fff;
+    }
+
+    #combo_icon img {
+        margin-top: -2px;
+    }
+
+    .notice {
+        background-color: #fce7c8;
+        border: 1px solid #f9d5a2;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    .warehouse-fee-tip{
+      text-align: right;
+      color: #fA6400;
+    }
+
+    .break-word{
+      word-break: break-word;
+    }
+
+    .white-sPre{
+      white-space: pre;
+    }
+    .complex-icon{
+      font-size: 12px;
+      color: #004BD8;
+      border: 1px solid #004BD8;
+      background-color: #eef2fe;
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      text-align: center;
+      line-height: 14px;
+      vertical-align: text-top;
+      margin-left: 6px;
+    }
+</style>
+
+
+<div id="page-rma-detail" class="page-seller-portal">
+    {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>{{ text_rma_detail }} of {{ rmaOrderInfo.rma_order_id | default('UNKNOWN') }}</h1>
+                {% if is_timeout and rmaOrderInfo.seller_status in [1,3] %}
+                    <p class="notice"><i class="fa fa-volume-up"></i> {{ tip_rmd_count_down2 }}</p>
+                {% endif %}
+                <fieldset>
+                </fieldset>
+                <div class="tab-content main mb-4">
+                    <div role="tabpanel" class="tab-pane active" id="tab-1">
+                        <div class="bg-white p-2">
+                            {# 图标 #}
+                            <div class="info-wrapper mb-4 mt-2">
+                                <div class="row">
+                                    <div style="display: flex;justify-content: center">
+                                        <div class="col-md-2">
+                                            <span><i class="giga icon-summary-po-id"></i></span>
+                                            <span class="title">Purchase Order ID</span>
+                                            <span class="value">
+                      <a href="{{ b2b_order_url }}" target="_blank">#{{ rmaOrderInfo.b2b_order_id }}<span
+                                  class="giga icon-table-link" style="display: inline-block;"></span></a>
+                      {% if (rmaOrderInfo.delivery_type==2) %}
+                          <i class="giga icon-cwf" style="color: #1f5268;font-size: 15px;" data-toggle="tooltip"
+                             data-original-title="{{ cwf }}"></i>
+                      {% endif %}
+                    </span>
+                                        </div>
+                                        {% if rmaOrderInfo.order_type == 1 %}
+                                            <div class="col-md-2">
+                                                <span><i class="giga icon-summary-po-id"></i></span>
+                                                <span class="title">Sales Order ID</span>
+                                                <span class="value">{{ rmaOrderInfo.from_customer_order_id }}</span>
+                                            </div>
+                                        {% endif %}
+                                        <div class="col-md-2">
+                                            <span><i class="giga icon-summary-day"></i></span>
+                                            <span class="title">RMA Date</span>
+                                            <span class="value">{{ rmaOrderInfo.create_time }}</span>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <span><i class="giga icon-summary-store"></i></span>
+                                            <span class="title">Store</span>
+                                            <span class="value">{{ rmaOrderInfo.store }}</span>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <span><i class="giga icon-summary-return-rma"></i></span>
+                                            <span class="title">RMA Type</span>
+                                            {% if rmaOrderInfo.order_type == 1 %}
+                                                <span class="value">Sales Order RMA</span>
+                                            {% else %}
+                                                <span class="value">Purchase Order RMA</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-2">
+                                            <span><i class="giga icon-summary-status"></i></span>
+                                            <span class="title">RMA Status</span>
+                                            {% if rmaOrderInfo.cancel_status == 1 %}
+                                                {% for status in rmaStatus %}
+                                                    {% if status.status_id == 4 %}
+                                                        <span class="value"
+                                                              style="color:{{ status.color }}">{{ status.name }}</span>
+                                                        <br/>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                {% for status in rmaStatus %}
+                                                    {% if rmaOrderInfo.seller_status == status.status_id %}
+                                                        <span class="value"
+                                                              style="color:{{ status.color }}">{{ status.name }}</span>
+                                                        <br/>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-2">
+                      <span><i class="gcl gcldaojishi"></i>
+                          <i class="giga icon-V10-wenhaotishi"
+                             data-toggle="tooltip_custom"
+                             style="cursor: pointer;font-size: 12px" title=""
+                             data-original-title="{{ tip_rmd_count_down }}">
+                          </i>
+                      </span>
+                                            <span class="title">Count Down</span>
+                                            <span  {% if rmaOrderInfo.seller_status in [1,3] %} class="count-down"  {% endif %}>-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {# Comments #}
+                            <h2>Comments</h2>
+                            <div class="well break-word white-sPre">{{ rmaOrderProduct.comments }}</div>
+                            {# Images #}
+                            <h2>Images</h2>
+                            <div class="row" id="thumbnails_1">
+                                {% if rmaFiles %}
+                                    {% for rmaFile in rmaFiles %}
+                                        <div class="ram-images-show">
+                                            {% if rmaFile.isImg %}
+                                                <a href="{{ rmaFile.imageUrl }}" data-toggle="tooltip"
+                                                   title="View Images" class="thumbnail">
+                                                    <img src="{{ rmaFile.imageUrl }}" alt="" class="img-thumbnail"
+                                                         style="height: 230px"/>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <div class="row">
+                                <ul class="thumbnails">
+                                    {% if rmaFiles %}
+                                        {% for rmaFile in rmaFiles %}
+                                            {% if rmaFile.isImg == false %}
+                                                <li class="image-additional">
+                                                    <a href="" data-toggle="tooltip" title="{{ rmaFile.file_name }}"
+                                                       class="thumbnail">
+                                                        <img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/wenjian.png"></a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            {# Item(s) Requested for RMA #}
+                            <h2>
+                                Item(s) Requested for RMA
+                            </h2>
+                            {% if margin_info %}
+                                <div style="width: 100%;float: left;border-top: 1px solid #eee;padding: 10px 0 10px 0;">
+                                    <div class="flex-layout" style="width: 50%;float: left" id="combo_icon">
+                                        Item Code /ASIN:
+                                        <span style="font-weight: bold;">
+                                          {% if rmaOrderProduct.tag %}
+                                            {{ rmaOrderProduct.item_code }}
+                                            {% for tag in rmaOrderProduct.tag %}
+                                             {{ tag }}
+                                            {% endfor %}
+                                          {% else %}
+                                            {{ rmaOrderProduct.item_code }}
+                                          {% endif %}
+                                          {% if rmaOrderProduct.asin %}
+                                            / {{ rmaOrderProduct.asin }}
+                                          {% endif %}
+                                        </span>
+                                        <a class="complex-icon" href="{{ margin_info.url_margin }}" target="_blank">
+                                            {{ margin_info.icon }}
+                                        </a>
+                                    </div>
+                                    <div style="width: 50%;float: left">
+                                        Margin Order ID：
+                                      <a href="{{ margin_info.purchase_order_link }}" target="_blank"
+                                         style="font-weight: bold">{{ margin_info.advance_order_id }}</a>
+                                    </div>
+                                </div>
+                                <div style="width: 100%;float: left;padding: 10px 0 10px 0;">
+                                    <div style="width: 50%;float: left">
+                                        Order Quantity：
+                                        <span style="font-weight: bold;color:#183464">
+                      {% if associated %}
+                          {{ associated.qty }}
+                      {% else %}
+                          {{ orderProduct.quantity }}
+                      {% endif %}
+                    </span>
+                                    </div>
+                                    <div style="width: 50%;float: left">
+                                        Margin Agreement ID：<a href="{{ margin_info.margin_order_link }}"
+                                                               target="_blank"
+                                                               style="font-weight: bold">{{ margin_info.margin_agreement_id }}</a>
+                                    </div>
+                                </div>
+                                <div style="width: 100%;float: left;padding: 10px 0 10px 0;">
+                                    <div style="width: 50%;float: left">
+                                        Margin agreement product unit deposit：<span
+                                                style="font-weight: bold;color:#4f658b">{{ margin_info.deposit_per_show }}</span>
+                                    </div>
+                                    <div style="width: 50%;float: left">
+
+                                        {% if  rmaOrderInfo.order_type == 1 %}
+                                            The number of defective Products：<span
+                                                style="font-weight: bold;color:#183464">{{ rmaOrderProduct.quantity }}</span>
+                                        {% else %}
+                                            Return Quantity：<span
+                                                style="font-weight: bold;color:#4f658b">{{ rmaOrderProduct.quantity }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div style="width: 100%;float: left;padding: 10px 0 10px 0;">
+                                    <div style="width: 50%;float: left">
+                                        Final payment cost per unit：<span
+                                                style="font-weight: bold;color:#4f658b">{{ orderProduct.price }}</span>
+                                    </div>
+                                    <div style="width: 50%;float: left">
+                                        RMA Reason：<span style="font-weight: bold">{{ rmaReason.reason }}</span>
+                                    </div>
+                                </div>
+                                <div style="width: 100%;float: left;padding: 10px 0 10px 0;">
+                                    <div style="width: 50%;float: left">
+                                        Fulfillment fee per unit：<span
+                                                style="font-weight: bold;color:#4f658b">{{ orderProduct.freight }}</span>
+                                        {% if isEurope %}
+                                            /&nbsp;Service Fee After Discount：<span
+                                                style="font-weight: bold;color:#4f658b">{{ orderProduct.service_fee_per }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div style="width: 50%;float: left">
+                                        Applied for reshipment：<span style="font-weight: bold">
+                      {% if rmaOrderProduct.rma_type == 1 or rmaOrderProduct.rma_type == 3 %}
+                          YES
+                      {% else %}
+                          NO
+                      {% endif %}</span>
+                                    </div>
+                                </div>
+                                <div style="width: 100%;float: left;padding-top: 10px;padding-bottom: 20px;">
+                                    <div style="width: 50%;float: left">
+                                        Total product value in this RMA detail：<span
+                                                style="font-weight: bold;color:#4f658b">{{ margin_info.total_margin }}</span>
+                                    </div>
+                                    <div style="width: 50%;float: left">
+                                        Applied for refund：<span style="font-weight: bold">
+                      {% if rmaOrderProduct.rma_type == 2 or rmaOrderProduct.rma_type == 3 %}
+                          YES
+                      {% else %}
+                          NO
+                      {% endif %}
+                    </span>
+                                    </div>
+                                </div>
+                            {% elseif future_margin_info %}
+                                <div style="width: 100%;float: left;border-top: 1px solid #eee;padding: 10px 0 10px 0;">
+                                    <div class="flex-layout" style="width: 50%;float: left" id="combo_icon">
+                                        Item Code /ASIN:
+                                        <span style="font-weight: bold;">
+                                          {% if rmaOrderProduct.tag %}
+                                            {{ rmaOrderProduct.item_code }}
+                                            {% for tag in rmaOrderProduct.tag %}
+                                              <span style="font-weight: bold; color: red;padding-left: 1px">{{ tag }}</span>
+                                            {% endfor %}
+                                          {% else %}
+                                            {{ rmaOrderProduct.item_code }}
+                                          {% endif %}
+                                          {% if rmaOrderProduct.asin %}
+                                            / {{ rmaOrderProduct.asin }}
+                                          {% endif %}</span>
+                                      <a class="complex-icon" href="{{ future_margin_info.future_margin_order_link }}" target="_blank">
+                                        {{ future_margin_info.icon }}
+                                      </a>
+                                    </div>
+                                    <div style="width: 50%;float: left">
+                                        Future goods deposit order：<a
+                                                href="{{ future_margin_info.purchase_order_link }}" target="_blank"
+                                                style="font-weight: bold">{{ future_margin_info.advance_order_id }}</a>
+                                    </div>
+                                </div>
+                                <div style="width: 100%;float: left;padding: 10px 0 10px 0;">
+                                    <div style="width: 50%;float: left">
+                                        Order Quantity：
+                                        <span style="font-weight: bold;color:#183464">
+                      {% if associated %}
+                          {{ associated.qty }}
+                      {% else %}
+                          {{ orderProduct.quantity }}
+                      {% endif %}
+                    </span>
+                                    </div>
+                                    <div style="width: 50%;float: left">
+                                        Future goods agreement ID：<a
+                                                href="{{ future_margin_info.future_margin_order_link }}" target="_blank"
+                                                style="font-weight: bold">{{ future_margin_info.agreement_no }}</a>
+                                    </div>
+                                </div>
+                                <div style="width: 100%;float: left;padding: 10px 0 10px 0;">
+                                    <div style="width: 50%;float: left">
+                                        Future goods agreement deposit per unit：<span
+                                                style="font-weight: bold;color:#4f658b">{{ future_margin_info.deposit_per_show }}</span>
+                                    </div>
+                                    <div style="width: 50%;float: left">
+
+                                        {% if  rmaOrderInfo.order_type == 1 %}
+                                            The number of defective Products：<span
+                                                style="font-weight: bold;color:#183464">{{ rmaOrderProduct.quantity }}</span>
+                                        {% else %}
+                                            Return Quantity：<span
+                                                style="font-weight: bold;color:#4f658b">{{ rmaOrderProduct.quantity }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div style="width: 100%;float: left;padding: 10px 0 10px 0;">
+                                    <div style="width: 50%;float: left">
+                                        Final payment cost per unit：<span
+                                                style="font-weight: bold;color:#4f658b">{{ orderProduct.price }}</span>
+                                    </div>
+                                    <div style="width: 50%;float: left">
+                                        RMA Reason：<span style="font-weight: bold">{{ rmaReason.reason }}</span>
+                                    </div>
+                                </div>
+                                <div style="width: 100%;float: left;padding: 10px 0 10px 0;">
+                                    <div style="width: 50%;float: left">
+                                        Fulfillment fee per unit：<span
+                                                style="font-weight: bold;color:#4f658b">{{ orderProduct.freight }}</span>
+                                        {% if isEurope %}
+                                            /&nbsp;Service fee after discount：<span
+                                                style="font-weight: bold;color:#4f658b">{{ orderProduct.service_fee_per }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div style="width: 50%;float: left">
+                                        Applied for reshipment：<span style="font-weight: bold">
+                      {% if rmaOrderProduct.rma_type == 1 or rmaOrderProduct.rma_type == 3 %}
+                          YES
+                      {% else %}
+                          NO
+                      {% endif %}</span>
+                                    </div>
+                                </div>
+                                <div style="width: 100%;float: left;padding-top: 10px;padding-bottom: 20px;">
+                                    <div style="width: 50%;float: left">
+                                        Total product value in this RMA detail：<span
+                                                style="font-weight: bold;color:#4f658b">{{ future_margin_info.total_future_margin }}</span>
+                                    </div>
+                                    <div style="width: 50%;float: left">
+                                        Applied for refund：<span style="font-weight: bold">
+                      {% if rmaOrderProduct.rma_type == 2 or rmaOrderProduct.rma_type == 3 %}
+                          YES
+                      {% else %}
+                          NO
+                      {% endif %}
+                    </span>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <table class="table main">
+                                    <thead>
+                                    <tr>
+                                        <td class="text-left" width="12%">Item Code</td>
+                                        {% if rmaOrderProduct.asin %}
+                                            <td class="text-left">ASIN</td>
+                                        {% endif %}
+                                        <td class="text-left">Quantity</td>
+                                        <td class="text-left" width="12%">Unit Price After Discount</td>
+                                        {% if isEurope %}
+                                            <td class="text-left" width="12%">Service Fee After Discount</td>
+                                        {% endif %}
+                                        <td class="text-center" style="width: 8%"> Fulfillment Per Unit
+                                            <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip"
+                                               style="cursor: pointer;font-size: 12px"
+                                               title="Fulfillment fee includes shipping fee and packing fee."
+                                            ></i>
+                                        </td>
+                                        {% if rmaOrderInfo.coupon_and_campaign > 0 %}
+                                          <td class="text-left" width="12%">Savings</td>
+                                        {% endif %}
+                                        <td class="text-left" width="12%">Total</td>
+                                        {% if  rmaOrderInfo.order_type == 1 %}
+                                            <td class="text-left">The number of defective Products</td>
+                                        {% else %}
+                                            <td class="text-left">Return Quantity</td>
+                                        {% endif %}
+                                        <td class="text-left">Reason</td>
+                                        <td class="text-left">Applied for Reshipment</td>
+                                        <td class="text-left">Applied for Refund</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        {% if rmaOrderProduct.tag %}
+                                            <td>{{ rmaOrderProduct.item_code }}
+                                                {% for tag in rmaOrderProduct.tag %}
+                                                    <span style="font-weight: bold; color: red;padding-left: 1px">{{ tag }}</span>
+                                                {% endfor %}
+                                            </td>
+                                        {% else %}
+                                            <td>{{ rmaOrderProduct.item_code }}</td>
+                                        {% endif %}
+                                        {% if rmaOrderProduct.asin %}
+                                            <td class="text-left">{{ rmaOrderProduct.asin }}</td>
+                                        {% endif %}
+                                        <td class="text-price">
+                                            {% if associated %}
+                                                {{ associated.qty }}
+                                            {% else %}
+                                                {{ orderProduct.quantity }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-price">{{ orderProduct.price }}</td>
+                                        {% if isEurope %}
+                                            <td class="text-price">{{ orderProduct.service_fee_per }}</td>
+                                        {% endif %}
+                                        <td class="text-price">
+                                            {{ orderProduct.freight }}
+                                            {% if orderProduct.freight_diff %}
+                                                <i class="glyphicon glyphicon-info-sign" data-toggle="tooltip"
+                                                   style="cursor: pointer;font-size: 12px"
+                                                   title="{{ orderProduct.tips_freight_difference_per }}"></i>
+                                            {% endif %}
+                                        </td>
+                                        {% if rmaOrderInfo.coupon_and_campaign > 0 %}
+                                          <td class="text-price">-{{ rmaOrderInfo.coupon_and_campaign_show }}</td>
+                                        {% endif %}
+                                        <td class="text-price">{{ orderProduct.total }}</td>
+                                        <td class="text-price">{{ rmaOrderProduct.quantity }}</td>
+                                        <td>{{ rmaReason.reason }}</td>
+                                        <td>
+                                            {% if rmaOrderProduct.rma_type == 1 or rmaOrderProduct.rma_type == 3 %}
+                                                YES
+                                            {% else %}
+                                                NO
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if rmaOrderProduct.rma_type == 2 or rmaOrderProduct.rma_type == 3 %}
+                                                YES
+                                            {% else %}
+                                                NO
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            {% endif %}
+
+
+
+
+                            {# Refund #}
+                            {% if rmaOrderProduct.rma_type == 2 or rmaOrderProduct.rma_type == 3 %}
+                                <h2>Refund</h2>
+                                <table class="table main">
+                                    <tbody>
+                                    <tr>
+                                        <td class="text-price">Refund Type</td>
+                                        <td>
+                                            {{ rmaOrderInfo.refund_type_str }}
+                                        </td>
+                                        <td class="text-price">Seller's Process Result</td>
+                                        <td>
+                                            {% if rmaOrderProduct.status_refund == 1 %}
+                                                Agree
+                                            {% elseif rmaOrderProduct.status_refund == 2 %}
+                                                Refuse
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-price">Applied Refund Amount</td>
+                                        <td>{{ rmaOrderProduct.apply_refund_amount }}</td>
+                                        <td class="text-price">Seller's Refund Amount</td>
+                                        <td>
+                                            {{ rmaOrderProduct.actual_refund_amount }}
+                                            {% if 5 == rmaOrderInfo.refund_type %} (Virtual Pay: {{ rmaOrderInfo.actual_refund_amount_vp }})
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+{#                                    4414 仓租增加的提示#}
+                                    {% if feeOrder is defined and feeOrder.status == 5 %}
+                                    <tr>
+                                      <td colspan="4">
+                                        <div class="warehouse-fee-tip">
+                                          While your RMA request was being processed, your order incurred a {{ feeOrder.fee_total|formatPrice(currency) }} storage fee that has been automatically deducted from your Marketplace account balance.
+                                        </div>
+                                      </td>
+                                    </tr>
+{#                                    4414 仓租增加的提示#}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+
+
+                                {% if rmaOrderProduct.seller_refund_comments %}
+                                    <h2>Seller's Refund Comments</h2>
+                                    <div class="well break-word white-sPre">
+                                        {{ rmaOrderProduct.seller_refund_comments }}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
+
+
+                            {% if rmaOrderProduct.rma_type == 1 or rmaOrderProduct.rma_type == 3 %}
+                                <h2><b>Reshipment</b></h2>
+                                <h4>Reshipment Information</h4>
+                                <table class="table table-hover" style="margin-bottom: 0;border-bottom: 0;">
+                                    <thead>
+                                    <tr>
+                                        <th>Sales Order ID</th>
+                                        <th>Reshipment ID</th>
+                                        <th>Reshipment Date</th>
+                                        <th>Order Status</th>
+                                        <th>Seller's Process Result</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>{{ rmaOrderInfo.customer_order_id }}</td>
+                                        <td>{{ reorder.reorder_id }}</td>
+                                        <td>{{ reorder.reorder_date }}</td>
+                                        <td>
+                                            {% if reorder.order_status == 1 %}
+                                                New Order
+                                            {% else %}
+                                                {% for orderStatus in customer_order_status %}
+                                                    {% if reorder.order_status ==  orderStatus.DicKey %}
+                                                        {{ orderStatus.DicValue }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if rmaOrderProduct.status_reshipment == 1 %}
+                                                Agree
+                                            {% elseif rmaOrderProduct.status_reshipment == 2 %}
+                                                Refuse
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table class="table table-hover">
+                                    <tr>
+                                        <th>Ship To:</th>
+                                        <td>{{ reorder.ship_name }}</td>
+                                        <th>Email:</th>
+                                        <td>{{ reorder.email }}</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone:</th>
+                                        <td>{{ reorder.ship_phone }}</td>
+                                        <th>Address:</th>
+                                        <td>
+                                            {{ reorder.ship_address }}&emsp;{{ reorder.ship_city }}&emsp;{{ reorder.ship_state }}&emsp;{{ reorder.ship_zip_code }}&emsp;{{ reorder.ship_country }}</td>
+                                        <td class="text-center">
+                                            <a class="btn btn-show-more" data-toggle="collapse" href="#collapse_1"
+                                               aria-expanded="false" aria-controls="collapse_1" onclick="changeIcon()"
+                                               style="padding: 0;">
+                                                <i class="giga icon-action-stretch"
+                                                   style="font-size: 16px;display: none" id="icon_down1"></i>
+                                                <i class="giga icon-arrow-compress" style="font-size: 16px;"
+                                                   id="icon_up1"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="11" style="padding: 0">
+                                            <div id="collapse_1" class="collapse in">
+                                                <table class="table" style="margin-bottom: 0px;">
+                                                    <thead>
+                                                    <tr class="info">
+                                                        <th width="12%x">Item Code</th>
+                                                        <th width="12%">Reshipment Type</th>
+                                                        <th>Product Name</th>
+                                                        <th>Quantity</th>
+                                                        <th>Sub-item Code</th>
+                                                        <th>Sub-item Quantity</th>
+                                                        <th>Carrier Name</th>
+                                                        <th>Tracking Number</th>
+                                                        <th width="10%">Item Status</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for reorderLine in reorderLines %}
+                                                        <tr>
+                                                            {% if reorderLines['cross_row'] %}
+                                                                {% if reorderLine.tag %}
+                                                                    <td rowspan="{{ reorderLines['cross_row'] }}">{{ reorderLine.item_code }}
+                                                                        {% for tag in reorderLine.tag %}
+                                                                            <span style="font-weight: bold; color: red;padding-left: 1px">{{ tag }}</span>
+                                                                        {% endfor %}
+                                                                    </td>
+                                                                {% else %}
+                                                                    <td rowspan="{{ reorderLines['cross_row'] }}">{{ reorderLine.item_code }}</td>
+                                                                {% endif %}
+                                                                <td rowspan="{{ reorderLines['cross_row'] }}">
+                                                                    {% if reorderLine.part_flag==2 %}
+                                                                        Part Item
+                                                                    {% else %}
+                                                                        New Product
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td rowspan="{{ reorderLines['cross_row'] }}">{{ reorderLine.product_name }}</td>
+                                                                <td rowspan="{{ reorderLines['cross_row'] }}">{{ reorderLine.qty }}</td>
+                                                            {% else %}
+                                                                {% if reorderLine.tag %}
+                                                                    <td>{{ reorderLine.item_code }}
+                                                                        {% for tag in reorderLine.tag %}
+                                                                            <span style="font-weight: bold; color: red;padding-left: 1px">{{ tag }}</span>
+                                                                        {% endfor %}
+                                                                    </td>
+                                                                {% else %}
+                                                                    <td>{{ reorderLine.item_code }}</td>
+                                                                {% endif %}
+                                                                <td>
+                                                                    {% if reorderLine.part_flag==2 %}
+                                                                        Part Item
+                                                                    {% else %}
+                                                                        New Product
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td>{{ reorderLine.product_name }}</td>
+                                                                <td>{{ reorderLine.qty }}</td>
+
+                                                            {% endif %}
+
+                                                            <td>{{ reorderLine['child_sku'] }}</td>
+                                                            <td>{{ reorderLine['all_qty'] }}</td>
+                                                            <td>
+                                                                {% for k,v in reorderLine['carrier_name'] %}
+                                                                    {{ v }}<br/>
+                                                                {% endfor %}
+                                                            </td>
+                                                            <td class="text-center">
+                                                                {% for k,v in reorderLine['tracking_number'] %}
+                                                                    {% if reorderLine['carrier_name'][k] == 'Fedex' and  reorderLine['tracking_status'][k] == 1 %}
+                                                                        <a href="{{ text_fedex_homepage }}{{ v }}"
+                                                                           target="_blank" class="cpbd"
+                                                                           data-clipboard-text="{{ v }}"
+                                                                           style="text-decoration:underline;cursor: pointer;">{{ v }}</a>
+                                                                        <br/>
+                                                                    {% else %}
+                                                                        {{ v }}
+                                                                        {% if reorderLine['tracking_status'][k] == 0 %}
+                                                                            (invalid)
+                                                                        {% endif %}
+                                                                        <br/>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </td>
+                                                            {% if reorderLines['cross_row'] %}
+                                                                <td rowspan="{{ reorderLines['cross_row'] }}">
+                                                                    {% for orderStatus in customer_order_item_status %}
+                                                                        {% if reorderLine.item_status ==  orderStatus.DicKey %}
+                                                                            {{ orderStatus.DicValue }}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </td>
+                                                            {% else %}
+                                                                <td>
+                                                                    {% for orderStatus in customer_order_item_status %}
+                                                                        {% if reorderLine.item_status ==  orderStatus.DicKey %}
+                                                                            {{ orderStatus.DicValue }}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </td>
+                                                            {% endif %}
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+
+
+                                {% if rmaOrderProduct.seller_reshipment_comments %}
+                                    <h2>Seller's Reshipment Comments</h2>
+                                    <div class="well break-word white-sPre">
+                                        {{ rmaOrderProduct.seller_reshipment_comments }}
+                                    </div>
+                                    {#Seller 上传的附件#}
+                                    {% if sellerRmaFiles %}
+                                        <h2>Attachment</h2>
+                                        <div class="row" id="thumbnails_1">
+                                            {% if rmaFiles %}
+                                                {% for rmaFile in sellerRmaFiles %}
+                                                    <div class="ram-images-show">
+                                                        {% if rmaFile.isImg %}
+                                                            <a href="{{ rmaFile.imageUrl }}" data-toggle="tooltip"
+                                                               title="View Images" class="thumbnail">
+                                                                <img src="{{ rmaFile.imageUrl }}" alt=""
+                                                                     class="img-thumbnail"/>
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                        <div class="row">
+                                            <ul class="thumbnails">
+                                                {% if rmaFiles %}
+                                                    {% for rmaFile in sellerRmaFiles %}
+                                                        {% if rmaFile.isImg == false %}
+                                                            <a href="{{ rmaFile.download }}" data-toggle="tooltip"
+                                                               title="{{ rmaFile.file_name }}" class="thumbnail">
+                                                                <img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/wenjian.png"/>
+                                                            </a>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {{ rma_message }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="my_own_tip"></div>
+
+
+{{ footer }}
+<script>
+  var isNewApplyRma = {{ isNewApplyRma ? 'true' : 'false' }};
+  $(".white-sPre").each(function () {
+    var text = $(this).text().trim();
+    $(this).text(text);
+  })
+    $('[data-toggle="tooltip_custom"]').tooltip({
+        container: '#my_own_tip',
+        template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner" style="text-align: left;min-width: 300px;"></div></div>',
+    });
+    $(function () {
+        $('#thumbnails_1').magnificPopup({
+            type: 'image',
+            delegate: 'a',
+            gallery: {
+                enabled: true
+            }
+        });
+        // 倒计时显示
+        let startDate = new Date('{{ date }}').getTime();
+        let endDate = new Date('{{ rmaOrderInfo.created_time }}').getTime();
+        if (isNewApplyRma){
+          endDate += 7 * 24 * 60 * 60 * 1000;
+        } else {
+          endDate += 14 * 24 * 60 * 60 * 1000;
+        }
+        if (startDate < endDate) {
+            TimeDown('count-down', startDate, endDate)
+        }
+    });
+
+    function TimeDown(classname, startDate, endDate) {
+        //相差的总秒数
+        let totalSeconds = parseInt((endDate - startDate) / 1000);
+        //天数
+        let days = Math.floor(totalSeconds / (60 * 60 * 24));
+        //取模（余数）
+        let modulo = totalSeconds % (60 * 60 * 24);
+        //小时数
+        let hours = Math.floor(modulo / (60 * 60));
+        modulo = modulo % (60 * 60);
+        //分钟
+        let minutes = Math.floor(modulo / 60);
+        //秒
+        let seconds = modulo % 60;
+
+        let str = days + "D</br>" + hours + "H" + minutes + "M" + seconds + "S";
+        if (seconds < 0) {
+            str = '-';
+        }
+        //输出到页面
+        document.getElementsByClassName(classname)[0].innerHTML = str;
+        //延迟一秒执行自己
+        setTimeout(function () {
+            TimeDown(classname, startDate + 1000, endDate);
+        }, 1000)
+    }
+
+    function changeIcon() {
+        if ($("#icon_down1").css('display') == 'none') {
+            $("#icon_down1").css('display', 'block');
+            $("#icon_up1").css('display', 'none');
+        } else {
+            $("#icon_up1").css('display', 'block');
+            $("#icon_down1").css('display', 'none');
+        }
+    }
+
+</script>

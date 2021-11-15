@@ -1,0 +1,43 @@
+{% trans_default_category 'catalog/view/customerpartner/seller_store/home/index' %}
+{{ js(['widgets/product-select-modal/index.js', 'js/common/orisComponents.js', 'js/common/mathematical.js']) }}
+{{ css(['widgets/product-select-modal/index.css']) }}
+<div class="modal fade product-select-modal" tabindex="-1" role="dialog" data-backdrop="static" id="{{ _id }}">
+  <div class="modal-dialog oris-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          <i class="giga icon-V10_danchuangguanbi close-icon"></i>
+        </button>
+        <div class="modal-title">{{__('选择产品', {}, 'catalog/view/customerpartner/marketing_campaign/discount/index')}}</div>
+      </div>
+      <div class="modal-body">
+        <div class="search-input-container">
+          <div class="input-label">{{ __('请输入') }} ItemCode / MPN</div>
+          <div class="oris-ingroup action-clear">
+            <input type="text" class="search-input oris-input" placeholder="{{__('输入2位及以上字母开始搜索')}}" autocomplete="off"/>
+            <i class="giga icon-v10quxiao-01 oris-clear"></i>
+          </div>
+        </div>
+        <div class="products-container oris-scrollbar">
+          <div class="no-records">{{ __('没有数据') }}</div>
+          <div class="action-products"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="text-right">
+          <button type="button" class="oris-button oris-button-default" data-dismiss="modal">{{__('取消')}}</button>
+          <button type="button" class="oris-button action-submit">{{__('提交', {}, 'catalog/view/customerpartner/marketing_campaign/discount/index')}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% apply script %}
+<script>
+;
+(function(prodModal) {
+  let maxCountTips = "{{__('产品数量不可超过:num个', {'num': maxCount}, 'catalog/view/customerpartner/marketing_campaign/discount/index')}}";
+  prodModal = new productSelectModal('#{{ _id }}', '#{{triggerId}}', '{{url}}', '{{params}}', {{ submitCb }}, {{ maxCount }}, maxCountTips);
+})('prodModal{{ _id }}');
+</script>
+{% endapply %}

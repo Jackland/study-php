@@ -1,0 +1,341 @@
+{% set cnzzEventMapProduct = {
+  'common/home':                                  '首页|Hm_Channel_Product',
+  'account/marketing_time_limit':                 '首页|Hm_Promotion_Product',
+  'account/marketing_time_limit/index':           '首页|Hm_Promotion_Product',
+  'account/marketing_time_limit/listHot':         '首页|Hm_Promotion_Product',
+  'account/marketing_time_limit/listWillEnd':     '首页|Hm_Promotion_Product',
+  'account/marketing_time_limit/listAll':         '首页|Hm_Promotion_Product',
+  'account/marketing_time_limit/listWillSale':    '首页|Hm_Promotion_Product',
+  'account/marketing_time_limit/sellerOnSale':    '店铺页|Sh_Promotion_Product',
+  'account/marketing_time_limit/sellerWillSale':  '店铺页|Sh_Promotion_Product',
+}
+%}
+{% set cnzzEventMapStore = {
+  'common/home':                                  '首页|Hm_Channel_StoreName',
+  'account/marketing_time_limit':                 '首页|Hm_Promotion_StoreName',
+  'account/marketing_time_limit/index':           '首页|Hm_Promotion_StoreName',
+  'account/marketing_time_limit/listHot':         '首页|Hm_Promotion_StoreName',
+  'account/marketing_time_limit/listWillEnd':     '首页|Hm_Promotion_StoreName',
+  'account/marketing_time_limit/listAll':         '首页|Hm_Promotion_StoreName',
+  'account/marketing_time_limit/listWillSale':    '首页|Hm_Promotion_StoreName',
+}
+%}
+<div class="grid-layout">
+  <div class="product-simple-template-new">
+    <div class="product-image">
+      <span class="store-discount-value" time-limit="{{ product.timeLimitId }}">{{ product.discountShow }}% OFF</span>
+      <a href="{{ product.href }}" target="_blank" {% if cnzzEventMapProduct[route] %} data-cnzz-event="{{ cnzzEventMapProduct[route] }}" {% endif %} >
+        <div class="con-img">
+          <div class="full-height img-responsive scale" title="{{ product.name }}"
+            style="background: url('{{ product.thumb }}') no-repeat center;background-size: 100%;"></div>
+          {# <img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}"
+               class="img-responsive scale"> #}
+          {% if product.horn_mark == 'hot' %}
+            <div class="horn-mark-pos horn-hot"></div>
+          {% elseif product.horn_mark == 'new' %}
+            <div class="horn-mark-pos horn-new"></div>
+          {% elseif product.horn_mark == 'sale' %}
+            <div class="horn-mark-pos horn-sale"></div>
+          {% elseif product.horn_mark == 'featured' %}
+            <div class="horn-mark-pos horn-recommend"></div>
+          {% endif %}
+        </div>
+      </a>
+      <div class="btn-group">
+        {% if isLogin %}
+          {# 已登录 #}
+          {% if product['can_sell'] == 1 and product['unsee'] == 0 %}
+            {# 精细化可卖、上架可见 #}
+            {% if product['productWishList'] %}
+              <a type="button" class="wishlist pointer expand-range" data-toggle="tooltip"
+                 title="{{ button_wishlist_remove }}"
+                 onclick="wishlist.remove('{{ product.product_id }}', this, 'home');"
+                 data-cnzz-event="首页|Hm_Channel_SavedItem">
+                <i class="giga fa-heart"></i>
+              </a>
+            {% else %}
+              <a type="button" class="wishlist pointer expand-range" data-toggle="tooltip"
+                 title="{{ button_wishlist_add }}" onclick="wishlist.add('{{ product.product_id }}', this, 'home');"
+                 data-cnzz-event="首页|Hm_Channel_SavedItem">
+                <i class="giga fa-heart-o"></i>
+              </a>
+            {% endif %}
+          {% else %}
+            {% if product['productWishList'] %}
+              {# 14103要所有上过架的产品都可以被检索到，如果产品已失效，则在检索结果页和商品详情页标注出商品无效的原因 #}
+              {% if product['unsee'] == 1 %}
+                <a type="button" class="wishlist pointer expand-range" data-toggle="tooltip"
+                   title="{{ button_wishlist_remove }}"
+                   onclick="wishlist.unavailable('{{ product.product_id }}', this, 'home');"
+                   data-cnzz-event="首页|Hm_Channel_SavedItem">
+                  <i class="giga fa-heart"></i>
+                </a>
+              {% else %}
+                <a type="button" class="wishlist pointer expand-range" data-toggle="tooltip"
+                   title="{{ button_wishlist_remove }}"
+                   onclick="wishlist.remove('{{ product.product_id }}', this, 'home');"
+                   data-cnzz-event="首页|Hm_Channel_SavedItem">
+                  <i class="giga fa-heart"></i>
+                </a>
+              {% endif %}
+            {% else %}
+              {# 14103要所有上过架的产品都可以被检索到，如果产品已失效，则在检索结果页和商品详情页标注出商品无效的原因 #}
+              {% if product['unsee'] == 1 %}
+                <a type="button" class="wishlist pointer expand-range" data-toggle="tooltip"
+                   title="{{ button_wishlist_add }}"
+                   onclick="wishlist.unavailable('{{ product.product_id }}', this, 'home');"
+                   data-cnzz-event="首页|Hm_Channel_SavedItem">
+                  <i class="giga fa-heart-o "></i>
+                </a>
+              {% else %}
+                <a type="button" class="wishlist pointer expand-range" data-toggle="tooltip"
+                   title="{{ button_wishlist_add }}" onclick="wishlist.add('{{ product.product_id }}', this, 'home');"
+                   data-cnzz-event="首页|Hm_Channel_SavedItem">
+                  <i class="giga fa-heart-o "></i>
+                </a>
+              {% endif %}
+            {% endif %}
+            {# END 精细化可卖、上架可见 #}
+          {% endif %}
+          {# END 已登录 #}
+        {% endif %}
+        {# <a type="button" class="wishlist pointer expand-range" data-toggle="tooltip" title="" onclick="" data-cnzz-event="首页|Hm_Channel_SavedItem" data-original-title="Remove from Saved Items"> #}
+        {# <i class="giga fa-heart"></i> #}
+        {# </a> #}
+        {% if not is_home %}
+          {# #16460 增加的下载功能 #}
+          {% if (product['can_sell']==1 or product['loginId']==product['seller_id']) and product['unsee'] == 0 %}
+            <div class="mt-octal1">
+              <a type="button" data-toggle="tooltip" title="Download Material Package"
+                 class="btn-download pointer expand-range"
+                 onclick="download_file(this,{{ product['product_id'] }},{{ product['seller_id'] }})"
+                 data-cnzz-event="列表页|Lt_product_Download">
+                <i class="giga icon-V10_xiazai-moren download text-most"></i>
+                <i class="giga icon-V10_xiazaihover download text-most none"></i>
+              </a>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="product-information m8-t">
+      <div class="code-price-wrapper">
+        {# #29414 首页限时限量活动-进行中-店铺名称 #}
+        <div class="store-name-marketing"><a href="{{ product.href }}" target="_blank" {% if cnzzEventMapProduct[route] %} data-cnzz-event="{{ cnzzEventMapProduct[route] }}" {% endif %}>{{ product.name }}</a></div>
+        <div class="code-group text-small pos-rela">
+          {# 1200px屏幕下隐藏 #}
+          <span class="media1200">Item Code:&nbsp;</span><span class="swiper-no-swiping">{{ product.sku }}</span>&nbsp;
+          {# <i class="giga icon-combox"></i> <i class="giga icon-oversized"></i> #}
+          {% if product['tag'] is not empty %}
+            {{ product['tag'] }}
+          {% endif %}
+          {% if not is_home %}
+            {# 非首页：目前有频道页 #}
+            {% if product['verify']['qty_available'] %}
+              {# New Arrivals qty 只有频道类页面使用 #}
+              <span class="new-arrivals-qty">
+                Qty:&nbsp;{{ product['quantity'] <= 100 ? product['quantity']:'100+' }}
+              </span>
+            {% else %}
+              <span class="new-arrivals-qty">
+                Qty:&nbsp;**
+              </span>
+            {% endif %}
+          {% else %}
+            {# 首页 #}
+            {% if product.is_original_design %}
+              <div class="original-img">
+                <img src="{{ product.original_image }}">
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+        <div class="m8-t adaptation-height">
+          <div class="price-group min-price-height comming-soon-flex">
+            {# price #}
+            {% if product['verify']['price_available'] %}
+              {% if not is_home %} {# 匹配#16460 特殊要求 #}
+                <div class="price-ellipsis"
+                     title="{% if product['min_price'] == product['max_price'] %}
+                              {{ product['min_price_show'] }}/Unit
+                            {% else %}
+                              {{ product['min_price_show'] }}-{{ product['max_price_show'] }}/Unit
+                            {% endif %}">
+                  <span class="price price1200">
+                    {% if product['min_price'] == product['max_price'] %}
+                      {{ product['min_price_show'] }}
+                    {% else %}
+                      {{ product['min_price_show'] }}-{{ product['max_price_show'] }}
+                    {% endif %}
+                  </span>
+                  <span class="text-light unit1200">/Unit</span>
+                </div>
+                {# comming-soon 增加最近价格调整时间 #}
+                <span class="settling-time" style="display: none;">
+                  {{ product['futures_delivery_date'] }}
+                </span>
+              {% else %}
+                <div>
+                  <span class="price price1200">
+                    {% if product['min_price'] == product['max_price'] %}
+                      {{ product['min_price_show'] }}
+                    {% else %}
+                      {{ product['min_price_show'] }}-{{ product['max_price_show'] }}
+                    {% endif %}
+                  </span>
+                  <span class="text-light unit1200">/Unit</span>
+                </div>
+              {% endif %}
+            {% else %}
+              {% if isLogin %}
+                <div>
+                  <span
+                    class="price price1200"> {{ product.currency_symbol_left }}**{{ product.currency_symbol_right }}</span>
+                  <span class="text-light unit1200">/Unit</span>
+                </div>
+                <button class="contact-seller text-small light-btn btn-outline-clear" type="button"
+                        onclick="sellerAffiliationCommonFn.actionAffiliation({{ product['seller_id'] }})"
+                        title="If you want to contact this seller,please click this button to apply."
+                        data-cnzz-event="首页|Hm_Channel_ContactSeller">
+                  Seller Affiliation
+                </button>
+              {% else %}
+                <div>
+                  <span
+                    class="price price1200">{{ product.currency_symbol_left }}**{{ product.currency_symbol_right }}</span>
+                  <span class="text-light unit1200">/Unit</span>
+                </div>
+                <button class="login-price text-small light-btn btn-outline-clear" type="button"
+                        onclick="window.location.href='{{ login }}'"> Login To See Price
+                </button>
+              {% endif %}
+            {% endif %}
+            {# Freight #}
+            {% if product['verify']['price_available'] %}
+              <div>
+                <span class="text-light text-small">Fulfillment:&nbsp;{{ product.extra_fee }}<span class="unit1200"> /Unit</span></span>
+              </div>
+            {% endif %}
+            {# #29414 店铺活动折扣价 划线价 #}
+            {% if isLogin and product['verify']['price_available'] and product['delete_price_show'] %}
+              <div class="store-discount-price">{{ product['delete_price_show'] }}</div>
+            {% endif %}
+          </div>
+          {# Qty Available #}
+          {% if product['verify']['qty_available'] %}
+            <div class="qty-group text-small m6-t pop-down-new pos-rela">
+              {% if product['quantity']<=100 %}
+                <span class="text-light">Qty Available:&nbsp;{{ product['quantity'] }}</span>
+              {% else %}
+                <span class="text-light">Qty Available:&nbsp;100+</span>
+              {% endif %}
+              {% if product.verify.arrival_available and product.receipt %}
+                <span class="more-way block1200"><i class="pointer will-arrive">more on the way</i>
+                  <div class="pop-down">
+                    <span
+                      style='font-size: 12px;line-height: 20px;'>Date of next arrival:&nbsp;{{ product['receipt']['expect_date'] }}</span>
+                    <br/>
+                    <span style='font-size: 12px;line-height: 20px;'>Estimated QTY of next arrival:
+                      {% if product['receipt']['expect_qty']  >= 100 %}
+                        100+
+                      {% elseif  product['receipt']['expect_qty']  >= 50 %}
+                        50+
+                      {% elseif  product['receipt']['expect_qty']  >= 20 %}
+                        20+
+                      {% else %}
+                        less than 20
+                      {% endif %}
+                    </span>
+                  </div>
+                </span>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="qty-group text-small m6-t">
+              <span class="text-light">Qty Available:&nbsp;**</span>
+            </div>
+          {% endif %}
+          <div class="tag-group text-small flex-layout m6-t tag-group-home tag1200">
+            {% if product['rebate_status'] %}
+              <div class="tag-type">
+                <span>&nbsp;<i class="giga icon-duihao_10 text-small" aria-hidden="true"></i> Rebates&nbsp;</span>
+              </div>
+            {% endif %}
+            {% if product['margin_status'] %}
+              <div class="tag-type">
+                <span>&nbsp;<i class="giga icon-duihao_10 text-small" aria-hidden="true"></i> Margin&nbsp;</span>
+              </div>
+            {% endif %}
+            {% if product['future_status'] %}
+              <div class="tag-type">
+                <span>&nbsp;<i class="giga icon-duihao_10 text-small" aria-hidden="true"></i> Futures&nbsp;</span>
+              </div>
+            {% endif %}
+          </div>
+          {% if not is_home %}
+            {% if product['verify']['qty_available'] %}
+              {# Estimated Date 频道类页面有，其他没有 #}
+              {% if product.verify.arrival_available and product.receipt %}
+                <div class="estimated-date qty-group m6-t text-size-norma pop-down-new pos-rela">
+                  <span class="text-light">
+                    Estimated Date:
+                    <span style="color: #333;">{{ product['receipt']['expect_date'] }}</span>
+                  </span>
+                </div>
+                {# Estimated Qty #}
+                <div class="estimated-qty qty-group m04-t text-size-norma pop-down-new pos-rela">
+                  <span class="text-light">Estimated Qty:
+                    {% if product['receipt']['expect_qty']  >= 100 %}
+                      <span style="color: #333;">100+</span>
+                    {% elseif  product['receipt']['expect_qty']  >= 50 %}
+                      <span style="color: #333;">50+</span>
+                    {% elseif  product['receipt']['expect_qty']  >= 20 %}
+                      <span style="color: #333;">20+</span>
+                    {% else %}
+                      <span style="color: #333;">less than 20</span>
+                    {% endif %}
+                  </span>
+                </div>
+              {% endif %}
+            {% endif %}
+          {% endif %}
+          {# #29414 首页限时限量活动-进行中-折扣值#}
+          <div class="up-dowm-thumbnails-discount-value" time-limit="{{ product.timeLimitId }}">{{ product.discountShow }}% OFF</div>
+        </div>
+      </div>
+      <div class="store-group flex-layout mt-2 m30-b" qa_rate="{{ product['qa_rate'] }}"
+           seller_id="{{ product['seller_id'] }}" return_approval_rate="{{ product['return_approval_rate'] }}"
+           sku="{{ product['sku'] }}">
+        <i class="giga icon-V10_dianpu text-warning"></i>
+        <span class="store-name" onclick="getSeller({{ product['seller_id'] }})"
+             {% if cnzzEventMapStore[route] %} data-cnzz-event="{{ cnzzEventMapStore[route] }}" {% endif %} title="{{ product['screenname'] }}">{{ product['screenname'] }}&nbsp;</span>
+        {% if is_channel and isLogin %}
+          {# 频道页增加店铺评分 #}
+          {% if product['new_seller_score'] is defined and product['new_seller_score'] == true %}
+            <span class="score pop-down-new">
+              New Seller
+            </span>
+          {% elseif product['score'] %}
+            <span class="score pop-down-new">
+              {{ product['score'] }}
+              <div class="pop-down">
+                <div class="text-small">
+                  <b>GIGA Index</b>
+                  <div class="text-light mtb-04">
+                    <span>The GIGA Index&nbsp;serves as a Seller Performance Index automatically calculated by the Giga Cloud MarketPlace with a maximum possible index score of 100.</span><br>
+                    <span>Click [Learn more] to learn how the GIGA Index is calculated.</span>
+                  </div>
+                  <a class="link underline"
+                     href="{{ url('information/information', {'information_id': product.information_id }) }}"
+                     target="_blank">Learn More</a>
+                </div>
+              </div>
+            </span>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {# #29414 店铺活动折扣模块 #}
+  <a href="{{ product.href }}" target="_blank"><div class="buy-now-btn-marketing">BUY NOW</div></a>
+</div>

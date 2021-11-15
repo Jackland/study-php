@@ -1,0 +1,315 @@
+<div class="oris-row max-1080">
+{# 卖家有留言，申请结束 #}
+  {% if agreement.is_bid == 1 and message.seller_message %}
+    <div class="module-row">
+      <div class="module-title"><span class="Y-axis"></span>{{ __('Processed Result') }}</div>
+      <div class="processed-result0 overflow">
+        <div class="result-details full-width ">
+          <span class="title">Verdict:</span>
+          {% if agreement.status in [1, 2] %}
+            <span class="txt text-larger text-bold" style="color: #004BD8">{{ __('Pending') }}</span>
+          {% elseif agreement.status==4 %}
+            <span class="txt text-larger text-bold" style="color: #333333">{{ __('Rejected') }}</span>
+          {% elseif agreement.status==7 %}
+            <span class="txt text-larger text-bold" style="color: #999999">{{ __('Canceled') }}</span>
+          {% else %}
+            <span class="txt text-larger text-bold" style="">{{ __('Approved') }}</span>
+          {% endif %}
+        </div>
+        <div class="result-details full-width">
+          <span class="title">Seller Message:</span>
+          <span class="txt break-word">
+            {{ message.seller_message }}
+          </span>
+        </div>
+        <div class="result-details full-width">
+          <span class="title">Processed Time:</span>
+          <span class="txt">{{ message.seller_message_time }}</span>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  <div class="module-row">
+    <div class="module-title">
+      <span class="Y-axis"></span>{{ __('Agreement Summary') }}
+    </div>
+    <div class="summary-list">
+      <div class="summary-details full-width ">
+        <span class="title">{{ __('Agreement Status') }}:</span>
+        <span class="txt text-larger text-bold "
+              style="color: {{ agreement.marginStatus.color }}">{{ agreement.marginStatus.name }}</span>
+      </div>
+      <div class="summary-details col-xs-6 col-sm-4">
+        <span class="title">{{ __('Agreement ID') }}:</span>
+        <span class="txt">{{ agreement.agreement_id }}
+          {% if agreement.futureDelivery.margin_agreement_id %}
+              <a class="oris-mark-futures" href="{{ url('account/product_quotes/futures/sellerBidDetail', {id: agreement.futureDelivery.agreement_id }) }}" target="_blank" data-toggle="tooltip" data-original-title="{{ __('This Margin Agreement has been transferred from a Future Goods Agreement. Click to view the original Future Goods Agreement') }}">F</a>
+          {% endif %}
+        </span>
+      </div>
+      <div class="summary-details col-xs-6 col-sm-4" >
+        <span class="title" >{{ __('Name') }}:</span>
+        <span class="txt action-userinfo pointer" data-user_customer_id="{{ agreement.buyer_id }}"
+              data-toggle="popover" data-placement="top" data-content="" data-html="true"  data-trigger="manual" data-container="body">
+          <span class="name-color">{{ agreement.buyer.nickname }}</span>&nbsp;&nbsp;{{ agreement.buyer.user_number }}
+          {% if is_home_pickup %}
+          <span class="account-type atype-wc">{{ __('Will Call') }}</span>
+          {% else %}
+          <span class="account-type atype-ds">{{ __('Drop Shipping') }}</span>
+          {% endif %}
+        </span>
+        {{ agreement.ex_vat }}
+      </div>
+    </div>
+  </div>
+  <div class="module-row">
+    <div class="module-title"><span class="Y-axis"></span>{{ __('Agreement Detail') }}</div>
+    <div class="detail-table">
+      <table class="oris-table border-table no-hover">
+        <thead>
+        <tr>
+          <th class="text-left oris-w200">{{ __('Item Code') }} / {{ __('MPN') }}</th>
+          <th class="text-left oris-w160">{{ __('Attribute') }}</th>
+          <th class="text-right oris-w90">{{ __('Agreed Price') }}</th>
+          <th class="oris-w160">{{ __('Agreed Days') }}</th>
+          <th class="oris-w160">{{ __('Agreed Quantity') }}</th>
+          <th class="oris-w220">{{ __('Margin Validity') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="text-left" width="30%">
+            <a class="oris-link image-td"  target="_blank" href="{{ url('product/product', {product_id: agreement.product_id}) }}">
+                <img class="pro-image" src="{{ product_info.image }}"/>
+                <div>
+                  <span class="tags-image">
+                    <text class="max-line1" title="{{ product_info.sku }}">{{ product_info.sku }}</text>{{ product_info.tags|join('') }}
+                  </span>
+                  <span class="max-line2" title="{{ product_info.mpn }}">{{ product_info.mpn }}</span>
+                </div>
+            </a>
+          </td>
+          <td class="text-left">
+            <div class="max-line1" title="{{ product_info.attributes|join(' + ') }}">{{ product_info.attributes|join(' + ') }}</div>
+          </td>
+          <td class="nowrap text-right">
+            {{ agreement.price|formatPrice(currency) }}
+            {% if agreement.discountShow != '' %}
+              <br><span class="limit-discount">Discount:<span class="percent-dis"> {{ agreement.discountShow }}% </span>OFF</span>
+            {% endif %}
+          </td>
+          <td>{{ agreement.day }}</td>
+          <td>{{ agreement.num }}</td>
+          <td>
+            {% if agreement.effect_time and agreement.expire_time %}
+              {{ agreement.effect_time|formatZone(country,null,'Y-m-d') ~ '&nbsp;-&nbsp;' ~ agreement.expire_time|formatZone(country,null,'Y-m-d') }}
+            {% else %}
+            --
+            {% endif %}
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      {% if message.buyer_message %}
+      <div class="buyer-msg">
+        <span class="text-bold">{{ __('Buyer Messages') }}:</span>
+        <span class="break-word">{{ message.buyer_message }}</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <input type="hidden" name="last_update_time" value="{{ agreement.update_time }}">
+  {% if agreement.status in [1, 2] %}
+  <div class="module-row">
+    <div class="module-title"><span class="Y-axis"></span>{{ __('Processed Result') }}</div>
+    <div class="processed-result">
+      <div>
+        <span style="margin-right: 80px">
+          <input type="radio" name="agreement_status" value="3">{{ __('Approved') }}
+        </span>
+        <span>
+          <input type="radio" name="agreement_status" value="4">{{ __('Rejected') }}
+        </span>
+      </div>
+      <div class="m20-t">
+        <div class="required-before text-bold">{{ __('Message to Buyer') }}</div>
+        <div class="m10-t oris-comments">
+          <textarea id="toBuyerVal" class="oris-input msg-to" placeholder="Please enter your message..."></textarea>
+          <div class="letter-count"><span id="toBuyerLen" class="link-color">0</span>/2000</div>
+        </div>
+      </div>
+      <div class="text-center m24-t">
+        <button id="sendMsg" class="oris-button oris-button-bigger width120" disabled>{{ __('Send') }}</button>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+<script type="text/javascript" src="catalog/view/javascript/layerOris.js?v={{ app_version }}"></script>
+<script>
+  //计算word 数量
+  $("#toBuyerVal").bind('input propertychange change', function () {
+    var toBuyerVal = $("#toBuyerVal").val();
+    var calcReturn = toolString.calcStringLength(toBuyerVal, 2000);
+    $("#toBuyerVal").val(calcReturn.fullStr);
+    $("#toBuyerLen").text(calcReturn.len)
+    var pResult = $('input:radio[name="agreement_status"]:checked').val();
+    if ((calcReturn.len > 0) &&(pResult!=null)){
+      $("#sendMsg").removeAttr('disabled')
+    }else{
+      $("#sendMsg").attr('disabled',true)
+    }
+  });
+
+  //监听Processed Result的选择
+  $("input[type=radio][name=agreement_status]").on('change',function () {
+    var pResult = $('input:radio[name="agreement_status"]:checked').val();
+    var toBuyerVal = $("#toBuyerVal").val().trim();
+    if((pResult!=null) && toBuyerVal){
+      $("#sendMsg").removeAttr('disabled')
+    }else {
+      $("#sendMsg").attr('disabled',true)
+    }
+  })
+
+  // 给buyer发消息
+  $("#sendMsg").on('click', function () {
+    $(this).button('loading');
+    var button = this;
+    var agreement_status = $('input:radio[name="agreement_status"]:checked').val();
+    var toBuyerVal = $("#toBuyerVal").val().trim();
+    if (agreement_status == null) {
+      layer.open({
+        type: 1,
+        title: 'Alter',
+        closeBtn: 1,
+        skin: 'oris-layer',
+        shadeClose: true,
+        offset: 'auto',
+        area: ['400px', 'auto'],
+        content: '{{ __('Processed Result is required.') }}',
+        btn: 'OK',
+      });
+      $("#sendMsg").button('reset');
+      return
+    } else if (!toBuyerVal) {
+      layer.open({
+        type: 1,
+        title: 'Alter',
+        closeBtn: 1,
+        skin: 'oris-layer',
+        shadeClose: true,
+        offset: 'auto',
+        area: ['400px', 'auto'],
+        content: '{{ __('Message to buyer is required.') }}',
+        btn: 'OK',
+      });
+      $("#sendMsg").button('reset');
+      return
+    } else if (Number($("#toBuyerLen").text()) > 2000) {
+      layer.open({
+        type: 1,
+        title: 'Alter',
+        closeBtn: 1,
+        skin: 'oris-layer',
+        shadeClose: true,
+        offset: 'auto',
+        area: ['400px', 'auto'],
+        content: '{{ __('The message text is too long.') }}',
+        btn: 'OK',
+      });
+      $("#sendMsg").button('reset');
+      return
+    } else {
+      let contract_status = $('input[name=\'agreement_status\']:checked').val();
+      let need_alarm = '{{ need_alarm }}';
+      // 价格预警
+      if (need_alarm == '1' && contract_status == '3') {
+        let noticeMsg = '{{ is_show_cwf_notice ? error_product_price_approve_cwf : error_product_price_approve }}';
+        let options = {
+          title: 'Attention',
+          content: noticeMsg,
+          btn: ['Yes', 'No'],
+          skin: 'oris-layer',
+        };
+        layerOris.confirmLayer(options,function () {
+          layer.closeAll();
+          sendMessage(button);
+        }, function () {
+          $("#sendMsg").button('reset');
+        }, function () {
+          $("#sendMsg").button('reset');
+        });
+      } else {
+        sendMessage(button);
+      }
+    }
+  })
+
+  function sendMessage(button) {
+    var msg = $('#toBuyerVal').val().trim();
+    $('#toBuyerVal').val(msg);
+    var contract_status = $('input[name=\'agreement_status\']:checked').val();
+    var last_update_time = $('input[name=\'last_update_time\']').val();
+
+    var param = {
+      'message': msg,
+      'agreement_id': '{{ agreement.agreement_id }}',
+      'contract_status': contract_status,
+      'last_update_time': last_update_time
+    };
+
+    let notice = 'Are you sure you want to reject this margin agreement?';
+    if(contract_status == '3') {
+       notice = 'Are you sure you want to approve this margin agreement?'
+    }
+    let options = {
+      title: 'Confirm',
+      content: notice,
+      btn: ['Yes', 'No'],
+      skin: 'oris-layer',
+    };
+    layerOris.confirmLayer(options,function () {
+      layer.closeAll();
+      $.ajax({
+        url: "{{ url('account/product_quotes/margin_contract/addMessage') }}",
+        dataType: 'json',
+        type: 'post',
+        data: param,
+        success: function (json) {
+          $(button).button('reset');
+          if (json['success']) {
+            $.toast({
+              heading: false,
+              text: json['success'],
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'success',
+              hideAfter: 3000,
+              allowToastClose: false,
+              loader: false,
+              afterHidden: function () {
+                $('#margin-agreement').load("{{ url('account/product_quotes/margin_contract/info', {id:agreement.id}) }}");
+              }
+            });
+          } else if (json['error']) {
+            $.toast({
+              heading: false,
+              text: json['error'],
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: 3000,
+              allowToastClose: false,
+              loader: false
+            });
+          }
+        }
+      });
+    }, function () {
+      $("#sendMsg").button('reset');
+    }, function () {
+      $("#sendMsg").button('reset');
+    });
+  }
+</script>

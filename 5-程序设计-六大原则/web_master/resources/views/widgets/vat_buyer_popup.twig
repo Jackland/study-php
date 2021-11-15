@@ -1,0 +1,91 @@
+{{ css(['widgets/vatBuyerPopup.css']) }}
+
+<div class="modal fade verify-vat-modal" id="verifyVatBuyer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" 
+  style="z-index: 3000">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content no-shadow">
+      <div class="modal-header">
+        <h4 class="modal-title text-left">Provide VAT-free Information</h4>
+      </div>
+      <div class="modal-body">
+        <div class="verify-msg">
+          <div>When you purchase the VAT-free products from the Seller, GigaCloud will show your VAT-free information 
+            (such as VAT number) to the Seller as a VAT-free certificate.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="oris-button oris-button-bigger vat-confirm-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% apply script %}
+  <script>
+    window.hasVatBuyerVerify = true;
+
+    var can_vat_buyer_show  = {{ can_vat_buyer_show|js_var }};
+    var vatVerifyNoticeModal = $('#verifyVatBuyer');
+
+    const TIME_TOTAL = 5;
+    
+    $(function () {
+      if (can_vat_buyer_show === true) {
+        // 倒计时5S之后才能允许点击确认按钮
+        let count = TIME_TOTAL;
+        $('.vat-confirm-btn').html(`Confirm (${count}S)`);
+        $('.vat-confirm-btn').attr('disabled', true);
+        let timerId = setTimeout(function updateBtn() {
+          if (count > 0) {
+            $('.vat-confirm-btn').html(`Confirm (${count}S)`);
+          } else {
+            $('.vat-confirm-btn').removeAttr('disabled');
+            $('.vat-confirm-btn').html(`Confirm`);
+          }
+          count --;
+          timerId = setTimeout(updateBtn, 1000)
+        }, 1000)
+
+        vatVerifyNoticeModal.modal({
+          backdrop: 'static',
+          keyboard: false,
+          show: true,
+        });
+      }
+    })
+
+    $(document).ready(function() {
+      // 确认按钮事件
+      $('.vat-confirm-btn').on('click', function() {
+        $.ajax({
+          url: "{{ url('message/platform_notice/createVatBuyerConfirm') }}",
+          type: 'post',
+          dataType: 'json',
+          success: function (json) {
+            if (json.code == 200) {
+              window.hasVatBuyerVerify = false;
+              vatVerifyNoticeModal.modal('hide');
+            } else {
+              $.toast({
+                heading: false,
+                text: json.msg,
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: 3000,//3秒自动隐藏
+                allowToastClose: true,
+                loader: false,
+                afterHidden: function () {
+                }
+              });
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        });
+      })
+    })
+
+  </script>
+{% endapply %}

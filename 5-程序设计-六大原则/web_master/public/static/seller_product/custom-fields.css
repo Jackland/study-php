@@ -1,0 +1,50 @@
+.custom-fields-container .ele.ele-modal .el-dialog__body{
+  padding-bottom: 0px;
+}
+
+.custom-fields-container .addkey-btn {
+  margin-left: 200px;
+  margin-bottom: 24px;
+}
+
+.custom-fields-container .custom-fields-input-row .input-row-minus-icon{
+  margin-left: 12px;
+}
+
+.custom-fields-container .custom-fields-input-row .input-row-minus-icon:hover{
+  cursor: pointer;
+}
+
+.custom-fields-container .ele.ele-btn .el-button.is-disabled:hover {
+  background: #DCDCDC !important;
+}
+
+.custom-fields-container .disabled-confirm-btn {
+  margin-left: 10px;
+}
+
+.custom-fields-container label.el-form-item__label {
+  word-break: break-all;
+}
+
+.custom-fields-container .el-button--primary.is-disabled {
+  background: #DCDCDC !important;
+  color: #bbb !important;
+  border: 1px solid #DCDCDC !important;
+}
+
+.custom-fields-container .custom-fields-input-row .el-input__inner{
+  padding-right: 56px;
+}
+
+.custom-fields-container .countdown-container {
+  position: relative;
+}
+
+.custom-fields-container .countdown-container .text-countdown {
+  position: absolute;
+  right: 42px;
+  font-size: 12px;
+  color: #999;
+  bottom: -12px;
+}

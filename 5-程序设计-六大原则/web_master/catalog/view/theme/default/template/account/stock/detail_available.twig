@@ -1,0 +1,84 @@
+<div id="validGoodsPanel">
+  <div class="table-header table-fixed-title">
+    <table class="table">
+      <tr>
+        <th class="valid-index text-center">#</th>
+        <th class="valid-purchase-order-id text-center">{{ text_purchase_order_id }}</th>
+        <th class="valid-in-time text-center">{{ text_receive_time }}</th>
+        <th class="valid-qty text-center">{{ text_available_qty }}</th>
+        <th class="valid-days text-center">{{ text_in_storage_day }}</th>
+        <th class="valid-wait-pay text-center">
+          {{ text_storage_fee_to_be_paid }}
+          <i class="giga icon-V10-wenhaotishi house-ques-icon "
+             data-toggle="tooltip" title=""
+             data-original-title="{{ text_storage_fee_tips }}">
+          </i>
+        </th>
+        <th class="valid-action text-center">{{ text_action }}</th>
+      </tr>
+    </table>
+  </div>
+  <div class="table-body">
+    {% if list is not empty %}
+      <table class="table table-hover">
+        {% for k,detail in list %}
+          <tr>
+            <td class="valid-index text-center">{{ k+1 }}</td>
+            <td class="valid-purchase-order-id text-center ">
+              <a
+                onclick="parent.open('{{ url('account/order/purchaseOrderInfo',{'order_id':detail.order_id}) }}')"
+                class="link-color">
+                {{ detail.order_id }}
+              </a>
+            </td>
+            <td class="valid-in-time text-center">{{ detail.create_time }}</td>
+            <td class="valid-qty text-center">{{ detail.availableQty }}</td>
+            <td class="valid-days text-center">
+              {% if detail.days > 30 %}
+                <span class="red-circle"></span>
+              {% endif %}
+              {{ detail.days }}
+            </td>
+            <td class="valid-wait-pay text-center inner-detail-table">
+              {% if detail.need_pay > 0 %}
+              <a href="javascript:void(0);"
+                 data-toggle="popover-html"
+                 data-placement="top"
+                 data-html='{% include 'yzcTheme/template/account/sales_order/fee_order_popover/fee.twig' %}'
+                 class="gray-color"
+                 title>
+                {{ detail.need_pay|formatPrice(currency) }}
+                  <i class="giga icon-sidebar-unfold download-cart"></i>
+              </a>
+              {% else %}
+                {{ 0|formatPrice(currency) }}
+              {% endif %}
+            </td>
+            <td class="valid-action text-center">
+            <span
+              class="action-btn action-rma"
+              onclick="parent.open('{{ url('account/rma_management',{'filter_order_id':detail.order_id}) }}')">
+              RMA
+            </span>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <div class="order-row text-center">
+        {{ text_no_records }}
+      </div>
+    {% endif %}
+  </div>
+  {% if is_over_days %}
+    <div class="table-bottom-tip">
+      <span class="red-circle"></span>
+      {{ text_stock_over_days_tips|format(stock_management_over_day) }}
+    </div>
+  {% endif %}
+</div>
+<script>
+  $(function () {
+    initPopover();
+  })
+</script>

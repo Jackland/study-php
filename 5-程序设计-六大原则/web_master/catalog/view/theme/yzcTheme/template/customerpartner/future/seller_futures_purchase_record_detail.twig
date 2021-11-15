@@ -1,0 +1,317 @@
+<link href="catalog/view/javascript/layui/css/layui.css" rel="stylesheet">
+<script src="catalog/view/javascript/layui/layui.js"></script>
+<style>
+    .subscript {
+        position: absolute;
+        right: 0;
+        top: 0;
+        color: #fff;
+        /*width: 190px;*/
+        height: 40px;
+        padding: 0 8px;
+        line-height: 40px;
+        text-align: center;
+        border-radius: 4px;
+        background-color: {{ record.paid_color }};
+    }
+
+    .delivery-list-name,
+    .delivery-list-detail {
+        height: auto;
+        /*line-height: 40px;*/
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+    }
+    .delivery-list-detail{
+        padding: 15px 0;
+    }
+    .dropshipping-service {
+        box-shadow: 0 0 5px #aaa;
+        background-color: #fff;
+        position: absolute;
+        width: 250px;
+        padding:10px;
+        font-size: 12px;
+        right: 0;
+        top: 30px;
+        display: none;
+        z-index: 100;
+    }
+
+    .dropshipping-service .list-title{
+        font-size: 14px;
+        border-bottom: 1px solid #eee;
+        margin-left: 15px;
+    }
+    .dropshipping-service > div {
+        padding: 5px 0;
+        overflow: hidden;
+    }
+    .dropshipping-service > div .list-value{
+        font-weight: bold;
+    }
+
+    .freight-price:hover .dropshipping-service {
+        display: block;
+    }
+    .delivery-name{
+        font-weight: bold;
+    }
+</style>
+<div class="detail-main bg-white p-2" style="position: relative;padding-bottom: 120px">
+
+    {% if record.delivery_type == 1 %}
+        <div>
+            {#                    尾款#}
+            <div class="mb-3">
+                <div class="summary over">
+                    <div class="abstract col-sm-3">
+                        <p class="delivery-name">Agreement Quantity</p>
+                        <p class="delivery-content">{{ record.agreement_num }}</p>
+                    </div>
+                    <div class="abstract col-sm-3">
+                        <p class="delivery-name">Unsold Quantity</p>
+                        <p class="delivery-content">{{ record.left_num }}</p>
+                    </div>
+                    <div class="abstract col-sm-3" style="border: none">
+                        <p class="delivery-name">Sold Quantity</p>
+                        <p class="delivery-content">{{ record.purchase_num }}</p>
+                    </div>
+                    <div class="subscript">
+                      <span>{{ record.paid_ret }}{% if record.paid_ret and record.left_time_secs > 0 %}:{% endif %}</span>
+                      {% if record.left_time_secs > 0 %}
+                        <i class="giga icon-naozhong text-size-normal"></i>
+                        <span class="countdown-time" data-countdown="{{ record.left_time_secs }}"> </span>
+                      {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div id="delivery-list" style="" data-loadsuccess="true" page="1" data-end="0">
+                <div class="delivery-list-name" style="">
+                    <div style="width: 12%">Order ID</div>
+                    <div style="width: 11%">Ordered Quantity</div>
+                    <div style="width: 12%">Due Per Unit</div>
+                    {% if is_europe %}
+                        <div style="width: 12%">Service Fee</div>
+                    {% endif %}
+                    <div style="width: 12%">Fulfillment </div>
+                    <div style="width: 12%">Total Transaction Amount</div>
+                    <div style="width: 15%">RMA ID</div>
+                    <div style="width: 15%">Purchase Date</div>
+                </div>
+            </div>
+            <div class="load"></div>
+
+        </div>
+    {% else %}
+        <div>
+            {#                   转现货#}
+            <div class="mb-3">
+                <div class="title">Summary of Orders Transferred to Margin Transaction</div>
+                <div class="summary over">
+                    <div class="abstract col-sm-3">
+                        <i class="gcl gcldingdanhao summary-icon"></i> <br>
+                        <p class="summary-name">Agreement ID</p>
+                        <a class="link"
+                           href="index.php?route=account/product_quotes/margin_contract/view&agreement_id={{ record.agreement_id }}"
+                           target="_blank">{{ record.agreement_id }}</a>
+                    </div>
+                    <div class="abstract col-sm-3">
+                        <i class="giga icon-DatePicker"></i> <br>
+                        <p class="summary-name">Margin Validity: Beginning</p>
+                        <p class="summary-detail">{{ record.effect_time }}</p>
+                    </div>
+                    <div class="abstract col-sm-3">
+                        <i class="giga icon-DatePicker"></i> <br>
+                        <p class="summary-name">Margin Validity: Ending</p>
+                        <p sclass="summary-detail">{{ record.expire_time }}</p>
+                    </div>
+                    <div class="abstract col-sm-3">
+                        <i class="giga icon-BusinessIcons_BusinessTagSale-"></i> <br>
+                        <p class="summary-name">Agreement Status</p>
+                        <p style="color:{{ record.margin_status_color }}">{{ record.margin_status_name }}</p>
+                    </div>
+                </div>
+            </div>
+            {% if record.order_info %}
+              <div class="details mb-3">
+                <div class="title">Details of Orders Transferred to Margin Transaction</div>
+                <div>
+                    <div class="row  ">
+                        <div class="detail-item col-sm-2">
+                            <span class="text-right detail-name" style="width: 120px">Image</span>
+                            <span class="">
+                                <img src="{{ record.order_info.image_show }}" height="40px">
+                            </span>
+                        </div>
+                        <div class="detail-item col-sm-5">
+                            <span class="text-right detail-name">Item Code</span>
+                            <span class="my-color detail-content">
+                                <span>
+                                    {{ record.order_info.sku }}
+                                </span>
+                                {% if record.order_info.tag %}
+                                    {% for tagDetail in record.order_info.tag %}
+                                        {{ tagDetail }}
+                                    {% endfor %}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="detail-item col-sm-5">
+                            <span class="text-right detail-name">MPN</span>
+                            <span class="detail-content"> {{ record.order_info.mpn }}</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="detail-item col-sm-2" >
+                            <span class="text-right detail-name"  style="width: 120px">Margin Price</span>
+                            <span class="detail-content">{{ record.order_info.total_price_show }}</span>
+                        </div>
+                        <div class="detail-item col-sm-5">
+                            <span class="text-right detail-name">Quantity</span>
+                            <span class="detail-content">1</span>
+                        </div>
+                        <div class="detail-item col-sm-5">
+                            <span class="text-right detail-name">Total Amount of Margin Products</span>
+                            <span class="detail-content">{{ record.order_info.total_price_show }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% if record.delivery_type == 1 %}
+  <script>
+    var time;
+    $(function () {
+      countDown();
+      time = setInterval(countDown, 1000);
+    });
+    //倒计时
+    function countDown(){
+      $(".countdown-time").each((k,obj)=>{
+        let cTime = $(obj).attr('data-countdown');
+        $(obj).attr('data-countdown',--cTime);
+        let day = cTime / (60 * 60 * 24);
+        if (day > parseInt(day) && day > 1) {
+          day = parseInt(day) + 1 > 7 ? 7 :  parseInt(day) + 1;
+        }
+        if (day > 1){
+          $(obj).html(day + ' days Left')
+        }else{
+          let timeObj = secToTime(cTime);
+          $(obj).html(timeObj.time1)
+        }
+      })
+    }
+    /**
+     * 获取时分秒
+     * @param secs 需要转换的时间秒
+     * @returns {time1: string, time2: string}
+     */
+    function secToTime(secs) {
+      if (secs <= 0) {
+        return "00:00:00";
+      }
+      let second = parseInt(secs);
+      let minute = 0;// 分
+      let hour = 0;// 小时
+      let day = 0;// 天
+      if (second >= 60) {
+        minute = parseInt(second / 60);
+        second = parseInt(second % 60);
+        if (minute >= 60) {
+          hour = parseInt(minute / 60);
+          minute = parseInt(minute % 60);
+          if (hour >= 24) {
+            //大于24小时
+            day = parseInt(hour / 24);
+            hour = parseInt(hour % 24);
+          }
+        }
+      }
+
+      var currentTime = addZero(hour) + ":" + addZero(minute) + ":" + addZero(second);
+      var obj = {
+        time1: currentTime,
+        time2: day + " day " + currentTime,
+      };
+      return obj;
+    }
+
+    // 小于10补0
+    function addZero(i) {
+      return i < 10 ? "0" + i: i + "";
+    }
+
+
+    var load = true;
+    loadInfo("#delivery-list");
+    $(window).scroll(function () {
+            //滚过高度
+            var scrollTop = $(this).scrollTop();
+            //页面高度
+            var scrollHeight = $(document).height();
+            //浏览器高度
+            var windowHeight = $(this).height();
+            //滚动条到底时
+            if (load) {
+                if (scrollHeight - scrollTop - windowHeight < 200) {
+                    load = false;
+                    console.log('1');
+                    loadInfo("#delivery-list");
+                }
+            }
+        });
+
+    // loadInfo("#delivery-list");
+    /*加载分页数据*/
+    function loadInfo(loadHtml) {
+
+            if ($(loadHtml).attr("data-loadsuccess") == 'true') {
+                var t = $(loadHtml);
+                /*当前页码*/
+                var page = t.attr("page");
+                /**最后一页不再添加数据*/
+                if ($(loadHtml).attr('data-end') == '1') {
+                    return;
+                }
+                //触发ajax事件，加载dom
+                getrows(page, loadHtml);
+            }
+
+        }
+
+    function getrows(page, htmlcon) {
+        var url_column = 'index.php?route=account/product_quotes/futures/sellerFuturesPurchaseRecordDetailList&id={{ agreement_id }}';
+        waitBlock.blockUI();
+        $.ajax({
+            url: url_column,
+            data: {'page': page},
+            type: 'GET',
+            dataType: 'json',
+            async: 'false',
+            success: function (data) {
+                var appendItem = '';
+                appendItem = data.htmls;
+                $(htmlcon).append(appendItem);
+                $(htmlcon).attr('data-end', data.is_end);
+                $(htmlcon).attr("page", ++page);
+                $(htmlcon).attr('data-loadsuccess', true);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+
+                },
+                complete: function (xhr, textStatus) {
+                    waitBlock.unBlockUI();
+                    load = true;
+                }
+            })
+        }
+
+  </script>
+{% endif %}

@@ -1,0 +1,612 @@
+{% trans_default_category 'catalog/view/account/phone/verify_change' %}
+{{ this.title(__('修改手机号')) }}
+{{ css(['static/account/phone/verify.css','css/common/common.css']) }}
+{{ cssOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css',
+  'catalog/view/theme/yzcTheme/stylesheet/app.css'
+]) }}
+{{ jsOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js',
+]) }}
+{{ this.params('breadcrumbs',
+  customer.isPartner() ? [
+    'home',
+    'seller_center',
+    {
+      text: __('账号设置'),
+      href: url('account/account_setting'),
+    },
+    'current'
+  ] : []
+) }}
+
+<div id="page-change" class="page-change">
+  <div class="pull-right">
+    {{ widget('LangChangeWidget', {mode: 2}) }}
+  </div>
+  <h3 class="text-center text-bold change-phone-number">{{ __('修改手机号') }}</h3>
+  <div class="progress-step" id="proStep">
+    <ul class="flex-layout p-0">
+      <li class="verify step link-color">
+        <i class="giga icon-yanzheng"></i>
+        {{ __('验证手机号step') }}
+      </li>
+      <li class="next"></li>
+      <li class="modify step">
+        <i class="giga icon-edit"></i>
+          {{ __('修改手机号step') }}
+      </li>
+      <li class="next"></li>
+      <li class="step complete">
+        <i class="giga icon-v10tongguo-01"></i>
+           {{ __('完成') }}
+      </li>
+    </ul>
+  </div>
+  <div id="verifyNumber" class="verify-number">
+    <div class="verify-account">{{ __('手机验证码验证账户 <span class="text-danger">:email</span>，为确认是你本人操作，请完成以下验证', {email: email}) }}</div>
+    <div class="verify-msg">
+      <div class="m24-t pos-rela telNum">
+        <span class="msg-title text-tips {% if phone=='' %}none{% endif %}">  {{ __('手机号码') }}</span>
+        <span class="style-line"></span>
+        <input class="oris-input telephone-number" type="text" value="{{ phone }}" disabled>
+      </div>
+      <div class="m24-t pos-rela verCode">
+        <span class="msg-title text-tips none">{{ __('验证码') }}</span>
+        <input id="verifyCode" class="oris-input verify-code" type="text" placeholder="{{ __('验证码') }}" autocomplete="off" maxlength="6"
+               onkeyup="value=value.replace(/\s+/g,'')" onblur="value=value.replace(/\s+/g,'')"
+               onkeydown="value=value.replace(/\s+/g,'')">
+        <div class="text-success text-small mt-octal1 codeSent none">{{ __('验证码已发送到你的手机，5分钟内输入有效，请不要轻易告知他人') }}</div>
+        <div class="text-danger text-small mt-octal1 return-error"></div>
+        {% if countDown.countDown>0 %}
+          <button class="link-color get-code" id="getVerifyNum" disabled>
+            <span class="getCode none">{{ __('点此获取') }}</span>
+            <span class="resentCode" data-interval="{{ countDown.countDownInterval }}">{{ countDown.countDown }}</span>
+            <span class="resentUnit">{{ countDown.countDownUnit }}</span>
+          </button>
+        {% else %}
+          <button class="link-color get-code" id="getVerifyNum">
+            <span class="getCode">{{ __('点此获取') }}</span>
+            <span class="resentCode"></span>
+            <span class="resentUnit"></span>
+          </button>
+        {% endif %}
+      </div>
+      <button id="firstSubmitBtn" class="oris-button oris-wAll m24-t submitBtn mb-octal4" disabled>{{ __('确定') }}</button>
+    </div>
+    <hr>
+    <div class="verify-tip">
+      <div class="m16-t">
+        <div class="message-authentication-code">{{ __('没有收到短信验证码？') }}</div>
+        <div>{{ __('1、网络通讯异常可能会造成短信丢失，请重新获取或稍后再试。') }}</div>
+        <div>{{ __('2、请核实手机是否已欠费停机，或者屏蔽了系统短信。') }}</div>
+        <div>{{ __('3、您也可以尝试将SIM卡移动到另一部手机，然后重试。') }}</div>
+      </div>
+    </div>
+  </div>
+  <div id="changeNumber" class="verify-number none">
+    <div class="verify-msg ">
+      <div class="oris-select m24-t relative" id="countryCodeList">
+        <span class="msg-title text-tips country-code none">{{ __('国家/ 编码') }}</span>
+        <select class="selectpicker" id="countryCode">
+          <option value="">{{ __('国家/ 编码') }}</option>
+          {% for i, item in smsCountryCodeOptions %}
+            <option value="{{ item.id }}" data-index="{{ i }}">{{ item.desc }}+{{ item.code }}</option>
+          {% endfor %}
+        </select>
+        <input type="text" class="oris-input placeholder" placeholder="{{ __('请选择', {}, 'common') }}"/>
+      </div>
+      <div class="m24-t pos-rela telNum">
+        <span class="msg-title text-tips none">{{ __('手机号码') }}</span>
+        <input id="telephoneNum" class="oris-input telephone-number" type="text" placeholder="{{ __('手机号码') }}" maxlength="20"
+               onkeyup="value=value.replace(/[^\d]/g,'')"  onblur="value=value.replace(/[^\d]/g,'')"
+               autocomplete="off" >
+        <div class="text-danger text-small mt-octal1 numError none">{{ __('手机号码是11位数字，请重新输入') }}</div>
+        <div class="text-danger text-small mt-octal1 return-error"></div>
+      </div>
+      <div class="m24-t pos-rela verCode">
+        <span class="msg-title text-tips none">{{ __('验证码') }}</span>
+        <input id="changeCode" class="oris-input verify-code" type="text" placeholder="{{ __('验证码') }}" autocomplete="off" maxlength="6"
+               onkeyup="value=value.replace(/\s+/g,'')" onblur="value=value.replace(/\s+/g,'')"
+               onkeydown="value=value.replace(/\s+/g,'')">
+        <div class="text-success text-small mt-octal1 codeSent none">{{ __('验证码已发送到你的手机，5分钟内输入有效，请不要轻易告知他人') }}</div>
+        <div class="text-danger text-small mt-octal1 return-error"></div>
+        <button class="link-color get-code" id="getChangeNum" disabled>
+          <span class="getCode">{{ __('点此获取') }}</span>
+          <span class="resentCode"></span>
+          <span class="resentUnit"></span>
+        </button>
+      </div>
+      <button id="secondSubmitBtn" class="oris-button oris-wAll m24-t submitBtn mb-octal4" disabled>{{ __('确定') }}</button>
+    </div>
+    <hr>
+    <div class="verify-tip">
+      <div class="m16-t">
+        <div class="message-authentication-code">{{ __('没有收到短信验证码？') }}</div>
+        <div>{{ __('1、网络通讯异常可能会造成短信丢失，请重新获取或稍后再试。') }}</div>
+        <div>{{ __('2、请核实手机是否已欠费停机，或者屏蔽了系统短信。') }}</div>
+        <div>{{ __('3、您也可以尝试将SIM卡移动到另一部手机，然后重试。') }}</div>
+      </div>
+    </div>
+  </div>
+  <div id="changeSuccess" class="verify-number none">
+    <div id="verifySuccessTips" class="verify-success-tips">
+      <div class="flex-layout">
+        <i class="giga icon-v10tongguo-01"></i>
+        <div>
+          <div class="text-bold text-larger mb-octal1">{{ __('修改成功，您的手机号码为<span id="savedNumber"></span>') }}</div>
+          <div>{{ __('此手机号可作为安全验证的方式用于找回密码、修改手机号等场景，但不能作为登录名使用。') }}</div>
+        </div>
+      </div>
+      <div class="mt-octal1 m40-l link-color">
+        {{ __('<span id="returnTime">3</span>s后返回<a class="link underline" id="redirect-home" href=":url">:page</a>', {
+          url: url('common/redirect/home'),
+          page: customer.isPartner() ? __('Seller Central页面') : __('首页')
+        }) }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var countDown= new Object();
+  let time=0;
+  let unit;
+  let interval;
+  let key;
+  let flag = false;
+  let telCheck = false;
+
+  $(document).ready(function () {
+    time = Number($("#getVerifyNum").children('.resentCode').text());
+    unit = $("#getVerifyNum").children('.resentUnit').text();
+    interval = Number( $("#getVerifyNum").children('.resentCode').attr('data-interval'));
+    if (time) {
+      var $verifyNumber = $('#verifyNumber');
+      countdown($verifyNumber);
+    }
+  });
+
+  $("#countryCodeList").on('click',function () {
+    var list = {{ smsCountryCodeOptions |js_json}}
+      $("#countryCodeList .dropdown-menu li:not(:first-child)").each(function (i,n) {
+        var opt = `<span class="code">${list[i].desc}</span><span class="right-country-code"> +${list[i].code}</span>`;
+        $(this).children('a.dropdown-item').html(opt)
+      })
+  });
+
+  $("#countryCode").on('changed.bs.select',function () {
+    verifyTel();
+    countrySelect()
+  });
+
+  function countrySelect() {
+    var countryList = {{ smsCountryCodeOptions |js_json}}
+    var index = $('#countryCode').children('option:selected').attr('data-index');
+    if(countryList[index]){
+      var countryValue = `<span class="select-country">${countryList[index].desc}</span><span class="country-style"> +${countryList[index].code}</span>`;
+      $("#countryCodeList").find('div.filter-option-inner-inner').html(countryValue);
+      $('.select-country').addClass('counrty-code-color')
+      $('.country-style').addClass('counrty-code-color')
+      $('#countryCodeList').find('span.country-code').removeClass('none')
+    } else {
+      $('#countryCodeList').find('span.country-code').addClass('none')
+    }
+  }
+
+  //监听验证码
+  $(".verify-code").on('blur change input',function () {
+    $(".verify-code").next('.numError').addClass('none');
+    $(".verify-code").removeClass('border-danger');
+    $(".verify-code").prev('.msg-title').removeClass('text-danger');
+    $(".verify-code").next().next('.return-error').html('');
+  })
+
+  //倒计时
+  function countdown($div){
+    $div.find(".resentCode").html(time);
+    $div.find(".resentUnit").html(unit);
+    let countdown = setInterval(function () {
+      if (time < 2){
+        if ($div.find('.telephone-number').val()){
+          $div.find('.get-code').removeAttr('disabled');
+        }
+        $div.find('.getCode').removeClass('none');
+        $div.find(".resentCode,.resentUnit").html('');
+        clearInterval(countdown);
+        time=0;
+      }else{
+        $div.find(".resentCode").html(time);
+        $div.find(".resentUnit").html(unit);
+        time=time-1;
+      }
+    },interval)
+  }
+
+  //发送验证的 验证码，获取重发时间
+  function verifyNum($verifyNumber,url,param) {
+    $(".verify-code").next('.numError').addClass('none');
+    $(".verify-code").removeClass('border-danger');
+    $(".verify-code").prev('.msg-title').removeClass('text-danger').addClass('none');
+    $(".verify-code").next().next('.return-error').html('');
+    for(let key in countDown){
+      delete countDown[key];
+    }
+    $.ajax({
+      url : url,
+      type : 'post',
+      async : false,
+      data: JSON.stringify(param),
+      dataType:'json',
+      contentType:'application/json',
+      success : function(res) {
+        if (res.code==200){
+          var data= res.data;
+          if (data.result=='success'){
+            countDown.time = data.countDown.countDown;
+            countDown.interval = data.countDown.countDownInterval;
+            countDown.unit = data.countDown.countDownUnit;
+            $verifyNumber.find('.getCode').addClass('none');
+            $verifyNumber.find('.verCode').children('.return-error').html('');
+            if ($verifyNumber.find('.verCode').children('.codeSent ').hasClass('none')){
+              $verifyNumber.find('.verCode').children('.codeSent ').removeClass('none');
+            }else{
+              $verifyNumber.find('.verCode').children('.codeSent ').addClass('none');
+              setTimeout(function () {
+                $verifyNumber.find('.verCode').children('.codeSent ').removeClass('none');
+              },300)
+            }
+            $verifyNumber.find('.verCode').children('.verify-code').removeClass('border-danger');
+            $verifyNumber.find('.verCode').children('.msg-title').removeClass('text-danger');
+          }else{
+            if ($verifyNumber.find('.telephone-number').val()){
+              $verifyNumber.find('.get-code').removeAttr('disabled');
+            }
+            if (data.errors.phone){
+              $verifyNumber.find('.telNum').children('.return-error').html(data.errors.phone);
+              $verifyNumber.find('.telNum').children('.telephone-number').addClass('border-danger');
+              $verifyNumber.find('.telNum').children('.msg-title').addClass('text-danger');
+            }
+            if (data.errors.verify_code){
+              $verifyNumber.find('.verCode').children('.return-error').html(data.errors.verify_code);
+              $verifyNumber.find('.verCode').children('.verify-code').addClass('border-danger');
+              $verifyNumber.find('.verCode').children('.msg-title').addClass('text-danger');
+              $verifyNumber.find('.verCode').find('.codeSent').addClass('none');
+            }
+            countDown= new Object();
+            time = 0;
+            return false;
+          }
+
+        }else{
+          if ($verifyNumber.find('.verify-code').val()){
+            $verifyNumber.find('.submitBtn').removeAttr('disabled');
+          }else{
+            $verifyNumber.find('.submitBtn').attr('disabled','disabled');
+          }
+          if ($verifyNumber.find('.telephone-number').val()){
+            $verifyNumber.find('.get-code').removeAttr('disabled');
+          }
+          $.toast({
+            heading: false,
+            text: res.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 3000,
+            allowToastClose: true,
+            loader: false
+          });
+          countDown= new Object();
+          time = 0;
+          return
+        }
+      },
+      error : function() {
+        if ($verifyNumber.find('.verify-code').val()){
+          $verifyNumber.find('.submitBtn').removeAttr('disabled');
+        }else{
+          $verifyNumber.find('.submitBtn').attr('disabled','disabled');
+        }
+        if ($verifyNumber.find('.telephone-number').val()){
+          $verifyNumber.find('.get-code').removeAttr('disabled');
+        }
+        $.toast({
+          heading: false,
+          text: '信息获取失败，请刷新后重试',
+          position: 'top-center',
+          showHideTransition: 'fade',
+          icon: 'error',
+          hideAfter: 3000,
+          allowToastClose: true,
+          loader: false
+        });
+      }
+    });
+    return countDown;
+  }
+
+  //提交
+  function submit($div,url,num) {
+    $.ajax({
+      url : url,
+      type : 'post',
+      async : false,
+      data: JSON.stringify(num),
+      dataType:'json',
+      contentType:'application/json',
+      success : function(res) {
+        if (res.code==200){
+          let data= res.data;
+          if (data.result=='fail'){
+            if (data.errors.phone){
+              $div.find('.telNum').children('.return-error').html(data.errors.phone);
+              $div.find('.telNum').children('.telephone-number').addClass('border-danger');
+              $div.find('.telNum').children('.msg-title').addClass('text-danger');
+            }
+            if (data.errors.verify_code){
+              $div.find('.verCode').children('.return-error').html(data.errors.verify_code);
+              $div.find('.verCode').children('.verify-code').addClass('border-danger');
+              $div.find('.verCode').children('.msg-title').addClass('text-danger');
+              $div.find('.verCode').children('.codeSent').addClass('none');
+            }
+            return false
+          }else{
+            $("#verifyNumber,#changeNumber,#changeSuccess").addClass('none');
+            $div.next('.verify-number').removeClass('none');
+            if (data.key){
+              key = data.key;
+            }
+            if (data.phone){
+              $("#savedNumber").html(data.phone)
+            }
+            time=0;
+            flag=true;
+          }
+        }else{
+          $.toast({
+            heading: false,
+            text: res.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 3000,
+            allowToastClose: true,
+            loader: false
+          });
+        }
+      },
+      error : function() {
+        $.toast({
+          heading: false,
+          text: __('信息获取失败，请刷新后重试'),
+          position: 'top-center',
+          showHideTransition: 'fade',
+          icon: 'error',
+          hideAfter: 3000,
+          allowToastClose: true,
+          loader: false
+        });
+      }
+    });
+  }
+</script>
+
+{#验证手机号#}
+<script>
+  //监听验证码输入
+  $("#verifyCode").on('change input keyup blur',function () {
+    if ($(this).val() && $(this).val().trim()!=''){
+      $("#firstSubmitBtn").removeAttr('disabled');
+      $(this).prev('.msg-title').removeClass('none');
+    }else{
+      $("#firstSubmitBtn").attr('disabled','disabled');
+      $(this).prev('.msg-title').addClass('none');
+    }
+  });
+
+  //获取验证码
+  $("#getVerifyNum").on('click',function () {
+    var $verifyNumber = $(this).closest('.verify-number');
+    $("#verifyCode").val('');
+    $(this).attr('disabled','disabled');
+    var url = {{ url('account/phone/sendChangeVerifyCode')|js_var }};
+    var param='';
+    countDown = verifyNum($verifyNumber,url,param);
+    if (JSON.stringify(countDown) != "{}"){
+      time = countDown.time;
+      unit = countDown.unit;
+      interval = countDown.interval;
+      countdown($verifyNumber);
+    }
+  });
+
+  //提交下一步
+  $("#firstSubmitBtn").on('click',function () {
+    var num = {
+      verify_code:$("#verifyCode").val()
+    };
+    var url = {{ url('account/phone/verifyChangeVerifyCode')|js_var }};
+    var $verifyNumber = $(this).closest('.verify-number');
+    submit($verifyNumber,url,num);
+    if (flag){
+      $("#proStep").find('.modify').addClass('link-color');
+    }
+  });
+</script>
+
+{#修改手机号#}
+<script>
+  let $telephoneNum = $("#telephoneNum");
+  //验证手机号
+  function verifyTel() {
+    var phoneRule = /^\d{11}$/;
+    var countryCode=$("#countryCode").val();
+    if(countryCode==1){
+      if (!phoneRule.test($telephoneNum.val())){
+        $("#getChangeNum").attr('disabled','disabled');
+        telCheck = false;
+      }else{
+        if (time < 1){
+          $("#getChangeNum").removeAttr('disabled');
+        }
+        $telephoneNum.next('.numError').addClass('none');
+        $telephoneNum.removeClass('border-danger');
+        $telephoneNum.prev('.msg-title').removeClass('text-danger');
+        $telephoneNum.next().next('.return-error').html('');
+        telCheck = true;
+      }
+    }else if(countryCode==''){
+      $("#getChangeNum").attr('disabled', 'disabled');
+      telCheck = false;
+    }else{
+      if (!$telephoneNum.val()){
+        $("#getChangeNum").attr('disabled','disabled');
+        telCheck = false;
+      }else{
+        if (time < 1){
+          $("#getChangeNum").removeAttr('disabled');
+        }
+        $telephoneNum.next('.numError').addClass('none');
+        $telephoneNum.removeClass('border-danger');
+        $telephoneNum.prev('.msg-title').removeClass('text-danger');
+        $telephoneNum.next().next('.return-error').html('');
+        telCheck = true;
+      }
+    }
+  }
+
+  //监听手机号
+  $telephoneNum.on('blur',function () {
+    var phoneRule = /^\d{11}$/;
+    var countryCode=$("#countryCode").val();
+    if(countryCode==1){
+      if (!phoneRule.test($telephoneNum.val())){
+        $("#getChangeNum").attr('disabled','disabled');
+        $telephoneNum.next('.numError').removeClass('none');
+        $telephoneNum.addClass('border-danger');
+        $telephoneNum.prev('.msg-title').addClass('text-danger');
+        $telephoneNum.next().next('.return-error').html('');
+        telCheck = false;
+      }else{
+        if (time < 1 ){
+          $("#getChangeNum").removeAttr('disabled');
+        }else{
+          $("#getChangeNum").attr('disabled','disabled');
+        }
+        $telephoneNum.next('.numError').addClass('none');
+        $telephoneNum.removeClass('border-danger');
+        $telephoneNum.prev('.msg-title').removeClass('text-danger');
+        $telephoneNum.next().next('.return-error').html('');
+        telCheck = true;
+      }
+    }else {
+      if (time < 1 ){
+        $("#getChangeNum").removeAttr('disabled');
+      }else{
+        $("#getChangeNum").attr('disabled','disabled');
+      }
+      $telephoneNum.next('.numError').addClass('none');
+      $telephoneNum.removeClass('border-danger');
+      $telephoneNum.prev('.msg-title').removeClass('text-danger');
+      $telephoneNum.next().next('.return-error').html('');
+      telCheck = true;
+    }
+  })
+
+  //校验手机号码,验证码是否为空
+  function checkTelNum(that){
+    if ($(that).val() && ($(that).val().trim()!='')){
+      $(that).prev('.msg-title').removeClass('none');
+    }else{
+      $(that).prev('.msg-title').addClass('none');
+    }
+    verifyTel();
+  }
+
+  //监听输入框是否有值
+  $("#changeNumber").find(".verify-msg .oris-input").on('change input keyup blur',function () {
+    var that = this;
+    checkTelNum(that);
+    if (telCheck==true && $("#changeCode").val() && $("#changeCode").val()!=' '){
+      $("#secondSubmitBtn").removeAttr('disabled');
+    }
+    else{
+      $("#secondSubmitBtn").attr('disabled','disabled')
+    }
+    if (!$telephoneNum.val() && !$("#changeCode").val()){
+      $(".return-error").html('');
+      $(".numError,.codeSent").addClass('none');
+      $(".msg-title").removeClass('text-danger');
+      $(".border-danger").removeClass('border-danger');
+    }
+  });
+
+  //获取验证码
+  $("#getChangeNum").on('click',function () {
+    var $verifyNumber = $(this).closest('.verify-number');
+    $(this).attr('disabled','disabled');
+    $("#changeCode").val('');
+    var url = {{ url('account/phone/sendChangeModifyCode')|js_var }};
+    var param = {
+      phone:$telephoneNum.val(),
+      country_code:$("#countryCode").val(),
+      key:key
+    };
+    countDown = verifyNum($verifyNumber,url,param);
+    if (JSON.stringify(countDown) != "{}"){
+      time = countDown.time;
+      unit = countDown.unit;
+      interval = countDown.interval;
+      countdown($verifyNumber);
+    }
+  });
+
+  //提交下一步
+  $("#secondSubmitBtn").on('click',function () {
+    flag=false;
+    var num = {
+      phone:$telephoneNum.val(),
+      verify_code:$("#changeCode").val(),
+      country_code:$("#countryCode").val(),
+      key:key
+    };
+    var url = {{ url('account/phone/verifyChangeModifyCode')|js_var }};
+    var $verifyNumber = $(this).closest('.verify-number');
+    var phoneRule = /^\d{11}$/;
+    var countryCode=$("#countryCode").val();
+    if ($telephoneNum.val() && $("#changeCode").val()){
+      if(countryCode==1){
+        if (!phoneRule.test($telephoneNum.val())){
+          $telephoneNum.next('.numError').removeClass('none');
+          $telephoneNum.addClass('border-danger');
+          $telephoneNum.prev('.msg-title').addClass('text-danger');
+          return false
+        }else{
+          $telephoneNum.next('.numError').addClass('none');
+        }
+      }
+    }else{
+      return false
+    }
+    if (!key){
+      $verifyNumber.find('.verCode').children('.codeError').removeClass('none');
+      $verifyNumber.find('.verCode').children('.verify-code').addClass('border-danger');
+      $verifyNumber.find('.verCode').children('.msg-title').addClass('text-danger');
+      return
+    }
+    submit($verifyNumber,url,num);
+    if (flag){
+      $("#proStep").find('.step').addClass('link-color');
+      let time =3;
+      let countdown = setInterval(function () {
+        if (time < 2){
+          clearInterval(countdown);
+          window.location.href = $('#redirect-home').attr('href');
+        }else{
+          time=time-1;
+          $("#returnTime").html(time)
+        }
+      },1000)
+    }
+  });
+</script>
+

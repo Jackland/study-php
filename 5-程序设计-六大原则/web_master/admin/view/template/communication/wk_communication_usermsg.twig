@@ -1,0 +1,151 @@
+  <div class="well">
+    <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label">{{ date_from }}</label>
+            <div class='input-group '>
+              <input type="text" name="filter_date_from" value="{{ filter_date_from }}" placeholder="{{ date_from }}"
+                     class="form-control date"/>
+              <span class="input-group-addon">
+                      <i class="fa fa-calendar"></i>
+                    </span>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label">{{ date_to }}</label>
+            <div class='input-group '>
+              <input type="text" name="filter_date_to" value="{{ filter_date_to }}" placeholder="{{ date_to }}"
+                     class="form-control date"/>
+              <span class="input-group-addon">  <i class="fa fa-calendar"></i> </span>
+            </div>
+        </div>
+      </div>
+
+      <div class="col-sm-4">
+        <div class="form-group">
+          <button type="button" onclick="exportCsv();" class="btn btn-default pull-right"><i class="fa fa-download"></i></button>
+          <button type="button" onclick="filterUsermsg();" class="btn btn-primary pull-right"><i class="fa fa-search"></i>{{button_filter}}</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <form action="{{delete}}" method="post" enctype="multipart/form-data" id="form-message" class="form-horizontal">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <td style="width: 1px;" class="text-center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></td>
+          <td class="text-left">Account</td>
+          <td class="text-left">Name</td>
+          <td class="text-left">Email</td>
+          <td class="text-left">Enquiry</td>
+          <td class="text-left">Date</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% if messages %}
+          {% for message in messages %}
+            <tr>
+              <td class="text-center">
+                <input type="checkbox" name="selected[]" value="{{message.message_id}}" />
+                <input type="hidden" value="{{ message.json }}" >
+              </td>
+              <td class="text-left" name="account">{{message.account}}</td>
+              <td class="text-left" name="user_name">{{message.user_name}}</td>
+              <td class="text-left" name="email">{{message.email}}</td>
+              <td class="text-left" name="body">{{message.body}}</td>
+              <td class="text-left" name="date">{{message.date}}</td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td class="text-center" colspan="12">{{text_no_results}}</td>
+          </tr>
+        {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </form>
+  <div class="row">
+    <div class="col-sm-6 text-left">{{pagination}}</div>
+    <div class="col-sm-6 text-right">{{results}}</div>
+  </div>
+  <script>
+    $('.date').datetimepicker({
+      pickDate: true,
+      pickTime: false,
+      format: 'YYYY-MM-DD'
+    });
+    changePaginationUrl();
+    function filterUsermsg() {
+      var url = "index.php?route=communication/wk_communication/userMsg&user_token={{ user_token }}";
+      var filter_date_from = $('[name="filter_date_from"]').val();
+      var filter_date_to = $('[name="filter_date_to"]').val();
+      if(filter_date_from){
+        url += '&filter_date_from='+filter_date_from;
+      }
+      if(filter_date_to){
+        url += '&filter_date_to='+filter_date_to;
+      }
+      $('#tab-userMsg').load(url);
+      changePaginationUrl()
+    }
+    function changePaginationUrl() {
+      $('#tab-userMsg .pagination a').each(function (i, e) {
+         var href = $(e).attr('href');
+        $(e).attr('href','javascript:void(0)');
+        $(e).click(function () {
+          $('#tab-userMsg').load(href);
+        })
+      })
+    }
+
+    function  exportCsv() {
+      var array = [];
+      var selects = $('#tab-userMsg [name="selected[]"]:checked');
+      if(selects.length<1){
+        selects = $('#tab-userMsg [name="selected[]"]')
+      }
+      if(selects.length<1){
+        alert('No messages !');
+        return;
+      }
+      var selectIds = [];
+      selects.each(function (i, e) {
+        selectIds.push($(e).val());
+      });
+      var data = {'ids':selectIds};
+      $.ajax({
+        url: "index.php?route=communication/wk_communication/exportCsv&user_token={{ user_token }}",
+        type:'POST',
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+          if(data['success']){
+            location=data['path'];
+          }else {
+            alert(data['msg']);
+          }
+        }
+      });
+    }
+
+    Date.prototype.Format = function (fmt) { //author: meizz
+      var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "H+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+      };
+      if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+      for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+      return fmt;
+    }
+  </script>

@@ -1,0 +1,63 @@
+{% trans_default_category 'catalog/view/account/seller_bill/bill' %}
+<div id="settle_bill" style="padding: 0 5% 20px 5%;">
+  <h2>{{ logistics_customer_name }} {{ __('结算单') }}</h2>
+    <span >{{ __('结算周期') }}: </span>
+    <span>{{ date_format }}</span>
+  <div style="border-bottom: 2px solid #183464;">
+    {% for item in total_list %}
+      <table class="statement-details" style="margin-bottom:30px;overflow: hidden;padding: 0;width: 100%">
+        <tr style="padding: 0">
+          <td style="width: 30%;line-height: 40px;padding: 0">{{ item.item_name }}</td>
+          <td style="width: 70%;line-height: 40px;padding: 0">
+            {% if item.item_list is not empty %}
+            <table class="price-detail" style=" border-bottom: 2px solid #183464;width: 100%">
+              {% for ii in item.item_list %}
+                <tr>
+                  <td style="line-height: 20px;padding: 0;width: 80%">{{ ii.item_name }}</td>
+                  <td style="text-align: right;width:20%;line-height: 20px;padding: 0">{{ ii.amount_total_format }}</td>
+                </tr>
+              {% endfor %}
+            </table>
+            {% endif %}
+            <table style="width: 100%">
+              <tr>
+                <td style="text-align: right;padding: 0;width: 80%">{{ item.type_name }}</td>
+                <td style="text-align: right;width:20% ;padding: 0">{{ item.amount_total_format }}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    {% endfor %}
+  </div>
+  <table>
+    <tr>
+      <td style="width: 30%;line-height: 30px;padding: 0">{{ ending_balance.item_name }}</td>
+      <td style="width: 70%;line-height: 30px;padding: 0">
+        <table style="width: 100%;padding: 0">
+          <tr>
+            <td style="width: 80%">{{ ending_balance.item_sub_name }}</td>
+            <td style="width: 20%;text-align: right;padding: 0">{{ ending_balance.amount_total_format }}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    {% if frozen_total_format %}
+      <tr>
+        <td style="width: 30%;line-height: 30px;padding: 0">{{ __('本期订单冻结金额') }}</td>
+        <td style="width: 70%;line-height: 30px;padding: 0">
+          <table style="width: 100%;padding: 0">
+            <tr>
+              <td style="width: 80%">{{ __('本期订单冻结金额') }}</td>
+              <td style="width: 20%;text-align: right;padding: 0">{{ frozen_total_format }}</td>
+            </tr>
+            <tr>
+              <td style="width: 80%">{{ __('本期剩余冻结金额') }}</td>
+              <td style="width: 20%;text-align: right;padding: 0">{{ last_frozen_format }}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    {% endif %}
+  </table>
+</div>

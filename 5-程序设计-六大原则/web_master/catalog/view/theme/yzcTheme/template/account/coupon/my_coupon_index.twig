@@ -1,0 +1,112 @@
+{{ header }}
+<link type="text/css" href="catalog/view/theme/yzcTheme/stylesheet/account/myCoupon.css?v={{ app_version }}" rel="stylesheet" />
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+
+
+<div id="content" class="my-coupon-page center-module">
+
+    {#菜单#}
+    {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+    {#END 菜单#}
+    <div class="nav-oris">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="coupon-policy mb-12">{{ text_my_coupon_link_title }}</div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {#Togglable tabs#}
+                        <ul class="nav nav-tabs main" role="tablist">
+                            <li id="available_coupon_li" role="presentation"><a href="#available_coupon" aria-controls="drop-shipping" role="tab" data-toggle="tab">{{ text_available }} <span class="tab-number">
+                            {% if available_num > 99 %}
+                                99+
+                            {% else %}
+                                {{ available_num }}
+                            {% endif %}
+                            </span></a></li>
+                            <li id="used_coupon_li" role="presentation"><a href="#used_coupon" aria-controls="cloud-wholesales" role="tab" data-toggle="tab">{{ text_used }} <span class="tab-number"></span></a></li>
+                            <li id="cloud_wholesale_li" role="presentation"><a href="#expired_coupon" aria-controls="cloud-wholesales" role="tab" data-toggle="tab">{{ text_expired }} <span class="tab-number"></span></a></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        {#tab页对应内容#}
+        <div class="row">
+            <div class="col-md-12 pos-static">
+
+                <div class="tab-content main">
+                    <div class="tab-pane active" id="available_coupon">
+                        <div id="available_coupon_show" class="pane-content">
+                            <div role="tabpanel" class="tab-pane active" id="home">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="used_coupon">
+                        <fieldset>
+                            <div id="used_coupon_show" class="pane-content">
+                                <div role="tabpanel" class="tab-pane" id="profile">
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="tab-pane" id="expired_coupon">
+                        <fieldset>
+                            <div id="expired_coupon_show" class="pane-content">
+                                <div role="tabpanel" class="tab-pane" id="messages">
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="coupon-description">
+            <div class="coupon-policy">
+                {{ text_my_coupon_rule_title }}
+            </div>
+            <div class="coupon-rules">
+                <div class="coupon-rule"><span class="rules-num">1</span><span class="rules-content">{{ text_my_coupon_rule_one }}</span></div>
+                <div class="coupon-rule"><span class="rules-num">2</span><span class="rules-content">{{ text_my_coupon_rule_two }}</span></div>
+                <div class="coupon-rule"><span class="rules-num">3</span><span class="rules-content">{{ text_my_coupon_rule_three }}</span></div>
+                <div class="coupon-rule"><span class="rules-num">4</span><span class="rules-content">{{ text_my_coupon_rule_four }}</span></div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+{{ footer }}
+<script>
+    $('.tab-content').children().removeClass('active');
+    $('#available_coupon').addClass('active');
+    $('#available_coupon_li').addClass('active');
+    $('#home').load("{{ url('account/coupon/management_center/getMyCouponList', {'status':1}) }}");
+
+
+    $('#used_coupon_li').removeClass('active');
+    $('#profile').load("{{ url('account/coupon/management_center/getMyCouponList', {'status':2}) }}");
+
+    $('#expired_coupon_li').removeClass('active');
+    $('#messages').load("{{ url('account/coupon/management_center/getMyCouponList', {'status':3}) }}");
+
+    //控制跳转tab页
+    {% if tab == 1 %}
+    $('#available_coupon_li a:first').tab('show');
+    {% elseif tab == 2 %}
+    $('#used_coupon_li a:first').tab('show');
+    {% elseif tab == 3 %}
+    $('#expired_coupon_li a:first').tab('show');
+    {% endif %}
+</script>
+
+

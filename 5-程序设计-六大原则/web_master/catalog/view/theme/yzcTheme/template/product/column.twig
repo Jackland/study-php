@@ -1,0 +1,577 @@
+{{ header }}
+<meta http-equiv="Expires" CONTENT="0">
+<meta http-equiv="Cache-Control" CONTENT="no-cache">
+<meta http-equiv="Pragma" CONTENT="no-cache">
+<script>
+  //浏览器后退强制刷新页面
+  if (document.addEventListener) {
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted || window.performance &&
+          window.performance.navigation.type == 2) {
+          location.reload();
+          return false;
+        }
+      },
+      false);
+  }
+</script>
+<link href="catalog/view/javascript/jquery/swiper/css/swiper.min.css" rel="stylesheet" type="text/css">
+<script src="catalog/view/javascript/jquery/swiper/js/swiper.jquery.js" type="text/javascript"></script>
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+  }
+
+  .king-true::-webkit-scrollbar {
+    width: 0;
+  }
+
+  .section{
+    /*background: linear-gradient(to right,#ccefea 20%,#b2ded8 30%, #84bfb7 50%,#71b3aa 70%, #71b3aa 100%);*/
+    background-image: url("/image/catalog/product-header-background2.jpg");
+    height:120px ;
+    overflow: hidden;
+  }
+  .section h1{
+    line-height: 65px;
+    color: #183464;
+    /*margin-top: 20px;*/
+    width: 1140px;
+    margin: 27.5px auto; /*频道页title垂直居中*/
+    padding-left: 10px;
+  }
+  .title .hot{
+    color: #293049;
+    line-height: 120px;
+    float: left;
+    margin-left: 3%;
+    /*font-size: 15px;*/
+  }
+  .title .hot i{
+    font-size: 20px;
+    margin-right: 5px;
+  }
+  main{
+    width: 1140px;
+    margin: 20px auto;
+  }
+  .nav-tabs{
+    border: none;
+  }
+  /*.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus{*/
+  /*  border: none;*/
+  /*  border-bottom: 1px solid #FA6400;*/
+  /*  background-color: transparent;*/
+  /*  border-radius: 0;*/
+  /*  color: #FA6400;*/
+  /*}*/
+  .nav-tabs a{
+    text-align: center;
+  }
+  .my-btns{
+    padding-bottom: 20px;
+    margin-left: 8px;
+  }
+  .tab-pane{
+    overflow: hidden;
+    margin-top: 20px;
+  }
+  .goods{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  main ul{
+    overflow: hidden;
+  }
+  .con_img{
+    position: relative;
+    margin-top: 2px;
+      height: 228px;
+      overflow: hidden;
+  }
+  .my-btns{
+    position: relative;
+  }
+  .image .goodscheck{
+    position: absolute;
+    top: 0;
+  }
+  .image .button-group{
+    position: absolute;
+    bottom: 10px;
+    right: 8px;
+    text-align: right;
+  }
+  .button-group i,
+  .goods .store-group .email i{
+    color: #FA6400;
+    border: 1px solid #fecb75;
+    padding: 5px;
+    border-radius:50%;
+    font-weight: bold;
+  }
+  .goods .code{
+    text-align: center;
+    color: #707070;
+  }
+  .goods .code .value{
+    font-weight: bold;
+  }
+  .goods .price span{
+    font-size: 20px;
+    color: #ff0000;
+    padding-left: 10px;
+  }
+  .goods .wrapper{
+    color: #777777;
+    padding: 0 10px;
+  }
+  .goods .wrapper p{
+    margin: 10px 0;
+  }
+  .goods .wrapper span{
+    margin-left: 5px;
+  }
+  ul input[type=checkbox]{
+    position: absolute;
+    top: 0;
+  }
+  .goods .store-group{
+    height: 38px;
+    line-height: 30px;
+  }
+  .goods .store-group .dropdown{
+    padding: 0;
+  }
+  main ul li{
+    list-style: none;
+    margin-bottom: 15px;
+  }
+  /*@media (max-width: 1300px){*/
+  /*  main{*/
+  /*    width: 85%;*/
+  /*  }*/
+  /*}*/
+  @media (max-width: 1200px){
+    main{
+      width:940px;
+    }
+    .section h1{
+      width: 940px;
+    }
+  }
+  body.bg-grey{
+    min-width: 992px;
+    overflow: auto;
+    background-color: #fff;
+  }
+  .flex{
+    margin-bottom: 20px;
+  }
+  .product-simple-grid .image .button-group a i{
+    line-height: 20px;
+  }
+  .product-simple-grid{
+    height: 430px;
+  }
+  .product-simple-grid .image .button-group{
+    right: 10px;
+  }
+  .load{
+    height: 60px;
+    /*margin-bottom: 60px;*/
+   }
+
+   .button-next,
+  .button-prev{
+    position: absolute;
+    width: 50px;
+    height:40px ;
+    background: #333;
+    z-index: 100;
+    opacity: 0.5;
+    color: #fff;
+  }
+   .button-next{
+      right: 10px;
+     top: 0;
+  }
+   .button-prev{
+      left: 10px;
+  }
+  .inner-container{
+    width: 130px;
+    border: 1px solid #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+
+  }
+  .inner-container:hover,
+  .inner-container.active{
+    background-color: #fa6400;
+    border: 1px solid #FA6400;
+
+  }
+  .inner-container:hover a,
+  .inner-container.active a{
+    color: #fff;
+    width: 100%;
+    padding: 10px 0;
+  }
+  .inner-container-tabs.inner-container a{
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+  .inner-container-tabs.inner-container:hover a,
+  .inner-container-tabs.inner-container.active a{
+    padding: 0;
+  }
+  .padding-bottom-60{
+    padding-bottom: 60px;
+  }
+</style>
+
+<div class="section">
+  <h1 >{{ product_column_name }}</h1>
+  <div class="title col-sm-8" style="display: none">
+    <div class="hot">
+      <i class="fa fa-check-circle-o"></i>
+      <span>Selected Sellers</span>
+    </div>
+    <div class="hot">
+      <i class="giga icon-cart"></i>
+      <span>Get deals from 10% off</span>
+    </div>
+    <div class="hot">
+      <i class="giga icon-cart"></i>
+      <span>Choose from thousands of globally sourced products</span>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div style="position: relative;overflow: hidden">
+{#    {% if categories|length>6 %}#}
+{#    <button class="button-prev">11</button>#}
+{#    {% endif %}#}
+    <!-- Nav tabs -->
+    {% if categories %}
+      <div id="myTab" class="outer-container nav-tabs" style="display: flex;justify-content: flex-start;padding: 0 10px">
+        {% for item in categories %}
+          <div class="inner-container inner-container-tabs {% if item.category_id == category_id %}active{% endif %}">
+{#                  <li role="presentation" class="  {% if item.category_id == category_id %}active{% endif %}">#}
+            <a href="#tabpanel_{{ item.category_id }}" data-category_id="{{ item.category_id }}" aria-controls="home" role="tab" data-id="tabpanel_{{ item.category_id }}">{{ item.name }}</a>
+{#                  </li>#}
+          </div>
+        {% endfor %}
+      </div>
+{#      <ul class="nav nav-tabs" role="tablist" id="myTab">#}
+    {% endif %}
+{#      {% if categories|length>6 %}#}
+{#    <button class="button-next">22</button>#}
+{#    {% endif %}#}
+  </div>
+
+
+  <!-- Tab panes -->
+  {% if categories %}
+    <div class="tab-content">
+      {% for key,item in categories %}
+        <div role="tabpanel" class="tab-pane {% if key==0 %}active{% endif %}" id="tabpanel_{{ item.category_id }}">
+          {% if logged %}
+            <div id="pageLimit_{{ item.category_id }}" class="my-btns">
+              <input type="checkbox" id="allCheck_tabpanel_{{ item.category_id }}" /> Select All
+
+              {% if download_csv_privilege == 1 %}
+                <button id="batch_download_{{ item.category_id }}" mean="{{ products_to_csv }}" class="btn btn-primary ml-1 btn-top downp" onclick="batchDownload(this)">
+                  <i class="giga "></i>Download Product Info
+                </button>
+              {% endif %}
+
+              <button id="batch_wish_{{ item.category_id }}" mean="{{ products_to_wish }}" class="btn btn-primary ml-1 btn-top adds" onclick="batchAddWish(this)">
+                <i class="giga "></i>Add to Saved Items
+              </button>
+            </div>
+          {% endif %}
+            <div id="productList_{{ item.category_id }}" class="king-true" style="overflow-y: auto;">
+              <ul id="newsList_tabpanel_{{ item.category_id }}" page="1" data-loadsuccess="true" class="padding-bottom-60">
+              </ul>
+              <div class="load"></div>
+            </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+{#  <script>#}
+{#    $(".button-next").click(function () {#}
+{#      console.log()#}
+{#      alert(1)#}
+{#    });#}
+{#    $(".button-prev").click(function () {#}
+{#      alert(2)#}
+{#    })#}
+{#  </script>#}
+
+
+  <script>
+    {% for key,item in categories %}
+    //全选
+    $("#allCheck_tabpanel_{{ item.category_id }}").click(function(){
+      $("#newsList_tabpanel_{{ item.category_id }}").find("input[name='checkbox']").prop("checked", this.checked);
+    });
+
+    //下载
+    $("#batch_download_{{ item.category_id }}").click(function () {
+      var id=$("input[name='check']:checked").attr('data-pId');
+      $("input:checkbox[name='check']:checked").each(function (){
+        $("input[name='check']").prop("checked",false);
+        alert(id)
+      })
+    });
+    {% endfor %}
+
+
+    //单选框反选
+    $('body').on('change','input[name=\'checkbox\']',function () {
+      var domEle      = $(this).parentsUntil("ul[id^='newsList_tabpanel_']").parent();
+      var domTabpanel = $(domEle).parentsUntil("div[id^='tabpanel_']").parent();
+      if(domEle.find("input[name='checkbox']").not("input:checked").size() <= 0){
+        $(domTabpanel).find("input[id^='allCheck_tabpanel_']").prop("checked",true);
+      } else {
+        $(domTabpanel).find("input[id^='allCheck_tabpanel_']").prop("checked",false);
+      }
+    });
+
+    // $('body').on('click','.wishlist',function () {
+    //   if ($(this).hasClass("fa-heart-o")) {
+    //     $(this).removeClass("fa-heart-o");
+    //     $(this).addClass("fa-heart")
+    //   } else if ($(this).hasClass("fa-heart")) {
+    //     $(this).removeClass("fa-heart");
+    //     $(this).addClass("fa-heart-o")
+    //   }
+    // });
+
+  </script>
+
+</main>
+<script>
+  $(window).load(function() {
+    $(window).scroll(function() {
+      //滚过高度
+      var scrollTop = $(this).scrollTop();
+      //页面高度
+      var scrollHeight = $(document).height();
+      //浏览器高度
+      var windowHeight = $(this).height();
+      //尾栏高度 +  一行商品
+      var footerHeight = $("footer").height() + $(".product-simple-grid").height()
+      //滚动条到底时
+      if (scrollHeight-scrollTop - windowHeight < footerHeight) {
+        //console.log('1');
+        loadInfo("#newsList_"+$('.nav-tabs .active a').attr('data-id'), $('.nav-tabs .active a').attr('data-category_id'));
+      }
+    });
+  });
+  /*加载分页数据*/
+  function loadInfo(loadHtml,categoryId) {
+    //console.log(loadHtml);
+    //console.log(categoryId);
+    $("#allCheck_"+categoryId).prop("checked",false);
+    //console.log("#allCheck_"+categoryId);
+    if($(loadHtml).attr("data-loadsuccess")=='true'){
+      var t = $(loadHtml);
+      /*当前页码*/
+      var page = t.attr("page");
+
+      /**最后一页不再添加数据*/
+      if($(loadHtml).attr('data-end')=='1'){
+        return;
+      }
+      //触发ajax事件，加载dom
+      getrows(page,categoryId,loadHtml);
+    }
+  }
+</script>
+<script>
+  var page_limit = 16;
+  $(document).ready(function () {
+    getrows(1,$('.nav-tabs .active a').attr('data-category_id'),'#newsList_tabpanel_0');
+    //切换选项卡
+    $("#myTab a").click(function(e){
+      e.preventDefault();
+      $(this).tab("show");
+      var flagId=$(this).attr('data-id');
+      var category_id = $(this).attr('data-category_id');
+      $(this).parent().parent().children().removeClass('active');
+      $(this).parent().addClass('active');
+      loadInfo("#newsList_"+flagId, category_id);
+    });
+  });
+  function getrows(page,categoryId,htmlcon) {
+    $(htmlcon).attr('data-loadsuccess', false);
+    var name = window.location.href.split("&name=")[1];
+    var url_column = '{{ url_column }}';
+    waitBlock.blockUI();
+    $.ajax({
+      url: url_column,
+      data: {'name': name, 'category_id': categoryId, 'page': page, 'page_limit': page_limit},
+      type: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        var appendItem = '';
+        appendItem = data.htmls;
+        //console.log(htmlcon);
+        $(htmlcon).append(appendItem);
+        $(htmlcon).attr('data-end', data.is_end);
+        $(htmlcon).attr("page", ++page);
+        $(htmlcon).attr('data-loadsuccess', true);
+        $('.tips').on({
+          mouseenter: function () {
+            var that = this;
+
+            $(that).next().show();
+          },
+          mouseleave: function () {
+            var that = this;
+            $(that).next().hide();
+
+          }
+        });
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        $(htmlcon).attr('data-loadsuccess', true);
+      },
+      complete: function (xhr, textStatus) {
+        waitBlock.unBlockUI();
+      }
+    })
+  }
+  //兼容产品卡片，空方法
+  function checkSingleProduct(obj,length){
+
+  }
+  function batchDownload(obj) {
+    var list = [];
+
+    var domTabpanel = $(obj).parentsUntil("div[id^='tabpanel_']").parent();
+    $(domTabpanel).find("ul[id^='newsList_tabpanel_']").find("input[id^='checkbox_']:checked").each(function(index, domEle){
+      var product_id = $(domEle).attr("id").split('_')[1];
+      list.push(product_id);
+    });
+
+    var choose_product = list.join(',');
+    if(choose_product == ''){
+      layer.alert('Please select at least one product.', {
+        title: 'Message',
+        btn : 'OK',
+        skin: 'yzc_layer' //样式类名
+        ,closeBtn: 0
+      }, function(index){
+        layer.close(index);
+      });
+    }else{
+      var to_url  = $(obj).attr('mean');
+      to_url = to_url + '&type=0&product_str=' + choose_product;
+
+      layer.confirm('Do you confirm to batch download the information of these products?', {
+        title: 'Confirm',
+        skin: 'yzc_layer',
+        btn: ['Yes','No'] //按钮
+      }, function(index){
+        // 选择商品并且弹窗后选择YES 才算有效点击
+        CNZZ.triggerEvent('频道页', 'CH_All_Download');
+
+        layer.close(index);
+        window.location.href = to_url;
+      }, function(index){
+        layer.close(index);
+      });
+    }
+  }
+  function batchAddWish(obj) {
+    var list = [];
+
+    var domTabpanel = $(obj).parentsUntil("div[id^='tabpanel_']").parent();
+    $(domTabpanel).find("ul[id^='newsList_tabpanel_']").find("input[id^='checkbox_']:checked").each(function(index, domEle){
+      var product_id = $(domEle).attr("id").split('_')[1];
+      list.push(product_id);
+    });
+
+    var choose_product = list.join(',');
+    if(choose_product == ''){
+      layer.alert('Please select at least one product.', {
+        title: 'Message',
+        btn : 'OK',
+        skin: 'yzc_layer' //样式类名
+        ,closeBtn: 0
+      }, function(index){
+        layer.close(index);
+      });
+    }else{
+      var to_url  = $(obj).attr('mean');
+      to_url = to_url + '&type=0&product_str=' + choose_product;
+
+      layer.confirm('Do you confirm to add these products to Saved Items?', {
+        title: 'Confirm',
+        skin: 'yzc_layer',
+        btn: ['Yes','No'] //按钮
+      }, function(index){
+        // 选择商品并且弹窗后选择YES 才算有效点击
+        CNZZ.triggerEvent('频道页', 'CH_All_SavedItems')
+
+        layer.close(index);
+        $.ajax({
+          url: to_url,
+          type: 'get',
+          dataType: 'json',
+          success: function (json) {
+            console.log(json);
+            if(json){
+              var tip = '';
+              if (json['success_num']){
+                tip = json['success_num'] + ' products have been added <br>to my saved items list successfully.'
+              }
+              if (json['fail_num']){
+                tip += json['fail_num'] + ' products have failed to be added to the list <br>since the relationship with sellers <br>has not been established.';
+              }
+              parent.layer.msg(tip);
+              window.location.reload();
+            }
+          }
+        });
+      }, function(index){
+        layer.close(index);
+      });
+    }
+  }
+
+  function getSellerContact(seller_id, sku) {
+    //window.location.href = 'index.php?route=customerpartner/profile&id=' + seller_id + '&itemCode=' + sku + '&contact=1';
+    var url = 'index.php?route=message/seller/addMessage&receiver_id=' + seller_id + '&item_code=' + sku;
+    window.open(url, '_blank');
+  }
+</script>
+
+
+
+
+
+
+
+<script type="text/javascript" src="catalog/view/javascript/layui/layui.all.js?v={{ app_version }}"></script>
+<link href="catalog/view/javascript/layui/css/layui.css?v={{ app_version }}" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="catalog/view/javascript/time-to/jquery.time-to.js?v={{ app_version }}"></script>
+<link href="catalog/view/javascript/time-to/css/timeTo.css?v={{ app_version }}" rel="stylesheet" type="text/css"/>
+<link href="catalog/view/javascript/customer/css/customer.css?v={{ app_version }}" rel="stylesheet" type="text/css"/>
+
+{{ footer }}

@@ -1,0 +1,904 @@
+
+<div class="panel">
+  <div class="panel-body" style="padding:0;">
+    <div class="well">
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label" for="margin_input-id">{{ column_agreement_id }} </label>
+            <input type="text" name="margin_filter_id" value="{{ contract_id }}" placeholder="{{ column_agreement_id }}"
+                   id="margin_input-id" class="form-control"/>
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="margin_input_buyer_name">{{ column_buyer_name }} </label>
+            <input type="text" name="margin_filter_buyer_name" value="{{ filter_buyer_name }}"
+                   placeholder="{{ text_enter_buyer_name }}" id="margin_input_buyer_name" class="form-control"/>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label" for="margin_input-status">{{ column_status }} </label>
+            <select name="margin_filter_status" class="form-control" id="input_margin_status">
+              <option value="*">--- {{ __('请选择', {}, 'common') }} ---</option>
+              {% if marginStatusList %}
+                {% for item in marginStatusList %}
+                  <option value="{{ item.id }}"  {% if item.id ==filter_status  %}selected{% endif %} >{{ item.name }}</option>
+                {% endfor %}
+              {% endif %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-10" for="margin_input-date_from" style="padding: 0">{{ column_data_modify }}</label>
+            <div class="input-group date col-sm-6" style="float: left">
+              <input type="text" name="margin_filter_date_from" id="margin_input-date_from" class="form-control"
+                     value="{{ filter_date_from }}" placeholder="{{ text_pick_date }}"/>
+              <span class="input-group-btn"><button class="btn btn-default"><i
+                    class="fa fa-calendar"></i></button></span>
+            </div>
+            <div class="input-group date col-sm-6" style="float: left">
+              <input type="text" name="margin_filter_date_to" id="margin_input-date_to" class="form-control"
+                     value="{{ filter_date_to }}" placeholder="{{ text_pick_date }}"/>
+              <span class="input-group-btn"><button class="btn btn-default"><i
+                    class="fa fa-calendar"></i></button></span>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label" for="margin_input-sku_mpn">{{ column_sku_mpn }} </label>
+            <input type="text" name="margin_filter_sku_mpn" value="{{ filter_sku_mpn }}"
+                   placeholder="{{ column_sku_mpn }}" id="margin_input-sku_mpn" class="form-control"/>
+          </div>
+          <div class="form-group" style="margin-top: 25px;margin-right: 30px">
+
+            {# reset #}
+            <a onclick="resetMarginBid(this);" class="btn btn-default pull-right" data-toggle="tooltip"
+               title="RESET " id="rebates-filter-btn" style="margin: 5px">
+              <i class="fa fa-refresh"></i>
+            </a>
+
+            {# download #}
+            <button type="button" onclick="downloadMarginBid()" class="btn btn-default pull-right" data-toggle="tooltip" title="Download" style="margin: 5px">
+              <i class="fa fa-download"></i>
+            </button>
+
+            {# filter #}
+            <a onclick="filterSellerMargin(this);" class="btn btn-primary pull-right" data-toggle="tooltip"
+               title="{{ btn_filter }}" id="margin-filter-btn" style="margin: 5px">
+              {{ btn_filter }} </a>
+          </div>
+        </div>
+      </div>
+      {#热区#}
+      <input id="filter_margin_hot_map" name="filter_margin_hot_map" type="hidden" value="{{ filter_margin_hot_map }}">
+      <div class="row" style="text-align: center;">
+        <div class="margin-hot-map {% if filter_margin_hot_map=='wait_process' %}active{% endif %}" onclick="doSearchMargin(this, 'wait_process')" data-hot_map_type="wait_process">
+          <div class="hot-map-status">{{text_wait_process}}<i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{ tip_wait_process }}</div>"></i></div>
+          <div class="hot-map-num">{{ count_wait_process }}</div>
+        </div>
+        <div class="margin-hot-map {% if filter_margin_hot_map=='wait_deposit_pay' %}active{% endif %}" onclick="doSearchMargin(this, 'wait_deposit_pay')" data-hot_map_type="wait_deposit_pay">
+          <div class="hot-map-status">{{text_wait_deposit_pay}}<i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{ tip_wait_deposit_pay }}</div>"></i></div>
+          <div class="hot-map-num">{{ count_wait_deposit_pay }}</div>
+        </div>
+        <div class="margin-hot-map {% if filter_margin_hot_map=='termination_request' %}active{% endif %}" onclick="doSearchMargin(this, 'termination_request')">
+          <div class="hot-map-status">{{text_termination_request}}<i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{ tip_count_termination_request }}</div>"></i></div>
+          <div class="hot-map-num">{{ count_termination_request }}</div>
+        </div>
+        <div class="margin-hot-map {% if filter_margin_hot_map=='due_soon' %}active{% endif %}" onclick="doSearchMargin(this, 'due_soon')" data-hot_map_type="due_soon">
+          <div class="hot-map-status">{{text_due_soon}}<i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{ tip_due_soon }}</div>"></i></div>
+          <div class="hot-map-num">{{ count_due_soon }}</div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <td class="text-center">
+            {% if sort  ==  'agreement_id' %}
+              <a href="javascript:void(0)" onclick="columnSortMargin('{{ sort_agreement_id }}')" class="{{ order|lower }}">{{ column_agreement_id }}</a>
+            {% else %}
+              <a href="javascript:void(0)" onclick="columnSortMargin('{{ sort_agreement_id }}')">{{ column_agreement_id }}</a>
+            {% endif %}
+          </td>
+          <td class="text-center" style="width: 160px">{{ column_buyer_name }} </td>
+          <td class="text-center" style="width: 120px">{{ column_item_code }}<br/>({{ column_mpn }})</td>
+          <td class="text-center">{{ column_day }} </td>
+
+          <td class="text-center" width="16%">{{ column_marginnum_and_agreenum }} </td>
+          <td class="text-center">
+            <span>{{ column_personal_price }}</span>
+            <span>
+              <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{ column_personal_price_tips }}</div>"></i>
+            </span>
+          </td>
+          <td class="text-center">
+            <span>{{ column_agreement_price }}</span>
+            <span>
+              <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{ column_agreement_price_tips }}</div>"></i>
+            </span>
+          </td>
+          <td class="text-center" style="width: 180px">{{ column_status }} </td>
+          <td class="text-center" style="width: 94px;text-align: right">
+            {% if sort  ==  'update_time' %}
+              <a href="javascript:void(0)" onclick="columnSortMargin('{{ sort_last_modified }}')" class="{{ order|lower }}">{{ column_modify }}</a>
+            {% else %}
+              <a href="javascript:void(0)" onclick="columnSortMargin('{{ sort_last_modified }}')">{{ column_modify }}</a>
+            {% endif %}
+          </td>
+          <td class="text-center">{{ column_action }} </td>
+        </tr>
+        </thead>
+
+        {% if margin_contracts %}
+          {% for result in margin_contracts %}
+            <tbody>
+            <tr>
+              <td class="text-center" style="white-space:nowrap;">
+                {% if result.futures_id %}
+                  <a class="giga icon-futures" style="color: #FA6400" href="{{ futures_detail_link }}&id={{ result.futures_id }}"
+                     target="_blank" data-toggle="tooltip" data-original-title="{{ text_futures_tip }}"></a>
+                {% endif %}
+                {{ result.contract_id }}
+                {% if result.status == 6 and result.is_can_performer_audit %}
+                  <i class="giga giga icon-gantanhao1" style="color: red"></i>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <div style="display: flex;align-items: center;justify-content: flex-start">
+                  <div style="flex: 1" class="user_portrait" data-user_customer_id="{{ result.buyer_id }}" >
+                    {{ result.buyer_name }}
+                  </div>
+                  <div class="img_logo" style="width: 25px">
+                    <img data-toggle="tooltip" style="padding-left: 1px"
+                       src="{{ result['is_home_pickup'] ? asset('image/icons/HomePickup/home_pickup-15x15.png') : asset('image/icons/HomePickup/drop_shipping-15x15.png') }}"
+                       data-original-title="{{ result['is_home_pickup']?tip_home_pickup_logo:tip_drop_shipping_logo }}">
+                  </div>
+                </div>
+
+              </td>
+              <td class="text-center">
+                <a class="a-link"  target="_blank" href="{{ result.product_url }}" style="color: #3A75DC">
+                  <span>{{ result.sku }}<br/>({{ result.mpn }})</span>
+                </a>
+              </td>
+              <td class="text-center">
+                {{ result.day }}
+                {% if result.days_left.is_show and result.days_left.days <= result.day %}
+                  <br><span style="color: red; text-transform: none">{{ result.days_left.days }} days left</span>
+                {% endif %}
+              </td>
+              <td class="text-center" type="{{ result.agreement_new }}">{{ result.sell_qty }}/{{ result.agreement_qty }}</td>
+              <td class="text-center">{{ result.price }} </td>
+              <td class="text-center">{{ result.agreement_amount }} </td>
+              <td class="text-center">
+                <span style="color: {{ result.status_color }}">{{ result.status_name }} </span>
+{#                倒计时#}
+                {% if result.count_down.is_show %}
+                <span data-toggle="tooltip" data-original-title="{{ text_count_down }}" style="color: {{ result.status_color }}" data-id="{{ result.contract_id }}" id="timer{{ result.contract_id }}" data-min="{{ result.count_down.minute }}" data-second="{{ result.count_down.second }}" class="count-time-flag" ><i style="margin-right: 2px" class="giga icon-daojishi"></i><i style="font-style: normal" name="minute">{{ result.count_down.minute }}</i>:<i style="font-style: normal" name="second">{{ result.count_down.second }}</i></span>
+                {% endif %}
+{#                倒计时#}
+              </td>
+              <td class="text-center" style="width: 94px;text-align: right">{{ result.update_time }} </td>
+              <td class="text-center" style="width: 100px">
+                <div class="btn-group-outer">
+                  {% if result.option_num > 2 %}
+                    <a href="{{ result.action.href }}" class="btn btn-primary" data-toggle="tooltip" title="{{ result.action.text }}">
+                      <i class="giga icon-chakan1"></i>
+                    </a>
+                    <div class="btn-group">
+                      <button type="button" data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><i class="giga icon-action-more"></i></button>
+                      <ul class="dropdown-menu dropdown-menu-right">
+{#                        {% if result.status == 6 and result.show_terminate==1%}  #}{# 终止 #}
+{#                          <li><a onclick="marginTerminateContract('{{ result.db_agreement_id }}','{{ result.margin_terminate_url }}')" class="margin-action-ele" data-toggle="tooltip" title="Terminate">#}
+{#                              <i class="giga icon-hand_raised_slash"></i> Terminate#}
+{#                            </a></li>#}
+{#                        {% elseif result.status == 6 and result.show_terminate==2%}   #}{# 协商终止 #}
+{#                          #16147 去掉Buyer与Seller相互协商终止现货保证金协议的功能#}
+{#                          <li><a onclick="marginTerminateRequest('{{ result.db_agreement_id }}','{{ result.margin_terminate_request_url }}')" class="margin-action-ele" data-toggle="tooltip" data-html='true' title="<div style=&quot;word-wrap: break-word;width:150px&quot;>Request to terminate the<br> agreement with buyer.</div>">#}
+{#                              <i class="giga icon-zhongzhitoudi" aria-hidden="true"></i> {{ text_margin_terminate_request }}#}
+{#                            </a></li>#}
+{#                        {% elseif result.status == 6 and result.show_terminate==3%}#}
+{#                          #16147 去掉Buyer与Seller相互协商终止现货保证金协议的功能#}
+{#                          <li><a onclick="marginFailedContract('{{ result.db_agreement_id }}','{{ result.handle_margin_terminate_request_url }}')" class="margin-action-ele"  data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{ tip_termination_request }}</div>">#}
+{#                              <i class="giga icon-shenpi"></i> Approval Status#}
+{#                            </a></li>#}
+{#                        {% endif %}#}
+                        {% if  result.is_can_performer_audit %}
+                          <li><a onclick="marginPerformerContract('{{ result.performer_apply_id }}','{{ result.db_agreement_id }}','{{ result.contract_id }}','{{ result.handle_margin_audit_performer_request_url }}',this)" class="margin-action-ele">
+                              <i class="giga icon-xieyixiangqing"></i> {{ btn_audit_performer_request }}
+                            </a></li>
+                        {% endif %}
+                      </ul>
+                    </div>
+                  {% else %}
+                    <a href="{{ result.action.href }}" class="btn btn-primary" data-toggle="tooltip" title="{{ result.action.text }}">
+                      <i class="giga icon-chakan1"></i>
+                    </a>
+{#                    {% if result.status == 6 and result.show_terminate==1%}  #}{# 终止 #}
+{#                      <a onclick="marginTerminateContract('{{ result.db_agreement_id }}','{{ result.margin_terminate_url }}')" class="btn btn-primary" data-toggle="tooltip" title="Terminate" >#}
+{#                        <i class="giga icon-hand_raised_slash"></i>#}
+{#                      </a>#}
+{#                    {% elseif result.status == 6 and result.show_terminate==2%}   #}{# 协商终止 #}
+{#                      #16147 去掉Buyer与Seller相互协商终止现货保证金协议的功能#}
+{#                      <a onclick="marginTerminateRequest('{{ result.db_agreement_id }}','{{ result.margin_terminate_request_url }}')" class="btn btn-primary" data-toggle="tooltip" data-html='true' title="<div style=&quot;word-wrap: break-word;width:150px&quot;>Request to terminate the<br> agreement with buyer.</div>" >#}
+{#                        <i class="giga icon-zhongzhitoudi" aria-hidden="true"></i>#}
+{#                      </a>#}
+{#                    {% elseif result.status == 6 and result.show_terminate==3%}#}
+{#                      #16147 去掉Buyer与Seller相互协商终止现货保证金协议的功能#}
+{#                      <a onclick="marginFailedContract('{{ result.db_agreement_id }}','{{ result.handle_margin_terminate_request_url }}')" class="btn btn-primary"  data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{ tip_termination_request }}</div>">#}
+{#                        <i class="giga icon-shenpi"></i>#}
+{#                      </a>#}
+{#                    {% endif %}#}
+                    {% if  result.is_can_performer_audit %}
+                      <a onclick="marginPerformerContract('{{ result.performer_apply_id }}','{{ result.db_agreement_id }}','{{ result.contract_id }}','{{ result.handle_margin_audit_performer_request_url }}',this)" class="btn btn-primary"  data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{ btn_audit_performer_request }}</div>">
+                        <i class="giga icon-xieyixiangqing"></i>
+                      </a>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          {% endfor %}
+        {% else %}
+          <tbody>
+          <tr>
+            <td colspan="12" class="text-center">{{ text_no_results }} </td>
+          </tr>
+          </tbody>
+        {% endif %}
+      </table>
+    </div>
+    <div class="row" style="padding-bottom: 12px">
+      <div class="col-sm-12 text-right" style="margin-top: 15px;">
+        <ul id="seller_margin_pagination"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+<input id="page_sort_val" value="{{ page_sort_val }}" hidden>
+<input id="page_sort_type" value="{{ page_sort_type }}" hidden>
+
+{#终止协议#}
+<div class="modal fade" id="myModalMarginTerminate" tabindex="-1" role="dialog" aria-labelledby="myModalLabelMarginTerminate" aria-hidden="true" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          &times;
+        </button>
+        <h4 class="modal-title" id="myModalLabelMarginTerminate">
+          {{ title_confirm }}
+        </h4>
+      </div>
+      <div class="modal-body">
+        <h4>Do you confirm to terminate this margin agreement?</h4>
+        <div class="modal-body-group">
+          <div style="width: 100%; margin-top: 20px; position: relative;">
+            <label >REASON</label>
+            <span class="input-required" style="color:red; position: absolute; right: 0;">
+                REQUIRED
+            </span>
+          </div>
+          <div style="width: 100%; position: relative; margin-bottom: 10px; border: 1px solid #e3e3e3;border-radius: 4px ;padding: 4px 4px 0 4px">
+            <textarea style="width: 100%; resize: none;border: none" rows="4" class="modalMarginReason"  onkeyup="computWordMarginTerminateReason(this)"></textarea>
+            <span class="count-word" style="color:gray; display:inline-block ;right: 0;bottom: 0;width: 100%;text-align: right">0/2000</span>
+            <input type="hidden" class="modalMarginId">
+            <input type="hidden" class="modalMarginUrl">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btnMarginConfirm btn btn-primary" onclick="marginTerminateAgreement(this)" disabled>Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<style>
+  .margin-hot-map{
+      width: 20%;
+      border-right: 1px solid #e1e1e1;
+      display: inline-block;
+      text-align: center;
+      padding: 10px 0;
+  }
+  .margin-hot-map:last-child{
+    border: 0;
+  }
+  .margin-hot-map.active, .margin-hot-map:hover{
+    background-color: #1834640c;
+  }
+  .margin-hot-map:hover{
+    cursor: pointer;
+  }
+  .margin-hot-map:hover .hot-map-status{
+    color: #183464;
+  }
+  .margin-hot-map:hover .hot-map-num{
+    color: #FA6400;
+  }
+  .hot-map-status{
+    font-weight: bold;
+    font-size: 14px;
+    padding: 6px 0;
+    color: #677999;
+  }
+  .margin-hot-map.active .hot-map-status{
+    color: #183464;
+  }
+  .giga.icon-help-inactive{
+    color: #b620e0;
+  }
+  .hot-map-num{
+    font-size: 16px;
+  }
+  .margin-hot-map.active .hot-map-num{
+    font-weight: bold;
+    color: #FA6400;
+  }
+  .table tbody tr td .btn-group-outer .btn{
+      border: 1px solid #eee;
+      line-height: 30px;
+      padding: 0;
+      background-color: #f3f5f7;
+      /*box-shadow: none;*/
+      /*margin-right: 5px;*/
+      box-shadow: 1px 1px 4px #b5b5b5;
+  }
+  .table tbody tr td .btn-group-outer .btn:hover{
+      background-color: #fa6400;
+      border: 1px solid #fa6400;
+  }
+  .table tbody tr td .btn-group-outer .btn i{
+      font-size: 14px !important;
+  }
+  textarea.modalMarginReason:focus{
+    outline: none;
+  }
+  .a-link:hover{
+    text-decoration: underline;
+  }
+</style>
+
+<script src="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js"
+        type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css" type="text/css"
+      rel="stylesheet" media="screen"/>
+
+<script type="text/javascript">
+  $('#margin_input-date_from').datetimepicker({
+    pickDate: true,
+    pickTime: false,
+    format: 'YYYY-MM-DD 00:00:00'
+  });
+  $('#margin_input-date_to').datetimepicker({
+    pickDate: true,
+    pickTime: false,
+    format: 'YYYY-MM-DD 23:59:59'
+  });
+  var timerIDArr=new Array();
+  $(function () {
+    margin_pagination();
+    block.unBlockUI();
+    $('#margin-filter-btn').button('reset');
+    // 倒计时
+    let countTimeArr=$(".count-time-flag");
+    let countTimeInitArr=[];
+    countTimeArr.each((i,item)=>{
+      let min=Number($(item).attr("data-min"));
+      let second=Number($(item).attr("data-second"));
+      let totalTime=min*60+second;
+      let currentOrderId=$(item).attr("data-id");
+      countTimeInitArr.push({
+        "currentOrderId":currentOrderId,
+        "totalTime":totalTime
+      })
+    })
+    for ( let i = 0; i < countTimeInitArr.length; i++ ) {
+      (function (i) {
+        let obj = 'timer' + countTimeInitArr[i].currentOrderId;
+        countDown( i,countTimeInitArr[i].totalTime,function( msg ) {
+          let currentMinutes=msg.split(":")[0];
+          let currentSeconds=msg.split(":")[1];
+          if(currentMinutes<10){
+            currentMinutes="0"+currentMinutes
+          }
+          if(currentSeconds<10){
+            currentSeconds="0"+currentSeconds
+          }
+          $("#"+obj).find("i[name='minute']").html(currentMinutes);
+          $("#"+obj).find("i[name='second']").html(currentSeconds);
+        })
+      })(i)
+    }
+    //倒计时
+  });
+
+  function columnSortMargin(url) {
+      if (url.length < 1) {
+          return false;
+      }
+      clearTimer();
+      block.blockUI();
+      $('#bid-margin').load(url);
+  }
+  
+  function downloadMarginBid() {
+      let url = 'index.php?route=account/product_quotes/margin_contract/margin_download';
+
+      let filter_margin_agreement_id = $.trim($("#margin_input-id").val());
+      let filter_margin_status = $.trim($("#input_margin_status").val());
+      let filter_margin_item_code = $.trim($("#margin_input-sku_mpn").val());
+      let filter_margin_buyer_name = $.trim($("#margin_input_buyer_name").val());
+      let filter_margin_date_from = $.trim($("#margin_input-date_from").val());
+      let filter_margin_date_to = $.trim($("#margin_input-date_to").val());
+      let filter_margin_hot_map = $.trim($("#filter_margin_hot_map").val());
+      let filter_margin_order=$.trim($('#page_sort_type').val());
+      let filter_margin_sort=$.trim($('#page_sort_val').val());
+
+      if( filter_margin_agreement_id ){
+          url += "&filter_id="+encodeURIComponent(filter_margin_agreement_id);
+      }
+      if( filter_margin_item_code ){
+          url += "&filter_sku_mpn="+encodeURIComponent(filter_margin_item_code);
+      }
+      if( filter_margin_status ){
+          url += "&filter_status="+encodeURIComponent(filter_margin_status);
+      }
+      if( filter_margin_buyer_name ){
+          url += "&filter_buyer_name="+encodeURIComponent(filter_margin_buyer_name);
+      }
+      if( filter_margin_date_from ){
+          url += "&filter_date_from="+encodeURIComponent(filter_margin_date_from);
+      }
+      if( filter_margin_date_to ){
+          url += "&filter_date_to="+encodeURIComponent(filter_margin_date_to);
+      }
+
+      if (filter_margin_hot_map) {
+          url += "&filter_margin_hot_map=" + encodeURIComponent(filter_margin_hot_map);
+      }
+
+      if(filter_margin_order){
+          url += "&order=" + encodeURIComponent(filter_margin_order);
+      }
+
+      if(filter_margin_sort){
+          url += "&sort=" + encodeURIComponent(filter_margin_sort);
+      }
+
+      window.location.href=url;
+  }
+
+  {# 终止 #}
+  function computWordMarginTerminateReason(_this) {
+      let modalwindow = $("#myModalMarginTerminate");
+      let words = $(_this).val();
+      $(_this).parentsUntil(".modal-body-group").parent().find(".count-word").text(words.length + "/2000");
+      if (words.length > 2000) {
+          $(_this).parentsUntil(".modal-body-group").parent().find(".input-required").text("REASON can not be more than 2000 characters");
+          modalwindow.find(".btnMarginConfirm").attr('disabled', true);
+      } else if (words.length < 1) {
+          $(_this).parentsUntil(".modal-body-group").parent().find(".input-required").text("REASON can not be left blank");
+          modalwindow.find(".btnMarginConfirm").attr('disabled', true);
+      } else {
+          $(_this).parentsUntil(".modal-body-group").parent().find(".input-required").text("REQUIRED");
+          modalwindow.find(".btnMarginConfirm").attr('disabled', false);
+      }
+  }
+  function marginTerminateContract(contract_id,url){
+      let modalwindow = $("#myModalMarginTerminate");
+      modalwindow.find(".modalMarginId").val(contract_id);
+      modalwindow.find(".modalMarginUrl").val(url);
+      modalwindow.modal();
+  }
+  function marginTerminateRequest(contract_id,url){
+      let reload_url = '{{ reload_url|escape }}';
+      layer.confirm('{{ confirm_terminate_request }}', {
+          title: '{{ title_confirm }}',
+          btn: ['Confirm', 'Cancel'],
+          skin: 'yzc_layer',
+          scrollbar: false
+      }, function () {
+          layer.closeAll();
+          $.ajax({
+              url: url,
+              type: 'get',
+              beforeSend : function (){
+                  block.blockUI();
+              },
+              success: function (json) {
+                  block.unBlockUI();
+                  if(json['status']){
+                      layer.msg('{{ confirm_success }}');
+                      clearTimer();
+                      $('#bid-margin').load(reload_url);
+                  }else{
+                      layer.alert(json.err,{title: 'Notice',skin: 'yzc_layer',btn:['OK']});
+                  }
+              },
+              complete:function(XMLHttpRequest, textStatus){
+                  block.unBlockUI();
+              }
+          });
+      });
+  }
+  function marginTerminateAgreement(_this){
+      let modalwindow = $("#myModalMarginTerminate");
+      let margin_id = modalwindow.find(".modalMarginId").val();
+      let url = modalwindow.find(".modalMarginUrl").val();
+      let reason = $.trim(modalwindow.find(".modalMarginReason").val());
+      let param = {'margin_id': margin_id, 'reason': reason};
+
+      if(reason.length < 1){
+          return false;
+      }
+      $(_this).attr('disabled', true);
+      $.ajax({
+          url: url,
+          type: 'post',
+          data: param,
+          dataType: 'json',
+          beforeSend : function (){
+              block.blockUI();
+          },
+          success: function (json) {
+              layer.closeAll();
+              block.unBlockUI();
+              if(json['success']){
+                  modalwindow.modal("hide");
+                  layer.msg(json['success'],{},function () {
+                      window.location.reload();
+                  });
+              }else if('error'){
+                  layer.alert(json['error'],{ skin: 'yzc_layer',title: 'Message', btn: 'OK',});
+              }
+          },
+          complete:function(XMLHttpRequest, textStatus){
+              block.unBlockUI();
+              $(_this).attr('disabled', false);
+          }
+      });
+  }
+
+  function margin_pagination() {
+      if ({{ total_pages }}) {
+          $('#seller_margin_pagination').bootstrapPaginator({
+              /*当前使用的是3版本的bootstrap*/
+              bootstrapMajorVersion: 3,
+              /*配置的字体大小是小号*/
+              size: 'normal',
+              /*当前页*/
+              currentPage: {{ page_num }},
+              /*一共多少页*/
+              totalPages: {{ total_pages }},
+              /*页面上最多显示几个含数字的分页按钮*/
+              numberOfPages: 5,
+              total: {{ total_num }},
+              rowsOfPage: {{ page_limit|default(20) }},
+              onPageClicked: function (event, originalEvent, type, page) {
+                  clearTimer();
+                  let url = "{{ pagination_url }}";
+                  if (page) {
+                      url += "&page=" + page;
+                  } else {
+                      url += "&page=" + {{ page_num }};
+                  }
+                  clearTimer();
+                  block.blockUI();
+                  $('#bid-margin').load(url,function () {
+                    block.unBlockUI();
+                  });
+              }
+          });
+      }
+  }
+
+  function filterSellerMargin(button) {
+    clearTimer();
+    block.blockUI();
+
+    url = '{{ action }}';
+    var filter_id = $('input[name=\'margin_filter_id\']').val();
+    if (filter_id) {
+      url += '&filter_id=' + encodeURIComponent(filter_id);
+    }
+
+    var filter_buyer_name = $('input[name=\'margin_filter_buyer_name\']').val();
+    if (filter_buyer_name) {
+      url += '&filter_buyer_name=' + encodeURIComponent(filter_buyer_name);
+    }
+
+    var filter_sku_mpn = $('input[name=\'margin_filter_sku_mpn\']').val();
+    if (filter_sku_mpn) {
+      url += '&filter_sku_mpn=' + encodeURIComponent(filter_sku_mpn);
+    }
+
+    var filter_status = $('select[name=\'margin_filter_status\']').val();
+    if (filter_status != '*') {
+      url += '&filter_status=' + encodeURIComponent(filter_status);
+    }
+
+    var filter_date_from = $('input[name=\'margin_filter_date_from\']').val();
+    if (filter_date_from) {
+      url += '&filter_date_from=' + encodeURIComponent(filter_date_from);
+    }
+
+    var filter_date_to = $('input[name=\'margin_filter_date_to\']').val();
+    if (filter_date_to) {
+      url += '&filter_date_to=' + encodeURIComponent(filter_date_to);
+    }
+
+    //热区
+    var filter_hot_map=$("#filter_margin_hot_map").val();
+    if(filter_hot_map){
+        url += '&filter_margin_hot_map=' + encodeURIComponent(filter_hot_map);
+    }
+
+    $('#bid-margin').load(url);
+    $(button).button('loading');
+  }
+
+  function doSearchMargin(dom, _condition) {
+      if($(dom).hasClass('active')){
+          $("#filter_margin_hot_map").val('');
+          $(dom).removeClass('active');
+      } else {
+          /*未选中则选中*/
+          switch (_condition) {
+              case 'wait_process':
+              case 'wait_deposit_pay':
+              case 'due_soon':
+              case 'termination_request':
+                  $("#input_margin_status").val(0);
+                  break;
+              default:
+                  return false;
+                  break;
+          }
+          $("#filter_margin_hot_map").val(_condition);
+          $(dom).addClass('active');
+      }
+
+      filterMargin();
+  }
+
+  function filterMargin(button) {
+      filterSellerMargin($('#margin-filter-btn'));
+  }
+
+  function approveMargin(agreementId, last_update_time) {
+    if (confirm("{{ text_approve_confirm }}")) {
+      var data = {
+        'agreementId': agreementId,
+        'last_update_time': last_update_time
+      };
+      $.ajax({
+        url: "{{ margin_approve_url }}",
+        type: 'post',
+        dataType: 'json',
+        data :data,
+        success:function (json) {
+          if(json['success']){
+            alert(json['success']);
+            filterSellerMargin($('#margin-filter-btn'));
+          }else if(json['error']){
+            alert(json['error']);
+            filterSellerMargin($('#margin-filter-btn'));
+          }
+        }
+      })
+    }
+  }
+
+  var lock_margin_failed_id=0;//阻止重复提交
+  function marginFailedContract(contract_id,url) {
+    if (lock_margin_failed_id == contract_id) {
+      return false;
+    }
+    lock_margin_failed_id = contract_id;
+
+    var content = '<div style="text-align: left;"><div>Please respond to the agreement termination request from buyer.</div></div>';
+    layer.confirm(content, {
+      title: '{{ title_confirm }}',
+      skin: 'yzc_layer',
+      btn: ['Approve', 'Reject'],
+      area: ['600px'],
+      scrollbar: false
+      ,cancel:function(index, layero){
+        lock_margin_failed_id = 0;
+      }
+    }, function (lay_index) {
+      layer.closeAll();
+
+      let sendData = {};
+      sendData.margin_id = contract_id;
+      sendData.process = 1;
+      doFAiled(sendData, url);
+    }, function (lay_index) {
+      layer.closeAll();
+
+      let sendData = {};
+      sendData.margin_id = contract_id;
+      sendData.process = 0;
+      doFAiled(sendData, url);
+    });
+  }
+
+  function doFAiled(sendData, url) {
+    var reload_url = '{{ reload_url|escape }}';
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: sendData,
+      dataType: 'json',
+      beforeSend: function () {
+        block.blockUI();
+      },
+      success: function (json) {
+        block.unBlockUI();
+        if (json['success']) {
+          layer.msg(json['success'], {area: ['400px'], time: 5000});
+          setTimeout(function () {
+            clearTimer();
+            block.blockUI();
+            $('#bid-margin').load(reload_url);
+          }, 5000);
+        } else if (json['error']) {
+          layer.alert(json['error'], {
+            title: 'NOTICE',
+            skin: 'yzc_layer',
+            btn: ['OK'],
+            closeBtn: 0,
+            area: ['500px'],
+          }, function (index) {
+            layer.closeAll();
+          });
+          lock_margin_failed_id = 0;
+        }
+      },
+      complete: function (XMLHttpRequest, textStatus) {
+        block.unBlockUI();
+      }
+    });
+  }
+
+  //审批共同履约人弹窗---START
+  var lock_margin_performer_id=0;//阻止重复提交
+  function marginPerformerContract(performerApplyId,marginId,agreementId,url,obj) {
+    if (lock_margin_performer_id == performerApplyId) {
+      return false;
+    }
+    lock_margin_performer_id = performerApplyId;
+
+      var content =
+      '<div style="text-align: left;">' +
+      '<div> Buyer has submitted an Add a Partner request for Agreement ID ' + agreementId + '. Please approve or deny.</div>' +
+      '</div>';
+    let sendData = {};
+    sendData.performer_apply_id = performerApplyId;
+    sendData.margin_id = marginId;
+    layer.confirm(content, {
+      title: 'Confirm',
+      skin: 'yzc_layer',
+      btn: ['Approve', 'Deny'],
+      area: ['480px'],
+      scrollbar: false
+      ,cancel:function(index, layero){
+        lock_margin_performer_id = 0;
+      }
+    }, function (lay_index) {
+      layer.closeAll();
+      sendData.process = 1;
+      doPerformer(sendData, url,obj);
+    }, function (lay_index) {
+      layer.closeAll();
+      sendData.process = 2;
+      doPerformer(sendData, url,obj);
+    });
+  }
+
+  function doPerformer(sendData,url,obj) {
+    var reload_url = '{{ reload_url|escape }}';
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: sendData,
+      dataType: 'json',
+      beforeSend: function () {
+        block.blockUI();
+      },
+      success: function (json) {
+        block.unBlockUI();
+        if (json['success']) {
+          $(obj).remove();
+          layer.msg(json['msg'], {area: ['500px'], time: 5000});
+          setTimeout(function () {
+            clearTimer();
+            block.blockUI();
+            $('#bid-margin').load(reload_url);
+          }, 5000);
+        } else {
+          layer.alert(json['msg'], {
+            title: 'NOTICE',
+            skin: 'yzc_layer',
+            btn: ['OK'],
+            closeBtn: 0,
+            area: ['500px'],
+          }, function (index) {
+            layer.closeAll();
+          });
+          lock_margin_performer_id = 0;
+        }
+      },
+      complete: function (XMLHttpRequest, textStatus) {
+        block.unBlockUI();
+      }
+    });
+  }
+  //审批共同履约人弹窗---END
+
+  function rejectMargin(agreementId, last_update_time) {
+    if (confirm("{{ text_reject_confirm }}")) {
+      var data = {
+        'agreementId': agreementId,
+        'contract_status': 4,
+        'last_update_time': last_update_time
+      };
+      $.ajax({
+        url: "{{ margin_reject_url }}",
+        type: 'post',
+        dataType: 'json',
+        data :data,
+        success:function (json) {
+          if(json['success']){
+            alert(json['success']);
+            filterSellerMargin($('#margin-filter-btn'));
+          }else if(json['error']){
+            alert(json['error']);
+            filterSellerMargin($('#margin-filter-btn'));
+          }
+        }
+      })
+    }
+  }
+  function resetMarginBid(button) {
+      clearTimer();
+      block.blockUI();
+      let url = '{{action}}';
+      $('#bid-margin').load(url);
+      $(button).button('loading');
+  }
+  // 倒计时
+  function countDown( i,maxtime,fn ) {
+    let timer = setInterval(function() {
+      if( !!maxtime ){
+        var day = Math.floor(maxtime / 86400),
+          hour = Math.floor((maxtime % 86400) / 3600),
+          minutes = Math.floor((maxtime % 3600) / 60),
+          seconds = Math.floor(maxtime%60),
+          msg = minutes+":"+seconds;
+        fn( msg );
+        --maxtime;
+      } else {
+        clearInterval( timer );
+        // 处理结束
+        fn("0:0");
+      }
+    }, 1000);
+    timerIDArr.push(timer);
+  }
+  function clearTimer() {
+    for(let i=0;i<timerIDArr.length;i++){
+      clearInterval(timerIDArr[i]);
+    }
+    timerIDArr.splice(0, timerIDArr.length)
+  }
+  // 倒计时
+</script>

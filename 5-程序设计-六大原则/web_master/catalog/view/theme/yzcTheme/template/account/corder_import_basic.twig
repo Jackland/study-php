@@ -1,0 +1,1032 @@
+<link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css?v={{ app_version }}" rel="stylesheet" type="text/css"/>
+<link href="catalog/view/theme/yzcTheme/stylesheet/font_demo/iconfont.css?v={{ app_version }}" rel="stylesheet" type="text/css"/>
+<link href="catalog/view/javascript/diyUpload/file_upload/css/iconfont.css?v={{ app_version }}" rel="stylesheet" type="text/css"/>
+<div role="tabpanel" class="tab-pane active">
+  <div class="bg-white p-2">
+    <form class="form-horizontal">
+      <fieldset>
+        <div class="form-group required">
+          <div class="col-sm-12" id="radio" style="margin-bottom: 10px;margin-top: 10px;">
+            <span class="type" style="margin-top: 3px"> Giga Pickup Order From:</span>
+            {% for item in order_from_list %}
+              <div class="type" style="position: relative;">
+                <input
+                        {% if item.checked %}
+                          checked
+                        {% endif %}
+                        type="radio" name="{{ item.name }}" value="{{ item.value }}"  data-labelauty="{{ item.labelauty }}" style="display: inline-block;">
+                <span>
+                  {{ item.text }}
+                  {% if item.tip %}
+                    <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title="" data-original-title="{{ item.tip }}" style="font-size: 12px"></i>
+                  {% endif %}
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="col-sm-12" style="display: none;margin-top: 10px;" id="upload_0">
+            <button type="button" id="button-upload"  style="text-align: left"
+                    data-loading-text="{{ text_loading }}" class="btn btn-primary">
+              <i class="giga  icon-action-upload"></i> {{ button_upload }}</button>
+            <a class="btn btn-default"  href="{{ downloadAmazonTemplateHref }}"
+               style="text-decoration: none;cursor: pointer;position: relative;left: 20px;">
+              {{ text_download_template_file }}</a>
+
+          </div>
+
+          <div class="col-sm-12" style="display: none;margin-top: 10px;" id="upload_1">
+            <button type="button" id="button-upload-wayfair"  style="text-align: left"
+                    data-loading-text="{{ text_loading }}" class="btn btn-primary">
+              <i class="giga  icon-action-upload"></i> {{ button_upload }}</button>
+            <a class="btn btn-default" href="{{ downloadDPTemplateHref }}&type=wayfair"
+               style="text-decoration: none;cursor: pointer;position: relative;left: 20px;">
+              {{ text_download_template_file }}</a>
+            {% if country_id == 222 or country_id == 81 %}
+              <a  class="btn btn-default" href="{{ europeWayfairInstructionHref }}" target="_blank"
+                  style="text-decoration: none;cursor: pointer;position: relative;margin-left: 40px;">
+                How to Complete Template</a>
+            {% endif %}
+          </div>
+
+          <div class="col-sm-12" style="display: none;margin-top: 10px;" id="upload_3">
+            <button type="button" id="button-upload-walmart" style="text-align: left;"
+                    data-loading-text="{{ text_loading }}" class="btn btn-primary"  data-toggle="modal" data-target=".bs-example-modal-lg">
+              <i class="giga icon-action-upload"></i> {{ button_upload }}</button>
+            <a class="btn btn-default" href="{{ downloadDPTemplateHref }}&type=walmart"
+               style="text-decoration: none;cursor: pointer;position: relative;margin-left: 20px;">
+              {{ text_download_template_file }}</a>
+            <a  class="btn btn-default" href="{{ walmartInstructionHref }}" target="_blank"
+                style="text-decoration: none;cursor: pointer;position: relative;margin-left: 20px;">
+              How to Complete Template</a>
+          </div>
+          {#自提货#}
+            <div class="col-sm-12" style="display: none;margin-top: 10px;" id="upload_4">
+              <button type="button" id="button-upload-buyer-pick-up" style="text-align: left;"
+                      data-loading-text="{{ text_loading }}" class="btn btn-primary" data-toggle="modal"
+                      data-target=".bs-example-modal-lg">
+                <i class="giga icon-action-upload"></i> {{ button_upload }}</button>
+              <a class="btn btn-default" href="{{ url('account/customer_order/downloadBuyerPickUpTemplate') }}"
+                 style="text-decoration: none;cursor: pointer;position: relative;margin-left: 20px;">
+                {{ text_download_template_file }}</a>
+              <a class="btn btn-default" href="{{ url('account/customer_order/buyerPickUpInstruction') }}"
+                 target="_blank"
+                 style="text-decoration: none;cursor: pointer;position: relative;margin-left: 20px;">
+                How to Complete Template</a>
+            </div>
+            {% if country_id == 223 %}
+            <div class="col-sm-12" style="display: none;margin-top: 10px;" id="upload_2">
+            <button type="button" id="upload_button_other" style="text-align: left;"
+                    data-loading-text="{{ text_loading }}" class="btn btn-primary">
+              <i class="giga icon-action-upload"></i> {{ button_upload }}</button>
+            <input type="file" id="upload_file_other" name='upload_file_other' onchange="handleFiles(this.files)" style="display:none;">
+            <a class="btn btn-default" href="{{ downloadOtherTemplateHref }}"
+               style="text-decoration: none;cursor: pointer;position: relative;margin-left: 20px;">
+              {{ text_download_template_file }}</a>
+            <a  class="btn btn-default" href="{{ otherInstructionHref }}" target="_blank"
+                style="text-decoration: none;cursor: pointer;position: relative;margin-left: 20px;">
+              How to Complete Template</a>
+          </div>
+          {% else %}
+            <div class="col-sm-12" style="display: none;margin-top: 10px;" id="upload_2">
+              <button type="button" id="button-upload-common" style="text-align: left;"
+                      data-loading-text="{{ text_loading }}" class="btn btn-primary">
+                <i class="giga icon-action-upload"></i> {{ button_upload }}</button>
+              <a class="btn btn-default" href="{{ downloadTemplateHref }}"
+                 style="text-decoration: none;cursor: pointer;position: relative;margin-left: 20px;">
+                {{ text_download_template_file }}</a>
+              <a  class="btn btn-default" href="{{ downloadInterpretationHref }}" target="_blank"
+                  style="text-decoration: none;cursor: pointer;position: relative;margin-left: 20px;">
+                How to Complete Template</a>
+            </div>
+          {% endif %}
+          {# 上传完成信息确认弹窗 #}
+          <div class="modal fade" tabindex="-1" role="dialog" id="orderConfirmModal" data-backdrop="static">
+            <div class="modal-dialog oris-modal" style="width: 800px;">
+              <div class="modal-content" id="orderConfirmContent" style="border-radius:0px">
+                <div class="modal-header" style="border-bottom: 1px solid #e6e6e6;">
+                  {# <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="giga icon-V10_danchuangguanbi close-icon"></i>
+                  </button> #}
+                  <div class="modal-title">Notice</div>
+                </div>
+                <input type="hidden" name="confirmRunId" id="confirmRunId">
+                <input type="hidden" name="confirmImportMode" id="confirmImportMode">
+                <div class="modal-body">
+                  {% include "yzcTheme/template/account/corder_import_confirm_file_upload_data_box.twig" %}
+                </div>
+                <div class="modal-footer">
+                  <div class="text-right">
+                    {# <button type="button" class="oris-button oris-button-default" data-dismiss="modal">Cancel</button> #}
+                    <button type="button" class="oris-button" id="modalSubmit">OK</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <br/>
+      <fieldset>
+        <div class="form-group">
+          <div class="col-sm-12">
+            <div class="progress">
+              <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+            </div>
+            <div id="progress-text"></div>
+          </div>
+        </div>
+      </fieldset>
+      <br/>
+      <fieldset>
+
+        <div class="form-group" style="height: 100%">
+          <h2 class="col-sm-2 control-label" style="text-align: left">{{ text_history }}</h2> <a class="btn btn-default" href="{{ upload_history_records }}" style="text-transform:none;font-weight:normal;font-size: 14px;float:right;margin-top: 6px;margin-right:16px; " target="_blank">View all...</a>
+          {% if historys %}
+            <div id="history" style="width: 96.5%;margin-left: 15px;">
+              <table class="table main table-condensed table-hover">
+                <thead>
+                <tr>
+                  <th>File Name</th>
+                  <th>Create Time</th>
+                  <th>Status </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for history in historys %}
+                  <tr>
+                    <td><a  style="cursor: pointer" onclick=" window.location.href='{{ history.file_path }}'">{{ history.file_name }}&nbsp;<i class="giga icon-table-download"></i></a></td>
+                    <td>{{ history.create_time }}</td>
+                    <td>
+                      {% if history.handle_status == 1 %}
+                        <i class="giga icon-action-confirm-and-agree" aria-hidden="true" style="color: #00CC00;cursor: pointer"></i>
+                      {% else %}
+                        <i class="giga icon-action-warning" aria-hidden="true" style="color: #DB0000;cursor: pointer"></i>
+                      {% endif %}
+                      &nbsp;{{ history.handle_message }}
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  {% include "yzcTheme/template/account/inventory_match_modal.twig" with {'from':'import'} %}
+</div>
+
+<link rel="stylesheet" href="catalog/view/javascript/product_category/css/jquery-labelauty-unchecked.css?v={{ app_version }}">
+<script src="catalog/view/javascript/product_category/js/jquery-labelauty.js?v={{ app_version }}"></script>
+
+<script>
+  $('input:radio[name="upload_type"]').click(function(){
+    var checkValue = $('input:radio[name="upload_type"]:checked').val();
+    $('#upload_0').hide();
+    $('#upload_1').hide();
+    $('#upload_2').hide();
+    $('#upload_3').hide();
+    $('#upload_4').hide();
+    var id = '#upload_'+ checkValue;
+    $(id).show();
+
+  });
+
+  // 初始化内容
+  $(document).ready(function(){
+    var import_mode = '{{ last_import_mode }}';
+    if(import_mode == 4 ){
+      var type = 0;
+    }else if(import_mode == 5 ){
+      var type = 1;
+    }else if(import_mode == 6 ){
+      var type = 2;
+    }else if(import_mode == 7 ){
+      var type = 3;
+    } else if (import_mode == 8) {
+      var type = 4;
+    }
+    $('#upload_0').hide();
+    $('#upload_1').hide();
+    $('#upload_2').hide();
+    $('#upload_3').hide();
+    $('#upload_4').hide();
+    var id = '#upload_'+ type;
+    $(id).show();
+  });
+
+
+
+
+</script>
+<style>
+  .labelauty-checked ,.labelauty-unchecked{
+    margin-top: 3px;
+  }
+  .page-seller-portal .btn.btn-default {
+    color:grey;
+    border-color: #e3e3e3;
+    background-color: #fbfbfb;
+  }
+  .page-seller-portal:not('#editPickingInfoModal') .btn.btn-default:hover {
+    color: white;
+    background-color: #3a75dc;
+    border-color: #3a75dc;
+  }
+  .modal-header {
+    padding: 15px;
+    border-bottom: 0px solid
+    #e5e5e5;
+  }
+  .modal-footer {
+    padding: 15px;
+    text-align: center;
+    border-top: 1px solid #e5e5e5;
+  }
+  /*input {*/
+  /*  display: block !important;*/
+  /*}*/
+  .type{
+    float: left;margin-right: 10px;
+  }
+  .type span{
+    vertical-align: text-bottom;
+    margin-right: 20px;
+  }
+  input[type=radio] {
+    vertical-align: inherit;
+  }
+  .modal .modal-itemcodemapping-area {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+</style>
+<!--模态对话框-->
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal" aria-labelledby="myModalItemCodeMappingLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog modal-itemcodemapping-area" role="document" style="width: 90%;margin:0 auto ">
+    <div class="modal-header modal-itemcodemapping-header">
+      <h4 class="modal-title" id="myModalItemCodeMappingLabel">Attention</h4>
+    </div>
+    <div class="modal-content" id="myModalItemCodeMappingContent">
+
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+    //关闭模态框时清空模态框内容
+    $("#myModal").on("hide.bs.modal", function(){
+      $("#myModalItemCodeMappingContent").html("");
+    })
+  });
+  var timer;
+  $('#button-upload').on('click', function () {
+    var form_type = '<input name="upload_type" value="0" type="hidden">';
+    $('#form-upload').remove();
+
+    $('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;">'+form_type+'<input type="file" name="file" /></form>');
+
+    $('#form-upload input[name=\'file\']').trigger('click');
+
+    if (typeof timer != 'undefined') {
+      clearInterval(timer);
+    }
+
+    timer = setInterval(function () {
+      if ($('#form-upload input[name=\'file\']').val() != '') {
+        clearInterval(timer);
+
+        // Reset everything
+        $('.alert-dismissible').remove();
+        $('#progress-bar').css('width', '0%');
+        $('#progress-bar').removeClass('progress-bar-danger progress-bar-success');
+        $('#progress-text').html('');
+
+        $.ajax({
+          url: 'index.php?route=account/customer_order/upload',
+          type: 'post',
+          dataType: 'json',
+          data: new FormData($('#form-upload')[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          beforeSend: function () {
+            $("#radio input").attr("disabled","disabled");
+            $('#button-upload').button('loading');
+          },
+          // 14091Sales Order Management - Upload History表中加上传结果列
+          complete: function () {
+
+          },
+          success: function (json) {
+            // 14091Sales Order Management - Upload History表中加上传结果列
+            if (json['error']) {
+              $('#progress-bar').addClass('progress-bar-danger');
+              $('#progress-text').html('<div class="text-danger" style="font-weight: bold">' + json['error'] + '</div>');
+            }
+
+            if (json['text']) {
+              $('#progress-bar').css('width', '30%');
+              $('#progress-text').html(json['text']);
+            }
+            setTimeout(function () {
+              $('#button-upload').button('reset');
+              $("#radio input").attr("disabled",false);
+            },3000);
+            if(json['warning']){
+              var msg = json['warning']+"Are you sure you want to upload this file?";
+              layer.confirm(msg, {
+                icon: 3,
+                closeBtn:0,
+                title: 'Message',
+                skin: 'yzc_layer',
+                btn: ['Yes', 'No'],
+                scrollbar: false
+              }, function (lay_index) {
+                if (json['next']) {
+                  next(json['next'], 1);
+                }
+                layer.closeAll();
+              },function (lay_index) {
+                $('#progress-bar').addClass('progress-bar-danger');
+                $('#progress-text').html('<div class="text-danger">' + json['warning'] + '</div>');
+                next(json['warningNext'], 1);
+                layer.closeAll();
+              });
+            }else{
+              if (json['next']) {
+                next(json['next'], 1);
+              }
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            // 14091Sales Order Management - Upload History表中加上传结果列
+            setTimeout(function () {
+              $('#button-upload').button('reset');
+            },1000);
+            console.log("Error");
+            layer.msg(xhr.responseText, {icon: 5});
+            // alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        });
+      }
+    }, 500);
+  });
+
+  $('#button-upload-wayfair').on('click', function () {
+
+    $('#form-upload').remove();
+    var form_type = '<input name="upload_type" value="1" type="hidden">';
+    $('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;">'+ form_type +'<input type="file" name="file" /></form>');
+
+    $('#form-upload input[name=\'file\']').trigger('click');
+
+    if (typeof timer != 'undefined') {
+      clearInterval(timer);
+    }
+
+    timer = setInterval(function () {
+      if ($('#form-upload input[name=\'file\']').val() != '') {
+        clearInterval(timer);
+
+        // Reset everything
+        $('.alert-dismissible').remove();
+        $('#progress-bar').css('width', '0%');
+        $('#progress-bar').removeClass('progress-bar-danger progress-bar-success');
+        $('#progress-text').html('');
+
+        $.ajax({
+          url: 'index.php?route=account/customer_order/upload',
+          type: 'post',
+          dataType: 'json',
+          data: new FormData($('#form-upload')[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          beforeSend: function () {
+            $("#radio input").attr("disabled","disabled");
+            $('#button-upload-wayfair').button('loading');
+          },
+          // 14091Sales Order Management - Upload History表中加上传结果列
+          complete: function () {
+
+          },
+          success: function (json) {
+            // 14091Sales Order Management - Upload History表中加上传结果列
+            if (json['error']) {
+              $('#progress-bar').addClass('progress-bar-danger');
+              $('#progress-text').html('<div class="text-danger" style="font-weight: bold" >' + json['error'] + '</div>');
+            }
+
+            if (json['text']) {
+              $('#progress-bar').css('width', '30%');
+              $('#progress-text').html(json['text']);
+            }
+            setTimeout(function () {
+              $('#button-upload-wayfair').button('reset');
+              $("#radio input").attr("disabled",false);
+            },3000);
+
+            if (json['next']) {
+              next(json['next'], 1);
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            // 14091Sales Order Management - Upload History表中加上传结果列
+            setTimeout(function () {
+              $('#button-upload-wayfair').button('reset');
+            },1000);
+            console.log("Error");
+            layer.msg(xhr.responseText, {icon: 5});
+            // alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        });
+      }
+    }, 500);
+  });
+
+  $('#button-upload-walmart').on('click', function () {
+
+    $('#form-upload').remove();
+    var form_type = '<input name="upload_type" value="3" type="hidden">';
+    $('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;">'+ form_type +'<input type="file" name="file" /></form>');
+
+    $('#form-upload input[name=\'file\']').trigger('click');
+
+    if (typeof timer != 'undefined') {
+      clearInterval(timer);
+    }
+
+    timer = setInterval(function () {
+      if ($('#form-upload input[name=\'file\']').val() != '') {
+        clearInterval(timer);
+
+        // Reset everything
+        $('.alert-dismissible').remove();
+        $('#progress-bar').css('width', '0%');
+        $('#progress-bar').removeClass('progress-bar-danger progress-bar-success');
+        $('#progress-text').html('');
+
+        $.ajax({
+          url: 'index.php?route=account/customer_order/upload',
+          type: 'post',
+          dataType: 'json',
+          data: new FormData($('#form-upload')[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          beforeSend: function () {
+            $("#radio input").attr("disabled","disabled");
+            $('#button-upload-walmart').button('loading');
+          },
+          // 14091Sales Order Management - Upload History表中加上传结果列
+          complete: function () {
+
+          },
+          success: function (json) {
+            // 14091Sales Order Management - Upload History表中加上传结果列
+            if (json['error']) {
+              $('#progress-bar').addClass('progress-bar-danger');
+              $('#progress-text').html('<div class="text-danger" style="font-weight: bold" >' + json['error'] + '</div>');
+            }
+
+            if (json['text']) {
+              $('#progress-bar').css('width', '30%');
+              $('#progress-text').html(json['text']);
+            }
+            setTimeout(function () {
+              $('#button-upload-walmart').button('reset');
+              $("#radio input").attr("disabled",false);
+            },3000);
+
+            if (json['next']) {
+              console.log(json);
+              next(json['next'], 1);
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            // 14091Sales Order Management - Upload History表中加上传结果列
+            setTimeout(function () {
+              $('#button-upload-walmart').button('reset');
+            },1000);
+            console.log("Error");
+            layer.msg('Upload Failed', {icon: 5});
+            // alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        });
+      }
+    }, 500);
+  });
+  {% if country_id == 223 %}
+    let fileSelectOther = document.getElementById('upload_button_other'),
+            fileElem = document.getElementById('upload_file_other');
+    fileSelectOther.addEventListener("click", function (e) {
+      if (fileElem) {
+        fileElem.click();
+      }
+      e.preventDefault(); // prevent navigation to "#"
+    }, false);
+
+    function handleFiles(files) {
+      let formFile = new FormData();
+      formFile.append("file", files[0]);
+      //一件代发
+      formFile.append("upload_type", 2);
+      let data = formFile;
+      $('.alert-dismissible').remove();
+      $('#progress-bar').css('width', '0%');
+      $('#progress-bar').removeClass('progress-bar-danger progress-bar-success');
+      $('#progress-text').html('');
+
+      $.ajax({
+        url: 'index.php?route=account/customer_order/upload',
+        data: data,
+        type: "Post",
+        dataType: "json",
+        cache: false,//上传文件无需缓存
+        processData: false,//用于对data参数进行序列化处理 这里必须false
+        contentType: false, //必须
+        beforeSend: function () {
+          $("#radio input").attr("disabled","disabled");
+          $('#upload_button_other').button('loading');
+        },
+        // 14091Sales Order Management - Upload History表中加上传结果列
+        complete: function () {
+
+        },
+        success: function (json) {
+          // 14091Sales Order Management - Upload History表中加上传结果列
+          $('#upload_file_other').val('');
+          if (json['error']) {
+            $('#progress-bar').addClass('progress-bar-danger');
+            $('#progress-text').html('<div class="text-danger" style="font-weight: bold" >' + json['error'] + '</div>');
+          }
+
+          if (json['text']) {
+            $('#progress-bar').css('width', '30%');
+            $('#progress-text').html(json['text']);
+          }
+          setTimeout(function () {
+            $('#upload_button_other').button('reset');
+            $("#radio input").attr("disabled",false);
+          },3000);
+
+          if (json['next']) {
+            next(json['next'], 1);
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          // 14091Sales Order Management - Upload History表中加上传结果列
+          $('#upload_file_other').val('');
+          setTimeout(function () {
+            $('#upload_button_other').button('reset');
+          },1000);
+          console.log("Error");
+          layer.msg(xhr.responseText, {icon: 5});
+          // alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      });
+    }
+  {% endif %}
+
+  $('#button-upload-common').on('click', function () {
+    $('#form-upload').remove();
+    var form_type = '<input name="upload_type" value="2" type="hidden">';
+    $('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;">'+form_type+'<input type="file" name="file" /></form>');
+
+    $('#form-upload input[name=\'file\']').trigger('click');
+
+    if (typeof timer != 'undefined') {
+      clearInterval(timer);
+    }
+
+    timer = setInterval(function () {
+      if ($('#form-upload input[name=\'file\']').val() != '') {
+        clearInterval(timer);
+
+        // Reset everything
+        $('.alert-dismissible').remove();
+        $('#progress-bar').css('width', '0%');
+        $('#progress-bar').removeClass('progress-bar-danger progress-bar-success');
+        $('#progress-text').html('');
+
+        $.ajax({
+          url: 'index.php?route=account/customer_order/upload',
+          type: 'post',
+          dataType: 'json',
+          data: new FormData($('#form-upload')[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          beforeSend: function () {
+            $("#radio input").attr("disabled","disabled");
+            $('#button-upload-common').button('loading');
+          },
+          // 14091Sales Order Management - Upload History表中加上传结果列
+          complete: function () {
+
+          },
+          success: function (json) {
+            // 14091Sales Order Management - Upload History表中加上传结果列
+            if (json['error']) {
+              $('#progress-bar').addClass('progress-bar-danger');
+              $('#progress-text').html('<div class="text-danger" style="font-weight: bold" >' + json['error'] + '</div>');
+            }
+
+            if (json['text']) {
+              $('#progress-bar').css('width', '30%');
+              $('#progress-text').html(json['text']);
+            }
+            setTimeout(function () {
+              $('#button-upload-common').button('reset');
+              $("#radio input").attr("disabled",false);
+            },3000);
+
+            if (json['next']) {
+              next(json['next'], 1);
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            // 14091Sales Order Management - Upload History表中加上传结果列
+            setTimeout(function () {
+              $('#button-upload-common').button('reset');
+            },1000);
+            console.log("Error");
+            layer.msg(xhr.responseText, {icon: 5});
+            // alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        });
+      }
+    }, 500);
+  });
+
+  //自提货上传
+  $('#button-upload-buyer-pick-up').on('click', function () {
+
+    $('#form-upload').remove();
+    var form_type = '<input name="upload_type" value="4" type="hidden">';
+    $('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;">' + form_type + '<input type="file" name="file" /></form>');
+
+    $('#form-upload input[name=\'file\']').trigger('click');
+
+    if (typeof timer != 'undefined') {
+      clearInterval(timer);
+    }
+
+    timer = setInterval(function () {
+      if ($('#form-upload input[name=\'file\']').val() != '') {
+        clearInterval(timer);
+
+        // Reset everything
+        $('.alert-dismissible').remove();
+        $('#progress-bar').css('width', '0%');
+        $('#progress-bar').removeClass('progress-bar-danger progress-bar-success');
+        $('#progress-text').html('');
+
+        $.ajax({
+          url: '{{ url('account/customer_order/upload') }}',
+          type: 'post',
+          dataType: 'json',
+          data: new FormData($('#form-upload')[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          beforeSend: function () {
+            $("#radio input").attr("disabled", "disabled");
+            $('#button-upload-buyer-pick-up').button('loading');
+          },
+          success: function (json) {
+            if (json['error']) {
+              $('#progress-bar').addClass('progress-bar-danger');
+              $('#progress-text').html('<div class="text-danger" style="font-weight: bold" >' + json['error'] + '</div>');
+            }
+
+            if (json['text']) {
+              $('#progress-bar').css('width', '30%');
+              $('#progress-text').html(json['text']);
+            }
+            setTimeout(function () {
+              $('#button-upload-buyer-pick-up').button('reset');
+              $("#radio input").attr("disabled", false);
+            }, 3000);
+
+            if (json['next']) {
+              next(json['next'], 1);
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            setTimeout(function () {
+              $('#button-upload-buyer-pick-up').button('reset');
+            }, 1000);
+            console.log("Error");
+            layer.msg('Upload Failed', {icon: 5});
+          }
+        });
+      }
+    }, 500);
+  });
+
+  // 匹配库存弹窗
+  function inventoryMatchHandler(url, orderIds) {
+    let importMode = {{ last_import_mode }};
+    let formData = new FormData();
+    formData.append('orderId', orderIds);
+    formData.append('importMode', importMode);
+    imm_page_import.setRedirctData(url, orderIds , importMode);
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(json) {
+        res = json;
+        //初始化弹窗内容
+        if(res.code == 200) {
+          imm_page_import.initPage(res.data);
+        } else if (res.code == 0) {
+          $.toast({
+            heading: false,
+            text: res.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+          });
+          setTimeout(function() {
+            layer.closeAll();
+            // 转跳到sales order列表页
+            $('#customerOrderTabs a[href="#tab-orders"]').tab('show');
+            $('#order-import').load("{{ url('account/customer_order/customerOrderImport') }}");
+            clearTimer();
+            $('#order-show').load("{{ url('account/customer_order/customerOrderTable', {'filter_orderStatus': ''}) }}", function(){
+              $('#filter-button').click();
+              $('.modal-backdrop').remove();
+            });
+          }, 2000);
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.msg('Upload Failed', {icon: 5});
+      }
+    })
+  }
+
+  function next(url, i) {
+    i = i + 1;
+    block.blockUI();
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      success: function (json) {
+        $('#progress-bar').css('width', (i * 30) + '%');
+
+        if (json['error']) {
+          $('#progress-bar').addClass('progress-bar-danger');
+          if('err_href' in json){
+            $('#progress-text').html('<div class="text-danger" style="font-weight: bold" >' + json['error'] + '</div>' + json['err_href']);
+          }else{
+            $('#progress-text').html('<div class="text-danger" style="font-weight: bold" >' + json['error'] + '</div>');
+
+          }
+        }
+
+        if (json['text']) {
+          $('#progress-text').html(json['text']);
+        }
+
+        // 弹框显示order 信息
+        if(json['file_deal']){
+          var url = json['file_deal'];
+          getInitPretreatment(url);
+        }
+
+        // manifest提示
+        if(json['file_deal_wayfair_europe']){
+          var url = json['file_deal_wayfair_europe'];
+          getEuropeManifest(url);
+
+        }
+        // 采购完成的提醒
+        if (json['success']) {
+          $('#progress-bar').css('width', '100%');
+          $('#progress-bar').addClass('progress-bar-success');
+          $('#progress-text').html('<span class="text-success" style="font-weight: bold" >' + json['success'] + '</span>');
+          if (json['modalBox']) {
+            var url = json['modalBox'];
+            modalShow(url);
+          }
+        }
+
+        // other platform 跳过order展示的部分
+        if(json['other_next']){
+            getLayUrl(json['other_next'],1);
+        }
+
+        // #24701 新增库存匹配弹窗流程
+        if(json['dropship_order_match']) {
+          if(json['confirm_next']){
+            confirmLayUrl(json['confirm_next'], json['dropship_order_match'], json['orderIds']);
+            block.unBlockUI();
+            return;
+          }
+          inventoryMatchHandler(json['dropship_order_match'], json['orderIds']);
+          block.unBlockUI();
+          return 
+        }
+
+        if (json['next']) {
+          next(json['next'], i);
+        }
+
+        block.unBlockUI();
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.msg('Upload Failed', {icon: 5});
+        block.unBlockUI();
+      }
+    });
+  }
+
+  function modalShow(url) {
+    var myModalSelector = $("#myModal");
+    // 请求后台获取详细信息
+    myModalSelector.modal({
+      remote: url,
+      backdrop: 'static',
+      keyboard: false
+    });
+    // 每次隐藏时，清除数据。确保点击时，重新加载
+    myModalSelector.on("hidden.bs.modal", function () {
+      $(this).removeData("bs.modal");
+    });
+  }
+
+  function getInitPretreatment(url) {
+    let  upload_info = 'Notice';
+    layer.open({
+      type: 2,
+      area: ['1250px', '600px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar:false,
+      content: url,
+      cancel:function(index, layero){
+        let url_cancel = url.replace('initPretreatmentDropshipTable','dropshipOrderState');
+        uploadFinish(url_cancel);
+      },
+    });
+
+  }
+
+  function getEuropeManifest(url) {
+    var  upload_info = 'Order Preview & Upload Manifest';
+    layer.open({
+      type: 2,
+      area: ['1250px', '700px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar:false,
+      content: url,
+      cancel:function(index, layero){
+        var url_cancel = url.replace('wayfairUploadManifest','dropshipOrderState');
+        uploadFinish(url_cancel);
+      },
+
+    });
+
+  }
+
+  // 弹窗确认
+  // 用于库存匹配弹窗后置操作
+  var confirm_dropship_order_match = "";
+  var confirm_order_ids = [];
+  function confirmLayUrl(url, dropship_order_match, orderIds) {
+    block.blockUI();
+    $.ajax({
+      url: url,
+      type: 'get',
+      dataType: 'json',
+      cache: false,
+      contentType: false,
+      processData: false,
+      success: function (json) {
+        if (json.code == 200) {
+          let content = "";
+          let countArray = [];
+          // 设置表格内容
+          for (let [index, info] of json.data.entries()) {
+            $('#confirmRunId').val(info.run_id);
+            $('#confirmImportMode').val(info.customer_sales_order.import_mode);
+            let itemCode = info.item_code;
+            for (var i = 0; i < info.tags.length; i++) {
+              itemCode += info.tags[i];
+            }
+            countArray.push(info.customer_sales_order.order_id);
+            content += `
+              <tr>
+                <td class="oris-w42">${index + 1}</td>
+                <td class="text-left oris-w150">${info.customer_sales_order.order_id}</td>
+                <td class="text-left oris-w150 itemcode-col">` + itemCode + `</td>
+                <td class="oris-w80">${info.qty}</td>
+                <td class="oris-w150">${info.customer_sales_order.pick_up.warehouse.WarehouseCode}</td>
+                <td class="oris-w120">${info.customer_sales_order.pick_up.apply_date}</td>
+              </tr>
+            `
+          }
+          // 设置订单编号
+          $('#upload-confirm-ordernumber').html((new Set(countArray)).size);
+          $("#upload-confirm-content").html(content);
+          $("#orderConfirmModal").modal();
+          confirm_dropship_order_match = dropship_order_match;
+          confirm_order_ids = orderIds;
+        } else {
+          layer.msg(json.msg, {icon: 5});
+        }
+        block.unBlockUI();
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.msg(xhr.responseText, {icon: 5});
+        block.unBlockUI();
+      }
+    });
+
+  }
+
+  //确认弹窗按钮操作
+  function confirmOrderHandle() {
+    let runId = $('#confirmRunId').val();
+    let importMode = $('#confirmImportMode').val();
+    // #24701 修改为弹出库存匹配弹窗 
+    // let url = '{{ url('account/customer_order/orderPurchase') }}' + '&runId=' + runId + '&importMode=' + importMode;
+    // next(url, 1);
+    inventoryMatchHandler(confirm_dropship_order_match, confirm_order_ids);
+  }
+
+  //确认弹窗按钮事件
+  $("#orderConfirmModal #modalSubmit").click(function() {
+    $(this).button("loading");
+    confirmOrderHandle();
+    $("#orderConfirmModal").modal('hide');
+    $(this).button("reset");
+  });
+
+  function getLayUrl(url, modal_size) {
+    modal_size = modal_size || 0;
+    var area = [ "1250px", '700px'];
+    if (modal_size==1){
+      area =[ "1000px", '700px'];
+    }
+    var upload_info = '{{ text_label }}';
+    var confirm_info = '{{ text_close_confirm_info }}';
+    layer.open({
+      type: 2,
+      area:area,
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar:false,
+      content: url,
+      cancel:function(index, layero){
+        var url_cancel = url.replace('dropshipUploadFileBoxShow','dropshipOrderState');
+        uploadFinish(url_cancel);
+      },
+    });
+  }
+  function uploadFinish(url) {
+    next(url,3)
+  }
+
+  function getTest(url) {
+    let  upload_info = '{{ text_label }}';
+    layer.open({
+      type: 2,
+      area: ['1250px', '700px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar:false,
+      content: url,
+    });
+
+  }
+
+  // 测试订单弹窗使用
+  function testModalShow(){
+    url = '{{ url("account/customer_order/dropshipModalBoxShow",{'runId':'1610949493813','importMode':4}) }}';
+    modalShow(url);
+  }
+</script>
+

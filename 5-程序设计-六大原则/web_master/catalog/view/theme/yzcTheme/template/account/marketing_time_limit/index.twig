@@ -1,0 +1,54 @@
+{{ this.title('Limited Sales Promotions') }}
+{{ this.params('breadcrumbs', 'hide') }}
+{{ cssOrigin(['/catalog/view/javascript/layui/css/layui.css']) }}
+{{ css(['css/common/common.css']) }}
+{{ css(['static/account/marketing_time_limit/css/index.css']) }}
+{{ css(['css/buyer/channel/category_nav.css']) }}
+<div class="marketing-time-limit-content pb-20 main-bg">
+  <div class="section">
+    <div class="section-title">Limited Sales Promotions</div>
+    <div class="section-tip display-center">
+      <span href="javascript:void(0)" class="event-rules border-color-fb mr-28">Promotion Rules</span>
+      <div class="section-text">
+        <div class="word-break">
+          Rebates transactions, custom price and agreements reached via BID are not applicable to the promotion discounts.
+          <br/>Please refer to each product's page for specific promotion rules.
+          <div class="color-c1"> The Qty mentioned on this page refers to the quantity that can be sold for the promotion, not Available Qty.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="main p20-t">
+    <div class="center-module">
+      {% if isOnSale or isWillSale %}
+      <div class="activity-navigation">
+        <ul class="activity-navigation-ul">
+          {% if isOnSale %}
+          <li class="navigation-default navigation-active {% if not isWillSale %} full-li-width {% endif %}" data-type="1">On Sale Now</li>
+          {% endif %}
+          {% if isWillSale %}
+          <li class="navigation-default {% if not isOnSale %} full-li-width {% endif %}" data-type="2">Next Deals</li>
+          {% endif %}
+        </ul>
+      </div> 
+      <div class="include-box">
+        {% if isOnSale %}
+          <div class="include-box-show">{% include 'yzcTheme/template/account/marketing_time_limit/on_sale.twig'%}</div>
+        {% endif %}
+        {% if isWillSale %}
+          <div class="include-box-show {% if isOnSale %} navigation-none {% endif %}">{% include 'yzcTheme/template/account/marketing_time_limit/will_sale.twig'%}</div>
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="limit-no-record">
+        <div>
+          <i class="giga icon-cuxiaohuodong-gexingdazhe no-limit-icon"></i>
+          <div class="no-limit-text">Currently no products participate in the promotion event.</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{{ js(['static/account/marketing_time_limit/js/index.js']) }}
+

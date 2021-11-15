@@ -1,0 +1,34 @@
+<!--议价-->
+{% if quote_price_details %}
+<div class="price">
+    <div class="col-sm-11">
+        <span class="text-muted col-sm-3">
+            {{ text_spot_label }}({{ text_unit }})<br>
+        </span>
+        {% for item in quote_price_details %}
+            <span class="col-sm-3 pcs handleSpotPriceClass"
+                  data-min_quantity="{{ item.min_quantity }}"
+                  data-max_quantity="{{ item.max_quantity }}"
+                  data-price_calc="{{ item.price_calc }}"
+                  data-data-value="quote_price"
+                  onclick="handleSpotPrice(this)"
+            >
+                <strong>{{ item.price_currency }}</strong><br>
+                <span class="text-muted">{{ item.quantity_show }}&nbsp;{{ text_pcs }}</span>
+            </span>
+        {% endfor %}
+    </div>
+    <div class="col-sm-1" style="padding: 0">
+      {% if isSeller != 1 %}
+        <span class="bid_title_span" data-toggle="tooltip" title="" data-original-title="Bid for a lower price">
+            <button class="btn bid_btn pull-right"
+                    data-confirm="{% if product_pending %}1{% else %}0{% endif %}"
+                    data-exc="1"
+                    onclick="loadSpotModal(this)"
+                    style="float: right;"
+            >{{ entry_btn_bid }}</button>
+        </span>
+      {% endif %}
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,126 @@
+<style>
+  .layui-layer-content #msg-window p a{
+    color: #1e91cf!important;
+  }
+  .layui-layer-content #msg-window p a:hover{
+    color: #14628c!important;
+  }
+</style>
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+<script>
+    // var visProp = getHiddenProp();
+    // var windowIsHidden = false; //浏览器窗口的状态
+    // var messageWindowShow = false; //站内信弹窗的状态
+    // var requestFinished = false; // 一次请求结束
+    // if (visProp) {
+    //     // 有些浏览器也需要对这个事件加前缀以便识别。
+    //     var evtname = visProp.replace(/[H|h]idden/, '') + 'visibilitychange';
+    //     document.addEventListener(evtname, function () {
+    //         if (document[getVisibilityState()] == 'visible') {
+    //             windowIsHidden = false;
+    //             // start()
+    //         } else {
+    //             windowIsHidden = true;
+    //         }
+    //     }, false);
+    // }
+    // getMessageData();
+    // start()
+
+    function start() {
+        if (!windowIsHidden) {
+            if (requestFinished) {
+                getMessageData();
+                requestFinished = false;
+            }
+            setTimeout(start, {{ messageIntervalTime }}* 1000
+        )
+        }
+
+    }
+
+    function getMessageData() {
+        $.ajax({
+            url: 'index.php?route=common/message_window/messageState',
+            type: 'post',
+            dataType: 'json',
+            cache: false,
+            timeout: 1000000,
+            success: function (res) {
+                if (res.content) {
+                    // 判断弹窗未打开
+                    if (!messageWindowShow) {
+                        messageWindow()
+                    }
+                    let msgWindow = document.querySelector('#msg-window');
+                    if (msgWindow) {
+                        msgWindow.innerHTML = res.content;
+                    }
+                }
+                requestFinished = true;
+            },
+            error: function () {
+                requestFinished = true;
+            }
+        });
+
+    }
+
+    function messageWindow() {
+        layer.open({
+            type: 1
+            , title: 'Notifications'
+            , isOutAnim: false
+            , maxWidth: 500
+            , offset: 'rb' //具体配置参考：offset参数项
+            , content: '<div id="msg-window" style="width: 450px;height: 180px;padding: 10px; font-size: 14px"></div>'
+            , anim: 5
+            , shade: 0 //不显示遮罩
+            , cancel: function (index, layero) {
+                layer.close(index);
+                $.get('index.php?route=common/message_window/closeWindow')
+                messageWindowShow = false;
+                return false;
+            }
+
+        });
+        messageWindowShow = true;
+    }
+
+    //浏览器兼容性处理
+    function getVisibilityState() {
+        var prefixes = ['webkit', 'moz', 'ms', 'o'];
+
+        if ('visibilityState' in document) {
+            return 'visibilityState';
+        }
+
+        for (var i = 0; i < prefixes.length; i++) {
+            if ((prefixes[i] + 'VisibilityState') in document) {
+                return prefixes[i] + 'VisibilityState';
+            }
+        }
+        // 找不到返回 null
+        return null;
+    }
+
+    //浏览器兼容性处理
+    function getHiddenProp() {
+        var prefixes = ['webkit', 'moz', 'ms', 'o'];
+        // 如果hidden 属性是原生支持的，我们就直接返回
+        if ('hidden' in document) {
+            return 'hidden';
+        }
+
+        // 其他的情况就循环现有的浏览器前缀，拼接我们所需要的属性
+        for (var i = 0; i < prefixes.length; i++) {
+            // 如果当前的拼接的前缀在 document对象中存在 返回即可
+            if ((prefixes[i] + 'Hidden') in document) {
+                return prefixes[i] + 'Hidden';
+            }
+        }
+
+        // 其他的情况 直接返回null
+        return null;
+    }
+</script>

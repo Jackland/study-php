@@ -1,0 +1,1507 @@
+<style>
+  .giga.icon-cart-add{
+    font-weight: normal;
+  }
+  .scroll-auto{
+    overflow: auto;
+  }
+</style>
+<link href="catalog/view/javascript/layer/theme/yzc/layuiOris.css?v={{ app_version }}" rel="stylesheet"/>
+<div id="page-sales-order-management-inventory" class="page-seller-portal">
+<div class="row">
+  <div class="col-md-12">
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active">
+        <div class="bg-white p-2">
+          {#搜索条件#}
+          <div class="filter-wrapper form-wrapper mt-3 mb-3">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="input-orderId">{{ column_orderId }}</label>
+                  <input type="text" name="filter_buyer_orderId" value="{{ filter_buyer_orderId}}" placeholder="{{ column_orderId}}" id="input-buyer-orderId" class="form-control">
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="input-item_code">{{ column_item_code_search }}</label>
+                  <input type="text" name="filter_buyer_item_code" value="{{ filter_buyer_item_code}}" placeholder="{{ column_item_code_search}}" id="input-buyer-item_code" class="form-control" />
+                </div>
+              </div>
+
+              <div class="col-md-3 col-md-push-1">
+                <div class="form-group pull-right">
+                  <label for="">&nbsp;</label>
+                  <div>
+                    <button type="button" onclick="buyerFilter(this);" class="btn btn-primary">{{ button_filter}}</button>&nbsp;
+                    <button onclick="refresh(this);" class="btn btn-default" data-toggle="tooltip" title="Reset">Reset</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {#<div class="form-group">#}
+          {#<button type="button" onclick="refresh(this);" class="btn btn-primary"><i class="fa fa-refresh"></i>Refresh</button>#}
+          {#</div>#}
+
+          {#列表#}
+          {% if hasNoCostArr %}
+            <div style="position:relative">
+              <fieldset>
+                <p style="text-transform: uppercase"><strong>{{ text_has_no_cost_product }}</strong></p>
+              </fieldset>
+              <div class="table-responsive">
+                <table class="table main table-scrollable table-hover scroll-auto">
+                  <thead>
+                  <tr>
+                    <th>
+                      <div class="check"><input id="check_box" onclick="selectAll(this)" data-set=".checkboxes" type="checkbox"/><span class="icon"></span></div>
+                    </th>
+                    <th style="text-align: center;">Creation Time</th>
+                    <th style="text-align: center;">Sales Order ID</th>
+                    <th style="text-align: center;">{{ entry_item_code }}</th>
+                    <th style="text-align: center;">{{ entry_qty }}</th>
+                    <th style="text-align: center;">{{ text_ship_label_name }}</th>
+                    <th style="text-align: center;width: 200px">{{ text_ship_address }}</th>
+                    <th class="no-wrap">{{ entry_seller }}</th>
+                    <th class="no-wrap" style="width: 200px;">Transaction Type</th>
+                    <th style="text-align: center;">{{ entry_price }}</th>
+                    <th class="text-center">Fulfillment Per Unit
+                      <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" style="cursor: pointer;font-size: 12px" title="" data-original-title="Fulfillment fee includes shipping fee and packing fee."></i>
+                    </th>
+                    <th style="text-align: center;">{{ entry_quantity }}</th>
+                    <th style="text-align: center;">Available to Purchase</th>
+                    <th hidden></th>
+                    <th style="text-align: center;">Action</th>
+                  </tr>
+                  </thead>
+                  <tbody style="text-align: center;word-break:break-word">
+                  {% for customerProduct in hasNoCostArr %}
+                    {% if customerProduct.status == '0' or customerProduct.buyer_flag == '0' %}
+                      <tr style="background: #9e9e9e5c">
+                        <td style="text-align: center">
+                          <div class="check">
+                            <input class="checkboxes" onclick="selectOneRow(this)" mean="{{ loop.index }}" name="product_id[]" value="{{ customerProduct.product_id }}" type="checkbox" disabled="disabled"/>
+                            <span class="icon"></span></div>
+                        </td>
+                        <td>{{ customerProduct.create_time }}</td>
+                        {% if 64 == customerProduct.order_status %}
+                          <td>
+                            {% if customerProduct.cancel_failure %}
+                              <i title="" class="fa fa-exclamation-circle" data-toggle="tooltip" style="color: red"
+                                 data-original-title="{{ cancel_failure_tip }}">
+                              </i>
+                            {% endif %}
+                            <img style="cursor: pointer" data-toggle="tooltip" title="{{ text_oversize_item_caution }}" src="image/product/RedFlag.gif">
+                            {{ customerProduct.order_id }}</td>
+                        {% else %}
+                          <td>
+                            {% if customerProduct.cancel_failure %}
+                              <i title="" class="fa fa-exclamation-circle" data-toggle="tooltip" style="color: red"
+                                 data-original-title="{{ cancel_failure_tip }}">
+                              </i>
+                            {% endif %}
+                            {{ customerProduct.order_id }}</td>
+                        {% endif %}
+                        <td>
+                          {% if customerProduct.tag %}
+                            <span class="form-display sku-display">{{ customerProduct.item_code }}
+                              {% for tagDetail in customerProduct.tag %}
+                                {{ tagDetail }}
+                              {% endfor %}
+                                    </span>
+                          {% else %}
+                            <span class="form-display sku-display">{{ customerProduct.item_code }}</span>
+                          {% endif %}
+                          {% if customerProduct.failure_log %}
+                            <a onclick="showReorderFailureLog('{{ customerProduct.failure_log }}')"  style="border-radius: 4px;cursor: pointer" data-toggle="tooltip" title="{{ text_button_failure_log }}"><i style='color: red' class="fa fa-info-circle"></i></a>
+                          {% endif %}
+                        </td>
+                        <td>{{ customerProduct.qty }}</td>
+                        <td>
+                          {{ customerProduct.ship_name }}
+                        </td>
+                        <td>
+                        {% if customerProduct.import_mode !=8 %}<!--非自提货展示-->
+                          {{ customerProduct.ship_address1 }},{{  customerProduct.ship_city }},{{ customerProduct.ship_state }},{{ customerProduct.ship_country }}
+                          {% if 0 == is_dropship  %}
+                            {{ customerProduct.ship_address_tips }}
+                          {% endif %}
+                        {% endif %}
+                        </td>
+                        <td width="110px">
+                          {% if customerProduct.sellerArr|length > 1%}
+                            {% if 64 == customerProduct.order_status %}
+                              <select name="sellerNameNeedToBuy" mean="{{ loop.index }}" id="sellerNameNeedToBuy{{ loop.index }}" class="form-edit form-control" onchange="searchSeller(this);" disabled="disabled">
+
+                                {% for seller in customerProduct.sellerArr %}
+                                  {% if seller.product_id ==  customerProduct.product_id %}
+                                    <option value="{{ seller.product_id }}" selected="selected">{{ seller.name }}</option>
+                                  {% else %}
+                                    <option value="{{ seller.product_id }}">{{ seller.name }}</option>
+                                  {% endif %}
+                                {% endfor %}
+                              </select>
+
+                            {% else %}
+                              {#自动购买待重新购买的订单不允许补充购买#}
+                              {% if 1 == customerProduct.error_type %}
+                                <select name="sellerNameNeedToBuy" mean="{{ loop.index }}" id="sellerNameNeedToBuy{{ loop.index }}" class="form-edit form-control" onchange="searchSeller(this);" disabled="disabled">
+
+                                  {% for seller in customerProduct.sellerArr %}
+                                    {% if seller.product_id ==  customerProduct.product_id %}
+                                      <option value="{{ seller.product_id }}" selected="selected">{{ seller.name }}</option>
+                                    {% else %}
+                                      <option value="{{ seller.product_id }}">{{ seller.name }}</option>
+                                    {% endif %}
+                                  {% endfor %}
+                                </select>
+                              {% else %}
+                                <select name="sellerNameNeedToBuy" mean="{{ loop.index }}" id="sellerNameNeedToBuy{{ loop.index }}" class="form-edit form-control" onchange="searchSeller(this);">
+
+                                  {% for seller in customerProduct.sellerArr %}
+                                    {% if seller.product_id ==  customerProduct.product_id %}
+                                      <option value="{{ seller.product_id }}" selected="selected">{{ seller.name }}</option>
+                                    {% else %}
+                                      <option value="{{ seller.product_id }}">{{ seller.name }}</option>
+                                    {% endif %}
+                                  {% endfor %}
+                                </select>
+                              {% endif %}
+                            {% endif %}
+                          {% else %}
+                            <select name="sellerNameNeedToBuy" mean="{{ loop.index }}"  id="sellerNameNeedToBuy{{ loop.index }}" class="form-edit form-control" onchange="searchSeller(this);" disabled="disabled">
+                              {% for seller in customerProduct.sellerArr %}
+                                <option value="{{ seller.product_id }}">{{ seller.name }}</option>
+                              {% endfor %}
+                            </select>
+                          {% endif %}
+                        </td>
+                        <td class="no-wrap">
+                          <select id="transaction_type_{{ loop.index }}_{{ time_buy }}"  mean='{{ loop.index }}' class="form-edit form-control" onchange="searchTransactionType(this)"
+                            {% if customerProduct.transaction_type | length == 1 or 64 == customerProduct.order_status or 1 == customerProduct.error_type %}
+                              disabled="disabled"
+                            {% endif %}
+                          >
+                            {% for k,v in customerProduct.transaction_type %}
+                              {% if v.selected == 1 %}
+                                <option value="{{ v.key }}" selected="selected">{{ v.value }}</option>
+                              {% else %}
+                                <option value="{{ v.key }}" >{{ v.value }}</option>
+                              {% endif %}
+                            {% endfor %}
+                          </select>
+                        </td>
+
+                        {#14039下架产品在Sales Order Management功能中隐藏价格#}
+                        {% if customerProduct.p_status == '0' %}
+                          <td>-</td>
+                          <td>-</td>
+                        {% else %}
+                          <td class="no-wrap">{{ customerProduct.price }}</td>
+                          <td class="no-wrap">{{ customerProduct.freight }}</td>
+                        {% endif %}
+
+                        <td>
+                            {% if customerProduct.status == '1' %}
+                                {% if customerProduct.buyer_flag =='1' %}
+                                    {{ customerProduct.quantity }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            {% elseif customerProduct.status == '0'%}
+                                0
+                            {% endif %}
+                        </td>
+                        <td>
+                          {% if customerProduct.status == '1' %}
+                              {% if customerProduct.buyer_flag =='1' %}
+                                  Yes
+                              {% else %}
+                                  No
+                              {% endif %}
+                          {% elseif customerProduct.status == '0'%}
+                            No
+                          {% endif %}
+                        </td>
+                        <td hidden>{{ customerProduct.id }}</td>
+                        <td>
+                          <div class="btn-group action-group">
+                            {% if customerProduct.is_cancelling %}
+                              <a type="button" class="btn btn-danger" disabled data-toggle="tooltip" data-original-title="{{ sales_order_is_cancelling }}"><i class="fa fa-times"></i></a>
+                            {% else %}
+                              <a type="button" class="btn btn-danger" data-toggle="tooltip" data-original-title="{{ cancel_btn_tip }}"
+                                 onclick="cancelConfirmDialog({{ customerProduct.header_id }},'{{ customerProduct.order_id }}',{{ customerProduct.order_status}},'{{ customerProduct.order_date }}')" >
+                                <i class="fa fa-times"></i></a>
+                            {% endif %}
+                          </div>
+                        </td>
+                      </tr>
+                    {% else %}
+                      <tr>
+                        {% if 64 == customerProduct.order_status %}
+                          <td>
+                            <div class="check"><input class="checkboxes" onclick="selectOneRow(this)" mean="{{ loop.index }}" name="product_id[]" value="{{ customerProduct.product_id }}" type="checkbox" disabled="disabled"/><span class="icon"></span></div>
+                          </td>
+                          <td>{{ customerProduct.create_time }}</td>
+                          <td>
+                            {% if customerProduct.cancel_failure %}
+                              <i title="" class="fa fa-exclamation-circle" data-toggle="tooltip" style="color: red"
+                                 data-original-title="{{ cancel_failure_tip }}">
+                              </i>
+                            {% endif %}
+                            <img style="cursor: pointer" data-toggle="tooltip" title="{{ text_oversize_item_caution }}" src="image/product/RedFlag.gif">
+                            {{ customerProduct.order_id }}</td>
+                          {#自动购买待重新购买的订单不允许补充购买#}
+                        {% elseif 1 == customerProduct.error_type %}
+                          <td>
+                            <div class="check"><input class="checkboxes" mean="{{ loop.index }}" onclick="selectOneRow(this)" name="product_id[]" value="{{ customerProduct.product_id }}" type="checkbox" disabled="disabled"/><span class="icon"></span></div>
+                          </td>
+                          <td>{{ customerProduct.create_time }}</td>
+                          <td data-toggle="tooltip" title="{{ text_auto_buy }}">
+                            {% if customerProduct.cancel_failure %}
+                              <i title="" class="fa fa-exclamation-circle" data-toggle="tooltip" style="color: red"
+                                 data-original-title="{{ cancel_failure_tip }}">
+                              </i>
+                            {% endif %}
+                            {{ customerProduct.order_id }}</td>
+                        {% else %}
+                          <td>
+                            <div class="check">
+                              <input class="checkboxes"  mean="{{ loop.index }}" onclick="selectOneRow(this)" name="product_id[]" value="{{ customerProduct.product_id }}" type="checkbox"/><span class="icon"></span></div>
+                          </td>
+                          <td>{{ customerProduct.create_time }}</td>
+                          <td>
+                            {% if customerProduct.cancel_failure %}
+                              <i title="" class="fa fa-exclamation-circle" data-toggle="tooltip" style="color: red"
+                                 data-original-title="{{ cancel_failure_tip }}">
+                              </i>
+                            {% endif %}
+                            {{ customerProduct.order_id }}</td>
+                        {% endif %}
+                        <td class="item-code-width">
+                          {% if customerProduct.tag %}
+                            <span class="form-display sku-display">{{ customerProduct.item_code }}
+                              {% for tagDetail in customerProduct.tag %}
+                                {{ tagDetail }}
+                              {% endfor %}
+                                </span>
+                          {% else %}
+                            <span class="form-display sku-display">{{ customerProduct.item_code }}</span>
+                          {% endif %}
+                          {% if customerProduct.failure_log %}
+                            <a onclick="showReorderFailureLog('{{ customerProduct.failure_log }}')"  style="border-radius: 4px;cursor: pointer" class="sku-component-log" data-toggle="tooltip" title="{{ text_button_failure_log }}"><i style='color: red' class="fa fa-info-circle"></i></a>
+                          {% endif %}
+                        </td>
+                        <td>{{ customerProduct.qty }}</td>
+                        <td>
+                          {{ customerProduct.ship_name }}
+                        </td>
+                        <td>
+                        {% if customerProduct.import_mode !=8 %}<!--非自提货展示-->
+                          {{ customerProduct.ship_address1 }},{{  customerProduct.ship_city }},{{ customerProduct.ship_state }},{{ customerProduct.ship_country }}
+                          {% if 0 == is_dropship  %}
+                            {{ customerProduct.ship_address_tips }}
+                          {% endif %}
+                        {% endif %}
+                        </td>
+                        <td width="110px">
+                          {% if customerProduct.sellerArr|length > 1%}
+                            {% if 64 == customerProduct.order_status %}
+                              <select name="sellerNameNeedToBuy" mean="{{ loop.index }}" id="sellerNameNeedToBuy{{ loop.index }}" class="form-edit form-control" onchange="searchSeller(this);" disabled="disabled">
+                                {% if customerProduct.bx_pid_array is not defined or customerProduct.bx_product_id is not defined %}
+                                  <option value="">Select a store</option>
+                                {% endif %}
+                                {% for seller in customerProduct.sellerArr %}
+                                  {% if seller.product_id ==  customerProduct.product_id %}
+                                    <option value="{{ seller.product_id }}" selected="selected">{{ seller.name }}</option>
+                                  {% else %}
+                                    <option value="{{ seller.product_id }}">{{ seller.name }}</option>
+                                  {% endif %}
+                                {% endfor %}
+                              </select>
+                            {% else %}
+                              {#自动购买待重新购买的订单不允许补充购买#}
+                              {% if 1 == customerProduct.error_type %}
+                                <select name="sellerNameNeedToBuy" mean="{{ loop.index }}" id="sellerNameNeedToBuy{{ loop.index }}" class="form-edit form-control" onchange="searchSeller(this);" disabled="disabled">
+                                  {% if customerProduct.bx_pid_array is not defined or customerProduct.bx_product_id is not defined %}
+                                    <option value="">Select a store</option>
+                                  {% endif %}
+                                  {% for seller in customerProduct.sellerArr %}
+                                    {% if seller.product_id ==  customerProduct.product_id %}
+                                      <option value="{{ seller.product_id }}" selected="selected">{{ seller.name }}</option>
+                                    {% else %}
+                                      <option value="{{ seller.product_id }}">{{ seller.name }}</option>
+                                    {% endif %}
+                                  {% endfor %}
+                                </select>
+                              {% else %}
+                                <select name="sellerNameNeedToBuy" mean="{{ loop.index }}" id="sellerNameNeedToBuy{{ loop.index }}" class="form-edit form-control" onchange="searchSeller(this);">
+                                  {% for seller in customerProduct.sellerArr %}
+                                    {% if seller.product_id ==  customerProduct.product_id %}
+                                      <option value="{{ seller.product_id }}" selected="selected">{{ seller.name }}</option>
+                                    {% else %}
+                                      <option value="{{ seller.product_id }}">{{ seller.name }}</option>
+                                    {% endif %}
+                                  {% endfor %}
+                                </select>
+                              {% endif %}
+                            {% endif %}
+                          {% else %}
+                            <select name="sellerNameNeedToBuy" mean="{{ loop.index }}" id="sellerNameNeedToBuy{{ loop.index }}" class="form-edit form-control" onchange="searchSeller(this);" disabled="disabled">
+                              {% for seller in customerProduct.sellerArr %}
+                                <option value="{{ seller.product_id }}">{{ seller.name }}</option>
+                              {% endfor %}
+                            </select>
+                          {% endif %}
+                        </td>
+
+                        <td class="no-wrap">
+                          <select class="form-edit form-control" mean='{{ loop.index }}'  id="transaction_type_{{ loop.index }}_{{ time_buy }}" onchange="searchTransactionType(this)"
+                            {% if customerProduct.transaction_type | length == 1 or 64 == customerProduct.order_status or 1 == customerProduct.error_type %}
+                              disabled="disabled"
+                            {% endif %}
+                          >
+                            {% for k,v in customerProduct.transaction_type %}
+                              {% if v.selected == 1 %}
+                                <option value="{{ v.key }}" selected="selected">{{ v.value }}</option>
+                              {% else %}
+                                <option value="{{ v.key }}" >{{ v.value }}</option>
+                              {% endif %}
+                            {% endfor %}
+                          </select>
+                        </td>
+                        {#14039下架产品在Sales Order Management功能中隐藏价格#}
+                        {% if customerProduct.p_status == '0' %}
+                          <td>-</td>
+                          <td>-</td>
+                        {% else %}
+                          <td class="no-wrap">{{ customerProduct.price }}</td>
+                          <td class="no-wrap">{{ customerProduct.freight }}</td>
+                        {% endif %}
+                        <td>
+                            {% if customerProduct.status == '1' %}
+                                {% if customerProduct.buyer_flag =='1' %}
+                                    {{ customerProduct.quantity }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            {% elseif customerProduct.status == '0'%}
+                                0
+                            {% endif %}
+                        </td>
+                        <td>
+                          {% if customerProduct.status == '1' %}
+                              {% if customerProduct.buyer_flag =='1' %}
+                                  Yes
+                              {% else %}
+                                  No
+                              {% endif %}
+                          {% elseif customerProduct.status == '0'%}
+                            No
+                          {% endif %}
+                        </td>
+                        <td hidden>{{ customerProduct.id }}</td>
+                        <td>
+                          <div class="btn-group action-group">
+                            {% if customerProduct.is_cancelling %}
+                              <a type="button" class="btn btn-danger" disabled data-toggle="tooltip" data-original-title="{{ sales_order_is_cancelling }}"><i class="fa fa-times"></i></a>
+                            {% else %}
+                              <a type="button" class="btn btn-danger" data-toggle="tooltip" data-original-title="{{ cancel_btn_tip }}"
+                                 onclick="cancelConfirmDialog({{ customerProduct.header_id }},'{{ customerProduct.order_id }}',{{ customerProduct.order_status}},'{{ customerProduct.order_date }}')" >
+                                <i class="fa fa-times"></i></a>
+                            {% endif %}
+                          </div>
+                        </td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div></div>
+              <div class="form-group">
+                <div>
+                  <button type="button" class="btn btn-warning ml-1" id="addToCart" onclick="addToCart()"><i class="giga icon-cart-add"></i> {{ button_cart }}</button>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+          {% if overSizeArr %}
+            <div style="position:relative">
+              <fieldset>
+                <p style="text-transform: uppercase"><strong>{{ text_has_oversize_product }}</strong></p>
+              </fieldset>
+              <div>
+                <table class="table main table-scrollable table-hover">
+                  <thead>
+                  <tr>
+                    <th style="text-align: center;">
+                      <div class="check"><input type="checkbox" onclick="selectAllOverSize(this)"/><span class="icon"></span></div>
+                    </th>
+                    <th style="text-align: center;">Creation Time</th>
+                    <th style="text-align: center;">Sales Order ID</th>
+                    <th style="text-align: center;">{{ entry_item_code }}</th>
+                    <th style="text-align: center;">{{ entry_qty }}</th>
+                    <th style="text-align: center;">{{ text_ship_label_name }}</th>
+                    <th style="text-align: center;">{{ text_ship_label_email }}</th>
+                    <th style="text-align: center;">{{ text_ship_label_phone }}</th>
+                    <th style="text-align: center;">{{ text_ship_address }}</th>
+                  </tr>
+                  </thead>
+                  <tbody style="text-align: center;">
+                  {% for customerProduct in overSizeArr %}
+                    <tr>
+                      {% if customerProduct.is_cancelling %}
+                        <td style="text-align: center"  data-toggle="tooltip" data-original-title="{{ sales_order_is_cancelling }}">
+                          <div class="check"><input class="checkboxes" value="{{ customerProduct.header_id }}" name="overSizeProductLineId" type="checkbox" disabled /><span class="icon"></span></div>
+                        </td>
+                      {% else %}
+                        <td style="text-align: center">
+                          <div class="check"><input class="checkboxes" value="{{ customerProduct.header_id }}" name="overSizeProductLineId" type="checkbox" onclick="selectOneRow(this)"/><span class="icon"></span></div>
+                        </td>
+                      {% endif %}
+                      <td>{{ customerProduct.create_time }}</td>
+                      {% if 64 == customerProduct.order_status %}
+                        <td><img style="cursor: pointer" data-toggle="tooltip" title="{{ text_oversize_item_caution }}" src="image/product/RedFlag.gif">{{ customerProduct.order_id }}</td>
+                      {% else %}
+                        <td>{{ customerProduct.order_id }}</td>
+                      {% endif %}
+                      <td>{{ customerProduct.item_code }}</td>
+                      <td>{{ customerProduct.qty }}</td>
+                      <td>
+                        {{ customerProduct.ship_name }}
+                      </td>
+                      <td>{{ customerProduct.email }}</td>
+                      <td>
+                        {{ customerProduct.ship_phone }}
+                      </td>
+                      <td>
+                      {% if customerProduct.import_mode !=8 %}<!--非自提货展示-->
+                        {{ customerProduct.ship_address1 }},{{ customerProduct.ship_city }},{{ customerProduct.ship_state }}
+                        ,{{ customerProduct.ship_country }}
+                        {% if 0 == is_dropship  %}
+                          {{ customerProduct.ship_address_tips }}
+                        {% endif %}
+                      {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="form-group">
+                <div>
+                  <button type="button" class="btn btn-danger ml-1" id="cancelOverSizeProductOrder" onclick="cancelOverSizeProductOrder()" data-toggle="tooltip" >
+                    <i class="fa fa-times"></i> Canceled These Orders </button>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+          {% if hasNoProductArr %}
+            <div style="position:relative">
+              <fieldset>
+                <p style="text-transform: uppercase"><strong>{{ text_has_no_enter_product }}</strong></p>
+              </fieldset>
+              <div class="form-group">
+                <table class="table table-condensed table-hover table-bordered">
+                  <thead style="text-align: center;font-weight: bold">
+                  <tr>
+                    <th style="text-align: center;">
+                      <div class="check"><input type="checkbox" onclick="selectAllNoProduct(this)"/><span class="icon"></span></div>
+                    </th>
+                    <th style="text-align: center;">Creation Time</th>
+                    <th style="text-align: center;">Sales Order ID</th>
+                    <th style="text-align: center;">{{ entry_item_code }}</th>
+                    <th style="text-align: center;">{{ entry_qty }}</th>
+                  </tr>
+                  </thead>
+                  <tbody style="text-align: center;">
+                  {% for customerProducts in hasNoProductArr %}
+
+                    {% for customerProduct in customerProducts %}
+                      <tr>
+                        {% if customerProduct.is_cancelling %}
+                          <td style="text-align: center"  data-toggle="tooltip" data-original-title="{{ sales_order_is_cancelling }}">
+                            <div class="check"><input class="checkboxes" value="{{ customerProduct.header_id }}" name="noProductLineId" type="checkbox" disabled /><span class="icon"></span></div>
+                          </td>
+                        {% else %}
+                          <td style="text-align: center">
+                            <div class="check"><input class="checkboxes" value="{{ customerProduct.header_id }}" name="noProductLineId" type="checkbox" onclick="selectOneRow(this)"/><span class="icon"></span></div>
+                          </td>
+                        {% endif %}
+
+                        <td>{{ customerProduct.create_time }}</td>
+                        <td>
+                          {% if customerProduct.cancel_failure %}
+                            <i title="" class="fa fa-exclamation-circle" data-toggle="tooltip" style="color: red"
+                               data-original-title="{{ cancel_failure_tip }}">
+                            </i>
+                          {% endif %}
+                          {{ customerProduct.order_id }}</td>
+                        <td>{{ customerProduct.item_code }}</td>
+                        <td>{{ customerProduct.qty }}</td>
+                      </tr>
+                    {% endfor %}
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="form-group">
+                <div>
+                  <button type="button" class="btn btn-danger ml-1" id="cancelNoProductOrder" onclick="cancelNoProductOrder()"
+                          data-toggle="tooltip" >
+                    <i class="fa fa-times"></i> Canceled These Orders </button>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if hasNoExistProductArr %}
+            <div style="position:relative">
+              <fieldset>
+                <p style="text-transform: uppercase"><strong>{{ text_has_no_exist_product }}</strong></p>
+              </fieldset>
+              <div class="table-responsive">
+                <table class="table main table-scrollable table-hover">
+                  <thead>
+                  <tr>
+                    <th style="text-align: center;">
+                      <div class="check"><input type="checkbox" onclick="selectAllNoExistProduct(this)"/><span class="icon"></span></div>
+                    </th>
+                    <th style="text-align: center;">Creation Time</th>
+                    <th style="text-align: center;">Sales Order ID</th>
+                    <th style="text-align: center;">{{ entry_item_code }}</th>
+                    <th style="text-align: center;">{{ entry_qty }}</th>
+                  </tr>
+                  </thead>
+                  <tbody style="text-align: center;">
+                  {% for customerProducts in hasNoExistProductArr %}
+
+                    {% for customerProduct in customerProducts %}
+                      <tr>
+                        {% if customerProduct.is_cancelling %}
+                          <td style="text-align: center"  data-toggle="tooltip" data-original-title="{{ sales_order_is_cancelling }}">
+                            <div class="check"><input class="checkboxes" value="{{ customerProduct.header_id }}" name="noExistProductLineId" type="checkbox" disabled /><span class="icon"></span></div>
+                          </td>
+                        {% else %}
+                          <td style="text-align: center">
+                            <div class="check"><input class="checkboxes" value="{{ customerProduct.header_id }}" name="noExistProductLineId" type="checkbox" onclick="selectOneRow(this)"/><span class="icon"></span></div>
+                          </td>
+                        {% endif %}
+                        <td>{{ customerProduct.create_time }}</td>
+                        <td>
+                          {% if customerProduct.cancel_failure %}
+                            <i title="" class="fa fa-exclamation-circle" data-toggle="tooltip" style="color: red"
+                               data-original-title="{{ cancel_failure_tip }}">
+                            </i>
+                          {% endif %}
+                          {{ customerProduct.order_id }}</td>
+                        <td>{{ customerProduct.item_code }}</td>
+                        <td>{{ customerProduct.qty }}</td>
+                      </tr>
+                    {% endfor %}
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="form-group">
+                <div>
+                  <button type="button" class="btn btn-danger ml-1" id="cancelNoExistProductOrder" onclick="cancelNoExistProductOrder()" data-toggle="tooltip">
+                    <i class="fa fa-times"></i> Canceled These Orders </button>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="confirm_dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          &times;
+        </button>
+        <h4 class="modal-title" id="confirm_title">
+          {{ dialog_title_confirm }}
+        </h4>
+      </div>
+      <div class="modal-body" id="confirm_body" style="font-size: small;text-align:center;min-height: 200px;">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{ dialog_btn_no }}
+        </button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirm_btn_yes" onclick="">
+          {{ dialog_btn_yes }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="reorder_alert_dialog">
+<div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          &times;
+        </button>
+        <h4 class="modal-title" id="reorder_alert_title">
+
+        </h4>
+      </div>
+      <div class="modal-body" id="reorder_alert_body" style="font-size: small;text-align:center;min-height: 200px;">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="reorder_alert_confirm">
+          {{ dialog_btn_ok }}
+        </button>
+      </div>
+    </div>
+  </div></div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="alert_dialog2">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="alert_title2">
+
+                    </h4>
+                </div>
+                <div class="modal-body" id="alert_body2" style="font-size: large;text-align:center;min-height: 200px;">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="alert_confirm2">
+                        {{ dialog_btn_ok }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="cancelDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h3 class="modal-title" id="cancelLabel">
+                        {{ text_sure_cancel }}
+                    </h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="cancel_btn" onclick="">{{ dialog_btn_yes }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ dialog_btn_no }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript" src="catalog/view/javascript/layerOris.js?v={{ app_version }}"></script>
+<script>
+
+  $(document).ready(function () {
+    if (typeof timer !== 'undefined') {
+      clearInterval(timer);
+    }
+    block.unBlockUI();
+
+    // timer = setInterval(function () {
+    //   if ($('input:visible').parent().find('.sku-input').length === 0 && $('.modal.fade.in').length === 0) {
+    //     refresh();
+    //   }
+    // }, 30000);
+  });
+
+  /**
+   * update row style after selected
+   * @param checkbox
+   * @author zhousuyang
+   */
+  function selectOneRow(checkbox) {
+    if ($(checkbox).is(':checked')) {
+      $(checkbox).parentsUntil('tr').parent().addClass('selected');
+    } else {
+      $(checkbox).parentsUntil('table').parent().find('thead tr input[type="checkbox"]').prop('checked', false);
+      $(checkbox).parentsUntil('tr').parent().removeClass('selected');
+    }
+  }
+
+    function selectAll(checkbox) {
+        var checked = $(checkbox).is(":checked");
+        if (checked) {
+            var length = $("[name='product_id[]']").length;
+            for(var i=0;i<length;i++){
+                if($("[name='product_id[]']")[i].disabled == false){
+                    $("[name='product_id[]']").eq(i).prop('checked',true);
+                    $("[name='product_id[]']").eq(i).parentsUntil("tr").parent().addClass("selected");
+                }
+            }
+        } else {
+            $("[name='product_id[]']").prop("checked", false);//取消全选
+            $("[name='product_id[]']").parentsUntil("tr").parent().removeClass("selected");
+        }
+    }
+
+  function selectAllNoProduct(checkbox) {
+      var checked = $(checkbox).is(":checked");
+      var noProductLineId = $("[name='noProductLineId']");
+
+      if (checked) {
+          var length = noProductLineId.length;
+          for(var i=0;i<length;i++){
+              if(noProductLineId[i].disabled == false){
+                  noProductLineId.eq(i).prop('checked',true);
+                  noProductLineId.eq(i).parentsUntil("tr").parent().addClass("selected");
+              }
+          }
+      } else {
+          noProductLineId.prop("checked", false);//取消全选
+          noProductLineId.parentsUntil("tr").parent().removeClass("selected");
+      }
+  }
+
+  function selectAllNoExistProduct(checkbox) {
+      var checked = $(checkbox).is(":checked");
+      var noExistProductLineId = $("[name='noExistProductLineId']");
+      if (checked) {
+          var length = noExistProductLineId.length;
+          for(var i=0;i<length;i++){
+              if(noExistProductLineId[i].disabled == false){
+                  noExistProductLineId.eq(i).prop('checked',true);
+                  noExistProductLineId.eq(i).parentsUntil("tr").parent().addClass("selected");
+              }
+          }
+      } else {
+          noExistProductLineId.prop("checked", false);//取消全选
+          noExistProductLineId.parentsUntil("tr").parent().removeClass("selected");
+      }
+  }
+  function selectAllOverSize(checkbox) {
+    var checked = $(checkbox).is(":checked");
+    var overSizeProductLineId = $("[name='overSizeProductLineId']");
+    if (checked) {
+      var length = overSizeProductLineId.length;
+      for(var i=0;i<length;i++){
+        if(overSizeProductLineId[i].disabled == false){
+          overSizeProductLineId.eq(i).prop('checked',true);
+          overSizeProductLineId.eq(i).parentsUntil("tr").parent().addClass("selected");
+        }
+      }
+    } else {
+      overSizeProductLineId.prop("checked", false);//取消全选
+      overSizeProductLineId.parentsUntil("tr").parent().removeClass("selected");
+    }
+  }
+
+
+
+    function refresh(button) {
+        block.blockUI();
+        $(button).button('loading');
+        $('#order-need-to-buy').load("{{ url('account/customer_order/orderNeedToBuy') }}");
+    }
+    function getUrlForBuyerFilter(page) {
+      let url = "{{ url('account/customer_order/orderNeedToBuy') }}";
+      let filter_orderId = $('input[name=\'filter_buyer_orderId\']').val();
+      if (filter_orderId) {
+        url += '&filter_buyer_orderId=' + encodeURIComponent(filter_orderId);
+      }
+      let filter_item_code = $('input[name=\'filter_buyer_item_code\']').val();
+      if (filter_item_code) {
+        url += '&filter_buyer_item_code=' + encodeURIComponent(filter_item_code);
+      }
+
+      //新增查询
+      return url;
+    }
+
+    function buyerFilter(button) {
+      block.blockUI();
+      var url = getUrlForBuyerFilter();
+      $('#order-need-to-buy').load(url);
+      $(button).button('loading');
+    }
+
+    function addToCart() {
+        // 获取添加购物车数据
+        var data = [];
+        if ($("[name='product_id[]']:checked").length <= 0) {
+            var tmplayer = layer.alert("Please select a product!", {
+              title: 'Message',
+              btn : 'OK',
+              skin: 'yzc_layer' //样式类名
+              ,closeBtn: 0
+            }, function(){
+              layer.close(tmplayer);
+            });
+            return;
+        }
+        //相同itemcode,选择先导入的订单
+        var itemCodeFlag = false;
+        $("[name='product_id[]']:checked").each(function () {
+            var itemCode = $(this).parent().parent().parent().find('span')[1].innerText;
+            var this_select = $(this).parent().parent().parent().find('select').eq(0);
+            var lineNo = this_select.attr('id').split('sellerNameNeedToBuy')[1];
+            for(var i=1;i<lineNo;i++){
+                var select = $('select[id=\'sellerNameNeedToBuy' + i + '\']');
+               if(select.parent().parent().find('span')[1].innerText == itemCode && select.parent().parent().find('input').eq(0).is(':checked') == false){
+                 itemCodeFlag = true;
+               }
+            }
+        });
+        if(itemCodeFlag == true){
+            //alert("Same Item Code Order,please select previous order!");
+            var tmplayer = layer.alert("This item code exists in other sales orders. Please complete other sales orders before continuing.", {
+              title: 'Message',
+              btn : 'OK',
+              skin: 'yzc_layer' //样式类名
+              ,closeBtn: 0
+            }, function(){
+              layer.close(tmplayer);
+            });
+            $('#addToCart').button('');
+            return;
+        }
+        var sellFlag = false;
+        $("[name='product_id[]']:checked").each(function () {
+          var this_select = $(this).parent().parent().parent().find('select').eq(0);
+          if(this_select.val()=='' || this_select.val()==undefined){
+                sellFlag = true;
+            }
+        });
+        if(sellFlag == true){
+            var tmplayer = layer.alert("Please select seller!", {
+              title: 'Message',
+              btn : 'OK',
+              skin: 'yzc_layer' //样式类名
+              ,closeBtn: 0
+            }, function(){
+              layer.close(tmplayer);
+            });
+            return;
+        }
+        $("[name='product_id[]']:checked").each(function () {
+
+            var checked_td = $(this).parent().parent();
+            var transaction_type = '#transaction_type_' + $(this).attr('mean') + '_' + '{{ time_buy }}';
+
+            data.push({
+              "productId" : $(this).val(),
+              "qty" : checked_td.next().next().next().next()[0].textContent,
+              "transaction_type" : $(transaction_type).val(),
+              "orderLineId":checked_td.parent().find('td')[13].textContent});
+        });
+
+        var param = {"productDatas" : data};
+        $.ajax({
+            url: "{{ url('account/customer_order/addProductToCart') }}",
+            dataType: 'json',
+            method: 'POST',
+            data: param,
+            beforeSend: function () {
+                $('#addToCart').button('loading');
+            },
+            success: function (json) {
+                $('#addToCart').button('reset');
+                if(json['warning']){
+                  var tmplayer = layer.alert(json['warning'], {
+                    title: 'Message',
+                    btn : 'OK',
+                    skin: 'yzc_layer' //样式类名
+                    ,closeBtn: 0
+                  }, function(){
+                    layer.close(tmplayer);
+                  });
+                }else{
+                  if (json['cart']) {
+                      location.href = json['cart']
+                  }
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                $('#addToCart').button('reset');
+                var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+                  title: 'Message',
+                  btn : 'OK',
+                  skin: 'yzc_layer' //样式类名
+                  ,closeBtn: 0
+                }, function(){
+                  layer.close(tmplayer);
+                });
+            }
+        });
+    }
+
+    function editSku(lineId) {
+      let obj_id = 'edit_' + lineId;
+      let obj = $("#"+obj_id);
+      //展示控件隐藏
+      obj.siblings(".form-display").css("display", "none");
+      //输入框显示
+      obj.siblings(".form-edit").css("display", "inline-block");
+      //编辑按钮隐藏
+      obj.css("display", "none");
+      obj.siblings(".sku-component-log").css("display", "none");
+      //保存、取消按钮显示
+      obj.siblings(".btn-form-edit").css("display", "inline-block");
+    }
+
+    function cancelEditSku(lineId) {
+      let obj_id = 'edit_' + lineId;
+      let obj = $("#"+obj_id);
+      //展示控件显示
+      obj.siblings(".form-display").css("display", "inline-block");
+      //输入框隐藏
+      obj.siblings(".form-edit").css("display", "none");
+      //编辑按钮显示
+      obj.css("display", "inline-block");
+      obj.siblings(".sku-component-log").css("display", "inline-block");
+      //保存、取消按钮隐藏
+      obj.siblings(".btn-form-edit").css("display", "none");
+    }
+
+    function checkEditSku(lineId,sku,buyer_id) {
+      let newSku = $("#"+"sku_input_"+lineId).val().trim();
+      if(newSku !== sku){
+        $.ajax({
+          url: "{{ url('account/customer_order/checkChangeSku',{'lineId':''}) }}" + lineId + '&oldSku=' + sku + '&newSku=' + newSku + '&buyerId=' + buyer_id,
+          dataType: 'json',
+          type:'post',
+          success:function (json) {
+            if(json['success']){
+              var myModal = $("#confirm_dialog");
+              myModal.modal();
+              $('#confirm_body').html(json['success']);
+              $("#confirm_btn_yes").on("click",function () {
+                saveSkuEdit(lineId,newSku);
+              });
+              myModal.on("hidden.bs.modal", function () {
+                $(this).removeData("bs.modal");
+                $("#confirm_btn_yes").off("click");
+              });
+            }else if(json['error']){
+              var myModal = $("#reorder_alert_dialog");
+              myModal.modal();
+              $('#reorder_alert_title').text("{{ dialog_title_error }}");
+              $('#reorder_alert_body').html(json['error']);
+              myModal.on("hidden.bs.modal", function () {
+                $(this).removeData("bs.modal");
+                $('#reorder_alert_title').text("");
+                $('#reorder_alert_body').html("");
+              });
+            }else if(json['warning']){
+              var myModal = $("#reorder_alert_dialog");
+              myModal.modal();
+              $('#reorder_alert_title').text("{{ dialog_title_warning }}");
+              $('#reorder_alert_body').html(json['warning']);
+              $('#reorder_alert_confirm').text("{{ dialog_btn_go_back }}");
+              $('#reorder_alert_confirm').css("display","block");
+              $('#reorder_alert_confirm').css("margin","auto");
+              $('#reorder_alert_confirm').click(function()
+              {
+                setTimeout(function() {
+                  document.getElementById('sku_input_' + lineId).focus();
+                },50);
+              }
+              );
+              myModal.on("hidden.bs.modal", function () {
+                $(this).removeData("bs.modal");
+                $('#reorder_alert_title').text("");
+                $('#reorder_alert_body').html("");
+                  setTimeout(function() {
+                    document.getElementById('sku_input_' + lineId).focus();
+                  },50);
+              });
+            }
+          }
+        });
+      }else {
+        cancelEditSku(lineId);
+      }
+    }
+
+    function saveSkuEdit(lineId, newSku) {
+      $.ajax({
+        url:"{{ url('account/customer_order/changeSku',{'lineId':''}) }}" + lineId + '&newSku=' + newSku,
+        type: 'post',
+        dataType:'json',
+        success:function (json) {
+          if(json['success']){
+            let myModal = $("#reorder_alert_dialog");
+            myModal.modal();
+            $('#reorder_alert_title').text("{{ dialog_title_info }}");
+            $('#reorder_alert_body').html(json['success']);
+            myModal.on("hidden.bs.modal", function () {
+              $(this).removeData("bs.modal");
+              $('#reorder_alert_title').text("");
+              $('#reorder_alert_body').html("");
+              refresh();
+            });
+          }else if (json['error']){
+            let myModal = $("#reorder_alert_dialog");
+            myModal.modal();
+            $('#reorder_alert_title').text("{{ dialog_title_error }}");
+            $('#reorder_alert_body').html(json['error']);
+            myModal.on("hidden.bs.modal", function () {
+              $(this).removeData("bs.modal");
+              $('#reorder_alert_title').text("");
+              $('#reorder_alert_body').html("");
+            });
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+            title: 'Message',
+            btn : 'OK',
+            skin: 'yzc_layer' //样式类名
+            ,closeBtn: 0
+          }, function(){
+            layer.close(tmplayer);
+          });
+        }
+      });
+    }
+
+    function showReorderFailureLog($html_str) {
+      var myModal = $("#reorder_alert_dialog");
+      myModal.modal();
+      $('#reorder_alert_title').text("{{ dialog_title_fail_log }}");
+      $('#reorder_alert_body').html(decodeURI($html_str));
+      myModal.on("hidden.bs.modal", function () {
+        $(this).removeData("bs.modal");
+        $('#reorder_alert_title').text("");
+        $('#reorder_alert_body').html("");
+      });
+    }
+
+    function searchTransactionType(element) {
+      var count = $(element).attr('mean');
+      var sellerNameNeedToBuy = 'sellerNameNeedToBuy' + count;
+      var product_id = $('select[id=\'' + sellerNameNeedToBuy + '\']').val();
+      var id = element.id;
+      var transaction_type = $(element).val();
+      $.ajax({
+        url: "{{ url('account/customer_order/getTransactionTypeInfoByProductId',{'product_id':''}) }}" + product_id+'&sellerId='+id + '&transaction_type=' + transaction_type,
+        dataType: 'json',
+        beforeSend: function () {
+          layer.load(1);
+        },
+        success: function(json) {
+          //更新Transaction Type框
+          layer.closeAll();
+          if(json['is_expire']){
+            layer.msg(json['expire_error'], {time: 3000});
+          }
+          $('select[id=\'' + json['id'] + '\']').parent().parent().find('td')[9].innerHTML = json['price'];
+          $('select[id=\'' + json['id'] + '\']').parent().parent().find('td')[10].innerHTML = json['freight'];
+          $('select[id=\'' + json['id'] + '\']').parent().parent().find('td')[11].innerHTML = json['quantity'];
+          $('select[id=\'' + json['id'] + '\']').parent().parent().find('td')[12].innerHTML = json['status'];
+
+          if(json['status'] == 'No'){
+            var length = $('select[id=\'' + json['id'] + '\']').parent().parent().find('td').length;
+            for(var i=0;i<length;i++){
+              $('select[id=\'' + json['id'] + '\']').parent().parent().find('td').eq(i).css('background','#9e9e9e5c');
+            }
+            $('select[id=\'' + json['id'] + '\']').parent().parent().find('input').eq(0).attr('checked',false);
+            $('select[id=\'' + json['id'] + '\']').parent().parent().find('input').eq(0).attr('disabled',true);
+          }else{
+            var length = $('select[id=\'' + json['id'] + '\']').parent().parent().find('td').length;
+            for(var i=0;i<length;i++){
+              $('select[id=\'' + json['id'] + '\']').parent().parent().find('td').eq(i).css('background','#fff');
+            }
+            $('select[id=\'' + json['id'] + '\']').parent().parent().find('input').eq(0).attr('disabled',false);
+          }
+          $('select[id=\'' + json['id'] + '\']').parent().parent().find('input').eq(0).val(json['product_id']);
+          if(json['combo_flag'] == 1){
+            $('select[id=\'' + json['id'] + '\']').parent().parent().find('.sku-component-edit').css('display','none');
+          }else{
+            $('select[id=\'' + json['id'] + '\']').parent().parent().find('.sku-component-edit').css('display','inline-block');
+          }
+          $('select[id=\'' + json['id'] + '\']').parent().parent().find('.sku-component').css('display','none');
+          $('select[id=\'' + json['id'] + '\']').parent().parent().find('.sku-input').css('display','none');
+          $('select[id=\'' + json['id'] + '\']').parent().parent().find('.sku-display').css('display','inline-block');
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+          layer.closeAll();
+          var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+            title: 'Message',
+            btn : 'OK',
+            skin: 'yzc_layer' //样式类名
+            ,closeBtn: 0
+          }, function(){
+            layer.close(tmplayer);
+          });
+        }
+      });
+    }
+
+    //多seller选择
+    function searchSeller(element) {
+        var count = $(element).attr('mean');
+        var transaction_type_select = 'transaction_type_' + count + '_' + '{{ time_buy }}';
+        var id = element.id;
+
+        $.ajax({
+            url: "{{ url('account/customer_order/getPriceAndQtyByProductId',{'product_id':''}) }}" + element.value+'&sellerId='+id,
+            dataType: 'json',
+            beforeSend: function () {
+              layer.load(1);
+            },
+            success: function(json) {
+              //更新Transaction Type框
+              layer.closeAll();
+              $('select[id=\'' + transaction_type_select + '\']').attr('disabled',false);
+              $('select[id=\'' + transaction_type_select + '\']').empty();
+              var html_str = '';
+              for (i= 0; i < json['selectItem'].length; i++) {
+                  if(json['selectItem'][i]['selected'] == 1){
+                    html_str += "<option selected='selected' value="+ json['selectItem'][i]['key']  +">"+json['selectItem'][i]['value']+"</option>";
+                  }else{
+                    html_str += "<option value="+ json['selectItem'][i]['key']  +">"+json['selectItem'][i]['value']+"</option>";
+                  }
+
+              }
+              if(json['selectItem'].length == 1){
+                $('select[id=\'' + transaction_type_select + '\']').attr('disabled',true);
+              }
+              $('select[id=\'' + transaction_type_select + '\']').append(html_str);
+
+              $('select[id=\'' + json['id'] + '\']').parent().parent().find('td')[9].innerHTML  = json['price'];
+              $('select[id=\'' + json['id'] + '\']').parent().parent().find('td')[10].innerHTML = json['freight'];
+              $('select[id=\'' + json['id'] + '\']').parent().parent().find('td')[11].innerHTML = json['quantity'];
+              $('select[id=\'' + json['id'] + '\']').parent().parent().find('td')[12].innerHTML = json['status'];
+
+              if(json['status'] == 'No'){
+                  var length = $('select[id=\'' + json['id'] + '\']').parent().parent().find('td').length;
+                  for(var i=0;i<length;i++){
+                      $('select[id=\'' + json['id'] + '\']').parent().parent().find('td').eq(i).css('background','#9e9e9e5c');
+                  }
+                  $('select[id=\'' + json['id'] + '\']').parent().parent().find('input').eq(0).attr('checked',false);
+                  $('select[id=\'' + json['id'] + '\']').parent().parent().find('input').eq(0).attr('disabled',true);
+              }else{
+                  var length = $('select[id=\'' + json['id'] + '\']').parent().parent().find('td').length;
+                  for(var i=0;i<length;i++){
+                      $('select[id=\'' + json['id'] + '\']').parent().parent().find('td').eq(i).css('background','#fff');
+                  }
+                  $('select[id=\'' + json['id'] + '\']').parent().parent().find('input').eq(0).attr('disabled',false);
+              }
+              $('select[id=\'' + json['id'] + '\']').parent().parent().find('input').eq(0).val(json['product_id']);
+              if(json['combo_flag'] == 1){
+                $('select[id=\'' + json['id'] + '\']').parent().parent().find('.sku-component-edit').css('display','none');
+              }else{
+                $('select[id=\'' + json['id'] + '\']').parent().parent().find('.sku-component-edit').css('display','inline-block');
+              }
+              $('select[id=\'' + json['id'] + '\']').parent().parent().find('.sku-component').css('display','none');
+              $('select[id=\'' + json['id'] + '\']').parent().parent().find('.sku-input').css('display','none');
+              $('select[id=\'' + json['id'] + '\']').parent().parent().find('.sku-display').css('display','inline-block');
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                layer.closeAll();
+                var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+                  title: 'Message',
+                  btn : 'OK',
+                  skin: 'yzc_layer' //样式类名
+                  ,closeBtn: 0
+                }, function(){
+                  layer.close(tmplayer);
+                });
+            }
+        });
+    }
+
+    // $('select[name$=\'[country_id]\']').trigger('change');
+
+  function cancelConfirmDialog(id,order_id,order_status,order_date) {
+    let options = {
+      title: "Confirm",
+      content: "{{ text_sure_cancel }}",
+      btn: ["Yes", "No"]
+    };
+    layerOris.confirmLayer(options, (index)=>{
+      layer.close(index);
+      cancelOrder(id,order_id,order_status,order_date);
+    });
+  }
+
+  function cancelOrder(id,order_id,order_status,order_date) {
+      let remove_stock = 0;
+      let reason = '';
+      let postData = {
+          id:id,
+          orderId:order_id,
+          orderStatus:order_status,
+          removeStock:remove_stock,
+          orderDate:order_date,
+          reason:reason
+      };
+
+      $.ajax({
+          url: "{{ url('account/customer_order/cancelOrder') }}",
+          type: 'POST',
+          data:postData,
+          dataType:'json',
+          success: function (json) {
+              // var modal = $("#alert_dialog2");
+              // modal.modal();
+              if(json['success']){
+                  let options = {
+                    title: "{{ dialog_title_info }}",
+                    content: json['success'],
+                    close: false,
+                    btn: ["OK"],
+                    closeBtn: '0'
+                  };
+                  layerOris.confirmLayer(options, (index)=>{
+                    layer.close(index);
+                    let loadingCover=layer.load(1, {shade: [0.3, '#000']});
+                    let url = getUrlForBuyerFilter();
+                    $('#order-need-to-buy').load(url,function(responseTxt,statusTxt,xhr){
+                      if(statusTxt=="success"){
+                        layer.close(loadingCover);
+                      }
+                    });
+                  });
+
+                  {#$('#alert_title2').text("{{ dialog_title_info }}");#}
+                  {#$('#alert_body2').html(json['success']);#}
+                  {#$("#alert_confirm2").on("click",function () {#}
+                  {#    var url = getUrlForBuyerFilter();#}
+                  {#    //$('#order-need-to-buy').load(url);#}
+                  {#  $('#order-need-to-buy').load(url,function(responseTxt,statusTxt,xhr){#}
+                  {#    if(statusTxt=="success"){#}
+                  {#      $('.modal-backdrop').remove();//去掉遮罩层#}
+                  {#    }#}
+                  {#  });#}
+                  {#});#}
+                  {#modal.on("hidden.bs.modal", function () {#}
+                  {#    $(this).removeData("bs.modal");#}
+                  {#    $('#alert_title2').text("");#}
+                  {#    $('#alert_body2').html("");#}
+                  {#    $("#alert_confirm2").off("click");#}
+                  {#});#}
+              }else if (json['fail']){
+                let options = {
+                  title: "{{  dialog_title_error }}",
+                  content: json['fail'],
+                  btn: ["OK"]
+                };
+                layerOris.confirmLayer(options, (index)=>{
+                  layer.close(index);
+                });
+
+                  {#$('#alert_title2').text("{{ dialog_title_error }}");#}
+                  {#$('#alert_body2').html(json['fail']);#}
+                  {#modal.on("hidden.bs.modal", function () {#}
+                  {#    $(this).removeData("bs.modal");#}
+                  {#    $('#alert_title2').text("");#}
+                  {#    $('#alert_body2').html("");#}
+                  {#});#}
+              }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+              var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+                title: 'Message',
+                btn : 'OK',
+                skin: 'yzc_layer' //样式类名
+                ,closeBtn: 0
+              }, function(){
+                layer.close(tmplayer);
+              });
+          }
+      })
+  }
+
+
+  function cancelNoProductOrder() {
+      var noProduct = $("[name='noProductLineId']:checked");
+      if (noProduct.length <= 0) {
+          var tmplayer = layer.alert("{{ cancel_sales_order_select }}", {
+            title: 'Message',
+            btn : 'OK',
+            skin: 'yzc_layer' //样式类名
+            ,closeBtn: 0
+          }, function(){
+            layer.close(tmplayer);
+          });
+          return;
+      }
+      var chk_value = '';
+      noProduct.each(function () {
+        chk_value += $(this).val() + ',';
+      });
+
+      batchCancelConfirmDialog(chk_value);
+  }
+
+  function cancelNoExistProductOrder() {
+      var noExistProduct = $("[name='noExistProductLineId']:checked");
+      if (noExistProduct.length <= 0) {
+          var tmplayer = layer.alert("{{ cancel_sales_order_select }}", {
+            title: 'Message',
+            btn : 'OK',
+            skin: 'yzc_layer' //样式类名
+            ,closeBtn: 0
+          }, function(){
+            layer.close(tmplayer);
+          });
+          return;
+      }
+      var chk_value = '';
+      noExistProduct.each(function () {
+          chk_value += $(this).val() + ',';
+      });
+
+      batchCancelConfirmDialog(chk_value);
+  }
+
+  function cancelOverSizeProductOrder() {
+    var overSizeProductLine = $("[name='overSizeProductLineId']:checked");
+    if (overSizeProductLine.length <= 0) {
+      var tmplayer = layer.alert("{{ cancel_sales_order_select }}", {
+        title: 'Message',
+        btn : 'OK',
+        skin: 'yzc_layer' //样式类名
+        ,closeBtn: 0
+      }, function(){
+        layer.close(tmplayer);
+      });
+      return;
+    }
+    var chk_value = '';
+    overSizeProductLine.each(function () {
+      chk_value += $(this).val() + ',';
+    });
+
+    batchCancelConfirmDialog(chk_value);
+  }
+
+  function batchCancelConfirmDialog(ids) {
+    let optionsBatch = {
+      title: "Confirm",
+      content: "{{ text_sure_batch_cancel }}",
+      btn: ["Yes", "No"]
+    };
+    layerOris.confirmLayer(optionsBatch,(index)=>{
+      layer.close(index);
+      let optionsOmd = {};
+      $.ajax({
+        url: '{{ check_order_in_omd }}',
+        type: 'POST',
+        data:{ids:ids},
+        dataType:'json',
+        success: (json)=>{
+          if(json){
+            optionsOmd = {
+              title: "{{  dialog_title_info }}",
+              content: '{{ have_in_omd }}',
+              btn: ["Yes"]
+            };
+            layerOris.confirmLayer(optionsOmd, (index)=>{
+              layer.close(index);
+            });
+          }
+           batchCancelOrder(ids);
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+            title: 'Message',
+            btn : 'OK',
+            skin: 'yzc_layer' //样式类名
+            ,closeBtn: 0
+          }, function(){
+            layer.close(tmplayer);
+          });
+        }
+      });
+    });
+  }
+
+
+  function batchCancelOrder(ids) {
+      $.ajax({
+          url: '{{ batch_cancel_order }}',
+          type: 'POST',
+          data:{ids:ids},
+          dataType:'json',
+          success: function (json) {
+              var tipStr = '';
+              var reloadUrl = getUrlForBuyerFilter();
+              $.each(json, function (key,val) {
+                 if (val.hasOwnProperty('fail') == true){
+                     tipStr += val['order_id'] + ':' + val['fail'] + '<br/>';
+                 }
+              });
+              if(tipStr == ''){
+                let optionsSuccess = {
+                  title: "{{ dialog_title_info }}",
+                  content: " Orders canceled successfully. ",
+                  btn: ["Yes"]
+                };
+                layerOris.confirmLayer(optionsSuccess, (index)=>{
+                  layer.close(index);
+                  let loadingCover=layer.load(1, {shade: [0.3, '#000']});
+                  $('#order-need-to-buy').load(reloadUrl,function (responseTxt,statusTxt,xhr) {
+                    if(statusTxt=="success"){
+                      layer.close(loadingCover);
+                    }
+                  });
+                });
+              }else{
+                let optionsError = {
+                  title: "{{ dialog_title_error }}",
+                  content: tipStr,
+                  btn: ["Yes"]
+                };
+                layerOris.confirmLayer(optionsError, (index)=>{
+                  layer.close(index);
+                  let loadingCover=layer.load(1, {shade: [0.3, '#000']});
+                  $('#order-need-to-buy').load(reloadUrl,function (responseTxt,statusTxt,xhr) {
+                    if(statusTxt=="success"){
+                      layer.close(loadingCover);
+                    }
+                  });
+                });
+              }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+              var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+                title: 'Message',
+                btn : 'OK',
+                skin: 'yzc_layer' //样式类名
+                ,closeBtn: 0
+              }, function(){
+                layer.close(tmplayer);
+              });
+          }
+      })
+  }
+
+    </script>
+<style>
+  .sku-input{
+    width: 75%;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .item-code-width{
+    min-width: 150px;
+  }
+  .span-disable{
+    pointer-events: none;
+  }
+</style>

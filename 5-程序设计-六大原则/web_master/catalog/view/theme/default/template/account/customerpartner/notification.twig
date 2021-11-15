@@ -1,0 +1,272 @@
+{{ header }}{{ separate_column_left }}
+
+{% if separate_view is defined and separate_view %}
+  <div class="container-fluid" id="content" style="margin-left: 18%">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li>
+        <a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% if error_warning %}
+    <div class="alert alert-danger">
+      <i class="fa fa-check-circle"></i>
+      {{ error_warning}}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+  {% endif %}
+  {% if success %}
+    <div class="alert alert-success">
+      <i class="fa fa-check-circle"></i>
+      {{ success}}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+  {% endif %}
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+      {% set class = 'col-sm-6' %}
+      {% elseif column_left or column_right %}
+        {% set class = 'col-sm-9' %}
+      {% else %}
+        {% set class = 'col-sm-12' %}
+      {% endif %}
+      <div id="content" class="{{ class}}">{{ content_top}}
+        {% if chkIsPartner %}
+          <h1>{{ text_notifications}}
+            <div class="pull-right">
+              <a href="{{ back}}" data-toggle="tooltip" title="{{ button_back}}" class="btn btn-default">
+                <i class="fa fa-reply"></i>
+              </a>
+            </div>
+          </h1>
+          <form method="post" enctype="multipart/form-data" id="form-notification" class="form-horizontal">
+            <legend>
+              <i class="fa fa-list"></i>
+              {{ text_notification_information}}</legend>
+            {% if isMember %}
+              <ul class="nav nav-tabs">
+                <li class="active">
+                  <a href="#tab-order" id="tab_tab-order" data-toggle="tab">{{ tab_order}}</a>
+                </li>
+                <li>
+                  <a href="#tab-product" id="tab_tab-product" data-toggle="tab">{{ tab_product}}</a>
+                </li>
+                <li>
+                  <a href="#tab-seller" id="tab_tab-seller" data-toggle="tab">{{ tab_seller}}</a>
+                </li>
+              </ul>
+              <div class="tab-content">
+                <div class="tab-pane active" id="tab-order">
+                  {% if all_notifications is defined and all_notifications %}
+                    <div class="all_notifications_div">
+                      <div class="notification_filter">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" value="all" name="selected[]" {% if selected is defined and selected is iterable and 'all' in selected %} checked="checked" {% endif %}/>
+                            <span class="label label-info pull-right span_margin">{{ all_notifications}}</span>{{ text_all_notification}}
+                          </label>
+                        </div>
+
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" value="return" name="selected[]" {% if selected is defined and selected is iterable and 'return' in selected %} checked="checked" {% endif %}/>
+                            <span class="label label-danger pull-right span_margin">{{ return_total}}</span>{{ text_return}}
+                          </label>
+                        </div>
+
+                        {% if order_statuses is defined and order_statuses and notification_filter is defined and notification_filter %}
+                          {% for key, order_status in order_statuses %}
+                            {% if order_status['order_status_id'] in notification_filter %}
+                            <div class="checkbox">
+                              <label>
+                                <input type="checkbox" value="{{ order_status['order_status_id'] }}" name="selected[]" {% if selected is defined and selected is iterable and order_status['order_status_id'] in selected %}checked="checked"{% endif %} />
+                                <span class="label label-success pull-right span_margin">{{ order_status['total'] }}</span>{{ order_status['name'] }}
+                              </label>
+                            </div>
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}
+
+                      </div>
+
+                      <div class="notification_body">
+                        <div class="table-responsive">
+                          <table style="border-left: 1px solid #eee;">
+                            <tbody>
+                              {% for seller_notification in seller_notifications %}
+                                <tr>
+                                  <td style="padding-left:20px;">
+                                  <li style="margin-left:10px;">{{ seller_notification}}</li>
+                                  <hr width="100%;">
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-6 text-left">{{ pagination}}</div>
+                        <div class="col-sm-6 text-right">{{ results}}</div>
+                      </div>
+                    </div>
+                  </div>
+                {% else %}
+                  {{ text_no_notification }}
+                {% endif %}
+              </div>
+
+              <div class="tab-pane" id="tab-product">
+                {% if seller_product_reviews is defined and seller_product_reviews %}
+                  <div class="table-responsive">
+                    <table>
+                      <tbody>
+                        {% for seller_product_review in seller_product_reviews %}
+                          <tr>
+                            <td style="padding-left:20px;">
+                              <li style="margin-left:10px;">{{ seller_product_review}}</li>
+                              <hr width="100%;">
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6 text-left">{{ pagination_product}}</div>
+                    <div class="col-sm-6 text-right">{{ results_product}}</div>
+                  </div>
+                {% else %}
+                  {{ text_no_notification }}
+                {% endif %}
+              </div>
+
+              <div class="tab-pane" id="tab-seller">
+                {% if seller_reviews is defined and seller_reviews %}
+                  <div class="table-responsive">
+                    <table>
+                      <tbody>
+                        {% for seller_review in seller_reviews %}
+                          <tr>
+                            <td style="padding-left:20px;">
+                              <li style="margin-left:10px;">{{ seller_review}}</li>
+                              <hr width="100%;">
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6 text-left">{{ pagination_seller}}</div>
+                    <div class="col-sm-6 text-right">{{ results_seller}}</div>
+                  </div>
+                {% else %}
+                  {{ text_no_notification }}
+                {% endif %}
+              </div>
+
+            </div>
+          {% else %}
+            <div class="text-danger">
+              {{ error_warning_authenticate}}
+            </div>
+          {% endif %}
+        </form>
+      {% else %}
+        <div class="alert alert-danger">
+          <i class="fa fa-exclamation-circle"></i>{{ warning_become_seller}}
+          <button type="button" class="close" data-dismiss="alert">×</button>
+        </div>
+      {% endif %}
+      {{ content_bottom}}</div>
+    {{ column_right}}</div>
+</div>
+<script type="text/javascript">
+
+  $('.nav-tabs li a').on('click', function() {
+    if ($(this).attr('id')) {
+      localStorage.setItem("tab-active", $(this).attr('id'))
+      localStorage.setItem("tab-pane-active", $(this).attr('id').substring(4))
+    }
+  });
+
+  $(document).ready(function() {
+    var tab_active = localStorage.getItem("tab-active");
+    var tab_pane_active = localStorage.getItem("tab-pane-active");
+
+    {% if tab is defined and tab %}
+      tab_active = 'tab_tab-{{ tab}}';
+      tab_pane_active = 'tab-{{ tab}}';
+    {% endif %}
+
+    if (tab_active && tab_pane_active) {
+      $("#" + tab_active).parent().addClass('active');
+      $("#" + tab_active).parent().siblings().removeClass('active');
+      $("#" + tab_pane_active).addClass('active');
+      $("#" + tab_pane_active).siblings().removeClass('active');
+    }
+
+  });
+</script>
+<script type="text/javascript">
+  $('input[name*=\'selected\']').on('click', function() {
+    var options = '';
+    $('input[name*=\'selected\']:checked').each(function(index, item) {
+      options += ',' + $(item).val();
+    });
+
+    var url = 'index.php?route=account/customerpartner/notification&page={{ page}}';
+
+    if (options) {
+      url += '&options=' + options.substr(1);
+    }
+
+    location = url;
+  });
+</script>
+<style>
+  hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  li {
+    //font-family: monospace;
+  }
+
+  .span_margin {
+    margin-top: 4px;
+  }
+
+  .all_notifications_div {
+    display: inline-flex;
+    width: 100%;
+  }
+  .notification_filter {
+    width: 20%;
+    font-size: 15px;
+  }
+
+  .notification_body {
+    width: 80%;
+  }
+  @media screen and (max-width: 700px) {
+    .all_notifications_div {
+      display: inline;
+    }
+
+    .notification_filter {
+      width: 100%;
+    }
+
+    .notification_body {
+      width: 100%;
+    }
+  }
+
+</style>
+{{ footer}}

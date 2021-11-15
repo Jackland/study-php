@@ -1,0 +1,357 @@
+/**
+* @file element-ui组件的公共样式
+*
+* @description ele 作为前缀限制，防止污染
+* e.g, class="ele header-title" 
+* @author frontend-group
+*/
+
+/* card 上部标题 */
+.ele.header-title {
+  color: #193465;
+  font-size: 22px;
+  font-weight: bold;
+  padding-bottom: 16px;
+}
+
+/* 页面编辑部分白色背景 */
+.ele.card-container {
+  background-color: #fff;
+  border: 1px solid #DCDCDC;
+  padding: 24px 40px 40px 40px;
+}
+
+
+/* ---- 表单部分 ---- */
+
+/* 必填符号 */
+.ele.required:before {
+  content: '*';
+  color: #E64545;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* 表单部分 */
+.ele.ele-form label {
+  margin-bottom: initial;
+}
+
+.ele.ele-form .el-form-item__label{
+  color: #333;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 14px;
+}
+
+
+.ele.ele-form .el-textarea__inner {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  color: #333;
+  padding-right: 46px;
+  padding-bottom: 20px;
+}
+
+.ele.ele-form .el-textarea__inner:hover,
+.ele.ele-form .el-input__inner:hover {
+  border-color: #666;
+}
+
+.ele.ele-form .el-textarea__inner:focus,
+.ele.ele-form .el-input__inner:focus {
+  border-color: #375ACD;
+}
+
+/* 有错误的input框 */
+.ele.ele-form .is-error .el-textarea__inner{
+  border-color: #E64545;
+}
+
+.ele.ele-form .el-input__inner {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  color: #333;
+  padding-right: 32px;
+}
+
+.ele.ele-form .el-select {
+  width: 100%;
+}
+
+/* 输入框右下角数字统计 */
+.ele.ele-form .el-textarea .el-input__count {
+  line-height: 20px;
+  color: #999;
+  width: calc(100% - 13px);
+  bottom: 1px;
+  right: 10px;
+  text-align: right;
+}
+
+.ele.ele-form .el-form-item {
+  margin-bottom: 18px;
+}
+
+/* 文件上传控件边框调整（长宽控制不作为公共样式） */
+.ele.ele-upload .el-upload--picture-card {
+  border: 1px dashed #ccc;
+  border-radius: initial;
+}
+
+.ele.ele-upload .el-upload--picture-card:hover {
+  border-radius: initial;
+  border: 1px dashed #0047D8;
+}
+
+
+/* ---- 按钮样式部分 ---- */
+.ele.ele-btn-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ele.ele-btn .el-button {
+  border-radius: 2px;
+  font-size: 14px;
+  padding: 0px 20px;
+  display: flex;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+}
+
+.ele.ele-btn .el-button.is-disabled {
+  background: #DCDCDC !important;
+  color: #bbb !important;
+  border: initial !important;
+}
+
+.ele.ele-btn .el-button.is-disabled:hover {
+  cursor: not-allowed !important;
+}
+
+.ele.ele-btn .el-button.outline.is-disabled:hover {
+  background: #DCDCDC !important;
+}
+
+.ele.ele-btn .el-button:hover {
+  cursor: pointer;
+}
+
+
+/* default类型的按钮 */
+.ele.ele-btn .el-button:focus {
+  outline: initial;
+}
+
+.ele.ele-btn .el-button.el-button--default {
+  border: 1px solid #C1C1C1;
+  color: #333;
+  background: #fff;
+}
+
+/* 有外边框的按钮 */
+.ele.ele-btn .el-button.outline{
+  border: 1px solid #375ACD;
+  color: #375ACD;
+  background: #fff;
+} 
+
+.ele.ele-btn .el-button.outline:hover{
+  background: #EFF3FF !important;
+} 
+
+.ele.ele-btn .el-button.el-button--default:hover {
+  border: 1px solid #375ACD;
+  color: #375ACD;
+  background: #fff;
+}
+
+/* primary类型的按钮 */
+.ele.ele-btn .el-button.el-button--primary {
+  border: initial;
+  background: #375ACD;
+  color: #fff;
+}
+
+.ele.ele-btn .el-button.el-button--primary:hover {
+  border: initial;
+  background: #1E42B8 !important;
+}
+
+/* text类型的按钮 */
+.ele.ele-btn.el-button.el-button--text {
+  color: #004BD8;
+  font-size: 13px;
+}
+
+.ele.ele-btn.el-button.el-button--text:hover {
+  text-decoration: underline;
+}
+
+/* 必填项红色星花标志 */
+.ele.ele-required::before,
+.ele.ele-form .el-form-item.is-required .el-form-item__label::before,
+.ele-form-item-required .el-form-item__label::before {
+  content: '*';
+  color: #E64545;
+  margin-right: 4px;
+  position: relative;
+  top: 5px;
+  font-size: 18px;
+  line-height: 14px;
+}
+
+
+/* icon 小图标操作交互 */
+/* 小图标操作交互 */
+.ele.ele-action-icon {
+  font-size: 16px;
+  padding-right: 8px;
+}
+
+.ele.ele-action-icon:hover {
+  cursor: pointer;
+  color: #375ACD;
+}
+
+.ele.ele-action-icon.is-disabled {
+  color: #D4D4D4;
+}
+
+.ele.ele-action-icon.is-disabled:hover {
+  cursor: not-allowed !important;
+  color: #D4D4D4;
+}
+
+/* radio box 统一样式 */
+.ele.ele-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.ele.ele-radio-group .el-radio__input.is-checked+.el-radio__label{
+  /* color: #375ACD; */
+  color: #333;
+  font-size: 14px;
+}
+
+.ele.ele-radio-group .el-radio__input.is-checked .el-radio__inner {
+  border-color: #375ACD;
+  background: #375ACD;
+}
+
+.ele.ele-radio-group .el-radio__inner:hover {
+  border-color: #999;
+}
+
+.ele.ele-radio-group .el-radio__inner {
+  border: 2px solid #999;
+  width: 16px;
+  height: 16px;
+  box-shadow: initial !important;
+}
+
+.ele.ele-radio-group .el-radio__inner::after {
+  width: 6px;
+  height: 6px;
+}
+
+.ele.ele-radio-group .el-radio__original {
+  display: none;
+}
+
+.ele.ele-radio-group .el-radio__label {
+  padding-left: 4px;
+  color: #333;
+}
+
+/* checkbox box 统一样式 */
+.ele.ele-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.ele.ele-checkbox-group .el-checkbox {
+  line-height: 34px;
+}
+
+.ele.ele-checkbox-group .el-checkbox__input.is-checked+.el-checkbox__label{
+  /* color: #375ACD; */
+  color: #333;
+  font-size: 14px;
+}
+
+.ele.ele-checkbox-group .el-checkbox__input.is-checked .el-checkbox__inner {
+  border-color: #375ACD;
+  background: #375ACD;
+}
+
+.ele.ele-checkbox-group .el-checkbox__inner:hover {
+  border-color: #999;
+}
+
+.ele.ele-checkbox-group .el-checkbox__inner {
+  border: 2px solid #999;
+  width: 18px;
+  height: 18px;
+  border-radius: 0px;
+  box-shadow: initial !important;
+}
+
+.ele.ele-checkbox-group .el-checkbox__inner::after {
+  border: 2px solid #FFF;
+  border-left: 0px;
+  border-top: 0px;
+  height: 8px;
+  left: 4px;
+  top: 1px;
+}
+
+.ele.ele-checkbox-group .el-checkbox__original {
+  display: none;
+}
+
+.ele.ele-checkbox-group .el-checkbox__label {
+  padding-left: 4px;
+}
+
+/* checkbox 禁用样式 */
+.ele.ele-checkbox-group .el-checkbox__input.is-disabled .el-checkbox__inner{
+  background: rgba(55, 90, 205, 0.6);
+  border:2px solid rgba(255, 255, 255, 0);
+}
+
+.ele.ele-checkbox-group .el-checkbox__input.is-disabled .el-checkbox__inner::after {
+  border-color: #fff;
+}
+
+/* 下拉框图标调整 */
+.el-select .el-input .el-select__caret {
+  color: #666;
+  font-weight: bold;
+}
+
+/* tooltip 提示框 */
+.ele.ele-tooltip-content {
+  max-width: 232px;
+  word-break: break-word;
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.el-form-item__error {
+  font-size: 13px;
+  padding-top: 2px;
+}
+
+.ele.ele-input-limit .el-input__inner {
+  padding-right: 60px;
+}

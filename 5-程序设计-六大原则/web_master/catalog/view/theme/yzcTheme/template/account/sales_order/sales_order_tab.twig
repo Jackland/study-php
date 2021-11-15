@@ -1,0 +1,74 @@
+{#sales order 内容暂时写在这里，之后再进行抽取#}
+<div role="tabpanel" class="tab-pane active">
+  <div class="panel-default">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist" id="sales_list">
+      <li role="presentation" class="active"><a href="#sale_order" aria-controls="sale_order" role="tab" data-toggle="tab">Sales Order</a></li>
+      {% if importOrder  %}
+        <li role="presentation"><a href="#upload" aria-controls="upload" role="tab" data-toggle="tab">Upload</a></li>
+        <li role="presentation"><a href="#record" aria-controls="record" role="tab" data-toggle="tab"  onclick="emitClick()">File Upload History</a></li>
+      {% endif %}
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane  active" id="sale_order">
+        <div id="salesOrderListPanel">
+          {{ list }}
+        </div>
+      </div>
+      {% if importOrder %}
+        <div role="tabpanel" class="tab-pane " id="upload">
+          <div id="uploadPanel"></div>
+        </div>
+        <div role="tabpanel" class="tab-pane " id="record">
+          <div id="recordsPanel"></div>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+<script>
+  let query = '';
+  {% if filter_orderStatus is defined %}
+  query += '&filter_orderStatus=' + '{{ filter_orderStatus }}';
+  {% endif %}
+  {% if filter_tracking_number is defined %}
+  query += '&filter_tracking_number=' + '{{ filter_tracking_number }}';
+  {% endif %}
+  // $('#salesOrderListPanel').load("{{ url('account/sales_order/sales_order_management/salesOrderList') }}" + query);
+  var imOrder = '{{ importOrder }}';
+  if (imOrder){
+    $('#uploadPanel').load("{{ url('account/sales_order/sales_order_management/salesOrderUpload') }}");
+    $('#recordsPanel').load("{{ url('account/sales_order/sales_order_management/salesOrderRecord') }}");
+  }
+
+  function matchBox(salesOrderIdArray){
+    // var salesOrderIdArray = [753623,753624,753625,753626];
+    $.ajax({
+      url: "{{ url('account/sales_order/match_inventory_window') }}",
+      data:{'sales_order_id':salesOrderIdArray},
+      type: 'post',
+      success: function(json) {
+        $('body').append(json);
+        $('#saleOrderModal').modal({keyboard: false, backdrop: 'static'});
+        $('#saleOrderModal').modal('show');
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    })
+  }
+  function emitClick() {
+    $('#recordsPanel').load("{{ url('account/sales_order/sales_order_management/salesOrderRecord') }}");
+    $('#inputOrderRecordDateFrom').datetimepicker('remove');
+    $('#inputOrderRecordDateTo').datetimepicker('remove');
+  }
+  $('body').on('hidden.bs.modal','#saleOrderModal',function () {
+    $(this).removeData("bs.modal");
+    $('#saleOrderModal').remove();
+  });
+
+</script>
+

@@ -1,0 +1,358 @@
+{{ header }}{{ separate_column_left }}
+{% include 'yzcTheme/template/common/ticket.twig' %}
+
+<script src="catalog/view/javascript/layer/layer.js" type="text/javascript"></script>
+<style>
+    .content-inner-header{
+        padding-bottom: 20px;
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .ticket-lists-left ul li {
+        font-size: 12px;
+        margin-left: -35px;
+        height: 30px;
+        line-height: 30px;
+    }
+    .content-messages{
+        padding-top: 20px;
+    }
+    .message-group-title {
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    .role-customer-title{
+        color:#397C96;
+    }
+    .role-customer-server-title{
+        color:#e3503e;
+    }
+    .message-detail-content {
+      word-wrap: break-word;
+      word-break: break-word;
+    }
+    .message-detail-attachment{
+
+    }
+    .message-detail-title {
+      min-width: 120px;
+      flex-shrink: 0;
+    }
+    .message-detail-attachment ul{
+        list-style-type: none;
+        padding: 0px;
+    }
+    .message-detail-attachment ul li{
+        float: left;
+        margin-right: 20px;
+    }
+
+    #page-bid-list-spot-price-bid {
+      margin-top: 82px;
+      margin-left: 235px;
+    }
+</style>
+
+<div id="page-bid-list-spot-price-bid" class="page-seller-portal">
+  <div class="container">
+    <ul class="breadcrumb">
+      {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+      {% endfor %}
+    </ul>
+
+    <div class="row">
+      <div class="col-md-12">
+        <h1>{{ ticket_title_long }}
+          <div class="pull-right">
+            <a href="{{ cancel }}" data-toggle="tooltip" title="{{ title_cancel }}" class="btn btn-default" data-original-title="{{ title_cancel }}">
+              <i class="fa fa-reply"></i>
+            </a>
+          </div>
+        </h1>
+        {% if rma_edit_error %}
+          <div class="alert alert-warning alert-dismissible"><i class="fa fa-check-circle"></i> {{ error }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="tab-content main">
+          <div role="tabpanel" class="tab-pane active" id="upload">
+            <div class="bg-white p-2">
+
+              <div class="form-group">
+                <button type="button" class="btn btn-primary reply-ticket-button">Reply</button>
+              </div>
+
+              <div class="content-messages">
+
+                {% if lists %}
+                  {% for item in lists %}
+                    <div class="content-messages-group">
+                      <div class="message-group-title {% if item.from == 'server' %} role-customer-server-title {% else %} role-customer-title {% endif %}">
+                        {% if item.is_read == '0' and  item.from == 'server' %}
+                          <span class="glyphicon glyphicon-exclamation-sign"></span>&nbsp;
+                        {% endif %}
+                        ●&nbsp;{{ item.showName }}&emsp;-&emsp;{{ item.submit_time_format }}
+                      </div>
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                          {% if rma_key %}
+                            <div>
+                              <span class="message-detail-title">RMA ID:</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                              <span><a href="{{ rma_url }}">{{ rma_id }}</a></span>
+                            </div>
+                          {% endif %}
+                          {% if sales_order_key %}
+                            <div>
+                              <span class="message-detail-title">Sales Order ID:</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                              <span><a href="{{ sales_order_url }}">{{ sales_order_id }}</a></span>
+                            </div>
+                            {% if ticket_type !=  19%}
+                              <div>
+                                <span class="message-detail-title">Processing Method:</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span>{{ processing_method_name }}</span>
+                              </div>
+                            {% endif %}
+                          {% endif %}
+                          {% if ticket_type == 19 or ticket_type == 20 %}
+                            <div>
+                              <span class="message-detail-title">Item Code:</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                              <span>{{ sales_item_code }}</span>
+                            </div>
+                          {% endif %}
+                          {% if submit_ticket_for == 2 and ticket_type ==  19%}
+                            <div>
+                              <span class="message-detail-title">Tracking Number:</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                              <span>{{ tracking_number }}</span>
+                            </div>
+                          {% endif %}
+                          {% if submit_ticket_for == 21 and ticket_type ==  22%}
+                            <div>
+                              <span class="message-detail-title">Claim Application ID:</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                              <span>{{ safeguard_claim_no }}</span>
+                            </div>
+                          {% endif %}
+                          <div>
+                            <table>
+                              <tr>
+                                <td style="vertical-align: top !important;">
+                                  <div class="message-detail-title" style="">Description:&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                </td>
+                                <td>
+                                  <div class="message-detail-content">
+                                    {{ item.description }}
+                                  </div>
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                          <div>
+                            <table>
+                              <tr>
+                                <td valign="top">
+                                  <div class=" message-detail-title">Attachments:&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                </td>
+                                <td class="message-detail-attachment">
+                                  <ul>
+                                    {% for value in item.attachments %}
+                                      {% if value.is_img %}
+                                        <li><a href="{{ value.urlencode_url }}" target="_blank">{{ value.name }}</a></li>
+                                      {% else %}
+                                        <li><a href="{{ value.urlencode_url }}" download="{{ value.name }}">{{ value.name }}</a></li>
+                                      {% endif %}
+                                    {% endfor %}
+                                  </ul>
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  {#没有记录#}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div style="display: none">
+  <div id="hidden_ticket_id">{{ ticket_id }}</div>
+  <div id="hidden_ticket_long_id">{{ ticket_long_id }}</div>
+  <div id="hidden_submit_ticket_for">{{ submit_ticket_for }}</div>
+  <div id="hidden_submit_ticket_for_name">{{ submit_ticket_for_name }}</div>
+  <div id="hidden_ticket_type">{{ ticket_type }}</div>
+  <div id="hidden_ticket_type_name">{{ ticket_type_name }}</div>
+  <div id="hidden_rma_id">{{ rma_id }}</div>
+  <div id="hidden_sales_order_id">{{ sales_order_id }}</div>
+  <div id="hidden_processing_method">{{ processing_method }}</div>
+  <div id="hidden_processing_method_name">{{ processing_method_name }}</div>
+  <div id="hidden_sales_item_code">{{ sales_item_code }}</div>
+  <div id="hidden_tracking_number">{{ tracking_number }}</div>
+  <div id="hidden_safeguard_claim_no">{{ safeguard_claim_no }}</div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var hidden_ticket_id = $.trim($('#hidden_ticket_id').html());
+        var hidden_ticket_long_id = $.trim($('#hidden_ticket_long_id').html());
+        var hidden_submit_ticket_for = $.trim($('#hidden_submit_ticket_for').html());
+        var hidden_submit_ticket_for_name = $.trim($('#hidden_submit_ticket_for_name').html());
+        var hidden_ticket_type = $.trim($('#hidden_ticket_type').html());
+        var hidden_ticket_type_name = $.trim($('#hidden_ticket_type_name').html());
+        var hidden_rma_id = $.trim($('#hidden_rma_id').html());
+        var hidden_sales_order_id = $.trim($('#hidden_sales_order_id').html());
+        var hidden_processing_method = $.trim($('#hidden_processing_method').html());
+        var hidden_processing_method_name = $.trim($('#hidden_processing_method_name').html());
+        var hidden_sales_item_code = $.trim($('#hidden_sales_item_code').html());
+        var hidden_tracking_number = $.trim($('#hidden_tracking_number').html());
+        var hidden_safeguard_claim_no = $.trim($('#hidden_safeguard_claim_no').html());
+
+        $(".reply-ticket-button").click(function(){
+            $("#myModalTicket").modal({backdrop: 'static', keyboard: false});
+
+            //hide
+            $('div[group="parent-rma"]').hide();
+            $('div[group="parent-sales-order"]').hide();
+            $("#group_seller_item_code").hide();
+            $("#sales_item_code_group").hide();
+            $("#tracking_number_group").hide();
+            $("#safeguard_claim_no_group").hide();
+
+            $("#ticket_group_description").show();
+            $(".ticket_group_attachments").show();
+            $("#myModalTicketFooter").show();
+
+            $("#submit_ticket_for").attr('disabled', true);
+            $("#ticket_type").attr('disabled', true);
+            $("#rma_id").attr('disabled', true);
+            $("#sales_order_id").attr('disabled', true);
+            $("#group_processing_method").attr('disabled', true);
+            $("#tracking_number").attr('disabled', true);
+            $("#seller_item_code").attr('disabled', true);
+            $("#safeguard_claim_no").attr('disabled', true);
+
+            $("#submit_ticket_for").val(hidden_submit_ticket_for);
+            $("#ticket_type").html('<option>' + hidden_ticket_type_name + '</option>');
+            $("#rma_id").val(hidden_rma_id);
+            $("#sales_order_id").val(hidden_sales_order_id);
+            $("#processing_method").html('<option>' + hidden_processing_method_name + '</option>');
+            $("#sales_item_code").html('<option>' + hidden_sales_item_code + '</option>');
+            $("#seller_item_code").val(hidden_sales_item_code);
+            $("#tracking_number").val(hidden_tracking_number);
+            $("#safeguard_claim_no").val(hidden_safeguard_claim_no);
+
+            if(hidden_submit_ticket_for == 1){
+                $('div[group="parent-rma"]').show();
+            } else if (hidden_submit_ticket_for == 2){
+                $('div[group="parent-sales-order"]').show();
+                if (hidden_ticket_type == 19) {
+                  $("#sales_item_code_group").show();
+                  $("#tracking_number_group").show();
+                  $("#group_processing_method").hide();
+                }
+            } else if(hidden_ticket_type == 20) {
+                 $('div[group="parent-rma"]').show();
+                 $("#group_seller_item_code").show();
+            } else if (hidden_ticket_type == 22) {
+                 $("#safeguard_claim_no_group").show();
+            }
+
+
+            $("#myModalTicketLabel").text('Reply Request('+ hidden_ticket_long_id +')');
+            //remove button
+            $('#myModalTicketFooter').html('<button id="replyTicketSubmit" type="button" class="btn btn-primary btn-submit">Submit</button>');
+            $('#myModalTicket').modal('show');
+        });
+
+
+        $(document).on('click', "#replyTicketSubmit", function() {
+
+            let descriptionValue = $.trim($("#ticket_description").val());
+            if( descriptionValue.length < 1){
+                layer.msg('Description can not be left blank.');
+                return false;
+            }
+            if( descriptionValue.length > 1000 ){
+                layer.msg('Description more than 1000 characters');
+                return false;
+            }
+            $("#ticket_description").val(descriptionValue);
+
+
+            //upload files
+            let upfiles=[]
+            $(".ticket-upload-file li a").each(function(index, ele){
+                let item = {};
+                item.name=$(ele).text();
+                item.url =$(ele).data('val');
+                upfiles.push(item);
+            });
+
+            var sendData = {};
+            sendData.ticket_id = hidden_ticket_id;
+            sendData.ticket_description = $.trim($("#ticket_description").val());
+            sendData.ticket_attachments = JSON.stringify(upfiles);
+
+
+            var url = "index.php?route=account/ticket/reply&ticket_id=" + hidden_ticket_id;
+
+            block.blockUI();
+            $("#replyTicketSubmit").attr("disabled", true);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: sendData,
+                dataType: 'json',
+                success: function (result, status, xhr) {
+                    if (result.ret == 1) {
+                        $('#myModalTicket').modal('hide');
+                        clearTicketInputsReply();
+                        layer.msg(result.msg);
+                        setTimeout(function(){
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        layer.open({
+                            title: 'Failed'
+                            , content: result.msg
+                            , btn: ['OK']
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    layer.msg('error');
+                },
+                complete: function (xhr, status) {
+                    $("#replyTicketSubmit").attr("disabled", false);
+                    block.unBlockUI();
+                }
+            });
+        });
+
+
+        function clearTicketInputsReply(){
+            $("#ticket_description").val("");
+            //upload files
+            $(".ticket_group_attachments").find(".ticket-upload-file").html('');
+            $(".ticket_group_attachments").find("textarea").val('');
+        }
+    });
+</script>
+
+{{ footer }}

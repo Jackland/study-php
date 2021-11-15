@@ -1,0 +1,204 @@
+<style>
+    .progress-wrap{
+        height:40px;
+        width:80%;
+        margin:3rem auto;
+        text-align: center;
+    }
+    .fa-stack-2x{
+        font-size:2em !important;
+    }
+    .mt-5{
+        margin-top: 3rem!important;
+    }
+    .wrap{
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .align-middle {
+        vertical-align: middle!important;
+    }
+    .mb-1{
+        margin-bottom: .25rem!important;
+    }
+    .my-auto {
+        margin-bottom: auto!important;
+        margin-top: auto!important;
+
+    }
+    .mx-3 {
+        margin-left: 1rem!important;
+        margin-right: 1rem!important;
+    }
+    .border {
+        border: 1px solid #dee2e6!important;
+    }
+    .col {
+        -ms-flex-preferred-size: 0;
+        flex-basis: 0;
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        max-width: 100%;
+    }
+    .border-primary {
+        border-color: #007bff!important;
+    }
+    .completed{
+        color: #006eff;
+    }
+    .completed  .fa-circle-thin:before{
+        content: "\f111" !important;
+    }
+    .completed .fa-stack .fa-stack-1x{
+        color:#fff !important;
+    }
+    .title-td {
+        font-weight: bold;
+    }
+</style>
+<div class="modal-body">
+    <div class="progress-wrap mt-5 wrap">
+        <div class="align-middle {% if receiveOrder.status >= 1 %} completed {% endif %}">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <span class="fa-stack-1x">1</span>
+            </span>
+            <div>
+                <p class="mb-1">{{ text_status_application }}</p>
+            </div>
+        </div>
+        <span class="col border mx-3 my-auto {% if receiveOrder.status >= 2 %} border-primary {% endif %}"></span>
+        <div class="align-middle {% if receiveOrder.status >= 2 %} completed {% endif %}">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <span class="fa-stack-1x">2</span>
+            </span>
+            <div>
+                <p class="mb-1"><strong>{{ text_status_inspection }}</strong></p>
+            </div>
+        </div>
+        <span class="col border mx-3 my-auto {% if receiveOrder.status >= 6 %} border-primary {% endif %}"></span>
+        <div class="align-middle {% if receiveOrder.status >= 6 %} completed {% endif %}">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <span class="fa-stack-1x">3</span>
+            </span>
+            <div>
+                <p class="mb-1">{{ text_status_confirm }}</p>
+            </div>
+        </div>
+        <span class="col border mx-3 my-auto {% if receiveOrder.status >= 7 %} border-primary {% endif %}"></span>
+        <div class="align-middle {% if receiveOrder.status >= 7 %} completed {% endif %}">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <span class="fa-stack-1x">4</span>
+            </span>
+            <div>
+                <p class="mb-1">{{ text_status_receipt }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <td class="title-td">{{ detail_column_receiving_order_number }}:</td>
+                <td>{{ receiveOrder.receive_number }}</td>
+                <td class="title-td">{{ detail_column_date_of_application }}:</td>
+                <td>{{ receiveOrder.apply_date|date('Y-m-d') }}</td>
+                <td class="title-td">{{ detail_column_port_of_departure }}:</td>
+                <td>{{ receiveOrder.port_start }}</td>
+            </tr>
+            <tr>
+                <td class="title-td">{{ detail_column_container_number }}:</td>
+                <td>{{ receiveOrder.container_code }}</td>
+                <td class="title-td">{% if seller_accounting_type != 2 %}{{ detail_column_estimated_date_of_arrival }}:{% endif %}</td>
+                <td>{% if seller_accounting_type != 2 %}{{ receiveOrder.expected_date|date('Y-m-d') }}{% endif %}</td>
+                <td class="title-td">{{ detail_column_whether_to_hold }}:</td>
+                <td>{{ receiveOrder.package_flag }}</td>
+            </tr>
+            <tr>
+                <td class="title-td">{{ detail_column_container_size }}:</td>
+                <td>{{ receiveOrder.container_size }}</td>
+                <td class="title-td">{{ detail_column_receipt_date }}:</td>
+                <td>{{ receiveOrder.receive_date ? receiveOrder.receive_date|date('Y-m-d') : '-' }}</td>
+                <td class="title-td">{{ detail_column_warehouse }}:</td>
+                <td>Cloud Warehouse</td>
+            </tr>
+            <tr>
+                <td class="title-td">{{ detail_column_total_number }}:</td>
+                <td>{{ receiveOrderDetails|length }}</td>
+                <td class="title-td">{{ detail_column_shipping_way }}:</td>
+                <td>{{ receiveOrder.shipping_way }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="title-td">{{ detail_column_shipping_fee }}:</td>
+                <td>{{ receiveOrder.ocean_freight }}</td>
+                <td class="title-td">{{ detail_column_remark }}:</td>
+                <td colspan="3">{{ receiveOrder.remark }}</td>
+            </tr>
+        </table>
+    </div>
+    <h4>{{ text_inbound_details }}</h4>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>{{ detail_column_sku }}</th>
+                <th>{{ detail_column_mpn }}</th>
+                <th>{{ detail_column_product_name }}</th>
+                <th>{{ detail_column_currency }}</th>
+                <th>{{ detail_column_unit_price }}</th>
+                <th>{{ detail_column_length }}</th>
+                <th>{{ detail_column_width }}</th>
+                <th>{{ detail_column_height }}</th>
+                <th>{{ detail_column_weight }}</th>
+                <th>{{ detail_column_estimated_number }}</th>
+                <th>{{ detail_column_receipt_quantity }}</th>
+                <th data-toggle="tooltip" title="{{ help_difference }}">{{ detail_column_poor_quantity }}<i class="giga icon-V10-wenhaotishi"></i></th>
+                <th>{{ detail_column_receipt_remark }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if receiveOrderDetails %}
+                {% for item in receiveOrderDetails %}
+                    <tr>
+                        {% if item.tag %}
+                          <td class="text-left" style="min-width: 120px">{{ item.sku }}
+                            {% for tag in item.tag %}
+                              <span style="font-weight: bold; color: red;padding-left: 1px">{{ tag }}</span>
+                            {% endfor %}
+                          </td>
+                        {% else %}
+                            <td class="text-left">{{ item.sku }}</td>
+                        {% endif %}
+                        <td>{{ item.mpn }}</td>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.currency }}</td>
+                        <td>{{ item.item_price }}</td>
+                        <td>{{ item.length }}</td>
+                        <td>{{ item.width }}</td>
+                        <td>{{ item.height }}</td>
+                        <td>{{ item.weight }}</td>
+                        <td>{{ item.expected_qty }}</td>
+                        <td>{{ item.received_qty }}</td>
+                        <td>{{ item.expected_qty - item.received_qty }}</td>
+                        <td>{{ item.receive_remark }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td class="text-center" colspan="13">{{ text_no_results}}</td>
+                </tr>
+            {% endif %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">{{ button_close }}</button>
+</div>
+

@@ -1,0 +1,269 @@
+.recommend-detail-container{
+  font-family:  Arial;
+  font-size: 14px;
+}
+
+/*left*/
+  .buyer-info{
+    display: flex;
+  }
+  .buyer-info-left{
+    padding: 30px 20px 20px;
+    background: #fff;
+    flex: 1;
+    border: 1px solid #e6e7eb;
+  }
+  .buyer-info-left-main{
+    min-height: 720px;
+    background: url("./buyer-bg.png") no-repeat center;
+
+  }
+  .percent-val{
+    height: 130px;
+  }
+  .user-flag{
+    display: inline-block;
+    padding: 8px 24px;
+    background: #fff;
+    box-shadow:  0 0 8px rgba(0, 0, 0, .15);
+  }
+  .user-flag i{
+    font-style: normal;
+  }
+  .flag-value{
+    color: #000;
+    font-weight: bold;
+  }
+  .flag-tab{
+    margin-top: 30px;
+  }
+  .pad-l-70{
+    padding-left: 70px;
+  }
+  .pad-r-70{
+    padding-right: 70px;
+  }
+  .pad-l-90{
+    padding-left: 90px;
+  }
+  .pad-r-90{
+    padding-right: 90px;
+  }
+  .pad-l-130{
+    padding-left: 130px;
+  }
+  .pad-r-130{
+    padding-right: 130px;
+  }
+  .pad-l-280{
+    padding-left: 280px;
+  }
+  .per-val{
+    font-size: 56px;
+    color: #004bd8;
+  }
+  .per-val .unit{
+    font-size: 24px;
+    margin-left: 4px;
+  }
+  .per-dis{
+    font-size: 18px;
+    color: #666;
+  }
+  .buyer-type{
+    font-size: 18px;
+    font-weight: bold;
+    color: #004bd8;
+    margin-top: 24px;
+  }
+
+  .buyer-info-tips{
+    min-height: 300px;
+  }
+  .tip-title{
+    font-size: 20px;
+    color: #333;
+    padding-left: 60px;
+  }
+  .tip-item{
+    display: flex;
+  }
+  .tip-item-index{
+    width: 18px;
+    height: 18px;
+    background: #edeff3;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 18px;
+    margin-right: 8px;
+    font-weight: bolder;
+  }
+  .tip-item{
+    margin: 24px 60px 0 60px;
+  }
+
+/*left*/
+
+
+/*right*/
+.buyer-info-right{
+  width: 318px ;
+  min-height: 200px;
+  margin-left: 20px;
+
+  border-top: none;
+}
+.buyer-info-right-top-guid{
+  width: 100%;
+  background: #375acd;
+  height: 4px;
+  border-left: 1px solid #375acd;
+  border-right: 1px solid #375acd;
+}
+.buyer-info-right-main{
+  padding: 24px 20px;
+  border: 1px solid #e6e7eb;
+  background: #fff;
+  border-top: none;
+}
+.buyer-name{
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+.buyer-id{
+  font-size: 14px;
+  color: #666;
+  padding-bottom: 30px;
+  border-bottom: 1px dashed #e5e5e5;
+  position: relative;
+}
+.circle{
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #edeff3;
+  position: absolute;
+}
+.c-left{
+  left: -30px;
+  bottom: -10px;
+}
+.c-right{
+  right: -30px;
+  bottom: -10px;
+}
+.account-label{
+  font-size: 14px;
+  color: #666;
+}
+.account-value{
+  font-size: 14px;
+  color: #333;
+}
+.account-type{
+  margin-top: 24px;
+  margin-bottom: 10px;
+}
+.main-category{
+  margin-bottom: 24px;
+}
+.user-info{
+  margin-bottom: 8px;
+}
+.icon-phone,.icon-wx,.icon-qq{
+  font-size: 28px;
+  color: #337beb;
+  vertical-align: middle;
+}
+.icon-qq{
+  font-size: 24px;
+  padding: 0 2px;
+}
+.val-phone,.val-wx{
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+.user-wx{
+  margin-bottom: 8px;
+}
+.user-qq{
+  margin-bottom: 24px;
+}
+.no-interest{
+  text-align: center;
+  margin-top: 16px;
+}
+/*right*/
+
+
+
+/*common*/
+#container{
+  min-width: 1440px;
+  overflow: auto;
+}
+a.button.button-org{
+  display: block;
+  height: 38px;
+  line-height: 38px;
+  color: #ff6a00;
+  font-size: 14px;
+  text-align: center;
+  background: #fff;
+  font-weight: bold;
+  border: 1px solid #ff6a00;
+  cursor: pointer;
+}
+a.button.button-org:hover{
+  color: #fff;
+  background: #ff6a00;
+}
+.link-text-color{
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+}
+.link-text-color:hover{
+  color: #004bd8;
+  text-decoration: underline;
+}
+/*common*/
+
+/*reason*/
+  .reason-tab{
+    height: 36px;
+    line-height: 34px;
+    display: inline-block;
+    padding: 0 14px;
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+  .reason-tab:last-child{
+    margin-bottom: 0;
+  }
+  .reason-tab:hover,.reason-tab.active{
+    background: #3A75DC;
+    color: #fff;
+    border: 1px solid #3A75DC;
+  }
+  .border-raduis-2{
+    border-radius: 2px;
+  }
+/*reason*/
+
+/*layer.open submit 不可用*/
+.yzc_layer.submit_disabled .layui-layer-btn0 {
+  background-color: #dcdcdc !important;
+  color: #999;
+  border: 1px solid #dcdcdc !important;
+  cursor: not-allowed;
+}
+
+.per-val>div,.per-dis>div{
+  width: 118px;
+  text-align: center;
+}

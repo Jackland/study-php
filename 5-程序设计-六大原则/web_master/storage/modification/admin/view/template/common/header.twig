@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html dir="{{ direction }}" lang="{{ lang }}">
+<head>
+<meta charset="UTF-8" />
+<title>{{ title }}</title>
+<base href="{{ base }}" />
+{% if description %}
+<meta name="description" content="{{ description }}" />
+{% endif %}
+{% if keywords %}
+<meta name="keywords" content="{{ keywords }}" />
+{% endif %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+<script type="text/javascript" src="view/javascript/jquery/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="view/javascript/bootstrap/js/bootstrap.min.js"></script>
+<link href="view/stylesheet/bootstrap.css" type="text/css" rel="stylesheet" />
+<link href="view/javascript/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
+<script src="view/javascript/jquery/datetimepicker/moment/moment.min.js" type="text/javascript"></script>
+<script src="view/javascript/jquery/datetimepicker/moment/moment-with-locales.min.js" type="text/javascript"></script>
+<script src="view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<link href="view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" media="screen" />
+  <script src="view/javascript/bootstrap/js/bootstrap-table.min.js" type="text/javascript"></script>
+  <link type="text/css" href="view/stylesheet/bootstrap-table.css" rel="stylesheet" media="screen" />
+  <link type="text/css" href="view/stylesheet/_dropdown.css" rel="stylesheet" media="screen" />
+<link type="text/css" href="view/stylesheet/stylesheet.css?v={{ app_version }}" rel="stylesheet" media="screen" />
+  <link rel="stylesheet" href="view/stylesheet/stylesheet_giga.css?v={{ app_version }}" rel="stylesheet" media="screen" />
+{% for style in styles %}
+<link type="text/css" href="{{ style.href }}" rel="{{ style.rel }}" media="{{ style.media }}" />
+{% endfor %}
+{% for link in links %}
+<link href="{{ link.href }}" rel="{{ link.rel }}" />
+{% endfor %}
+  <link type="text/css" href="/public/fonts/giga/iconfont.css?v={{ app_version }}" rel="stylesheet">{#B2B页面改版 图标字体#}
+<script src="view/javascript/common.js?v={{ app_version }}" type="text/javascript"></script>
+{% for script in scripts %}
+<script type="text/javascript" src="{{ script }}"></script>
+{% endfor %}
+  <style>
+    #header .nav > li{
+      padding: 0;
+      line-height: 57px;
+    }
+  </style>
+  {#  toast#}
+  <link href="/catalog/view/javascript/toast/jquery.toast.min.css" rel="stylesheet" type="text/css"/>
+  <link href="/catalog/view/javascript/toast/jquery.toast.update.css" rel="stylesheet" type="text/css"/>
+  <script src="/catalog/view/javascript/toast/jquery.toast.min.js" type="text/javascript"></script>
+  {#  toast#}
+  {{ this.head() }}
+</head>
+<body>
+{{ this.beginBody() }}
+<div id="container">
+<header id="header" class="navbar navbar-static-top">
+  <div class="container-fluid" style="height: 100%">
+
+
+    {#<div id="header-logo" class="navbar-header"><a href="{{ home }}" class="navbar-brand"><img src="view/image/logo.png" alt="{{ heading_title }}" title="{{ heading_title }}" /></a></div>#}
+    {#<a href="#" id="button-menu" class="hidden-md hidden-lg"><span class="fa fa-bars"></span></a>#}
+    {% if logged %}
+
+
+
+
+    <ul class="nav navbar-nav navbar-right" style="padding: 0">
+
+          <li class="dropdown" id="wk-notify"></li>
+          {% if notification_access is defined and notification_access %}
+            <script type="text/javascript">
+              let time_interval = 1000 * 300; //毫秒
+              $(document).ready(function () {
+                getNotification(new Date().getTime());
+                setInterval(wk_notify, time_interval);
+              });
+
+              // 主方法 判断是否需要执行
+              function wk_notify() {
+                let this_timestamp = new Date().getTime();
+                let storage_timestamp = localStorage.getItem('admin_notification_timestamp');
+                let storage_data = localStorage.getItem('admin_notification_data');
+                storage_timestamp = (storage_timestamp == null || storage_timestamp == undefined) ? 0 : storage_timestamp;
+                storage_data = (storage_data == null || storage_data == undefined) ? '' : storage_data;
+                if (this_timestamp - storage_timestamp > time_interval || storage_data === '') {
+                  getNotification(this_timestamp);
+                } else {
+                  $('#wk-notify').html(JSON.parse(storage_data));
+                }
+              }
+
+              // 获取 notification
+              function getNotification(now_timestamp) {
+                $.ajax({
+                  url: 'index.php?route=customerpartner/notification/notifications&user_token={{ user_token }}',
+                  method: 'post',
+                  dataType: 'json',
+                  success: function (json) {
+                    localStorage.setItem('admin_notification_timestamp', now_timestamp);
+                    localStorage.setItem('admin_notification_data', JSON.stringify(json));
+                    $('#wk-notify').html(json);
+                  },
+                });
+              }
+            </script>
+          {% endif %}
+
+      <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{ image }}" alt="{{ firstname }} {{ lastname }}" title="{{ username }}" id="user-profile" class="img-circle" />{{ firstname }} {{ lastname }} <i class="fa fa-caret-down fa-fw"></i></a>
+        <ul class="dropdown-menu dropdown-menu-right">
+          <li><a href="{{ profile }}"><i class="fa fa-user-circle-o fa-fw"></i> {{ text_profile }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li class="dropdown-header">{{ text_store }}</li>
+          {% for store in stores %}
+          <li><a href="{{ store.href }}" target="_blank">{{ store.name }}</a></li>
+          {% endfor %}
+          <li role="separator" class="divider"></li>
+        </ul>
+      </li>
+      <li style="text-align: center"><a href="{{ logout }}"><i class="fa fa-sign-out"></i> <span class="hidden-xs hidden-sm hidden-md" style="right: -15px">{{ text_logout }}</span></a></li>
+    </ul>
+    {% endif %}
+  </div>
+</header>

@@ -1,0 +1,422 @@
+{{ this.title('Sales and Purchase Agreement') }}
+{{ this.params('breadcrumbs', [
+  'home',
+  'current'
+]) }}
+{{ this.params('pageTitle', {show: true}) }}
+{{ js(['js/common/toolString.js']) }}
+{{ jsOrigin(['/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js',
+  'catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js']) }}
+{{ cssOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css']) }}
+
+{{
+this.params('pageTitle', {
+  show: true,
+  buttons: [{
+    id: 'insert',
+    content: 'Create a New Agreement',
+    href:'index.php?route=account/tripartite_agreement/create',
+  }]
+})
+}}
+<style>
+  .oris-comments textarea{
+    height: 182px;
+  }
+
+  .special-note{
+    padding: 2px 8px;
+    background: rgba(230, 69, 69, 0.06);
+    color:#E64545 ;
+    border-radius: 100px;
+    display: inline-block;
+  }
+  .special-note1{
+    background-color:#F7F8FA ;
+    color: #666666;
+  }
+  .agreement-list .btn-text i.giga{
+    font-size: 24px;
+  }
+  .cancel-agreement .modal-dialog{
+    width: 640px;
+  }
+  .oris-w230{
+    width: 230px;
+  }
+</style>
+<div id="salesAgreement" class="buyer-page">
+  <div class="oris-row">
+    <div class="oris-col-3">
+      <label for="agreementName">Agreement Name</label>
+      <input type="text" name="agreementName" placeholder="Please Input" id="agreementName" class="oris-input"
+             autocomplete="off" value="{{ search.title }}"/>
+    </div>
+    <div class="oris-col-3">
+      <label for="agreementShop">Agreement Seller</label>
+      <input type="text" name="agreementShop" placeholder="Please Input" id="agreementShop" class="oris-input"
+             value="{{ search.screenname }}"/>
+    </div>
+    <div class="oris-col-3 oris-select">
+      <label for="status">Status</label>
+      <select id="status" title="Please Select" name="status">
+        <option value="0" selected> All </option>
+        {% for key,val in filter_status %}
+          <option value="{{ key }}" {% if key ==search.status %}selected{% endif %}>{{ val }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="oris-col-3 search-btn m24-t">
+      <button id="filterBtn" type="button" class="oris-button oris-button-bigger width80" data-toggle="tooltip"
+              title="Filter">Filter
+      </button>
+    </div>
+  </div>
+  <table class="oris-table m20-t agreement-list" id="agreementListTab">
+    <thead>
+    <tr>
+      <th class="text-left oris-w100">Agreement ID</th>
+      <th class="oris-w200 text-left">Agreement Name</th>
+      <th class="oris-w180 text-left">Agreement Seller</th>
+      <th class="oris-w180 text-left">Agreement Validity</th>
+      <th class="oris-w160 text-left">Signing Time</th>
+      <th class="text-left oris-w230">Status</th>
+      <th class="text-left oris-w100 ">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if list|length %}
+      {% for e,item in list %}
+        <tr>
+          <td class="text-left oris-w100">
+            <div> {{ item.agreement_no }}</div>
+          </td>
+          <td class="text-left oris-w200">
+            <div class="max-line2 white-normal" title="{{ item.title }}">{{ item.title }}</div>
+          </td>
+          <td class="text-left">
+            <a class="link max-line2" title="{{ item.seller. screenname }}"  target="_blank"
+               href="index.php?route=seller_store/products&id={{ item.seller. customer_id}}">
+            {{ item.seller. screenname }}
+            </a>
+          </td>
+          <td class="text-left oris-w180">
+            <div>
+              {{ item.effect_time |formatZone(country,null,'Y-m-d')  }} - {{ item.expire_time |formatZone(country,null,'Y-m-d')  }}
+            </div>
+          </td>
+          <td class="text-left oris-w160">
+            <div>
+              {% if item.seller_approved_time %}
+                {{ item.seller_approved_time }}
+              {% else %}
+                --
+              {% endif %}
+            </div>
+          </td>
+          <td class="text-left oris-w230">
+            <div class="flex-layout">
+              <span class="oris-circle {{ item.status_color }}"></span>
+              {{ item.status_name }}
+            </div>
+            {% if item.seven_remind > 0 %}
+              <div class="special-note mt-04">Due in {{ item.seven_remind }} day(s)</div>
+              <br>
+            {% endif %}
+            {% if item.early_termination == true %}
+                <div class="special-note mt-04">Seller termination request</div>
+              <br>
+            {% endif %}
+            {%if item.early_cancel == true %}
+              <div class="special-note mt-04">Seller cancellation request</div>
+              <br>
+            {% endif %}
+            {% if item.send_early_termination == true %}
+              <div class="special-note special-note1 mt-04">Termination request submitted</div>
+              <br>
+            {% endif %}
+            {% if item.send_early_cancel == true %}
+              <div class="special-note special-note1 mt-04">Cancellation request submitted</div>
+              <br>
+            {% endif %}
+          </td>
+          <td class="text-left">
+            <a href="/index.php?route=account/tripartite_agreement/detail&agreement_id={{ item.id }}" target="_blank"
+               data-index="{{ e }}" class="btn-text action-view">
+              <span><i class="giga icon-V10_chakan" data-toggle="tooltip" title="View"></i></span>
+            </a>
+            {% if item.can_tripartite_edit == true %}
+            <a href="javascript:void(0)" data-id="{{ item.id }}" class="btn-text action-edit">
+              <span><i class="giga icon-seller_bianji-01" data-toggle="tooltip" title="Edit"></i></span>
+            </a>
+            {% endif %}
+            {% if item.can_tripartite_delete == true %}
+              <a href="javascript:void(0)" data-id="{{ item.id }}" class="btn-text action-delete">
+                <span><i class="giga icon-seller_lajitong-01" data-toggle="tooltip" title="Delete"></i></span>
+              </a>
+            {% endif %}
+            {% if item.can_tripartite_cancel ==true %}
+            <a href="javascript:void(0)" data-id="{{ item.id }}" class="btn-text action-cancel" data-status="{{ item.status }}">
+              <span><i class="giga icon-V10_xianhuobaozhengjin-shanchu-011" data-toggle="tooltip" title="Cancel"></i></span>
+            </a>
+            {% endif %}
+            {% if item.can_tripartite_handle == true %}
+            <a href="/index.php?route=account/tripartite_agreement/detail&agreement_id={{ item.id }}" target="_blank"
+               data-index="{{ e }}" class="btn-text action-handle">
+              <span><i class="giga icon-V10_xianhuobaozhengjin-quchuli-01" data-toggle="tooltip" title="Process"></i></span>
+            </a>
+            {% endif %}
+            {% if item.can_tripartite_renewal == true %}
+            <a href="javascript:void(0)" data-id="{{ item.id }}" class="btn-text action-renew">
+              <span><i class="giga icon-xuqian-01" data-toggle="tooltip" title="Renew"></i></span>
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr class="no-records">
+        <td colspan="7">No records.</td>
+      </tr>
+    {% endif %}
+    </tbody>
+  </table>
+  {% if list|length %}
+    {# 分页 #}
+    <div class="oris-row oris-pagination">
+      <ul id="tablePagination"></ul>
+    </div>
+  {% endif %}
+</div>
+
+{#取消协议#}
+<div class="modal fade oris-modal cancel-agreement" id="cancelAgreement" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false">
+  <div class="modal-dialog h-v-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          <i class="giga icon-V10_danchuangguanbi"></i>
+        </button>
+        <div class="modal-title" id="myModalLabel">Confirm</div>
+      </div>
+      <div class="modal-body">
+        <div class="myModalTitle text-bold text-larger">Do you confirm to initiate the request to cancel this agreement?</div>
+        <div class="modal-body-group">
+          <div class="p20-t p2-b">
+            <label class="required-before">Reasons for Cancellation</label>
+          </div>
+          <div class="oris-comments">
+            <textarea rows="4" class="oris-input modalMarginReason" onkeyup="salesAgreement.computWordReason(this)"
+                      id="cancelReason" placeholder="Please enter the Reason for Cancellation"></textarea>
+            <span class="letter-count"><span id="addLen" class="link-color">0</span>/500</span>
+            <input type="hidden" class="agreementId">
+          </div>
+          <span class="text-danger" id="reason_error"></span>
+        </div>
+        <div class="text-light">Your cancellation request will be canceled automatically by the system if it is not processed by Buyer before the agreement starts;
+          and the request will be refused automatically if not processed by Buyer within 7 days.</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="oris-button oris-button-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="oris-button" id="conformCancel" >OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% apply script %}
+  <script type="text/javascript">
+    $(function () {
+      salesAgreement.initComponents();
+      salesAgreement.bindClick();
+      $('#status').selectpicker();
+    });
+    var salesAgreement = {
+      fitlerData: null,
+      // 初始化组建
+      initComponents: function () {
+        block.unBlockUI();
+        window.history.pushState({}, 0, '{{ url('account/tripartite_agreement') }}');
+        // 初始化分页
+        $('#tablePagination').bootstrapPaginator({
+          bootstrapMajorVersion: 3,
+          size: 'normal',
+          currentPage: {{ paginator.getPage() }},
+          totalPages: {{ max(paginator.getPageCount(), 1) }},
+          numberOfPages: 5,
+          pageRange: [10, 20, 30, 50, 100],
+          rowsOfPage: {{ paginator.getPageSize() }},
+          total: {{ paginator.totalCount }},
+          onPageClicked: function(event, originalEvent, type, page) {
+            block.blockUI();
+            salesAgreement.loadPage('{{ paginator.getUrlWithNoPage() }}&page_limit=' + originalEvent['page_info']['page_limit'] + '&page=' + page);
+          }
+        });
+      },
+      bindClick: function () {
+        $("#salesAgreement").on('click','#filterBtn',function () {
+          salesAgreement.fitlerData = salesAgreement.getUrlTabList();
+        })
+          // 取消协议
+          .on('click','.action-cancel',function () {
+            let agreementStatus = $(this).attr('data-status');
+            let agreementId = $(this).attr('data-id');
+            let requestUrl = '{{ url('account/tripartite_agreement/cancel') }}';
+            if (agreementStatus==15){
+              let modalwindow = $("#cancelAgreement");
+              modalwindow.find('.agreementId').val(agreementId);
+              $("#conformCancel").attr('data-status',agreementStatus)
+              modalwindow.modal();
+            }else{
+              var cancel =  layer.confirm('Do you confirm to cancel this agreement?', {
+                title: 'Confirm',
+                skin: 'oris-layer',
+                btn: ['OK', 'Cancel'] //按钮
+              }, function () {
+                layer.close(cancel);
+                let formData = {
+                  agreement_id:agreementId,
+                  status:agreementStatus,
+                }
+                salesAgreement.cancelDelAgreement(requestUrl,formData);
+              }, function () {
+                layer.close(cancel);
+              });
+            }
+
+        })
+          //删除协议
+          .on('click','.action-delete',function () {
+            let agreementId = $(this).attr('data-id');
+            let requestUrl = '{{ url('account/tripartite_agreement/delete') }}';
+            var deleteA =  layer.confirm('Do you confirm to delete this agreement?', {
+              title: 'Confirm',
+              skin: 'oris-layer',
+              btn: ['OK', 'Cancel'] //按钮
+            }, function (deleteA) {
+              layer.close(deleteA);
+              let formData = {
+                agreement_id:agreementId
+              }
+              salesAgreement.cancelDelAgreement(requestUrl,formData);
+            }, function (deleteA) {
+              layer.close(deleteA);
+            });
+          })
+          //编辑协议
+          .on('click','.action-edit',function () {
+            let agreementId = $(this).attr('data-id');
+            salesAgreement.loadPage('{{ url('account/tripartite_agreement/create')}}'+'&agreement_id='+agreementId);
+          })
+          //续签协议
+          .on('click','.action-renew',function () {
+            let agreementId = $(this).attr('data-id');
+            salesAgreement.loadPage('{{ url('account/tripartite_agreement/create')}}'+'&agreement_id='+agreementId+ '&renew=1');
+          })
+        $("#conformCancel").on('click',function () {
+          let requestUrl = '{{ url('account/tripartite_agreement/cancel') }}';
+          let agreementId = $("#cancelAgreement").find('.agreementId').val();
+          let reason = $("#cancelReason").val();
+          let agreementStatus = $(this).attr('data-status');
+          $("#cancelReason").removeClass('border-danger');
+          if (!reason){
+            $("#cancelReason").addClass('border-danger');
+            return
+          }
+          let formData ={
+            agreement_id:agreementId,
+            reason:reason,
+            status:agreementStatus,
+          }
+          salesAgreement.cancelDelAgreement(requestUrl,formData);
+        })
+      },
+      loadPage: function (url) {
+        block.blockUI();
+        window.location.href = url;
+      },
+      //按条件查询列表
+      getQueryParams: function() {
+        let params = {};
+        let agreementName = $('input[name=\'agreementName\']').val().trim();
+        if (agreementName) {
+          params['title'] = agreementName;
+        }
+        let agreementShop = $('input[name=\'agreementShop\']').val().trim();
+        if (agreementShop) {
+          params['screenname'] = agreementShop;
+        }
+        let status = $('select[name=\'status\']').val().trim();
+        if (status !=0) {
+          params['status'] = status;
+        }
+        console.log(params)
+        return params;
+      },
+      getUrlTabList: function(){
+        let url = "{{ url('account/tripartite_agreement') }}";
+        if ($.param(salesAgreement.getQueryParams())){
+          url= url + '&' +  $.param(salesAgreement.getQueryParams());
+        }
+        salesAgreement.loadPage(url);
+      },
+      cancelDelAgreement: function (requestUrl,formData) {
+        $.ajax({
+          url: requestUrl,
+          data: JSON.stringify(formData),
+          cache: false,
+          contentType: 'application/json;charset=UTF-8',
+          type: "post",
+          dataType: 'json',
+          success: function (res) {
+            if (res.code==200) {
+              $("#cancelAgreement").modal('hide');
+              $.toast({
+                heading: false,
+                text: res.msg,
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'success',
+                hideAfter: false,
+                allowToastClose: false,
+                loader: false,
+                hideAfter: 3000,
+              });
+              block.unBlockUI();
+              salesAgreement.getUrlTabList();
+            } else {
+              $.toast({
+                heading: false,
+                text: res.msg,
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: false,
+                allowToastClose: false,
+                loader: false,
+                hideAfter: 3000,
+              });
+              block.unBlockUI();
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        })
+      },
+      computWordReason: function (that) {
+        var calcReturn = toolString.calcStringLength($(that).val(), 500);
+        $(that).val(calcReturn.fullStr);
+        $("#addLen").text(calcReturn.len)
+        if (calcReturn.len < 1) {
+          $("#cancelReason").addClass('border-danger');
+        } else {
+          $("#cancelReason").removeClass('border-danger');
+        }
+      }
+    };
+  </script>
+{% endapply %}
+

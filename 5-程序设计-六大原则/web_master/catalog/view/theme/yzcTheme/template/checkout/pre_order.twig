@@ -1,0 +1,847 @@
+{{ header }}
+
+<style>
+    .breadcrumb {
+        padding: 15px 10%;
+        margin-bottom: 0;
+    }
+
+    .breadcrumb h1 {
+        font-size: 24px;
+        margin-bottom: 0;
+        margin-top: 15px;
+    }
+
+    .main {
+        width: 80%;
+        margin: 0 auto;
+        font-size: 14px;
+        padding:20px 10px;
+    }
+
+    .table th {
+        font-weight: initial;
+        background-color: #f3f5f7;
+    }
+
+    .table > thead > tr > th,
+    .table > thead > tr > td,
+    .table > tbody > tr > th,
+    .table > tbody > tr > td {
+        font-size: 14px;
+        vertical-align: middle !important;
+        border-bottom: 1px solid #eee;
+    }
+
+    .details, .transport {
+        overflow: hidden;
+        border: 1px solid #eee;
+    }
+
+    .details > div, .transport {
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+    }
+
+    .transport > div{
+        padding: 10px;
+        margin-right: 30px;
+    }
+
+    .priceList {
+         display: inline-block;
+         width: 100%;
+    }
+
+    .priceList .list {
+        width: 120px;
+        display: inline-block;
+    }
+
+    .priceList .price {
+        width: 80px;
+        display: inline-block;
+    }
+
+    .total {
+        color: #FA6400;
+    }
+
+    .check-out, .check-out:hover {
+        width: 150px;
+        height: 50px;
+        background-color: #fA6400;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 18px;
+    }
+    .footer .check-out, .footer .check-out:hover {
+        width: 100%;
+       height: 40px;
+    }
+
+    .check-out.disabled {
+      cursor: not-allowed;
+    }
+
+
+    .modal-footer {
+        text-align: center;
+    }
+
+    .btn-primary {
+        background-color: #3A75DC;
+        border: 1px solid #3A75DC;
+        border-radius: 4px;
+    }
+
+    .footer {
+        background-color: #fff;
+        padding: 0 10%;
+        overflow: hidden;
+        /*display: flex;*/
+        /*align-items: center;*/
+        margin-top: 10px;
+        box-shadow: 0 15px 15px -15px #000,
+        0 -15px 15px -15px #000;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        z-index: 100000;
+        min-width: 1240px;
+    }
+    .footer .show-module{
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .footer p {
+        display: inline-block;
+        /*margin-right: 15px;*/
+        margin-bottom: 0;
+
+    }
+
+    td .name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .breadcrumb .breadcrumb {
+        padding: 0;
+    }
+    .priceList td{
+        padding: 4px !important;
+    }
+    .priceList table td {
+        font-size: 16px !important;
+    }
+
+    .yzc_layer .layui-layer-content{
+        text-align: left;
+    }
+    .yzc_layer .layui-layer-ico{
+        background: none;
+    }
+    .yzc_layer .layui-layer-close.layui-layer-close1:after{
+        content: "\e6b4";
+        font-family: 'giga';
+        color: #fff;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    .yzc_layer .layui-layer-btn {
+        padding: 0 17px 17px;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn0{
+        border-color: #3A75DC;
+        background-color: #3A75DC;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn0:hover{
+        background-color: #2d57a9;
+        opacity: 1;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn1{
+        color: #3A75DC;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn1:hover{
+        background-color: #3A75DC;
+        color: #fff;
+        opacity: 1;
+    }
+    .close-jq-toast-single {
+        top: unset!important;
+    }
+    .check-out[disabled]{
+        opacity: .5;
+        cursor: not-allowed;
+    }
+    .footer .state{
+        word-break: break-word;
+        font-size: 13px;
+    }
+    .check-out:focus{
+        outline: none;
+    }
+
+    .tooltip-inner {
+      text-align: left;
+      word-break: break-word;
+    }
+    .address-div {
+        line-height: 22px;
+    }
+    .address-div .border-line:not(:last-child){
+        border-bottom: 1px solid #E7E7E7;
+    }
+
+    .address-table td{
+        padding: 2px 18px;
+    }
+    .address-table {
+        border: 1px solid #999999;
+        margin: 8px 0;
+    }
+    .address-table tr:not(:last-child) {
+        border-bottom: 1px solid #999999;
+    }
+    .address-table tr td:first-child {
+        background: #EDEFF3;
+    }
+    .address-table tr td:not(:first-child) {
+        border-left: 1px solid #999999;
+    }
+
+  .checkCheckbox[type=checkbox],
+  .checkCheckbox[type=checkbox]::before,
+  .checkCheckbox[type=checkbox]:checked::before{
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+    input[type=checkbox][disabled]:checked::before{
+      background-color: #9cbaed;
+    }
+</style>
+<link rel="stylesheet" type="text/css" href="catalog/view/theme/yzcTheme/stylesheet/checkout/cart.css">
+{{ css(['css/common/common.css']) }}
+<div id="content" class="pre-order-page">{{ content_top }}
+    <div class="breadcrumb">
+        {% include 'giga/template/_parts/breadcrumb.twig' %}
+        <h1>My Purchase List</h1>
+    </div>
+    <div style="background-color: #fff">
+        <div class="main">
+
+            <div class="product mb-2">
+              <div class="detailsTitle">
+                <h4 style="margin-top:0;margin-bottom: 15px">
+                  <i class="gcl gclfenlei" style="font-size: 20px;margin-right: 5px;color: #FA6400"></i>
+                  Product&Cost Details</h4>
+              </div>
+              <table class="table" style="border: 1px solid #eee">
+                <tr>
+                  <th colspan="2" class="text-center">Product Information</th>
+                  <th class="text-center">Store</th>
+                  <th class="text-center">Character</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="text-left">Transaction <br>Type</th>
+                  <th class="text-left">Unit Price<br> After Discount</th>
+                  {% if isEuropean %}
+                    <th class="text-left">Service Fee Per<br> Unit After Discount</th>{% endif %}
+                  <th class="text-left">Fulfillment
+                    <br> Per Unit</th>
+                  <th class="text-center">Total</th>
+                </tr>
+                {% for product in products %}
+                  <tr>
+                    <td class="text-center">
+                      <img src="{{ product.thumb }}" width="60">
+                    </td>
+                    <td class="text-left" style="width: 250px">
+                              <span class="name" title="{{ product.name }}"
+                                    style="word-break: break-all">{{ product.name }} </span>
+                      <span>{{ product.sku }}
+                        {% if product.tag %}
+                          {% for tagDetail in product.tag %}
+                            {{ tagDetail }}
+                          {% endfor %}
+                        {% endif %}
+                              </span>
+                    </td>
+                    <td class="text-center">{{ product.seller_name }}</td>
+                    <td class="text-center" style="width: 20%;word-break: break-all">
+                      {% if product.color_str %}
+                        {{ product.color_str }}
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td class="text-center">{{ product.quantity }}</td>
+                    <td class="text-left">
+                      {% if product.add_cart_type==2 %}
+                        Spot Price
+                      {% else %}
+                        {{ transaction_type[product.type_id] }}
+                        {% if product.agreement_code %}
+                          <br>#{{ product.agreement_code }}
+                        {% endif %}
+                      {% endif %}
+                    </td>
+                    <td class="text-left">
+                      {% if isEuropean %}
+                        {#<i class="gcl gclvat" style="color: red;font-size: 12px"></i>#} {{ product.product_price_per }}
+                      {% else %}
+                        {{ product.price }}
+                      {% endif %}
+                      </br>
+                      {# quote discount#}
+                      <span style="font-size: 12px;{% if product.transaction_type != 4 %}display:none{% endif %}"
+                            id="discount_{{ product.cart_id }}">(Discount:
+                                          <span style="color:#FA6400" id="discount_value_{{ product.cart_id }}">
+                                            {{ product.str_quote_amount_per }}</span>)</span>
+                    </td>
+                    {% if isEuropean %}
+                      <td class="text-left">
+                        <div class="price">{{ product.service_fee_per }}</div>
+                        {% if product.transaction_type==4 %}
+                          <span style="font-size: 12px">(Discount:<span
+                              style="color: #FA6400"> {{ product.quote_service_fee_per }}</span>)</span>
+                        {% endif %}
+                      </td>
+                    {% endif %}
+
+                    <td class="text-left">{{ product.freight_per }}</td>
+                    <td class="total text-center">{{ product.total }}</td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </div>
+            <div class="shipping mb-2">
+              <div class="detailsTitle">
+                <h4 style="margin: 15px 0">
+                  <i class="gcl gclyunshu" style="font-size: 20px;margin-right: 5px;color: #65B017"></i>
+                  Shipping Details
+                </h4>
+              </div>
+              {% if delivery_type==2 %}
+                {% if is_batch_cwf %}
+                  <div class="details mb-2">
+                    <div>
+                      <div class="col-sm-2">Transport Type:</div>
+                      <div class="col-sm-10">Cloud Wholesale Fulfillment</div>
+                    </div>
+                    <div style="min-height: 200px;display: inline;">
+                      <div class="col-sm-2" style="padding: 14px 10px;">Ship To Address:</div>
+                      <div class="col-sm-10 address-div">
+                        {% for key,value in batch_cloud_logistics_infos %}
+                        <div class="border-line p14-tb">
+                            {{ value.main_info.recipient }} +{{ value.main_info.phone }}<br>
+                            {{ value.main_info.address }} , {{ value.main_info.city }}  , {{ value.main_info.state }} ,{{ value.main_info.zip_code }} ,{{ value.main_info.country }}<br/>
+                            {% if value.line_info is defined %}
+                            <table class="address-table">
+                                <tbody>
+                                    {% for items in value.line_info %}
+                                    <tr>
+                                        <td>ItemCode:{{ items.b2b_item_code }}</td>
+                                        <td>Quantity: {{ items.ship_to_qty }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+
+                      </div>
+                    </div>
+                    <div>
+                      <div class="col-sm-2">Fulfillment Category:</div>
+                      {% if cloud_logistics.service_type %}
+                        <div class="col-sm-10">FBA</div>
+                      {% else %}
+                        <div class="col-sm-10">Other</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="details mb-2">
+                    <div>
+                      <div class="col-sm-2">Transport Type:</div>
+                      <div class="col-sm-10">Cloud Wholesale Fulfillment</div>
+                    </div>
+                    <div>
+                      <div class="col-sm-2">Ship To Address:</div>
+                      <div class="col-sm-10">
+                        {% if cloud_logistics.service_type==0 %}
+                          {{ cloud_logistics.recipient|dbDecrypt }} +{{ cloud_logistics.phone|dbDecrypt }}<br>
+                        {% endif %}
+                        {{ cloud_logistics.address|dbDecrypt }} , {{ cloud_logistics.city|dbDecrypt }}  , {{ cloud_logistics.state }} ,{{ cloud_logistics.zip_code }} ,{{ cloud_logistics.country }}
+                      </div>
+                    </div>
+                    <div>
+                      <div class="col-sm-2">Fulfillment Category:</div>
+                      {% if cloud_logistics.service_type %}
+                        <div class="col-sm-10">FBA</div>
+                      {% else %}
+                        <div class="col-sm-10">Other</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+              {% elseif delivery_type==1 %}
+                <div class="transport">
+                  <div>Transport Type:</div>
+                  <div>Pickup</div>
+                </div>
+              {% else %}
+                <div class="transport">
+                  <div>Transport Type:</div>
+                  <div>Drop Shipping</div>
+                </div>
+              {% endif %}
+
+            </div>
+          {# 1452优惠券删选优惠券 #}
+          {% if coupon.coupons|length > 0 %}<div class="priceList">
+                <table class="table" style="width: auto;float:right;margin-bottom: 0;">
+                    <tr>
+                        <td colspan="2" class="coupon-input text-right" id="couponListChoose">
+                            <input type="" name="checked_coupon_value" value="{{ coupon.checked_coupon_values }}" disabled placeholder="{{ __('请选择', {}, 'common') }}"/>
+                            <span class="caret"></span>
+                            <div id="coupons-choose" class="coupons-choose {%if coupon.coupons|length==1 %} coupons1{% endif %} {%if coupon.coupons|length==2 %} coupons2{% endif %}">
+                                <div class="coupon-title">GIGA Coupon<span class="pull-right">Coupon cannot be used for deposit or freight or transaction fee</span></div>
+                                <div class="coupon-content">
+                                    {% for c in  coupon.coupons %}
+                                    <div class="mycoupon{% if c.checked_coupon %} coupon-selected{% endif %} mycoupon-{{ c.id }}" data-id="{{ c.id }}" data-amount="{{ c.denomination }}">
+                                        <span><span class="link-price">{{ c.format_denomination }} OFF</span> Order Over {{ c.format_order_amount }}</span><span>{{ c.expiration_time }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="coupon-btn text-center">
+                                    <button type="button" class="btn-confirm" data-id="{{ coupon.checked_coupon_ids }}">OK</button>
+                                    <button type="button" class="btn-cancel" data-id="{{ coupon.checked_coupon_ids }}">Cancel</button>
+                                </div>
+                            </div>
+                         </td>
+                    </tr>
+                </table>
+            </div>
+          {% endif %}
+          <div class="mt-2" id="requiredAgreement">
+            <input class="checkCheckbox" checked type="checkbox" name="required" autocomplete="off">
+            <span>I promise that all the  products I acquire on the Giga Cloud Platform or through Giga Cloud Services will be for resale purposes only.</span>
+          </div>
+          {% if has_future_v3 %}
+          <div>
+          <div class="mt-1">
+            <input class="checkCheckbox" checked type="checkbox" name="future" disabled>
+            <span>I confirm that the goods property rights will be transferred to me according to the Future Goods Agreement when the due amount is paid.</span>
+          </div>
+            {% endif %}
+            <div class="priceList">
+                <table class="table" style="width: auto;float:right;">
+                    {# 1452优惠券 #}
+                    <tr style="{% if total.gifts|length == 0 %}display:none{% endif %}">
+                        <td colspan="2" class="text-right">
+                            <span class="font-bold">Gift:&nbsp;</span>
+                            <span id="gift-content-{{ delivery_type }}">
+                            {% for gift in total.gifts %}
+                                {% if gift.is_coupon %}
+                                    <span class="link-price">{{ gift.format_coupon_price }}</span> coupon&nbsp;<img src="image/coupon/coupon.png">
+                                    <span data-toggle="tooltip"  data-html="true" data-original-title="This order qualifies for a&nbsp;{{ gift.format_coupon_price }} off coupon that you can use on your next purchase" class="toggle-mark">
+                                        <i class="giga icon-V10-wenhaotishi"></i>
+                                    </span>
+                                {% else %}
+                                    {{ gift.condition_remark }}
+                                {% endif %}
+                                <br/>
+                            {% endfor %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% for total in  total.totals %}
+                        {% if total.code != 'promotion_discount' %}
+                        <tr style="{% if total.code == 'giga_coupon' and total.value == 0 %}display:none{% endif %}">
+                            <td class="text-right">
+                               {# {% if isEuropean and (total.code =='sub_total' or total.title == 'Total Item Discount') %}
+                                    <i class="gcl gclvat" style="color: red;font-size: 12px"></i>
+                                {% endif %}#}
+                                <strong>{{ total.title }}:</strong></td>
+                            <td class="text-right{% if total.code == 'giga_coupon' %} green-color{% endif %}" style="{% if total.code == 'total' %};color: #fA6400{% endif %}"
+                                id="{{ total.code }}_value_{{ delivery_type }}" data-value="{{ total.value }}">
+                                {{ total.text }}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr class="promotion-hover" style="{% if total.value == 0 %}display:none{% endif %}">
+                                <td class="text-right font-bold promotion-dis">{{ total.title }}:
+                                    <div class="promotion-content">
+                                        <div class="line-table">
+                                            <div class="text-center text-size-normal">Promotion Name</div>
+                                            <div class="text-left text-size-normal">Discount Amount</div>
+                                        </div>
+                                        <div id="promotion-discount-content-{{ delivery_type }}" data-value="{{ total.value }}">
+                                            {% for discount in total.discounts %}
+                                            <div class="line-table">
+                                                <div class="text-left">{{ discount.promotion_content }}</div>
+                                                <div class="text-left">{{ discount.format_price }}</div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-right relative">
+                                    <span class="green-color" id="{{ total.code }}_value_{{ delivery_type }}">{{ total.text }}</span>
+                                    <i class="giga icon-sidebar-unfold absolute"></i>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="text-right">
+              {% if asset_control %}
+                <button class="check-out" name="btn_checkout" onclick="checkout_pre()">Confirm to Pay</button>
+              {% else %}
+                  <button data-toggle="tooltip" data-html="true" title="{{ __('触发风控提醒',{screenName:asset_control_screen_name_str},'controller/seller_asset') }}" class="check-out disabled" name="btn_checkout" >Confirm to Pay</button>
+              {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" name="delivery_type" value="{{ delivery_type }}">
+    <input type="hidden" name="cart_id_str" value="{{ cart_id_str }}">
+    <input type="hidden" name="buy_now_data" value="{{ buy_now_data }}">
+    <input type="hidden" name="$cwf_file_upload_id" value="{{ cwf_file_upload_id }}">
+    <input type="hidden" name="cwf_file_upload_id" value="{{ cwf_file_upload_id }}">
+    <input type="hidden" name="product_id" value="{{ products[0].product_id }}">
+    <input type="hidden" name="is_virtual_pay" value="{{ products[0].is_virtual_pay }}">
+    <input type="hidden" name="cart_info" value='{{ cart_info }}'>
+    <input type="hidden" name="futures_questionnaire" id="futures_questionnaire" value="{{ futures_questionnaire }}">
+</div>
+{#                该div用于加载的问卷#}
+<div id="buyer_futures_question">
+</div>
+<div class="footer">
+    <div >
+        <input  checked type="checkbox" name="required" autocomplete="off">
+        <span class="state">I promise that all the products I acquire on the Giga Cloud Platform or through Giga Cloud Services will be for resale purposes only.</span>
+    </div>
+{% if has_future_v3 %}
+  <div>
+    <input  checked type="checkbox" name="future" disabled>
+    <span>I confirm that the goods property rights will be transferred to me according to the Future Goods Agreement when the due amount is paid.</span>
+  </div>
+{% endif %}
+    <div class="show-module">
+        <div style="text-align: right;position: relative;margin-right: 15px;padding-bottom: 5px">
+            {% set totals = total.totals %}
+            {% for k,total in totals %}
+                {% if total.code != 'giga_coupon' and total.code != 'promotion_discount' %}
+                    <p {% if total.code =='total' %} style="display: block;position: absolute;top: 0;right: 0;font-size: 18px;font-weight: bold" {% else %} style="margin-top: 20px"{% endif %}>
+                        {#{% if isEuropean and (total.code =='sub_total' or total.title == 'Total Item Discount') %}
+                            <i class="gcl gclvat" style="color: red;font-size: 12px"></i>
+                        {% endif %}#}
+                        <span class="list">
+            {{ total.title }}:</span>
+                        <span class="price" id="footer_{{ total.code }}_value_{{ delivery_type }}"
+                              style="font-weight: bold;{% if total.code == 'total' %}color: #fA6400{% endif %}" data-value="{{ total.value }}">{{ total.text }}</span>
+                        {% if (totals|length - 4) > k %},{% endif %}
+                    </p>
+                {% endif %}
+            {% endfor %}
+            <p style="margin-top: 30px; {% if total.discounts_amount.amount == 0 %}display:none{% endif %}">
+                <span class="list">, Savings:</span>
+                <span class="price" id="footer_save_value_{{ delivery_type }}" style="font-weight: bold;">{{ total.discounts_amount.amount_text }}</span>
+            </p>
+        </div>
+        <div style="padding-bottom: 10px">
+          {% if asset_control %}
+            <button class="check-out" name="btn_checkout" onclick="checkout_pre()">Confirm to Pay</button>
+          {% else %}
+            <button data-toggle="tooltip" data-html="true" title="{{ __('触发风控提醒',{screenName:asset_control_screen_name_str},'controller/seller_asset') }}" class="check-out disabled" name="btn_checkout" >Confirm to Pay</button>
+          {% endif %}
+        </div>
+    </div>
+</div>
+
+{{ footer }}
+<script>
+    $("input[type=checkbox][name=required]").on('change',function () {
+        if ($(this).is(":checked")){
+            $("input[type=checkbox][name=required]").prop("checked",true);
+            $(".check-out").removeAttr('disabled');
+        }else{
+            $("input[type=checkbox][name=required]").prop("checked",false);
+            $(".check-out").attr('disabled','disabled');
+        }
+    })
+</script>
+<script>
+    let delivery_type = $('input[name="delivery_type"]').val();
+    let cart_id_str = $('input[name="cart_id_str"]').val();
+    let buy_now_data = $('input[name="buy_now_data"]').val();
+    let cwf_file_upload_id = $('input[name="cwf_file_upload_id"]').val();
+    let cart_info = eval($('input[name="cart_info"]').val());
+    let product_id = eval($('input[name="product_id"]').val());
+    let is_virtual_pay = parseInt($('input[name="is_virtual_pay"]').val());
+    function checkout_pre() {
+        $('button[name="btn_checkout"]').attr("disabled", true);
+        let coupon_id = $('.btn-confirm').data('id');
+        let flag = true;
+        $.ajax({
+            url: "index.php?route=checkout/pre_order/checkPreOrder",
+            async: false,
+            type: 'POST',
+            dataType: "json",
+            data: {delivery_type: delivery_type, buy_now_data: buy_now_data, cart_id_str: cart_id_str,coupon_id:coupon_id,cwf_file_upload_id:cwf_file_upload_id},
+            success: function (json) {
+                // 云送仓报错 quantity & volume
+                let delivery_type = 0;
+                if (json['data'] && json['data']['delivery_type']) {
+                    delivery_type = json['data']['delivery_type'];
+                }
+
+                if(delivery_type && json['code'] == 0){
+                  if(json['data'] && json['data']['url']){
+                    location.href = json['data']['url']
+                    flag = false;
+                    exit;
+                  }
+                }
+                if (json['code']!=200) {
+                    layer.open({
+                        title: 'Message',
+                        skin: 'yzc_layer', //样式类名
+                        closeBtn: true,
+                        content: '<div style="word-break: break-word">' + json['msg'] + '</div>',
+                        btn: ['Yes'],
+                        area:['480px','auto'],
+                        yes: function (index, layero) {
+                            // layer.close(index);
+                            // block.blockUI();
+                          if(cwf_file_upload_id && delivery_type == 2){
+                            // 此处需要跳转到Sales Order Management下的云送仓列表页
+                            location.href = "{{ url('account/sales_order/sales_order_management',{ 'tab': 2 }) }}";
+                          } else if (cart_id_str) {
+                            location.href = 'index.php?route=checkout/cart';
+                          } else {
+                            location.href = 'index.php?route=product/product&product_id=' + product_id;
+                          }
+                        },
+                        cancel: function () {
+                          $('button[name="btn_checkout"]').attr("disabled", false);
+                        }
+                    });
+                    flag = false;
+                }
+
+
+            }
+        });
+
+        if (flag) {
+            checkout();
+        }
+
+    }
+
+    function checkout() {
+        let coupon_id = $('.btn-confirm').data('id');
+        let total=$('#total_value_' + delivery_type).data('value');
+        $.ajax({
+            url: "index.php?route=checkout/confirm/createOrder",
+            async: false,
+            type: 'POST',
+            dataType: "json",
+            data: {cart_id_str: cart_id_str, delivery_type: delivery_type, buy_now_data: buy_now_data,coupon_id:coupon_id,total:total,cwf_file_upload_id:cwf_file_upload_id},
+            success: function (json) {
+                if (json.code==200) {
+                  let virtual_str='';
+                  if (is_virtual_pay === 0 || is_virtual_pay === 1) {
+                    virtual_str = '&is_virtual_pay=' + is_virtual_pay
+                  }
+                  let order_source = '';
+                  if (delivery_type == 2) {
+                    order_source = '&order_source=sale';
+                  }
+                  location.href = 'index.php?route=checkout/confirm/toPay' + '&order_id=' + json.data.order_id + virtual_str + order_source;
+                } else {
+                    if (json.code == 405) {
+                      layer.open({
+                        title: 'Confirm',
+                        content: json.msg,
+                        skin: 'oris-layer'
+                        , btn: ['Refresh Page']
+                        , yes: function (index, layero) {
+                          location.reload();
+                        }
+                      });
+                      return;
+                    }
+
+                  if (json.code == 406) {
+                    layer.open({
+                      title: 'Confirm',
+                      content: json.msg,
+                      skin: 'oris-layer'
+                      , btn: ['Yes']
+                      , yes: function (index, layero) {
+                        location.href = 'index.php?route=product/product&product_id=' + json.data.product_id;
+                      }
+                    });
+                    return;
+                  }
+
+                    if (cart_id_str) {
+                        location.href = 'index.php?route=checkout/cart';
+                    } else {
+                        $.toast({
+                            heading: false,
+                            text: json.msg,
+                            position: 'top-center',
+                            showHideTransition: 'fade',
+                            icon: 'error',
+                            hideAfter: false,
+                            allowToastClose: true,
+                            loader: false,
+                            afterHidden: function () {
+                                location.href = 'index.php?route=product/product&product_id=' + product_id;
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+    }
+</script>
+<script>
+  if (!$('#futures_questionnaire').val()) {
+    $('button[name="btn_checkout"]').attr("disabled", true);
+    $("#buyer_futures_question").load("index.php?route=account/question/buyerFutures", function () {
+      $('button[name="btn_checkout"]').attr("disabled", false);
+    });
+  }
+    $(document).ready(function () {
+        let checkTop = $(".priceList").offset()['top'];
+        let winHeight = $(window).height();
+        if (checkTop > winHeight) {
+            $(".footer").show();
+            $(".priceList").hide();
+            $(".priceList").next('div').hide();
+            $("#requiredAgreement").hide();
+        } else {
+            $(".footer").hide();
+            $(".priceList").show();
+            $(".priceList").next('div').show();
+            $("#requiredAgreement").show();
+        }
+
+        $(window).scroll(function () {
+            //为了保证兼容性，这里取两个值，哪个有值取哪一个
+            //scrollTop就是触发滚轮事件时滚轮的高度
+            let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            if (checkTop - scrollTop < winHeight) {
+                $(".footer").hide();
+                $(".priceList").show();
+                $(".priceList").next('div').show();
+                $("#requiredAgreement").show();
+            } else {
+                $(".footer").show();
+                $(".priceList").hide();
+                $(".priceList").next('div').hide();
+                $("#requiredAgreement").hide();
+            }
+        })
+        // 弹出优惠券选择
+        $('body').on('click', '#couponListChoose', function(e) {
+            $('#coupons-choose').show();
+             e.stopPropagation();
+        })
+        // 选取优惠券
+        $('#couponListChoose').on('click', '.mycoupon', function(e) {
+            if ($(this).hasClass('coupon-selected')) {
+                $(this).removeClass('coupon-selected');
+                $("input[name='checked_coupon_value']").val('');
+                return ;
+            }
+            $('.mycoupon').removeClass('coupon-selected');
+            $(this).addClass('coupon-selected');
+            $("input[name='checked_coupon_value']").val($(this).children('span').eq(0).text().replace(/(^\s*)|(\s*$)/g, ""));
+
+        })
+        // 优惠券弹出框cancel
+        $('#couponListChoose').on('click', '.btn-cancel', function(e){
+            $('#coupons-choose').hide();
+            e.stopPropagation();
+            let couponId = $('.btn-confirm').data('id');
+            $('.mycoupon').removeClass('coupon-selected');
+            $('.mycoupon-' + couponId).addClass('coupon-selected');
+            $("input[name='checked_coupon_value']").val($('.mycoupon-' + couponId).children('span').eq(0).text().replace(/(^\s*)|(\s*$)/g, ""));
+        })
+        // 优惠券弹出框ok
+        $('#couponListChoose').on('click', '.btn-confirm', function (e) {
+            let symbolLeft = '{{ symbolLeft }}';
+            let symbolRight = '{{ symbolRight }}';
+            let precision = {{ precision }};
+            let delivery_type = $('input[name="delivery_type"]').val();
+            let buy_now_data = $('input[name="buy_now_data"]').val();
+            let coupon_id = 0;
+            let coupon_amount = 0.00;
+            if ($('#couponListChoose').find('div.coupon-selected').data('id')) {
+                coupon_id = $('#couponListChoose').find('div.coupon-selected').data('id');
+                coupon_amount = Number($('#couponListChoose').find('div.coupon-selected').data('amount'));
+            }
+            let subTotal = Number($('#total_value_' + delivery_type).data('value'));
+            let promotionAmount = Number($('#promotion-discount-content-' + delivery_type).data('value'));
+            let originalCouponAmount = Number($('#giga_coupon_value_' + delivery_type).data('value'));
+            let confirm_this = $(this);
+            $('#coupons-choose').hide();
+            $(this).prop('disabled', true);
+            e.stopPropagation();
+            confirm_this.data('id', coupon_id);
+
+            let discount= Math.abs(promotionAmount) + Math.abs(coupon_amount);
+            let disSubtotal = subTotal + Math.abs(originalCouponAmount) + Math.abs(promotionAmount) - discount;
+            disSubtotal = Number(disSubtotal).toFixed(precision);
+            discount = discount.toFixed(precision);
+            coupon_amount = Number(coupon_amount).toFixed(precision);
+            if(discount == 0){
+                $("#footer_save_value_" + delivery_type).parent().css('display', 'none');
+            }else{
+                $("#footer_save_value_" + delivery_type).text('-' + symbolLeft + discount + symbolRight);
+                $("#footer_save_value_" + delivery_type).parent().css('display', '');
+            }
+
+            $('#footer_total_value_' + delivery_type).text(symbolLeft + disSubtotal + symbolRight);
+
+            $('#giga_coupon_value_' + delivery_type).data('value', -coupon_amount);
+            $('#giga_coupon_value_' + delivery_type).text('-' + symbolLeft + coupon_amount + symbolRight)
+            if (coupon_amount == 0) {
+                $('#giga_coupon_value_' + delivery_type).parents('tr').css('display', 'none');
+            } else {
+                $('#giga_coupon_value_' + delivery_type).parents('tr').css('display', '');
+            }
+            $('#total_value_' + delivery_type).data('value', disSubtotal);
+            $('#total_value_' + delivery_type).text(symbolLeft + disSubtotal + symbolRight);
+
+            confirm_this.prop('disabled', false);
+        })
+        $(document).click(function(){
+            var $couponBox = $('#coupons-choose');
+            if (!$couponBox.is(":hidden")){
+                $couponBox.hide();
+                $('#couponListChoose').find('button.btn-cancel').trigger('click');
+            }
+        })
+    });
+</script>

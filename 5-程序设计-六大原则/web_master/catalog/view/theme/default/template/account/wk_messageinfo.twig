@@ -1,0 +1,170 @@
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <label>
+      <b>{{messageinfodata.text_from}}</b>
+      &nbsp;&nbsp;&nbsp;<div class="me" ng-if="message_info.message_from==messageinfodata.from_me">
+       {{messageinfodata.text_me}}
+      </div>
+    </label>
+    <div class="not_me" ng-if="message_info.message_from!=messageinfodata.from_me">
+     {{message_info.message_from_name}}
+    </div>
+
+    <br>
+    <label style="width: 100%; height: auto; word-wrap: break-word;" class="">
+      <b>{{messageinfodata.text_subject}}</b>&nbsp;&nbsp;&nbsp;
+     {{message_info.message_subject}}</label>
+    <br>
+    <label>
+      <b>{{messageinfodata.text_date}}</b>&nbsp;&nbsp;&nbsp;{{message_info.message_date}}</label>
+  </div>
+  <div id="message_body">
+    <p style="height: auto; word-wrap: break-word; width: 100%;" ng-bind-html="message_info.message_body | toTrusted"></p>
+  </div>
+  <div id="attachment">
+    <ul>
+      <li ng-repeat="attachment in attachments" style="list-style: outside none none; height:50px;">
+        <i class="fa fa-paperclip" aria-hidden="true" ng-click="download(attachment.attachment_id)"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{attachment.maskname}}
+      </li>
+    </ul>
+  </div>
+</div>
+<div ng-if="threadsQuery.length>count">
+  <div class="expanded-threads" ng-show="!expandmsg">
+    <button class="btn btn-sm btn-info" ng-click="expand()">
+      <span class="pages" style="display: inline;">{{messageinfodata.text_expand}}
+        <span class="count">{{threadsQuery.length-count}}</span>
+        More
+        <span class="caret"></span>
+      </span>
+      <i class="fa fa-spinner fa-spin" style="display: none;"></i>
+    </button>
+    <span></span>
+  </div>
+</div>
+<div id="threads">
+  <div ng-repeat='thread in threadsQuery'>
+    <div ng-if="$index < threadsQuery.length-count" ng-hide="!expandmsg">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <label>
+            <b>{{messageinfodata.text_from}}</b>
+          </label>
+          &nbsp;&nbsp;&nbsp;
+          <div class="me" ng-if="thread.message_from==messageinfodata.from_me">
+           {{messageinfodata.text_me}}
+          </div>
+        </label>
+        <div class="not_me" ng-if="thread.message_from!=messageinfodata.from_me">
+         {{thread.message_from_name}}
+        </div>
+        <br>
+        <label style="width: 100%; height: auto; word-wrap: break-word;">
+          <b>{{messageinfodata.text_subject}}</b>&nbsp;&nbsp;&nbsp;
+         {{thread.message_subject}}</label>
+        <br>
+        <label>
+          <b>{{messageinfodata.text_date}}</b>
+          &nbsp;&nbsp;&nbsp;{{thread.message_date}}</label>
+      </div>
+      <div id="message_body">
+        <p style="height: auto; word-wrap: break-word; width: 100%;" ng-bind-html="thread.message_body | toTrusted "></p>
+
+      </div>
+      <div id="attachment">
+        <ul>
+          <li ng-repeat="attachment in threadsAttachments[$index]" style="list-style: outside none none; height:50px;">
+            <i class="fa fa-paperclip" aria-hidden="true" ng-click="download(attachment.attachment_id)"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{attachment.maskname}}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div ng-if="$index >= threadsQuery.length-count">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <label>
+          <b>{{messageinfodata.text_from}}</b>
+        </label>
+        &nbsp;&nbsp;&nbsp;
+        <div class="me" ng-if="thread.message_from==messageinfodata.from_me">
+         {{messageinfodata.text_me}}
+        </div>
+      </label>
+      <div class="not_me" ng-if="thread.message_from!=messageinfodata.from_me">
+       {{thread.message_from_name}}
+      </div>
+      <br>
+      <label style="width: 100%; height: auto; word-wrap: break-word;">
+        <b>{{messageinfodata.text_subject}}</b>&nbsp;&nbsp;&nbsp;
+       {{thread.message_subject}}</label>
+      <br>
+      <label>
+        <b>{{messageinfodata.text_date}}</b>
+        &nbsp;&nbsp;&nbsp;{{thread.message_date}}</label>
+    </div>
+    <div id="message_body">
+      <p style="height: auto; word-wrap: break-word; width: 100%;" ng-bind-html="thread.message_body | toTrusted"></p>
+    </div>
+    <div id="attachment">
+      <ul>
+        <li ng-repeat="attachment in threadsAttachments[$index]" style="list-style: outside none none; height:50px;">
+          <i class="fa fa-paperclip" aria-hidden="true" ng-click="download(attachment.attachment_id)"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{attachment.maskname}}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<style type="text/css">
+.me {
+display: inline-block;
+}
+.not_me {
+display: inline-block;
+}
+.me:previous {
+background-color: red;
+}
+
+#subject {
+padding: 5px;
+height: auto;
+background-color: #ffe0b3;
+}
+#messageinfo {
+height: auto;
+}
+#message_body {
+margin-top: 8px;
+padding: 13px;
+}
+#message_div {
+border: 1px solid #5bc0de;
+}
+.fa-paperclip {
+font-size: 19px;
+cursor: pointer;
+}
+.thread-pagination {
+float: left;
+text-align: center;
+width: 100%;
+}
+.expanded-threads {
+text-align: center;
+width: 100%;
+}
+.btn-info {
+background-color: #31b0d5;
+background-image: none;
+background-repeat: none;
+border-color: none;
+}
+.btn-info:hover {
+background-color: none;
+}
+.panel-heading {
+height: auto;
+}
+
+</style>

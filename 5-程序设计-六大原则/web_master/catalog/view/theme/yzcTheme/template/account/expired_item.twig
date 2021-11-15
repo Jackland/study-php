@@ -1,0 +1,104 @@
+<div id="off-shelf">
+  {% if off_shelf %}
+    <div class="row mt-3 mb-1">
+      <div class="col-md-12 form-inline pull-right">
+        <div class="from-group pull-left">
+          <button type="button" onclick="downloadInValidWishList()" data-toggle="tooltip" title="Download"
+                  class="btn"><i class="fa fa-download"></i></button>
+          <a onclick="removeInValid()" data-toggle="tooltip" title="Clean Up" style="color: black;"
+             class="btn btn-grey"><i class="giga icon-action-delete-entry"></i></a>
+        </div>
+      </div>
+    </div>
+
+    {% for key, productArr in off_shelf %}
+      <div class="row mt-3 mb-1">
+        <div class="col-md-12">
+          <div style="font-size: 20px;" align="left">
+            <span style="line-height: 50px">
+              <a href="{{ productArr[0].customer_href }}">{{ key }}</a>
+            </span>
+            <span style="line-height: 50px">
+              <a href="{{ productArr[0].concat_href }}">
+                <i class="fa fa-envelope" style="font-size: 20px"></i>
+              </a>
+          </span>
+          </div>
+        </div>
+      </div>
+      <table class="table main">
+        <thead>
+        <tr>
+          <th width="24px" hidden>
+            <div class="text-left check">
+              <input name="check_box" onclick="selectAll(this)" data-set=".checkboxes" type="checkbox">
+            </div>
+          </td>
+          <th class="text-left" width="125px">{{ column_sku }}</th>
+          <th class="text-center" width="70px">{{ column_image }}</th>
+          <th class="text-left">{{ column_name }}</th>
+          <th class="text-center" width="80px">{{ column_brand }}</th>
+          <th class="text-center" width="100px">{{ column_type }}</th>
+          <th class="text-center" width="60px">{{ column_action }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for product in productArr %}
+          <tr>
+            <td hidden>
+              <input class="checkboxes invalidbox"
+                onclick="if (!$(this).is(':checked')) {$('#check_box').removeAttr('checked');}"
+                name="product_id[]"
+                value="{{ product.product_id }}"
+                type="checkbox">
+            </td>
+            <td class="text-center">
+            {% if product.tag %}
+              <a href="{{ product.href }}">{{ product.sku }}</a>
+              {% for tagDetail in product.tag %}
+                {{ tagDetail }}
+              {% endfor %}
+            {% else %}
+              <a href="{{ product.href }}">{{ product.sku }}</a>
+            {% endif %}
+            </td>
+            <td class="text-center">
+              {% if product.thumb %}
+                <a href="{{ product.href }}">
+                  <img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" style="width: 40px;"/>
+                </a>
+              {% endif %}
+            </td>
+            <td class="text-left"><a href="{{ product.href }}">{{ product.name }}</a></td>
+            <td class="text-center">
+              <a href="index.php?route=product/manufacturer/info&manufacturer_id={{ product.brand_id }}">{{ product.brand }}</a>
+            </td>
+            <td class="text-center">{{ product.type }}</td>
+            <td class="text-center">
+              <div class="action-group">
+                <a href="{{ product.remove }}" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-grey"><i class="giga icon-save-delete" style="line-height: 18px;"></i></a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% endfor %}
+  {% else %}
+      <div class="row mt-3 mb-1">
+          <div class="col-md-12">
+              {{ text_search }}
+          </div>
+      </div>
+  {% endif %}
+</div>
+<script>
+    block.unBlockUI();
+    var invalidCount = {{ search_invaild_count }};
+    if(invalidCount==0){
+        $('#valid_li').addClass('active');
+        $('#expired_li').removeClass('active');
+        $('#tab-valid').addClass('active');
+        $('#tab-expired').removeClass('active');
+    }
+</script>

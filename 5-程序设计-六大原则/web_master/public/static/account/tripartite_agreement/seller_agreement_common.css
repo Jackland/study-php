@@ -1,0 +1,424 @@
+
+/*吸底*/
+.seller-fixed-btn{
+    height: 60px; 
+    position: fixed;
+    bottom: 0;
+    background-color:#fff;
+    text-align: center;
+    right:0;
+    box-shadow: 0px -3px 10px rgba(0, 0, 0, 0.1);
+}
+.seller-width-full{
+    width: calc(100% - 235px);   
+}
+
+.seller-fixed-btn-false{
+    width: calc(100% - 62px);      
+}
+.fixed-btn{
+    height: 74px;
+    width: 828px; 
+    text-align: center;
+    margin-left: 24px;    
+}
+.fix-footer{
+    height: 60px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left:0;
+    box-shadow: 0px -3px 10px rgba(0, 0, 0, 0.1);
+    background-color:#fff;
+}
+.fixed-btn .bk-blue,.seller-fixed-btn .bk-blue{
+    cursor: pointer;
+    font-size: 16px;
+    font-family: Arial;
+    font-weight: 400;
+    color: #FFFFFF;
+    /* width: 155px; */
+    height: 40px;
+    line-height: 40px;
+    background: #2861CE;
+    border-radius: 2px;
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 8px;
+    padding: 0px 12px;
+}
+.fixed-btn .bk-default,.seller-fixed-btn .bk-default{
+    border: 1px solid #C1C1C1;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: Arial;
+    font-weight: 400;
+    color: #333333;
+    /* width: 155px; */
+    height: 40px;
+    line-height: 40px;
+    background: #fff;
+    border-radius: 2px;
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 8px;
+    padding: 0px 12px;
+}
+/*END*/
+/*头栏*/
+.agreement-box-top{
+    width: 100%;
+}
+.agreement-box-bottom{
+    display: flex;
+    align-items: start;
+}
+.agreement-title{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333333;
+    padding-right: 24px;
+    line-height: normal;
+    word-break: break-all;
+}
+.agreement-down-btn{
+    width: 95px;
+    height: 30px;
+    display:inline-block;
+    border: 1px solid #C1C1C1;
+    opacity: 1;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 9px;
+    /* margin-top: 16px; */
+    color: #333;
+    text-decoration: none;
+}
+.agreement-down-btn:hover{
+    background: #EDEFF3;
+    border: 1px solid #C1C1C1;
+    color: #666;
+}
+.download-text{
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 12px;
+    color: #333333;
+}
+/*END*/
+.flex-wrap{
+    flex-wrap: wrap;
+}
+.agreement-msg{
+    flex: 1;
+    height: 100%;
+    padding-right: 24px;
+}
+.status-text{
+    margin-bottom: 12px;
+}
+.radius18{
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%; 
+    line-height: 18px;
+    text-align: center;
+    color: #fff;
+}
+.color-28{
+    color: #2861CE;
+}
+.status-text-value{
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 16px; 
+}
+.color-33{
+    color: #333;
+}
+.color-4b{
+    color: #004BD8;
+}
+.color-f6{
+    color: #FF6600;
+}
+.color-oa{
+    color: #0AAD4F;
+}
+.color-e6{
+    color: #E64545;
+}
+.status-msg{
+    padding-bottom: 4px;
+    border-bottom: 1px dashed #c1c1c1;
+    margin-bottom: 20px;
+}
+.status-title{
+    font-size: 14px;
+    font-weight: 400;
+    color: #333333;
+}
+.status-value{
+    width: 100%;
+    padding-left: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333333;
+    margin-top: 6px;
+}
+.radius13{
+    display: inline-block;
+    height: 13px;
+    width: 13px;
+    background: rgba(40, 97, 206, 0.2);
+    text-align: center;
+    line-height: 12px;
+    border-radius: 50%;
+}
+.m20-b{
+    margin-bottom: 20px;
+}
+.m16-b{
+    margin-bottom: 16px;
+}
+.ml-04{
+    margin-left: 4px;
+}
+.agreement-history-header{
+    font-size: 14px;
+    font-weight: bold;
+    color: #333333;
+}
+.agreement-history .radius13 .oris-circle.margin0{
+    margin-right: 0;
+}
+.agreement-history .radius13 .oris-circle.padding4{
+    padding: 4.5px;
+}
+.agreement-history .radius13 .oris-circle.color-b{
+    background: #2861CE;
+}
+.radius13{
+    margin-right: 12px;
+}
+.agreement-history-msg{
+    width: 100%;
+    padding-left: 20px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-left: 6px;    
+    border-left: 1px solid rgba(40, 97, 206, 0.2);
+}
+.agreement-history-time{
+    font-size: 12px;
+    font-weight: 400;
+    color: #999999;
+    line-height: 12px;
+}
+.agreement-history-msg .name{
+    font-size: 14px;
+    font-weight: 400;
+    color: #004bd8;
+    margin-right: 8px;
+    word-break: break-word;
+}
+.agreement-history-msg .msg-value{
+    font-size: 14px;
+    font-weight: 400;
+    color: #333333;
+    word-break: break-word;
+    white-space: pre-line;
+    display: block;
+}
+.m8-t{
+    margin-top: 8px;
+}
+.ver-middle{
+    vertical-align: middle;
+}
+/*拒绝原因*/
+.reason-box{
+    width: 100%;
+    min-height: 40px;
+    background: rgba(230, 69, 69, 0.06);
+    border-radius: 8px;
+    padding: 12px;
+    position: relative;
+    margin-top: 16px;
+}
+.reason-box .triangle{
+    position: absolute;
+    top: -12px;
+    width: 0;
+    left: 24px;
+    height: 0;
+    border-bottom: 12px solid rgba(230, 69, 69, 0.06);
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+}
+.reason-header{
+    font-size: 14px;
+    color: #333;
+    /* color: #E64545; */
+}
+.reason-content{
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+.status-title .m8-l{
+    margin-left: 8px;
+}
+
+/*提前终止*/
+.early-termination{
+    display: inline-block;
+    width: 100%;
+    font-size: 14px;
+    font-weight: bold;  
+    word-break: break-all;
+    /* white-space: pre-line;  */
+}
+.early-termination.m8-t{
+    margin-top: 8px;
+}
+.early-termination.line-height15{
+    line-height: 15px;
+}
+.to-deal-with{
+    width: 110px;
+    height: 32px;
+    border: 1px solid #333;
+    border-radius: 20px;
+    padding: 8px 11px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 14px;
+    margin: auto;
+    margin-top: 12px;
+    cursor: pointer;
+}
+.to-deal-with:hover{
+    border: 1px solid #E64545;
+    color: #E64545;
+    /* background: rgba(230, 69, 69, 0.15); */
+}
+/*模态框样式*/
+.agreement-box .modal-input{
+    margin-right: 8px;
+    margin-top: -2px;
+    margin-left: 0px;
+}
+.m30-l{
+    margin-left: 30px;
+}
+.checkbox{
+    display: flex;
+}
+.checkbox .m24-r{
+    margin-right:24px;
+}
+.checkbox .check-text{
+    font-size: 14px;
+    color: #333333;
+}
+.check-text.checkbox{
+    margin-bottom: 6px;
+}
+.check-msg-box .check-textarea{
+    background: #FFFFFF;
+    border-color:#DCDCDC;
+    border-radius: 2px;
+    width: 100%;
+    height: 182px;
+    padding: 16px;
+}
+.m5-r{
+    margin-right: 5px;
+}
+.check-hint{
+    font-size: 14px;
+    font-weight: 400;
+    color: #777777;
+}
+.required-hint{
+    font-size: 14px;
+    vertical-align: middle;
+}
+.color-99{
+    color: #999 !important;
+}
+.display-inline{
+    display: inline-block !important;
+}
+/*取消弹窗*/
+.cancel_hint{
+    font-size: 16px;
+    font-weight: bold;
+    color: #333333;
+}
+.border-color-error{
+    border-color:#e3503e !important;
+}
+/*模板处理特殊字段*/
+/* .giga-template-value{
+    margin-left: 10px;
+    margin-right: 10px;
+    min-width: 45px;
+} */
+/* .AgreementValidity{
+    display: inline-block;
+    border: none;
+    border-bottom: 1px solid #333;
+    font-weight: bold;
+    text-align: center;
+    width: 250px;
+    margin-left: 0px;
+    margin-right:0px;
+} */
+.agreement-icon{
+    position: absolute;
+    top: -12px;
+    right: 22px;
+}
+.agreement-icon .icon-yiqianyue-01{
+    font-size: 100px;
+}
+/*协议模板普通参数及协议期限加下划线*/
+.AgreementDate-input.text-input {
+    width: 250px;
+}
+.text-input[disabled] {
+    background-color: #FAFAFA;
+}
+
+button[disabled], html input[disabled] {
+    cursor: default;
+}
+.text-input {
+    border: none;
+    border-bottom: 1px solid #333;
+    font-weight: bold;
+    text-align: center;
+    width: 50px;
+}
+/*due day 设计图更换 */
+.due-day{
+    margin-left: 3px;
+    padding: 3px 8px;
+    background: rgba(230, 69, 69, 0.06);
+    border-radius: 100px;
+    color: #E64545;
+}
+.error-msg{
+    margin-top: 6px;
+    border: transparent;
+    height: 20px;
+    color: #E64545;
+    font-size: 12px;
+    display: none;
+}

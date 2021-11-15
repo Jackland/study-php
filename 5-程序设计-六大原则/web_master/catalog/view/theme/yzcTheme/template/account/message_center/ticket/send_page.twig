@@ -1,0 +1,955 @@
+{# 消息中心 - submit a request/reply 弹窗 #}
+{# 由 “catalog\view\theme\yzcTheme\template\common\ticket.twig” 复制 #}
+{# 为了防止消息中心弹窗对于公共弹窗的修改造成不可预估的范围的影响，消息中心单独导出一份，开发周期原因代码逻辑未变更，仅修改了dom事件绑定 #}
+{# 35530 此弹框Buyer全局通用 #}
+<link rel="stylesheet" type="text/css" href="catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css">
+<link rel="stylesheet" type="text/css" href="public/static/message/setting/ticket.css?v={{ app_version }}">
+<!-- （Modal） -->
+<div class="modal fade oris-modal global-request-modal" id="myMessageTicket" tabindex="-1" role="dialog"
+  aria-labelledby="myMessageTicketLabel" aria-hidden="true">
+  <div class="modal-dialog modal-ticket-area">
+    <div class="modal-content">
+      <div class="modal-header ticket-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          <i class="giga icon-V10_danchuangguanbi"></i>
+        </button>
+        <div class="modal-title" id="myMessageTicketLabel">
+          Submit a Request
+        </div>
+      </div>
+      <form role="form" id="formList">
+        <div class="modal-body" style="min-height:360px;overflow: auto">
+          <div style="">
+            <div class="oris-row">
+              <div class="oris-col-6">
+                <a target="_blank" href="{{ guide_url }}" class="send-guide flex" style="line-height: 14px;">
+                  <span class="giga icon-V10-wenhaotishi" style="margin-right: 4px"></span>System Guide
+                </a>
+                <div id="ticket_hint__message" style="display: none;color: red"></div>
+                <div style="height: 10px;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="oris-row send-page-row">
+                <div class="oris-col-6">
+                  <div class="oris-select">
+                    <label for="submit_ticket_for"><span class="required-before"></span>Submit a Request for</label>
+                    <select id="submit_ticket_for__message" name="submit_ticket_for" class="form-control selectpicker oris-select-prerender"
+                      data-dropup-auto=false>
+                      <option value="0">--{{ __('请选择', {}, 'common') }}--</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="oris-col-6">
+                  <div class="oris-select">
+                    <label for="ticket_type"><span class="required-before"></span>Request Type</label>
+                    <select id="ticket_type__message" name="ticket_type" class="form-control selectpicker oris-select-prerender"
+                      data-dropup-auto=false>
+                      <option value="0">--{{ __('请选择', {}, 'common') }}--</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="request-type-tip mt-20" id="tipInterceptSalesOrder__message" style="display: none;">
+                  Requests submitted here after 04:00 AM PST will get the results from our customer service before
+                  08:00 PM PST.
+                  <br>
+                  *Please notice that before 04:00 AM PST, you can cancel the order by yourself or contact our customer
+                  representative via LIVE CHAT to cancel or intercept the order.
+                </div>
+                <div class="request-type-tip mt-20" id="tipReshipPickupOrder__message" style="display: none;">
+                  To reship the pickup orders, the buyer should provide the RMA ID approved by the seller and upload
+                  the required reshipment labels to attachments.
+                </div>
+              </div>
+            </div>
+            <div class="oris-row send-page-row">
+              <div class="oris-col-6">
+                <div group="parent-rma">
+                  <div class="pos-rela mt-20" id="group_rma_id__message">
+                    <label for="rma_id"><span class="required-before"></span>RMA ID</label>
+                    <input type="text" class="form-control oris-input" id="rma_id__message" name="rma_id" class="form-control"
+                      onblur="globalSendPageFuns.checkRmaId()">
+                    <div class="col-sm-8 request-type-error" id="rma_id_msg__message" style="display: none;"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="oris-col-6">
+                <div group="parent-item-code">
+                  <div class="pos-rela mt-20" id="group_seller_item_code">
+                    <label for="seller_item_code"><span class="required-before"></span>Item Code</label>
+                    <input type="text" class="form-control oris-input" id="seller_item_code__message" name="seller_item_code"
+                      onblur="globalSendPageFuns.checkItemCode()">
+                    <div class="col-sm-8 request-type-error" id="seller_item_code_msg__message" style="display: none;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="oris-row send-page-row" group="parent-sales-order">
+              <div class="oris-col-6">
+                <div class="pos-rela mt-20" id="group_sales_order_id">
+                  <label for="sales_order_id"><span class="required-before"></span>Sales Order ID</label>
+                  <input type="text" class="form-control oris-input" id="sales_order_id__message" name="sales_order_id"
+                    class="form-control" onblur="globalSendPageFuns.checkSalesOrderId()">
+                  <div class="request-type-error" id="sales_order_id_msg__message" style="display: none;"></div>
+                </div>
+              </div>
+              <div class="oris-col-6" style="padding-right: 0px;">
+                <div id="group_processing_method__message" class="oris-select">
+                  <label class="mt-20" for="processing_method"><span class="required-before"></span>Processing Method</label>
+                  <select id="processing_method__message" name="processing_method" class="form-control selectpicker oris-select-prerender"
+                    data-dropup-auto=false>
+                    <option value="0">--{{ __('请选择', {}, 'common') }}--</option>
+                  </select>
+                </div>
+              </div>
+              <div class="oris-col-6" group="parent-sales-item-code">
+                <div group="parent-sales-item-code" class="oris-select">
+                  <div class="pos-rela mt-20" id="sales_item_code_group">
+                    <label for="sales_item_code"><span class="required-before"></span>Item Code</label>
+                    <select id="sales_item_code__message" name="sales_item_code" class="form-control selectpicker oris-select-prerender"
+                      data-dropup-auto=false>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="oris-row send-page-row" group="parent-tracking_number">
+              <div class="oris-col-6">
+                <div class="pos-rela mt-20" id="tracking_number_group">
+                  <label for="tracking_number">Tracking Number</label>
+                  <input type="text" id="tracking_number__message" name="tracking_number" class="form-control oris-input">
+                </div>
+              </div>
+              <div class="oris-col-6">
+              </div>
+            </div>
+            <div class="oris-row send-page-row" group="parent-safeguard-claim">
+              <div class="oris-col-6">
+                <div class="pos-rela mt-20" id="safeguard_claim_no_group">
+                  <label for="safeguard_claim_no"><span class="required-before"></span>Claim Application ID</label>
+                  <input type="text" id="safeguard_claim_no__message" name="safeguard_claim_no" class="form-control oris-input"
+                    onblur="globalSendPageFuns.checkSafeguardClaimNo()">
+                  <div class="request-type-error" id="safeguard_claim_no_msg__message" style="display: none;"></div>
+                </div>
+              </div>
+              <div class="oris-col-6">
+              </div>
+            </div>
+            <div class="pos-rela mt-20 seld-page-row oris-comments" id="ticket_group_description__message" style="position:relative;">
+              <label for="ticket_description"><span class="required-before"></span>Description</label>
+              <textarea id="ticket_description__message" name="ticket_description" class="form-control ticket_description oris-input"
+                placeholder="Please enter content..." style="height:230px;"></textarea>
+              <span id="ticket_description_tips__message" class="ticket_description_tips letter-count"><span id="ticket_counter"
+                  class="link-color">0</span>/1000</span>
+            </div>
+          </div>
+        </div>
+        <div id="myMessageTicketFooter" class="modal-footer">
+          <div>
+            <!--upload-->
+            <div class="ticket_group_attachments__message">
+              <label id="labelUploadAttachments__message">Attachments</label>
+              <label id="labelUploadProffImages__message" style="display: none;" class="flex">
+                <span class="required-before"></span>Proof Images<span data-toggle="tooltip" data-original-title="Before submitting you request, please pay $30.00/order by purchasing S001010006 in US-SERVICE in advance, then upload the screenshot to Proof Images. Intercept fee will be returned to you for failed intercepts."
+                  class="giga icon-V10-wenhaotishi" style="margin-left: 4px;cursor: pointer"></span>
+              </label>
+              <div>
+                <div class="footer-button">
+                  <div>
+                    <button type="button" id="ticket-button-upload__message" data-loading-text="{{ text_loading }}"
+                      class="oris-button oris-button-default upload-button msg-upload-btn"><i class="giga icon-shangchuan upload-icon"></i>Upload
+                      Files</button>
+                    <span id="spanLabelAttachments__message" class="files-tip">
+                      <span class="upfile-type">picture</span>
+                      <span class="upfile-type">doc(x)</span>
+                      <span class="upfile-type">xls(x)</span>
+                      <span class="upfile-type">pdf</span>
+                      <span class="upfile-type">txt</span>
+                    </span>
+                    <span id="spanLabelProffImages" style="display: none;">
+                      <span class="upfile-type">picture</span>
+                    </span>
+                  </div>
+                  <div id="myMessageSubmitBtn">
+                    <button id="myMessageTicketSubmit" type="button" class="oris-button btn btn-primary">Submit</button>
+                  </div>
+                </div>
+                <div class="ticket-upload-file__container">
+                  <ul class="ticket-upload-file__message"></ul>
+                </div>
+                <textarea style="display: none;" name="ticket_attachments"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal -->
+</div>
+<script type="text/javascript" src="public/js/common/toolString.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js"></script>
+<script>
+var globalSendPageFuns = {
+  'ticketCategoryGroupList__message': {{ ticketCategoryGroupList }},
+  'txtPleaseSelect': "{{ __('请选择', {}, 'common') }}",
+  initSelect: function() {
+    $("#submit_ticket_for__message").selectpicker();
+    $("#ticket_type__message").selectpicker();
+    $("#processing_method__message").selectpicker();
+    $("#sales_item_code__message").selectpicker();
+  },
+  refreshSelect: function() {
+    $("#submit_ticket_for__message").selectpicker('refresh');
+    $("#ticket_type__message").selectpicker('refresh');
+    $("#processing_method__message").selectpicker('refresh');
+    $("#sales_item_code__message").selectpicker('refresh');
+  },
+  checkSalesOrderId: function() {
+    //设置个延迟，不然select的赋值会晚于onblur（失去焦点事件）
+    setTimeout(function() {
+      globalSendPageFuns.checkSalesOrderIdSubmit();
+    }, 500);
+  },
+  checkSalesOrderIdSubmit: function() {
+    var salesOrderId = $('#sales_order_id__message').val().trim();
+    var ticketType = $('#ticket_type__message').val();
+    $('#sales_item_code_message').html('');
+    if (salesOrderId == '') {
+      return false;
+    }
+    $.ajax({
+      url: 'index.php?route=account/ticket/checkSalesOrderId',
+      type: 'post',
+      dataType: 'json',
+      data: 'salesOrderId=' + encodeURIComponent(salesOrderId) + '&ticket_type=' + ticketType,
+      beforeSend: function() {
+        // $('#ticket-button-upload__message').button('loading');
+      },
+      complete: function() {
+        // $('#ticket-button-upload__message').button('reset');
+      },
+      success: function(json) {
+        $("#sales_order_id_msg__message").html("");
+        $("#sales_order_id_msg__message").hide();
+        $('#myMessageTicketSubmit').attr('disabled', false);
+        $("#sales_order_id__message").removeClass('input-err');
+        if (!json['success']) {
+          $("#sales_order_id_msg__message").show();
+          $("#sales_order_id_msg__message").html(json['msg']);
+          $("#sales_order_id").addClass('input-err');
+          $('#myMessageTicketSubmit').attr('disabled', true);
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        layer.msg(xhr.responseText, { icon: 5 });
+      }
+    });
+    //加载item code下拉选择器
+    $.ajax({
+      url: 'index.php?route=account/ticket/getItemCodeList',
+      type: 'post',
+      dataType: 'json',
+      data: 'order_id=' + encodeURIComponent(salesOrderId),
+      beforeSend: function() {
+        // $('#ticket-button-upload__message').button('loading');
+      },
+      complete: function() {
+        // $('#ticket-button-upload__message').button('reset');
+      },
+      success: function(list) {
+        //加载item code
+        let itemCodeSelectStr = '';
+        for (let i in list) {
+          let itemCode = list[i];
+          itemCodeSelectStr += '<option value="' + itemCode.item_code + '">' + itemCode.item_code +
+            '</option>';
+        }
+        $('#sales_item_code__message').html(itemCodeSelectStr);
+        $('#sales_item_code__message').trigger('change');
+        $('#sales_item_code__message').selectpicker('refresh');
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        layer.msg(xhr.responseText, { icon: 5 });
+      }
+    });
+  },
+  checkItemCode: function() {
+    //设置个延迟，不然select的赋值会晚于onblur（失去焦点事件）
+    setTimeout(function() {
+      globalSendPageFuns.checkItemCodeSubmit();
+    }, 500);
+  },
+  //seller 校验item code库存是否大于0
+  checkItemCodeSubmit: function() {
+    var sellerItemCode = $('#seller_item_code__message').val().trim();
+    $('#sales_item_code__message').html('');
+    if (sellerItemCode == '') {
+      return false;
+    }
+    $.ajax({
+      url: 'index.php?route=account/ticket/checkSellerItemCode',
+      type: 'post',
+      dataType: 'json',
+      data: 'item_code=' + encodeURIComponent(sellerItemCode),
+      beforeSend: function() {
+        // $('#ticket-button-upload__message').button('loading');
+      },
+      complete: function() {
+        // $('#ticket-button-upload__message').button('reset');
+      },
+      success: function(json) {
+        $("#seller_item_code_msg__message").html("");
+        $("#seller_item_code_msg__message").hide();
+        $('#myMessageTicketSubmit').attr('disabled', false);
+        $("#seller_item_code__message").removeClass('input-err');
+        if (!json['success']) {
+          $("#seller_item_code_msg__message").show();
+          $("#seller_item_code_msg__message").html(json['msg']);
+          $("#seller_item_code__message").addClass('input-err');
+          $('#myMessageTicketSubmit').attr('disabled', true);
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        layer.msg(xhr.responseText, { icon: 5 });
+      }
+    });
+  },
+  checkRmaId: function() {
+    //设置个延迟，不然select的赋值会晚于onblur（失去焦点事件）
+    setTimeout(function() {
+      globalSendPageFuns.checkRmaIdSubmit();
+    }, 500);
+  },
+  //seller 校验item code库存是否大于0
+  checkRmaIdSubmit: function() {
+    var rma_id = $('#rma_id__message').val().trim();
+    $('#rma_id__message').html('');
+    var ticketType = $('#ticket_type__message').val();
+    if (rma_id == '') {
+      return false;
+    }
+    $.ajax({
+      url: 'index.php?route=account/ticket/checkRmaId',
+      type: 'post',
+      dataType: 'json',
+      data: 'rma_id=' + encodeURIComponent(rma_id) + '&ticket_type=' + ticketType,
+      beforeSend: function() {
+        // $('#ticket-button-upload__message').button('loading');
+      },
+      complete: function() {
+        // $('#ticket-button-upload__message').button('reset');
+      },
+      success: function(json) {
+        $("#rma_id_msg__message").html("");
+        $("#rma_id_msg__message").hide();
+        $('#myMessageTicketSubmit').attr('disabled', false);
+        $('#rma_id__message').removeClass('input-err');
+        $("#seller_item_code__message").removeClass('input-err');
+        if (!json['success']) {
+          $("#rma_id_msg__message").show();
+          $("#rma_id_msg__message").html(json['msg']);
+          $("#rma_id__message").addClass('input-err');
+          $('#myMessageTicketSubmit').attr('disabled', true);
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        layer.msg(xhr.responseText, { icon: 5 });
+      }
+    });
+  },
+  checkSafeguardClaimNo: function() {
+    //设置个延迟，不然select的赋值会晚于onblur（失去焦点事件）
+    setTimeout(function() {
+      globalSendPageFuns.checkSafeguardClaimNoSubmit();
+    }, 500);
+  },
+  //buyer 校验理赔单ID
+  checkSafeguardClaimNoSubmit: function() {
+    let input = $("#safeguard_claim_no__message");
+    let msg = $("#safeguard_claim_no_msg__message");
+    var safeguardClaimNo = input.val().trim();
+    if (safeguardClaimNo == '') {
+      msg.html("");
+      msg.hide();
+      return false;
+    }
+    $.ajax({
+      url: "{{ url('account/ticket/ajaxCheckSafeguardNo')}}",
+      type: 'post',
+      dataType: 'json',
+      data: { safeguard_claim_no: safeguardClaimNo },
+      beforeSend: function() {},
+      complete: function() {},
+      success: function(json) {
+        let myModalTicketSubmit = $('#myModalTicketSubmit');
+        msg.html("");
+        msg.hide();
+        myModalTicketSubmit.attr('disabled', false);
+        input.removeClass('input-err');
+        if (!json['success']) {
+          msg.show();
+          msg.html(json['msg']);
+          input.addClass('input-err');
+          myModalTicketSubmit.attr('disabled', true);
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        layer.msg(xhr.responseText, { icon: 5 });
+      }
+    });
+  },
+  submitTicketForChange: function(value) {
+    value = parseInt(value);
+    $("#submit_ticket_for__message").val(parseInt(value));
+
+    let ticketTypeStr = `<option value="0">--${globalSendPageFuns.txtPleaseSelect}--</option>`;
+    let items = ticketCategoryGroupList[parseInt(value) + 's'];
+    for (let i in items) {
+      let item = items[i];
+      ticketTypeStr += '<option value="' + parseInt(item.category_id) + '">' + item.name + '</option>';
+    }
+    $('#ticket_type__message').html(ticketTypeStr);
+    $('#ticket_type__message').trigger('change');
+
+    if (value == 3) {
+      $('div[group="parent-rma"]').hide();
+      $('div[group="parent-sales-order"]').hide();
+    }
+    if (value == 0) {
+      globalSendPageFuns.hideReset();
+    }
+  },
+  hideReset: function() {
+    $('#submit_ticket_for__message').val(0);
+    $('#ticket_type__message').html(`<option value="0">--${globalSendPageFuns.txtPleaseSelect}--</option>`);
+    $('#ticket_type__message').val(0);
+    $("#tipInterceptSalesOrder__message").hide();
+    $('div[group="parent-rma"]').hide();
+    $('div[group="parent-sales-order"]').hide();
+    $('div[group="parent-sales-item-code"]').hide();
+    $('div[group="parent-tracking_number"]').hide();
+    $('div[group="parent-item-code"]').hide();
+    $('div[group="parent-safeguard-claim"]').hide();
+    $('#ticket_group_description__message').hide();
+    $('.ticket_group_attachments__message').hide();
+    $(".ticket_group_attachments__message").find(".ticket-upload-file__message").html('');
+    $(".ticket_group_attachments__message").find("textarea").val('');
+    $('#myMessageTicketFooter').hide();
+  },
+  clearContent: function() {
+    globalSendPageFuns.clearTicketInputs(false);
+  },
+  clearTicketInputs: function(select = true) {
+    if (select) {
+      $('#submit_ticket_for__message').val(0);
+      $('#ticket_type__message').html(`<option value="0">--${globalSendPageFuns.txtPleaseSelect}--</option>`);
+      $('#ticket_type__message').val(0);
+    }
+    $("#tipInterceptSalesOrder__message").hide();
+    $('#rma_id__message').val("");
+    $('#sales_order_id__message').val("");
+    $('#sales_item_code__message').html("");
+    $('#tracking_number').val("");
+    $('#seller_item_code__message').val("");
+    $('#processing_method__message').val(0);
+    $('#ticket_description__message').val("");
+    $('#safeguard_claim_no__message').val("");
+    $('#ticket_description_tips__message').html("<span id='ticket_counter' class='link-color'>0</span>/1000");
+    $(".ticket_group_attachments__message").find(".ticket-upload-file__message").html('');
+    $(".ticket_group_attachments__message").find("textarea").val('');
+  },
+  //清除所有提示框
+  clearTicketMsg: function() {
+    $("#rma_id_msg__message").html("");
+    $("#rma_id_msg__message").hide();
+
+    $("#sales_order_id_msg__message").html("");
+    $("#sales_order_id_msg__message").hide();
+
+    $("#seller_item_code_msg__message").html("");
+    $("#seller_item_code_msg__message").hide();
+
+    $("#safeguard_claim_no_msg__message").html("");
+    $("#safeguard_claim_no_msg__message").hide();
+  }
+}
+
+$(document).ready(function() {
+  //初始化下拉列表
+  globalSendPageFuns.initSelect();
+  let ticketFor = globalSendPageFuns['ticketCategoryGroupList__message'][0 + 's'];
+  let ticketForStr = `<option value="0">--${globalSendPageFuns.txtPleaseSelect}--</option>`;
+  for (let i in ticketFor) {
+    let item = ticketFor[i];
+    ticketForStr += '<option value="' + parseInt(item.category_id) + '">' + item.name + '</option>'
+  }
+  $("#submit_ticket_for__message").html(ticketForStr);
+
+  $(".submit-ticket-right__message").click(function() {
+    $("#myMessageTicket").modal({ backdrop: 'static', keyboard: false });
+    globalSendPageFuns.initSelect();
+    $('#myMessageTicket').modal('show');
+  });
+
+  $('#myMessageTicket').on('hide.bs.modal', function() {
+    globalSendPageFuns.clearTicketInputs();
+    globalSendPageFuns.clearTicketMsg();
+    $(".input-err").removeClass('input-err');
+    globalSendPageFuns.refreshSelect();
+  })
+
+  $("#submit_ticket_for__message").change(function() {
+    var that = this;
+    var thatvalue = parseInt($(that).val());
+    $("#myMessageTicketSubmit").attr('disabled', false);
+    if (thatvalue === '1') {
+      $('#ticket_hint__message').css('display', 'inline-block');
+      $('#ticket_hint__message').text('{{ tip_ticket_for_1 }}');
+    } else if (thatvalue === '2') {
+      //$('#ticket_hint__message').css('display','inline-block');
+      //$('#ticket_hint__message').text('{{ tip_ticket_for_2 }}');
+    } else if (thatvalue === '3') {
+      $('#ticket_hint__message').css('display', 'inline-block');
+      $('#ticket_hint__message').text('{{ tip_ticket_for_3 }}');
+    } else {
+      $('#ticket_hint__message').css('display', 'none');
+    }
+    globalSendPageFuns.submitTicketForChange(thatvalue);
+
+    $('#ticket_hint__message').css('display', 'none');
+    $("#formList").find('input,textarea').val('');
+    $("#formList").find('select:not("#submit_ticket_for__message")').val(0);
+
+    $(".ticket-upload-file__message").children().remove();
+    globalSendPageFuns.clearContent();
+    $(".input-err").removeClass('.input-err');
+
+    $('.request-type-error').css('display', 'none');
+    globalSendPageFuns.refreshSelect();
+  });
+
+  $("#ticket_type__message").change(function() {
+
+    $("#formList").find('input,textarea').val('');
+    $(".ticket-upload-file__message").children().remove();
+
+    $('#sales_order_id__message').val("");
+    $('#sales_item_code__message').html("");
+    $('#tracking_number').val("");
+    $('#ticket_description__message').val("");
+    $('#safeguard_claim_no__message').val("");
+    $('#ticket_description_tips__message').html("<span id='ticket_counter' class='link-color'>0</span>/1000");
+    $(".ticket_group_attachments__message").find(".ticket-upload-file__message").html('');
+    $(".ticket_group_attachments__message").find("textarea").val('');
+
+    $(".input-err").removeClass('input-err');
+    $('.request-type-error').css('display', 'none');
+
+
+    let that = this;
+    let thatvalue = parseInt($(that).val());
+    if (thatvalue == 0) {
+
+      $('div[group^="parent"]').hide();
+      //$("#group_rma_id__message").hide();
+      //$("#group_sales_order_id").hide();
+
+      $("#ticket_group_description__message").hide();
+      $(".ticket_group_attachments__message").hide();
+      $("#myMessageTicketFooter").hide();
+    } else {
+      if (thatvalue == 18) {
+        if ($("#attachmentRed").length == 0) {
+          $("#labelUploadAttachments__message").before('<span id="attachmentRed" class="redStart">*</span>');
+        }
+      }
+      let submitVal = $("#submit_ticket_for__message").val();
+
+      $('div[group^="parent"]').hide();
+      if (submitVal == 1) {
+        //RMA Management
+        $('div[group="parent-rma"]').show();
+        globalSendPageFuns.checkRmaId(); //重新RMA id
+      } else if (submitVal == 2) {
+        //Sales Order Management
+        if (thatvalue == 19) {
+          globalSendPageFuns.checkSalesOrderIdSubmit(); //重新校验订单号
+          $('#group_processing_method__message').hide();
+        } else {
+          $('#group_processing_method__message').show();
+        }
+        $('div[group="parent-sales-order"]').show();
+
+        //查询下一级
+        let procesMethodStr;
+        var items = ticketCategoryGroupList[thatvalue + 's'];
+        for (let i in items) {
+          let item = items[i];
+          procesMethodStr += '<option value="' + parseInt(item.category_id) + '">' + item.name + '</option>';
+        }
+        if (items) {
+          $("#processing_method__message").html(procesMethodStr);
+        }
+      } else if (submitVal == 21 && thatvalue == 22) {
+        $('div[group="parent-safeguard-claim"]').show();
+        globalSendPageFuns.checkSafeguardClaimNoSubmit();
+      } else {
+        //others
+      }
+      if (thatvalue == 19) {
+        $('div[group="parent-sales-item-code"]').show();
+        $('div[group="parent-tracking_number"]').show();
+      }
+      if (thatvalue == 20) {
+        $('div[group="parent-rma"]').show();
+        $('div[group="parent-item-code"]').show();
+      }
+      $("#ticket_group_description__message").show();
+      $(".ticket_group_attachments__message").show();
+      $("#myMessageTicketFooter").show();
+
+    }
+
+    //Request Type 下方的提示
+    if (thatvalue == 5) {
+      $("#tipInterceptSalesOrder__message").show();
+    } else if (thatvalue == 18) {
+      $("#tipReshipPickupOrder__message").show();
+    } else {
+      $("#tipInterceptSalesOrder__message").hide();
+      $("#tipReshipPickupOrder__message").hide();
+    }
+
+    //上传文件样式
+    if (thatvalue == 5) {
+      $("#labelUploadAttachments__message").hide();
+      $("#labelUploadProffImages__message").show();
+      $("#spanLabelAttachments__message").hide();
+      $("#spanLabelProffImages").show();
+    } else {
+      $("#labelUploadAttachments__message").show();
+      $("#labelUploadProffImages__message").hide();
+      $("#spanLabelAttachments__message").show();
+      $("#spanLabelProffImages").hide();
+    }
+
+    globalSendPageFuns.refreshSelect();
+  });
+
+  $("#myMessageTicketSubmit").click(function() {
+    //submit data, clear data, close modal
+    let value_submit_ticket_for = $("#submit_ticket_for__message").val();
+    let value_ticket_type = $("#ticket_type__message").val();
+    let value_rma_id = $.trim($("#rma_id__message").val());
+    let value_sales_order_id = $.trim($('#sales_order_id__message').val());
+    let value_processing_method = $("#processing_method__message").val();
+    var value_tracking_number = $.trim($("#tracking_number__message").val());
+    var value_seller_item_code = $.trim($("#seller_item_code__message").val());
+
+    if (value_submit_ticket_for == 0) {
+      layer.msg('Submit a Request For can not be left blank.');
+      return false;
+    }
+    if (value_submit_ticket_for == 1) {
+      if (value_ticket_type == 0) {
+        layer.msg('Request Type can not be left blank.');
+        return false;
+      }
+      if (value_rma_id.length == 0) {
+        layer.msg('RMA ID can not be left blank.');
+        return false;
+      }
+
+      if (value_submit_ticket_for == 1 && value_ticket_type == 18) {
+        if ($("li[name='inputFile']").length == 0) {
+          layer.msg('Attachments must be upload.');
+          return false;
+        }
+      }
+
+
+    } else if (value_submit_ticket_for == 2) {
+      if (value_ticket_type == 0) {
+        layer.msg('Request Type can not be left blank.');
+        return false;
+      }
+      if (value_sales_order_id.length == 0) {
+        layer.msg('Sales Order ID can not be left blank.');
+        return false;
+      }
+      if (value_processing_method == 0 && value_ticket_type == 5) {
+        layer.msg('Processing Method can not be left blank.');
+        return false;
+      }
+      if (value_ticket_type == 19) {
+        if (value_tracking_number.length > 500) {
+          layer.msg('Ticking Number more than 500 characters.');
+          return false;
+        }
+      }
+    } else if (value_submit_ticket_for == 9 && value_ticket_type == 20) {
+      if (value_rma_id.length == 0) {
+        layer.msg('RMA ID can not be left blank.');
+        return false;
+      }
+      if (value_seller_item_code.length == 0) {
+        layer.msg('Item Code can not be left blank.');
+        return false;
+      }
+    } else {
+      //don't do
+    }
+
+    var descriptionValue = $.trim($("#ticket_description__message").val());
+    if (descriptionValue.length < 1) {
+      layer.msg('Description can not be left blank.');
+      return false;
+    }
+    if (descriptionValue.length > 1000) {
+      layer.msg('Description more than 1000 characters');
+      return false;
+    }
+    $("#ticket_description__message").val(descriptionValue);
+
+    let upfiles = [];
+    $(".ticket-upload-file__message li a").each(function(index, ele) {
+      let item = {};
+      item.name = $(ele).text();
+      item.url = $(ele).data('val');
+      upfiles.push(item);
+    });
+    if (value_ticket_type == 5) {
+      //Request Type IS Intercept Sales Order
+      if (upfiles.length < 1) {
+        layer.msg('Proof Images can not be left blank.');
+        return false;
+      }
+    }
+    $(".ticket_group_attachments__message").find("textarea").val(JSON.stringify(upfiles));
+    var sendData = $("#myMessageTicket").find("form").serialize();
+    $("#myMessageTicketSubmit").attr("disabled", true);
+    $.ajax({
+      url: "index.php?route=account/ticket/add",
+      type: 'POST',
+      data: sendData,
+      dataType: 'json',
+      success: function(result, status, xhr) {
+        if (result.ret == 1) {
+          $('#myMessageTicket').modal('hide');
+          globalSendPageFuns.clearTicketInputs();
+          layer.msg(result.msg);
+
+          if ($("#ticket_page_is_need_reload").val()) {
+            window.location.href = window.location.href.replace(/&is_others=1/, '');
+          }
+        } else {
+          layer.open({
+            title: 'Failed',
+            content: result.msg,
+            btn: ['OK']
+          });
+        }
+      },
+      error: function(xhr, status, error) {
+        layer.msg('error');
+      },
+      complete: function(xhr, status) {
+        $("#myMessageTicketSubmit").attr("disabled", false);
+        globalSendPageFuns.refreshSelect();
+      }
+    });
+  });
+
+  $("#rma_id__message").autocomplete({
+    'source': function(request, response) {
+      $.ajax({
+        url: 'index.php?route=account/ticket/autocompletermaid&rma_id=' + encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          if (json.length == 1 && json[0]['rma_id'] == encodeURIComponent(request)) {} else {
+            response($.map(json, function(item) {
+              return {
+                label: item['rma_id'],
+                value: item['rma_id']
+              }
+            }));
+          }
+          $("#group_rma_id__message").removeClass("has-error");
+        }
+      });
+    },
+    'select': function(item) {
+      $("#rma_id__message").val(item['label']);
+    }
+  });
+
+  $("#sales_order_id__message").autocomplete({
+    'source': function(request, response) {
+      if (request) {
+        $.ajax({
+          url: 'index.php?route=account/ticket/autocompleteorderid&order_id=' + encodeURIComponent(
+            request),
+          dataType: 'json',
+          success: function(json) {
+            if (json.length == 1 && json[0]['order_id'] == encodeURIComponent(request)) {
+
+            } else {
+              response($.map(json, function(item) {
+                return {
+                  label: item['order_id'],
+                  value: item['order_id']
+                }
+              }));
+            }
+          }
+        });
+      }
+    },
+    'select': function(item) {
+      $("#sales_order_id__message").val(item['label']);
+    }
+  });
+  //seller item code 输入框下拉联想
+  $("#seller_item_code__message").autocomplete({
+    'source': function(request, response) {
+      $.ajax({
+        url: 'index.php?route=account/ticket/getItemCodeList',
+        type: 'post',
+        data: 'item_code=' + encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          if (json.length == 1 && json[0]['item_code'] == encodeURIComponent(request)) {
+
+          } else {
+            response($.map(json, function(item) {
+              return {
+                label: item['item_code'],
+                value: item['item_code']
+              }
+            }));
+          }
+        }
+      });
+    },
+    'select': function(item) {
+      $("#seller_item_code__message").val(item['label']);
+    }
+  });
+
+  //对文本框计数
+  $("#ticket_description__message").bind("input propertychange change", function() {
+    var userDesc = $("#ticket_description__message").val();
+    //获取输入内容
+    var calcReturn = toolString.calcStringLength(userDesc, 1000);
+    $("#ticket_description__message").val(calcReturn.fullStr)
+    //显示字数
+    $("#ticket_counter").text(calcReturn.len);
+  })
+
+  //回复页面
+  //upload file
+  $('#ticket-button-upload__message').on('click', function() {
+    $('#form-upload').remove();
+
+    let ticket_type = $("#ticket_type__message").val();
+    if (ticket_type == 5) {
+      //Request Type IS Intercept Sales Order，只上传图片
+      $('body').prepend(
+        '<form enctype="multipart/form-data" id="form-upload" style="display: none;"><input type="file" name="file" accept="image/tiff,image/pjp,image/pjpeg,image/jfif,image/tif,image/gif,image/svg,image/bmp,image/png,image/jpeg,image/svgz,image/jpg,image/webp,image/ico,image/xbm,image/dib"/></form>'
+      );
+    } else {
+      $('body').prepend(
+        '<form enctype="multipart/form-data" id="form-upload" style="display: none;"><input type="file" name="file" accept="application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/msexcel,application/pdf,image/tiff,image/pjp,image/pjpeg,image/jfif,image/tif,image/gif,image/svg,image/bmp,image/png,image/jpeg,image/svgz,image/jpg,image/webp,image/ico,image/xbm,image/dib,.txt,.csv"/></form>'
+      );
+    }
+
+
+    $('#form-upload input[name=\'file\']').trigger('click');
+    // 绑定change事件
+    $('#form-upload').find("input").change(function() {
+      $.ajax({
+          url: 'index.php?route=account/ticket/upload',
+          type: 'post',
+          dataType: 'json',
+          data: new FormData($('#form-upload')[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          beforeSend: function() {
+            $('#ticket-button-upload__message').button('loading');
+          },
+          complete: function() {
+            $('#ticket-button-upload__message').button('reset');
+          },
+          success: function(json) {
+            if (json['error']) {
+              layer.msg(json['error']);
+            }
+
+            if (json['text']) {
+              let str =
+                `<li name="inputFile" title="${json['name']}">
+                                    <div>
+                                      <a href="${json['path']}" data-val="${json['url']}" target="_blank"><i class="giga icon-attachment"></i>${json['name']}</a>
+                                    </div>
+                                    <span class="attach-list-btn">
+                                      <i class="giga icon-V10_shangchuanwenjianyanzhengtongguo-01 pull-right attach-success"></i>
+                                      <i class="giga icon-lajitong1 pull-right attach-delete"></i>
+                                    </span>
+
+                                  </li>`;
+              $(".ticket-upload-file__message").append(str);
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            layer.msg(xhr.responseText, { icon: 5 });
+          }
+      });
+      // 每次change后会清空input的值
+      $(this).val('');
+    })
+  });
+
+  $(document).on('click', ".ticket-upload-file__message li span", function() {
+    $(this).parent().remove();
+  });
+
+  var claimLock = false;
+  $("#safeguard_claim_no__message").autocomplete({
+    'source': function(request, response) {
+      claimLock = true;
+      $.ajax({
+        url: "{{ url('account/ticket/getSafeguardClaimList')}}",
+        type: 'post',
+        data: 'safeguard_claim_no=' + encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          response($.map(json, function(item) {
+            return {
+              label: item,
+              value: item
+            }
+          }));
+          claimLock = false;
+        },
+        error: function() {
+          claimLock = false;
+        }
+      });
+    },
+    'select': function(item) {
+      $("#safeguard_claim_no__message").val(item['value']);
+    }
+  });
+
+  globalSendPageFuns.refreshSelect();
+});
+</script>
+<style>
+#safeguard_claim_no_group .dropdown-menu {
+  max-height: 240px;
+  overflow-y: auto;
+}
+</style>

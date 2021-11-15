@@ -1,0 +1,50 @@
+<link href="catalog/view/javascript/jquery/swiper/css/swiper.min.css" type="text/css" rel="stylesheet" media="screen">
+<link href="catalog/view/javascript/jquery/swiper/css/opencart.css" type="text/css" rel="stylesheet" media="screen">
+<script src="catalog/view/javascript/jquery/swiper/js/swiper.jquery.js" type="text/javascript"></script>
+<link type="text/css" href="/public/fonts/giga/iconfont.css?v={{ app_version }}" rel="stylesheet">{#B2B页面改版 图标字体#}
+<style>
+  .title0 p {
+    margin-bottom: 15px;
+    color: #000;
+  }
+
+  .title0 a:hover {
+    color: #3a75dc;
+  }
+
+  .row {
+    margin: 0;
+  }
+</style>
+<div id="error-not-found" style="">
+  <div class="row">
+    <div style="display: flex;justify-content: center;height: 200px;align-items: center">
+      <div style="width: 150px">
+        <img src="catalog/view/theme/yzcTheme/image/cart/cart.svg" width="150px">
+      </div>
+      <div class="title0" style="width: auto">
+        <p style="font-size: 28px;margin-top: 14%">{{ text_error }}</p>
+        <p style="font-size: 16px">
+          <a href="{{ continue }}"> Continue Shopping ></a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  block.unBlockUI();
+  if($('body #cartTab ul li.active .tab-cart-count').html()==0){
+    $("#myCartSwiperCon").show();
+    if(buildSwiperNum==0){
+      mySwiperWork();
+      buildSwiperNum=1;
+    }
+  }else{
+    $("#myCartSwiperCon").hide();
+  }
+
+</script>
+
+

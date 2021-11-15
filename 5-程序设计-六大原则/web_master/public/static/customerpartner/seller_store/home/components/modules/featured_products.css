@@ -1,0 +1,162 @@
+.module-modal .featured-form {
+  padding: 0px 24px;
+  margin-top: 0px;
+}
+
+.module-modal .display-setting-tab {
+  margin-top: 24px;
+}
+
+.module-modal .product-item-container {
+  /* margin-bottom: 38px; */
+}
+
+.module-modal .products-container {
+  margin-bottom: 38px;
+}
+
+.module-modal .product-item-container .product-title{
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+/* 标题文字 */
+.product-item-container .product-title .product-title-text {
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+  margin-right: 2px;
+}
+
+
+/* 标题标识 */
+.product-item-container .product-title .tag-icon {
+  width: 5px;
+  height: 16px;
+  background: #375ACD;
+  margin-right: 11px;
+}
+
+.product-item-container .product-edit-body {
+  padding-left: 16px;
+}
+
+.product-item-container .product-edit-body .product-input-container {
+  position: relative;
+}
+
+.product-item-container .featured-tags-container {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.product-item-container .featured-tags-container .featured-tags-text{
+  margin-right: 12px;
+}
+
+/* 添加标签按钮部分 */
+.product-item-container .product-edit-body .product-btn-container {
+  margin-top: 8px;
+}
+
+.product-item-container .product-edit-body .product-btn-container .add-tag-btn {
+  height: 28px;
+  font-size: 12px;
+}
+
+.product-item-container .product-edit-body .product-btn-container .add-tag-btn i {
+  font-size: 14px;
+  margin-right: 6px;
+}
+
+/* tags列表显示 */
+.product-tags-container {
+  /* padding: 6px 0px  */
+}
+
+.product-tags-container .tag-item {
+  color: #333;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.product-tags-container .tag-item i {
+  margin-left: 8px;
+}
+
+.product-tags-container .tag-item:hover {
+  cursor: pointer;
+  color: #004BD8;
+}
+
+/* tags 弹窗 */
+.tags-modal .oper-btn {
+  margin-left: 5px !important;
+  margin-right: 5px !important;
+}
+
+.tags-modal .ele-form-item .el-form-item__label {
+  line-height: 40px !important;
+}
+
+.tags-modal .tags-tip {
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #333;
+}
+
+.tags-modal .el-dialog__body {
+  padding-top: 18px;
+}
+
+
+/* 错误信息 */
+.module-modal .product-edit-body .error-tip{
+  display: none;
+  position: absolute;
+  top: 40px;
+  font-size: 13px;
+  color: #E64545;
+}
+
+.module-modal .product-edit-body .errorinput,
+.module-modal .product-edit-body .errorimage {
+  display: block;
+}
+
+.module-modal .errorinput + .el-input .el-input__inner,
+.module-modal .errorimage + div .el-upload--picture-card {
+  border-color: #E64545;
+}
+
+.nofirst-container {
+  margin-bottom: 50px;
+}
+
+.module-modal .add-text-btn {
+  padding: 10px 20px;
+  padding-left: 14px;
+}
+
+.module-modal .tag-list {
+  margin-left: -8px;
+}
+
+.module-modal .tag-list li{
+  line-height: 22px;
+  text-indent: -2px;
+}
+
+/* 修改圆点样式 */
+.tooltip-list li {
+  text-indent: -4px;
+  line-height: 20px;
+}
+
+.tooltip-list {
+  padding-inline-start: 24px;
+  margin-top: 8px;
+}

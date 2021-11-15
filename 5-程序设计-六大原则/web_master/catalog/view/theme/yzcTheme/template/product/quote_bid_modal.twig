@@ -1,0 +1,349 @@
+<style>
+  .modal-content {
+    border-radius: 4px;
+  }
+
+  .modal-body > div {
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .contract-offer {
+    color: #FA6400;
+    display: flex;
+    align-items: center;
+  }
+
+  .quoted-price {
+    padding: 0 5px;
+    border: 1px solid #E3E3E3;
+    border-radius: 4px;
+  }
+
+  .quoted-price > table {
+    margin: 0;
+    text-align: center;
+  }
+
+  .quoted-price > table > tbody > tr > td {
+    border-color: #E3E3E3;
+  }
+
+  .quoted-price > table > thead > tr {
+    border-bottom: 2px solid #E3E3E3;
+  }
+
+  label {
+    font-weight: initial;
+  }
+
+  .required label::before {
+    content: "*";
+    color: #ff414d;
+  }
+
+  .quote-qty-error-msg, .quote-price-error-msg {
+    font-size: 12px;
+    color: #ff414d;
+    display: none;
+  }
+
+  .quote-qty-error-icon, .quote-price-error-icon {
+    position: absolute;
+    right: 15px;
+    bottom: 0;
+    line-height: 40px;
+    color: #ff414d;
+    display: none;
+  }
+
+  .btn.btn-primary {
+    height: 40px;
+  }
+</style>
+{#{% if customer_id %}#}
+
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal"><span
+        aria-hidden="true">&times;</span><span class="sr-only">{{ text_close }} </span></button>
+  <h3 class="modal-title">{{ text_add_quote }} </h3>
+</div>
+<form id="quote-product-form">
+  <div class="modal-body" style="padding: 5px 15px">
+    <div>
+      {% if quote_price_details %}
+        <div class="contract-offer">
+          <i class="giga icon-zhangdan" style="margin-right: -20px;font-size:30px "></i>
+          <span>Quote</span>
+        </div>
+        <div class="quoted-price">
+          <table class="table">
+            <thead>
+            <tr>
+              <td width="50%">Quantity Range</td>
+              <td width="50%">Price</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in quote_price_details %}
+              <tr class="" style="cursor: pointer;" onclick="bid_quote_select(this)" data-price="{{ item.price_calc }}"
+                  data-price_currency="{{ item.price_currency }}"
+                  data-min_quantity="{{ item.min_quantity }}"
+                  data-max_quantity="{{ item.max_quantity }}">
+                <td>{{ item.quantity_show }}&nbsp;{{ text_pcs }}</td>
+                <td>{{ item.price_currency }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+    <div>
+      <div class="col-sm-6 required" style="padding-left: 0">
+        <label class="control-label" for="quote-input-quantity">{{ text_quanity }} </label>
+        <input type="number" name="quote_quantity"
+               maxlength="10"
+               min="1"
+               max="{{ quantity }}"
+               onkeyup="checkQuoteInputInt(this)"
+               onchange="checkQuoteInputInt(this)"
+               id="quote-input-quantity"
+               class="form-control"
+               autocomplete="new-password"/>
+{#        <span class="quote-qty-error-icon">#}
+{#          <i class="giga icon-gantanhaojinggao" style="font-size: 14px"></i>#}
+{#        </span>#}
+      </div>
+      <div class="col-sm-6 required" style="padding-right: 0">
+        <label class="control-label" for="quote-input-price" style="position: relative;">{{ text_price }}
+          <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip"
+             data-original-title="Unit price (excluding fulfillment and handling)"
+             style="margin-left: 2px;font-size: 13px"></i>
+        </label>
+        <input type="text" name="quote_price"
+            {% if is_japan %}
+              intlength="8" maxlength="8" step="1" max="99999999"
+            {% else %}
+              intlength="6" maxlength="9" step="0.01" max="999999.99"
+            {% endif %}
+               min="0"
+               onkeyup="checkQuoteInputMoney(this)"
+               onkeydown="checkQuoteInputMoney(this)"
+               onchange="checkQuoteInputMoney(this)"
+               id="quote-input-price"
+               class="form-control"/>
+      </div>
+      <div class="quote-qty-error-msg">
+      </div>
+      <div class="quote-price-error-msg">
+      </div>
+    </div>
+    <div class="form-group ">
+      <label class="control-label" for="input-message">Comments</label>
+      <textarea class="form-control" maxlength="500" name="quote_message" rows="3"
+                id="input-message" style="resize: none"></textarea>
+    </div>
+    <div class="footer text-center">
+      <button type="button" class="btn btn-primary btn-submit"
+              id="btnBidQuote" onclick="submitBtnBidQuote()">Bid
+      </button>
+    </div>
+  </div>
+</form>
+
+<script>
+  var is_japan = '{{ is_japan }}';
+
+  // 校验数量
+  function checkQuoteInputInt(obj) {
+    if ($(obj).val().length == 1) {
+      $(obj).val($(obj).val().replace(/[^1-9]/g, ''));
+    } else {
+      $(obj).val($(obj).val().replace(/\D/g, ''));
+    }
+
+    let quantity_max = Number.parseInt($(obj).attr('max'));
+    let quantity = Number.parseInt($(obj).val());
+
+    if (window.isNaN(quantity)) {
+      $(".quote-qty-error-msg").text("Quantity not be less than 0.").show();
+      $(".quote-qty-error-icon").show();
+      $(obj).parent().addClass('has-error');
+      return false;
+    } else {
+      if (quantity <= 0) {
+        $(".quote-qty-error-msg").text("Quantity not be less than 0.").show();
+        $(".quote-qty-error-icon").show();
+        $(obj).parent().addClass('has-error');
+        return false;
+      } else if (quantity > quantity_max) {
+        $(".quote-qty-error-msg").text("Quantity Requested cannot exceed the current available inventory.").show();
+        $(".quote-qty-error-icon").show();
+        $(obj).parent().addClass('has-error');
+        return false;
+      } else {
+        $(".quote-qty-error-msg").text("").hide();
+        $(".quote-qty-error-icon").hide();
+        $(obj).parent().removeClass('has-error');
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // 校验价格
+  function checkQuoteInputMoney(_this) {
+    let maxlength = $(_this).attr('maxlength');
+    let intlength = $(_this).attr('intlength');
+    let min = $(_this).attr('min');
+    let max = $(_this).attr('max');
+    if (!is_japan) {
+      if (_this.value.indexOf(".") <= 0 && _this.value.length > intlength) {
+        _this.value = _this.value.substr(0, intlength);
+      }
+      if (!/^\d+\.?\d{0,2}$/.test(_this.value)) {
+        _this.value = _this.value.substring(0, _this.value.length - 1);
+      }
+    } else {
+      if (_this.value.length > maxlength) {
+        _this.value = _this.value.substr(0, maxlength);
+      }
+      if (_this.value.length == 1) {
+        _this.value = _this.value.replace(/[^1-9]/g, '')
+      } else {
+        _this.value = _this.value.replace(/\D/g, '')
+      }
+    }
+    if (_this.value > max) {
+      _this.value = max;
+    }
+
+    $(".quote-price-error-msg").text("").hide();
+    $(".quote-price-error-icon").hide();
+    $("#quote-input-price").parent().removeClass('has-error');
+  }
+
+  /*点击模板每一行*/
+  function bid_quote_select(obj) {
+    let quote_input_price = $(obj).data('price');
+    let min_quantity = $(obj).data('min_quantity');
+    let max_quantity = $(obj).data('max_quantity');
+    $("#quote-input-quantity").val(min_quantity);
+    $("#quote-input-price").val(quote_input_price);
+
+    //region quantity
+    if ($("#quote-input-quantity")) {
+      checkQuoteInputInt($("#quote-input-quantity"))
+    }
+    //endregion
+
+    //region price
+    $(".quote-price-error-msg").text("").hide();
+    $(".quote-price-error-icon").hide();
+    $("#quote-input-price").parent().removeClass('has-error');
+    //endregion
+  }
+
+  //点击提交
+  function submitBtnBidQuote() {
+    let f = 0;
+    //region quantity
+    if ($("#quote-input-quantity")) {
+      if (!checkQuoteInputInt($("#quote-input-quantity"))) {
+        f++;
+      }
+    }
+    //endregion
+
+    //region price
+    let price = $("#quote-input-price").val();
+    if (window.isNaN(price)) {
+      $(".quote-price-error-msg").text("Unit Price not be less than 0.").show();
+      $(".quote-price-error-icon").show();
+      $("#quote-input-price").parent().addClass('has-error');
+      f++;
+    } else if (price <= 0) {
+      $(".quote-price-error-msg").text("Unit Price not be less than 0.").show();
+      $(".quote-price-error-icon").show();
+      $("#quote-input-price").parent().addClass('has-error');
+      f++;
+    } else {
+      $(".quote-price-error-msg").text("").hide();
+      $(".quote-price-error-icon").hide();
+      $("#quote-input-price").parent().removeClass('has-error');
+    }
+    //endregion
+
+    if (f > 0) {
+      //页面校验不通过
+    } else {
+      if ($("#btnBidQuote").hasClass('disabled')) {
+        return true;
+      }
+      $('#btnBidQuote').addClass('disabled');
+      $('#quote_bid_modal').addClass('mail-procss');
+
+      $.ajax({
+        url: "{{ url('account/product_quotes/wk_product_quotes/add') }}",
+        data: $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea, #quote-product-form textarea, #quote-product-form input'),
+        type: 'post',
+        dataType: 'json',
+        success: function (json) {
+          $('.alert, .text-danger').remove();
+          $('.form-group').removeClass('has-error');
+
+          if (json['error']) {
+            if (json['error']['option']) {
+              for (let i in json['error']['option']) {
+                let element = $('#input-option' + i.replace('_', '-'));
+
+                if (element.parent().hasClass('input-group')) {
+                  element.parent().after('<div class="text-danger">' + json['error']['option'][i] + '</div>');
+                } else {
+                  element.after('<div class="text-danger">' + json['error']['option'][i] + '</div>');
+                }
+              }
+            }
+
+            if (json['error']['quantity']) {
+              $(".quote-qty-error-msg").show();
+              $.toast({
+                heading: false,
+                text: json['error']['quantity'],
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: 5000,
+                allowToastClose: false,
+                loader: false
+              });
+            }
+
+            if (json['error']['message']) {
+              $.toast({
+                heading: false,
+                text: json['error']['message'],
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: 5000,
+                allowToastClose: false,
+                loader: false
+              });
+            }
+          }
+
+          if (json['success']) {
+            $("#quote_bid_modal").modal("hide");
+            $("#quoteAfterModal").modal("show");
+          }
+
+        },
+        complete: function () {
+          $('#btnBidQuote').removeClass('disabled');
+        }
+      });
+    }
+  }
+</script>

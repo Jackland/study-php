@@ -1,0 +1,1635 @@
+/* #18273现货保证金统一样式库 */
+/* oris-buyer 没有任何样式，用来定位buyer端定制样式库；buyer端和seller端样式库存在差别 */
+/*--------以下是为了新定义button统一样式----Start--------*/
+.oris-button,
+.oris-layer .layui-layer-btn a {
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  background: #375ACD;
+  border: 1px solid #375ACD;
+  color: #fff;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: .1s;
+  font-weight: 500;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 2px;
+}
+
+.oris-buyer .oris-button,
+.oris-buyer .oris-layer .layui-layer-btn a {
+  background: #2861CE;
+  border: 1px solid #2861CE;
+}
+
+.oris-button:not([disabled]):focus,
+.oris-button:not([disabled]):hover,
+.oris-layer .layui-layer-btn a:focus,
+.oris-layer .layui-layer-btn a:hover {
+  background: #1E42B8;
+  border-color: #1E42B8;
+  color: #fff;
+  opacity: 1;
+}
+
+.oris-buyer .oris-button:not([disabled]):focus,
+.oris-buyer .oris-button:not([disabled]):hover,
+.oris-buyer .oris-layer .layui-layer-btn a.layui-layer-btn0:focus,
+.oris-buyer .oris-layer .layui-layer-btn a.layui-layer-btn0:hover {
+  background: #1D54BB;
+  border-color: #1D54BB;
+}
+
+.oris-button[disabled] {
+  background-color: #c3cdf0;
+  border-color: #c3cdf0;
+  color: #fff;
+}
+
+.oris-button[disabled]:hover {
+  cursor: not-allowed;
+}
+
+.oris-buyer .oris-button[disabled] {
+  background-color: #2861CE;
+  border-color: #2861CE;
+  color: #fff;
+  opacity: 0.3;
+}
+
+.oris-button-default,
+.oris-layer .layui-layer-btn .layui-layer-btn1 {
+  padding: 11px;
+  background: #fff;
+  border-color: #CCCCCC;
+  color: #333333;
+}
+
+.oris-button-default i {
+  color: #666666;
+}
+
+.oris-button-default:not([disabled]):focus,
+.oris-button-default:not([disabled]):hover,
+.oris-layer .layui-layer-btn .layui-layer-btn1:focus,
+.oris-layer .layui-layer-btn .layui-layer-btn1:hover {
+  background: #fff;
+  color: #375ACD;
+  border-color: #375ACD;
+  cursor: pointer;
+}
+
+.oris-button-default:not([disabled]):focus i,
+.oris-button-default:not([disabled]):hover i {
+  color: #375ACD;
+}
+
+.oris-buyer .oris-button-default:not([disabled]):focus,
+.oris-buyer .oris-button-default:not([disabled]):hover,
+.oris-buyer .oris-layer .layui-layer-btn a.layui-layer-btn1:focus,
+.oris-buyer .oris-layer .layui-layer-btn a.layui-layer-btn1:hover {
+  background: #EDEFF3;
+  border: 1px solid #C1C1C1;
+  color: #666;
+}
+
+.oris-buyer .oris-button-default,
+.oris-buyer .oris-layer .layui-layer-btn a.layui-layer-btn1 {
+  border-color: #C1C1C1;
+  background: #fff;
+}
+
+.oris-buyer .layui-layer-btn1:hover,
+.oris-buyer .layui-layer-btn1:focus {
+  background: #EDEFF3 !important;
+}
+
+.oris-buyer .layui-layer-title {
+  background: none;
+}
+
+.oris-button-default[disabled] {
+  border: 1px solid #C1C1C1;
+  color: #CCCCCC;
+  background: #fff;
+}
+
+.oris-button-bigger {
+  padding: 12px 20px;
+}
+
+.oris-button-mini {
+  color: #004BD8;
+  border: 1px solid #2861CE;
+  font-size: 12px;
+  background: transparent;
+  outline-style: none;
+  border-radius: 2px;
+  height: 20px;
+  line-height: 18px;
+  width: 56px;
+}
+
+.oris-button-mini:hover {
+  background: #2861CE;
+  color: #fff;
+}
+
+.oris-button-light {
+  height: 40px;
+  background: #FFFFFF;
+  border: 1px solid #004BD8;
+  border-radius: 2px;
+  padding: 0 18px;
+  color: #004BD8;
+}
+
+.oris-button-light:hover,
+.oris-button-light:focus {
+  background: #EFF3FF;
+  outline: none;
+}
+
+.oris-button-outline {
+  background-color: rgba(55, 90, 205, 0.1);
+  color: #375ACD;
+  border: 1px solid #375ACD;
+}
+
+.oris-button-outline:not([disabled]):focus,
+.oris-button-outline:not([disabled]):hover {
+  background-color: #375ACD;
+  color: #fff;
+}
+/*--------以下是为了新定义button统一样式----End--------*/
+
+/*------------------------------------------------------------------------------------------------------------*/
+
+/*--------以下是input统一样式----Start--------*/
+.oris-input {
+  font-size: 14px;
+  -webkit-appearance: none;
+  background-color: #fff;
+  background-image: none;
+  border-radius: 2px;
+  border: 1px solid #C1C1C1;
+  box-sizing: border-box;
+  color: #333333;
+  display: inline-block;
+  font-size: inherit;
+  height: 40px;
+  line-height: 1;
+  outline: none;
+  padding: 0 15px;
+  transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+  width: 100%;
+}
+
+.oris-input[disabled] {
+  background-color: #EDEFF3;
+  cursor: not-allowed;
+}
+
+.oris-input:hover {
+  border-color: #666666;
+}
+
+.oris-input[disabled]:hover {
+  border-color: #CCCCCC;
+  cursor: not-allowed;
+}
+
+.oris-input:focus {
+  border-color: #375ACD;
+}
+
+/*buyer端样式冲突*/
+.oris-buyer .oris-input:focus,
+.oris-buyer .oris-select .bootstrap-select .dropdown-toggle:focus {
+  border-color: #333;
+}
+
+/*input框placeholder*/
+.oris-input::-moz-placeholder {
+  color: #999999 !important;
+  opacity: 1;
+}
+
+.oris-input:-ms-input-placeholder {
+  color: #999999 !important;
+}
+
+.oris-input::-webkit-input-placeholder {
+  color: #999999 !important;
+}
+
+/* 评论框textarea并且右下角实时计算字符数量 */
+.oris-comments {
+  position: relative;
+}
+
+.oris-comments textarea {
+  width: 100%;
+  overflow-y: auto;
+  resize: none;
+  padding: 12px 16px 30px 16px;
+  line-height: 20px;
+}
+
+.oris-comments .letter-count {
+  position: absolute;
+  right: 16px;
+  bottom: 6px;
+  color: #666;
+  background: #fff;
+  width: calc(100% - 32px);
+  text-align: right;
+  padding-bottom: 6px;
+}
+
+/*input带标志框组*/
+.oris-ingroup {
+  position: relative;
+  display: flex;
+  border-collapse: separate;
+  width: 100%;
+}
+
+.oris-ingroup .oris-input {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.oris-ingroup .input-addon,
+.oris-ingroup .oris-ingroup-date {
+  text-align: center;
+  border-radius: 2px;
+  display: inline-block;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background-color: #EDEFF3;
+  border: 1px solid #ccc;
+  border-left: 0;
+}
+
+.oris-ingroup .input-addon {
+  min-width: 40px;
+  padding: 0 10px;
+  color: #333;
+  line-height: 38px;
+}
+
+.oris-ingroup .oris-ingroup-date {
+  color: #CCCCCC;
+  width: 40px;
+  border-left: none;
+  line-height: 37px;
+}
+/*新日期icon用999颜色*/
+.oris-ingroup .oris-ingroup-date .icon-riliriqi {
+  color: #999;
+}
+
+/*oris-clear是清空input内容icon, right值默认10px*/
+.oris-ingroup .oris-clear {
+  display: none;
+  color: #D2D2D2;
+  font-size: 16px;
+  position: absolute;
+  right: 10px;
+  line-height: 40px;
+}
+
+/* 日期选择框清除 */
+.oris-ingroup .oris-ingroup-date~.oris-clear {
+  right: 40px;
+}
+
+.oris-ingroup .oris-clear:hover {
+  cursor: pointer;
+  color: #8C8C8C;
+}
+
+.action-clear .oris-input:hover~.oris-clear-show {
+  display: block;
+}
+
+.action-clear .oris-input:hover~.oris-clear-hide {
+  display: none;
+}
+
+.action-clear .oris-clear:hover {
+  display: block;
+}
+
+/*--------以下是input统一样式----End--------*/
+
+/*------------------------------------------------------------------------------------------------------------*/
+
+/*--------以下是select统一样式----Start--------*/
+/* oris-select-prerender 是解决bootstrap select 初始化之前选择器dom空白样式----重要（css位置放oris-select最上方） */
+/* 这里用>表示oris-select-prerender必须是oris-select的最近子元素 ==> 控制样式初始化之后就不生效 */
+.oris-select>select.oris-select-prerender {
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+  display: -webkit-inline-box !important;
+  display: -webkit-inline-flex !important;
+  display: -ms-inline-flexbox !important;
+  display: inline-flex !important;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  background-color: #fff !important;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  padding: 0 40px 0 15px !important;
+  height: 40px;
+  border-radius: 2px;
+  position: relative;
+  color: #333 !important;
+  font-weight: initial;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+}
+.oris-select>select.oris-select-prerender option{
+  display: none !important;
+}
+/*解决buyer端已有冲突*/
+.oris-select .btn-default {
+  border-color: #CCC;
+}
+
+.oris-select .bootstrap-select {
+  width: 100% !important;
+}
+
+.oris-select .bootstrap-select .dropdown-menu.open {
+  padding: 4px 0;
+}
+
+/*多选下拉框样式*/
+.oris-select .bootstrap-select .dropdown-menu .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+  border-top-left-radius: 2px !important;
+  border-bottom-left-radius: 2px !important;
+}
+
+.oris-select .bootstrap-select .dropdown-menu .btn:last-child:not(:first-child) {
+  border-top-right-radius: 2px !important;
+  border-bottom-right-radius: 2px !important;
+}
+
+.oris-select .bootstrap-select .dropdown-menu li.selected .glyphicon-ok:before {
+  font-family: 'giga';
+  content: "\e6ec";
+}
+
+.oris-select .bootstrap-select.show-tick .dropdown-menu .selected span.check-mark {
+  top: 10px;
+}
+
+.oris-select .bootstrap-select .dropdown-toggle {
+  height: 40px;
+  border-radius: 2px;
+  padding: 0;
+  position: relative;
+  /*现有样式颜色冲突*/
+  color: #333 !important;
+  font-weight: initial;
+}
+
+.oris-select .bootstrap-select .dropdown-toggle .filter-option-inner {
+  box-sizing: border-box;
+  display: inline-block;
+  font-size: inherit;
+  height: 38px;
+  line-height: 38px;
+  outline: none;
+  padding: 0 40px 0 15px;
+  width: 100%;
+}
+
+.oris-select .bootstrap-select .dropdown-toggle:hover {
+  background-color: transparent;
+  border: 1px solid #999;
+  color: #333;
+}
+
+.oris-select .open>.dropdown-toggle,
+.oris-select .bootstrap-select .dropdown-toggle:focus,
+.oris-select .bootstrap-select .dropdown-toggle:active {
+  border: 1px solid #375ACD;
+  outline: none !important;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.oris-buyer .oris-select .open>.dropdown-toggle,
+.oris-buyer .oris-select .bootstrap-select .dropdown-toggle:focus,
+.oris-buyer .oris-select .bootstrap-select .dropdown-toggle:active {
+  border-color: #333;
+}
+
+.oris-select .bootstrap-select .caret {
+  border: none;
+}
+
+.oris-select .bootstrap-select .bs-caret {
+  position: absolute;
+  right: 0;
+  text-align: center;
+  height: 38px;
+  line-height: 38px;
+  width: 40px;
+}
+
+.oris-select .bootstrap-select .bs-caret:after {
+  font-family: 'giga';
+  content: '\101d6';
+}
+
+.oris-select .bootstrap-select .dropdown-menu .dropdown-item {
+  height: 36px;
+  line-height: 26px;
+  outline: none;
+  padding: 5px 20px;
+}
+
+.oris-select .bootstrap-select .dropdown-menu .dropdown-item.active,
+.oris-select .bootstrap-select .dropdown-menu .dropdown-item.active:hover {
+  background: #496DE5;
+  opacity: 1;
+}
+
+.oris-buyer .oris-select .bootstrap-select .dropdown-menu .dropdown-item.active,
+.oris-buyer .oris-select .bootstrap-select .dropdown-menu .dropdown-item.active:hover {
+  background: #E7E8EA;
+  color: #333;
+}
+
+.oris-select .bootstrap-select .dropdown-menu .dropdown-item:hover,
+.oris-select .bootstrap-select .dropdown-menu .dropdown-item:focus,
+.oris-select .bootstrap-select .dropdown-menu .dropdown-item:active {
+  background: #ECECEC;
+  opacity: 1;
+}
+
+.oris-buyer .oris-select .bootstrap-select .dropdown-menu .dropdown-item:hover {
+  background: #F5F6F7;
+}
+
+.oris-buyer .oris-select .bs-actionsbox .actions-btn {
+  color: #2861CE;
+}
+
+.oris-buyer .oris-select .bs-actionsbox .actions-btn:hover {
+  color: #fff;
+  background: #2861CE;
+}
+
+/*--------以上是select统一样式----Start--------*/
+
+/*------------------------------------------------------------------------------------------------------------*/
+
+/*--------以下是筛选label统一样式----Start--------*/
+.oris-big-label {
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+.oris-small-label {
+  font-size: 12px;
+  margin: 8px 0;
+  font-weight: bold;
+}
+
+/*--------以下是table统一样式----Start--------*/
+.oris-table {
+  position: relative;
+  box-sizing: border-box;
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  background-color: #fff;
+  font-size: 14px;
+  border-collapse: separate;
+}
+
+.oris-intable {
+  display: table;
+  background: #fff;
+}
+
+.oris-intable .oris-intable-tr,
+.oris-intable .oris-intable-th {
+  display: table-row;
+}
+
+.oris-intable .oris-intable-th {
+  font-size: 13px;
+}
+
+.oris-intable .oris-intable-tbody {
+  display: table-row-group;
+  vertical-align: middle;
+  border-color: inherit;
+}
+
+.oris-intable .oris-intable-td {
+  display: table-cell;
+}
+
+.oris-table:before,
+.oris-intable:before {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+}
+
+.oris-table thead {
+  width: 100%;
+  font-size: 12px;
+  color: #333;
+  background: #D7DDEA;
+  font-weight: bold;
+}
+
+.oris-table body,
+.oris-intable .oris-intable-tbody {
+  width: 100%;
+  overflow: auto;
+  position: relative;
+}
+
+.oris-table th {
+  white-space: nowrap;
+  user-select: none;
+  text-align: left;
+}
+
+.oris-table:not(.no-hover) tbody tr:not(.no-records):hover {
+  background-color: #F2F5FC;
+}
+
+.oris-table tr td:first-child,
+.oris-table tr th:first-child {
+  padding-left: 14px;
+}
+
+.oris-table tr td:last-child,
+.oris-table tr th:last-child {
+  padding-right: 14px;
+}
+
+.oris-table td,
+.oris-table th,
+.oris-intable .oris-intable-td {
+  padding: 10px 6px;
+  min-width: 0;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  position: relative;
+  text-align: center;
+  -moz-user-select: text;
+  /* Firefox私有属性 */
+  -webkit-user-select: text;
+  /* WebKit内核私有属性 */
+  -ms-user-select: text;
+  /* IE私有属性(IE10及以后) */
+  -khtml-user-select: text;
+  /* KHTML内核私有属性 */
+  -o-user-select: text;
+  /* Opera私有属性 */
+  user-select: text;
+  /* CSS3属性 */
+}
+
+.oris-table,
+.oris-table td,
+.oris-intable .oris-intable-td {
+  border-bottom: 1px solid #eeeeee;
+}
+
+.oris-table.border-table,
+.oris-table.border-table td {
+  border-bottom: 1px solid #DCDCDC;
+}
+
+/*border-table 用于详情页面的表格内容，表格有边框*/
+.oris-table.border-table tbody tr td:first-child {
+  border-left: 1px solid #DCDCDC;
+}
+
+.oris-table.border-table tbody tr td:last-child {
+  border-right: 1px solid #DCDCDC;
+}
+
+.oris-table>tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.oris-table input[type="checkbox"],
+input[type="checkbox"].oris-checkbox {
+  margin-top: 0;
+  width: 20px;
+  height: 20px;
+}
+
+input[type="checkbox"].oris-checkbox.size-small{
+  width: 18px;
+  height: 18px;
+}
+
+
+.oris-table input[type="checkbox"]::before,
+input[type="checkbox"].oris-checkbox::before {
+  border: 2px solid #C3C3C3;
+  width: 20px;
+  height: 20px;
+}
+
+input[type="checkbox"].oris-checkbox.size-small::before{
+  width: 18px;
+  height: 18px;
+  line-height: 14px;
+}
+
+.oris-buyer .oris-table input[type="checkbox"]::before,
+.oris-buyer input[type="checkbox"].oris-checkbox::before {
+  border: 2px solid #999999;
+}
+
+input[type="checkbox"].oris-checkbox.blue-theme::before{
+  border: 2px solid #1A4596;
+}
+
+.oris-table input[type="checkbox"]::after,
+input[type="checkbox"].oris-checkbox::after {
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+}
+
+input[type="checkbox"].oris-checkbox.size-small::after{
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+.oris-table input[type="checkbox"]::after,
+input[type="checkbox"].oris-checkbox::after {
+  background: #375ACD;
+}
+
+/*解决buyer端样式冲突*/
+.oris-buyer input[type="checkbox"].oris-checkbox::after,
+.oris-buyer input[type="checkbox"]:checked.oris-checkbox::before {
+  background: #333;
+  border: 2px solid #333333;
+}
+
+.oris-buyer input[type="checkbox"].oris-checkbox.blue-theme::after,
+.oris-buyer input[type="checkbox"]:checked.oris-checkbox.blue-theme::before {
+  background: #1A4596;
+  border: 2px solid #1A4596;
+}
+
+
+.oris-buyer input[type="checkbox"].oris-checkbox {
+  border-color: #999;
+
+}
+
+.oris-buyer input[type="checkbox"].oris-checkbox:hover {
+  cursor: pointer;
+}
+
+.oris-table .no-records {
+  height: 80px;
+}
+
+.oris-table i {
+  font-style: normal;
+}
+
+.oris-table .icon-vat:before {
+  color: #E64545;
+  font-size: 14px;
+}
+
+/*sort-order是右侧升序降序排列*/
+.sort-order,
+.bootstrap-table .oris-table .sortable {
+  position: relative;
+}
+
+.bootstrap-table .oris-table .sortable{
+  display: inline-block;
+}
+
+.sort-order:before,
+.sort-order:after,
+.bootstrap-table .oris-table .sortable:before,
+.bootstrap-table .oris-table .sortable:after {
+  font-family: "giga";
+  font-size: 12px;
+  transform: scale(0.76);
+  color: #999999;
+  position: absolute;
+}
+
+.sort-order:before {
+  content: "\101dc";
+  right: -16px;
+  top: -6px;
+}
+.bootstrap-table .oris-table .sortable:before {
+  content: "\101dc";
+  right: -16px;
+  top: -4px;
+}
+
+.sort-order:after {
+  content: "\101da";
+  right: -16px;
+  bottom: -5px;
+}
+.bootstrap-table .oris-table .sortable:after {
+  content: "\101da";
+  right: -16px;
+  bottom: -4px;
+}
+
+.sort-order.desc-active:after,
+.sort-order.asc-active:before,
+.bootstrap-table .oris-table .sortable.desc:after,
+.bootstrap-table .oris-table .sortable.asc:before {
+  color: #004BD8;
+}
+
+/*--------以下是table统一样式----End--------*/
+
+/*--------以下是table 分页默认弹框统一样式----Start--------*/
+
+.oris-pagination {
+  width: 100%;
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 20px 0 4px 0;
+}
+
+.oris-pagination .pagination>li>a {
+  color: #333;
+}
+
+.oris-pagination .pagination>li.active>a {
+  background: #333 !important;
+  opacity: 1;
+  color: #fff;
+}
+
+.oris-pagination .pagination>li:first-child>a,
+.oris-pagination .pagination>li:first-child>span {
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+}
+
+.oris-pagination .pagination,
+.oris-pagination .page-info {
+  margin: 0;
+}
+
+.oris-pagination .page-list {
+  padding-right: 14px;
+}
+
+.oris-pagination .page-list b {
+  padding: 0 14px;
+}
+
+.oris-pagination .page-list b,
+.oris-pagination .page-list .btn {
+  font-weight: normal;
+}
+
+.oris-pagination .btn-group .btn {
+  border: 1px solid #ccc;
+  border-radius: 0;
+  padding: 4px;
+  min-width: 42px;
+  height: 32px;
+}
+
+.oris-pagination .btn-group .btn .caret {
+  color: #666;
+  margin-left: 4px;
+}
+
+.oris-pagination .page-list .dropup .dropdown-menu,
+.oris-pagination .page-list .navbar-fixed-bottom .dropdown .dropdown-menu {
+  bottom: 100% !important;
+  margin-bottom: 0;
+}
+
+.oris-pagination .page-list,
+.oris-pagination .page-info {
+  line-height: unset;
+  height: unset;
+  position: static;
+  top: unset;
+}
+
+/*------------------------------------------------------------------------------------------------------------*/
+
+/*--------以下是layer 默认弹框统一样式----Start--------*/
+/* 18273现货保证金新弹框统一样式 */
+
+.layui-layer-shade {
+  background-color: #000000 !important;
+  opacity: 0.5 !important;
+}
+
+/* 默认弹框，一般用于alert提示以及确认 */
+.oris-layer,
+.oris-modal {
+  min-width: 480px !important;
+  min-height: 256px !important;
+  border-radius: 2px !important;
+}
+
+.oris-layer .layui-layer-title,
+.oris-modal .modal-header {
+  font-weight: bold;
+  padding: 12px 24px;
+  background: #EDEFF3;
+  color: #333;
+}
+
+.oris-buyer .oris-layer .layui-layer-title,
+.oris-buyer .oris-modal .modal-header {
+  background: #fff;
+  border-color: #E6E6E6;
+}
+
+.oris-layer .layui-layer-setwin {
+  right: 20px;
+  top: 16px;
+}
+
+.oris-layer .layui-layer-close {
+  background: none;
+}
+
+.oris-layer .layui-layer-close:before {
+  font-family: 'giga';
+  content: '\e6f3';
+  font-size: 16px;
+}
+
+.oris-layer.layui-layer-dialog .layui-layer-content,
+.oris-layer .layui-layer-content {
+  font-size: 16px;
+  padding: 24px 24px 0 24px;
+  min-height: 125px !important;
+  overflow-y: auto;
+}
+
+.oris-modal .modal-body {
+  max-height: calc(80vh - 48px);
+}
+
+.oris-modal .modal-content {
+  border-radius: 2px;
+}
+
+.oris-layer .layui-layer-content {
+  height: auto !important;
+  max-height: 800px;
+}
+
+.oris-modal .modal-content {
+  border-radius: 2px;
+}
+
+.oris-modal .modal-header {
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+.oris-layer .layui-layer-btn {
+  padding: 20px 24px 24px !important;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+}
+
+.oris-layer .layui-layer-btn a {
+  height: 36px;
+  min-width: 88px;
+}
+
+.oris-layer .layui-layer-btn a:not(:last-child) {
+  margin-left: 10px;
+}
+
+.oris-modal .modal-title {
+  font-weight: bold;
+}
+
+.oris-modal .modal-header,
+.oris-modal .modal-body,
+.oris-modal .modal-footer {
+  padding: 12px 24px !important;
+}
+
+.oris-buyer.oris-modal .modal-header {
+  background: none;
+}
+
+.oris-modal .modal-footer {
+  border: none;
+  padding-top: 0 !important;
+  padding-bottom: 24px !important;
+  margin-top: 8px;
+}
+
+.oris-modal .modal-footer .oris-button {
+  min-width: 88px;
+  margin-left: 6px;
+}
+
+.oris-modal .close {
+  font-size: 25px !important;
+  border-radius: unset !important;
+  background: inherit !important;
+  color: #999 !important;
+  width: 30px !important;
+  text-align: right !important;
+  font-weight: normal !important;
+  line-height: 25px !important;
+  opacity: 1 !important;
+}
+
+.oris-modal .close i,
+.oris-layer .layui-layer-close {
+  color: #999;
+}
+
+.oris-modal .close i:hover,
+.oris-layer .layui-layer-close:hover {
+  color: #333;
+}
+
+/*Fixed: modal弹框底部按钮高度不一致*/
+.oris-modal .modal-footer .oris-button {
+  padding: 10px 20px;
+}
+
+/*--------以上是layer 默认弹框统一样式----End--------*/
+
+/*--------以下是删兰布局 默认弹框统一样式----Start--------*/
+
+.oris-row {
+  position: relative;
+  box-sizing: border-box;
+  clear: both;
+}
+
+.oris-row:after,
+.oris-row:before {
+  display: table;
+  content: "";
+}
+
+[class*=oris-col] {
+  float: left;
+  box-sizing: border-box;
+}
+
+.oris-row:after {
+  clear: both;
+}
+
+.oris-col-3 {
+  width: 25%;
+}
+
+.oris-col-4{
+  width: 33.33%;
+}
+
+.oris-col-6{
+  width: 50%;
+}
+
+.oris-row [class*=oris-col-]:not(:last-child) {
+  padding-right: 40px;
+}
+
+/* 查询条件区域 */
+
+.oris-row .search-btn {
+  display: table-cell;
+}
+
+.oris-row .search-btn button:not(:last-child) {
+  margin-right: 10px;
+}
+
+/*--------以下是tabs切页 默认弹框统一样式----Start--------*/
+
+.oris-tabs {
+  white-space: nowrap;
+  position: relative;
+  transition: transform .3s;
+  margin-bottom: 16px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.oris-tabs:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #e4e7ed;
+  z-index: 1;
+}
+
+.oris-tabs .oris-tab-pane {
+  padding: 0 20px;
+  height: 40px;
+  box-sizing: border-box;
+  line-height: 40px;
+  display: inline-block;
+  list-style: none;
+  font-size: 14px;
+  font-weight: bold;
+  color: #303133;
+  position: relative;
+  cursor: pointer;
+}
+
+.oris-tabs .oris-pane-active {
+  z-index: 6;
+  border-bottom: 2px solid #004BD8;
+  color: #004BD8;
+}
+
+.oris-tabs .oris-pane-active,
+.oris-tabs .oris-pane-active .oris-tab-num {
+  color: #004BD8;
+}
+
+.oris-tabs .oris-tab-num {
+  display: inline-block;
+  text-align: center;
+  line-height: 20px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  padding: 0 5px;
+  color: #586993;
+  background-color: #E1E8FF;
+  transition: -webkit-transform .05s ease;
+  -webkit-transform: translate(0, 0);
+  margin-left: 6px;
+}
+
+/*F标签*/
+.oris-mark-futures {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: #EEF2FE;
+  color: #004BD8;
+  border: 1px solid #004BD8;
+  font-size: 12px;
+  text-align: center;
+  line-height: 18px;
+}
+
+/*------------------------------------------------------------------------------------------------------------*/
+
+/*--------以下是多行文本超出省略统一样式----Start--------*/
+.max-line1 {
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.max-line2 {
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/*--------以下上是多行文本超出省略统一样式----Start--------*/
+
+
+/*--------以下是必填项标志样式----Start--------*/
+.required-before:before,
+.required-after:after {
+  content: '*';
+  color: #E64545;
+  margin-right: 4px;
+  position: relative;
+  top: 5px;
+  font-size: 18px;
+  line-height: 14px;
+}
+
+/*--------以上是必填项标志样式----End--------*/
+
+/*drop shipping / will call / wcf */
+.account-type {
+  border-radius: 2px;
+  font-size: 12px;
+  padding: 2px 6px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.atype-ds {
+  color: #9c772f;
+  background: #FFEFE4;
+}
+
+.atype-wc {
+  color: #004BD8;
+  background: #EEF2FE;
+}
+
+.atype-cwf {
+  color: #0AAD4F;
+  background: #ddf7ec;
+}
+
+.atype-invalid {
+  color: #fff;
+  background: #999;
+}
+
+/*bootstrap 气泡*/
+.tooltip {
+  font-family: Arial, "Roboto", Helvetica, serif !important;
+  font-size: 13px !important;
+  opacity: 1 !important;
+}
+
+.tooltip-inner {
+  background-color: #464C59;
+  border-color: #464C59;
+  border-radius: 2px;
+  padding: 6px 16px;
+  text-align: left;
+}
+
+.tooltip.top .tooltip-arrow {
+  border-top-color: #464C59;
+}
+
+.tooltip.bottom .tooltip-arrow {
+  border-bottom-color: #464C59;
+}
+
+.tooltip.right .tooltip-arrow {
+  border-right-color: #464C59;
+}
+
+.tooltip.left .tooltip-arrow {
+  border-left-color: #464C59;
+}
+
+/*--------以下是下拉菜单样式----Start--------*/
+.oris-dropdown-menu .dropdown-menu {
+  min-width: 240px;
+  max-width: 400px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.oris-dropdown-menu .dropdown-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.oris-dropdown-menu .dropdown-menu::-webkit-scrollbar-thumb {
+  background: #8A91A6;
+  border-radius: 0;
+}
+
+.oris-dropdown-menu .dropdown-menu>li>a:hover,
+.oris-dropdown-menu .dropdown-menu>li>a:focus {
+  background-color: #F2F2F2;
+}
+
+/*--------以上是下拉菜单样式----End--------*/
+/*--------以下是滚动条样式----Start--------*/
+
+.oris-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.oris-scrollbar::-webkit-scrollbar-thumb {
+  background: #8A91A6;
+  border-radius: 0;
+}
+
+/*--------以上是滚动条样式----End--------*/
+
+/*--------以下是统一宽度样式----Start--------*/
+.oris-w42 {
+  width: 42px;
+}
+
+.oris-w80 {
+  width: 80px;
+}
+
+.oris-w90 {
+  width: 90px;
+}
+
+.oris-w100 {
+  width: 100px;
+}
+
+.oris-w120 {
+  width: 120px;
+}
+
+.oris-w130 {
+  width: 130px;
+}
+
+.oris-w160 {
+  width: 160px;
+}
+
+.oris-w180 {
+  width: 180px;
+}
+
+.oris-w200 {
+  width: 200px;
+}
+
+.oris-w220 {
+  width: 220px;
+}
+
+.oris-w240 {
+  width: 240px;
+}
+
+.oris-w264 {
+  width: 264px;
+}
+
+.oris-w270 {
+  width: 270px;
+}
+
+.oris-w280 {
+  width: 280px;
+}
+
+.oris-w300 {
+  width: 300px;
+}
+
+.oris-w340 {
+  width: 340px;
+}
+
+.oris-w400 {
+  width: 400px;
+}
+
+.oris-wAll {
+  width: 100%;
+}
+
+/*--------以上是统一宽度样式----End--------*/
+.oris-link {
+  color: #333;
+}
+
+.oris-link:hover {
+  text-decoration: underline;
+}
+
+/*--------以上是统一宽度样式----End--------*/
+
+/*--------以下是统一新样式圆圈小点，一般用于状态前面----Start--------*/
+.oris-circle {
+  padding: 3px;
+  margin-right: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  background: #333;
+}
+
+.oris-bg-success {
+  background: #0AAD4F;
+}
+
+.oris-bg-warning {
+  background: #FF6600;
+}
+
+.oris-bg-default {
+  background: #004BD8;
+}
+
+.oris-bg-info {
+  background: #999999;
+}
+
+.oris-bg-error {
+  background: #E64545;
+}
+
+/*--------以上是统一新样式圆圈小点，一般用于状态前面----End--------*/
+/*--------oris-title-border是title小标题左侧的蓝色竖条状--------*/
+.oris-title-border {
+  display: inline-block;
+  width: 5px;
+  height: 18px;
+  background: #375ACD;
+  margin-right: 8px;
+}
+
+
+/* 公共样式拓展 li.jun - 20210707 */
+
+/* checkbox radiobox 第二套样式标准  UI->陆伟 */
+/* --------------start------------ */
+.oris-table.oris-table-minicheck input[type="checkbox"],
+input[type="checkbox"].oris-checkbox-mini {
+  margin-top: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+input[type="checkbox"].oris-checkbox-mini[disabled]::before,
+input[type="checkbox"].oris-checkbox[disabled]::before {
+  background: #EDEFF3;
+}
+
+input[type="checkbox"].oris-checkbox-mini[disabled]::after,
+input[type="checkbox"].oris-checkbox[disabled]::after {
+  background: #C3C3C3;
+}
+
+.oris-table.oris-table-minicheck input[type="checkbox"]::before,
+input[type="checkbox"].oris-checkbox-mini::before {
+  border: 2px solid #C3C3C3;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  line-height: 12px;
+  font-weight: bold;
+}
+
+.oris-buyer .oris-table.oris-table-minicheck input[type="checkbox"]::before,
+.oris-buyer input[type="checkbox"].oris-checkbox-mini::before {
+  border: 2px solid #C3C3C3;
+}
+
+.oris-table.oris-table-minicheck input[type="checkbox"]::after,
+input[type="checkbox"].oris-checkbox-mini::after {
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+}
+
+.oris-table.oris-table-minicheck input[type="checkbox"]::after,
+input[type="checkbox"].oris-checkbox-mini::after {
+  background: #375ACD;
+  border-radius: 2px;
+}
+
+/*解决buyer端样式冲突*/
+.oris-buyer input[type="checkbox"].oris-checkbox-mini::after,
+.oris-buyer input[type="checkbox"]:checked.oris-checkbox-mini::before {
+  background: #333;
+  border: 2px solid #333333;
+}
+
+.oris-buyer input[type="checkbox"].oris-checkbox-mini {
+  border-color: #999;
+
+}
+.oris-buyer input[type="checkbox"].oris-checkbox-mini:hover{
+  cursor: pointer;
+}
+
+
+.oris-buyer .oris-table-minicheck input[type="checkbox"]:checked::before,
+.oris-buyer input[type="checkbox"]:checked.oris-checkbox-mini::before {
+  border: 2px solid #333;
+}
+
+.oris-buyer .oris-table-minicheck input[type="checkbox"]::after,
+.oris-buyer input[type="checkbox"].oris-checkbox-mini::after {
+  background: #333;
+}
+
+.oris-buyer input[type=checkbox].oris-checkbox:checked::before {
+  background-color: #333;
+}
+
+input[type="radio"].oris-radio-mini {
+  margin-top: 0;
+  width: 14px;
+  height: 14px;
+}
+
+input[type="radio"]:checked.oris-radio-mini::before,
+input[type="radio"]:checked.oris-radio-mini {
+  border: none;
+}
+
+input[type="radio"].oris-radio-mini::before {
+  border: 2px solid #C3C3C3;
+  width: 16px;
+  height: 16px;
+}
+
+input[type="radio"]:checked.oris-radio-mini::before {
+  background: #375ACD;
+}
+
+.oris-buyer input[type="radio"]:checked.oris-radio-mini::before {
+  background: #333;
+}
+
+input[type="radio"].oris-radio-mini::after {
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+}
+
+input[type="radio"]:checked.oris-radio-mini::after {
+  content: '';
+  position: relative;
+  top: 4px;
+  left: 4px;
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 1em;
+}
+
+.oris-buyer input[type="radio"].oris-radio-mini {
+  border-color: #999;
+}
+/* --------------end------------ */
+
+/* radio box 样式 */
+input[type="radio"].oris-radio {
+  margin-top: 0;
+  width: 18px;
+  height: 18px;
+}
+
+input[type="radio"]:checked.oris-radio::before,
+input[type="radio"]:checked.oris-radio {
+  border: none;
+}
+
+input[type="radio"].oris-radio::before {
+  border: 2px solid #C3C3C3;
+  width: 20px;
+  height: 20px;
+}
+
+input[type="radio"]:checked.oris-radio::before {
+  background: #375ACD;
+}
+
+.oris-buyer input[type="radio"]:checked.oris-radio::before {
+  background: #333;
+}
+
+input[type="radio"].oris-radio::after {
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+}
+
+input[type="radio"]:checked.oris-radio::after {
+  content: '';
+  position: relative;
+  top: 5px;
+  left: 5px;
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 1em;
+}
+
+.oris-buyer input[type="radio"].oris-radio {
+  border-color: #999;
+}
+
+/* 表格样式 - 固定列 */
+.oris-scroll-table {
+  overflow-x: auto;
+  white-space: nowrap;
+  display: block;
+}
+
+.oris-scroll-table td.fixed-right,
+.oris-scroll-table th.fixed-right {
+  position: sticky;
+  right: 0px;
+  height: 100%;
+}
+
+.oris-scroll-table th.fixed-right {
+  background-color: #D7DDEA;
+  box-shadow: -3px 4px 9px rgba(0, 0, 0, 0.1);
+}
+
+.oris-scroll-table td.fixed-right {
+  background-color: #fff;
+  box-shadow: -3px 4px 9px rgba(0, 0, 0, 0.1);
+}
+
+/* 按钮类型补充 */
+.oris-button-outline {
+  background-color: rgba(55, 90, 205, 0.1);
+  color: #375ACD;
+  border: 1px solid #375ACD;
+}
+
+.oris-button-outline:not([disabled]):focus,
+.oris-button-outline:not([disabled]):hover {
+  background-color: #375ACD;
+  color: #fff;
+}
+
+/* buyer端表格中的checkbox checked状态下存在边框颜色调整 */
+.oris-buyer .oris-table input[type="checkbox"]:checked::before,
+.oris-buyer input[type="checkbox"]:checked.oris-checkbox::before {
+  border: 2px solid #333;
+}
+
+.oris-buyer .oris-table input[type="checkbox"]::after,
+.oris-buyer input[type="checkbox"].oris-checkbox::after {
+  background: #333;
+}
+
+/* 列表为空样式 */
+.oris-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.oris-empty-container {
+  padding-top: 68px;
+  padding-bottom: 68px;
+}
+
+.oris-empty-icon {
+  text-align: center;
+}
+
+.oris-empty-title {
+  padding-top: 12px;
+  color: #999;
+}

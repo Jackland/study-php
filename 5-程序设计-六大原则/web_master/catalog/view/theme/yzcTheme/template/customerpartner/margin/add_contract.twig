@@ -1,0 +1,902 @@
+{{ css(['css/admin/bid/marginContract.css']) }}
+{{ cssOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css']) }}
+{{ jsOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js','/catalog/view/javascript/layerOris.js','/catalog/view/javascript/echarts/echarts.min.js']) }}
+
+{{ this.title(__('Create a Margin Contract', {}, 'catalog/document')) }}
+{{ this.params('breadcrumbs', [
+  {
+    text: __('Complex Transaction Management', {}, 'catalog/document'),
+    href: 'javascript:void(0)',
+  },
+  {
+    text: __('Margin Offerings', {}, 'catalog/document'),
+    href: url('customerpartner/margin/contract'),
+  },
+  'current'
+]) }}
+{{
+  this.params('pageTitle', {
+    show: true,
+    title: __('Create a Margin Contract'),
+    backUrl: '',
+    buttons: []
+  })
+}}
+<div>
+  <input type="hidden" id="setting-version" value="{{ settings.Version }}">
+  <input type="hidden" id="setting-days" value="{{ settings['Contract Days'] }}">
+  <input type="hidden" id="setting-deposit" value="{{ settings['Deposit Percentage'] }}">
+  <input type="hidden" id="setting-min-qty" value="{{ settings['Minimum Selling Quantity'] }}">
+  <input type="hidden" id="select-product-id" value="">
+  <div>
+    <div>
+      <div class="flex-layout">
+        <div>{{ __('Item Code / MPN') }}</div>
+        <div class="m10-l relative oris-dropdown-menu data-list oris-w400" id="dataList">
+          <input id="inputMpnSku" type="text" name="inputMpnSku" value=""
+                 placeholder="{{ __('Enter Item Code / MPN') }}"
+                 class="oris-input mpn-input p40-r-i"/>
+          <span class="clear-input none" id="mpnClear"></span>
+        </div>
+      </div>
+      <div id="inputMpnSkuError" class="input-mpnSku-error none text-danger" >
+        {{ __('Cannot find the matched item by this MPN or Item Code or, this item is not available, has been discarded or cannot be sold separately.') }}
+      </div>
+      <div id="product-detail" class="none"></div>
+
+      <div class="p24 m16-t bg-white overflow none" id="box-shadow">
+        <div class="oris-row clear-col">
+          <div class="col-sm-4">
+            <label class="oris-big-label">{{ __('Contract ID') }}</label>
+            <input type="text" name="contractNo" value="" placeholder="" id="contractNo" class="oris-input" disabled>
+          </div>
+          <div class="col-sm-4">
+            <label class="oris-big-label">{{ __('Version') }}</label>
+            <input type="text" name="version" value="" placeholder="" id="version" class="oris-input" disabled>
+            <div class="error-prompt text-danger text-less version-error-msg"></div>
+          </div>
+          <div class="col-sm-4 oris-select">
+            <label class="oris-big-label required-before">{{ __('Does this contract accept bid ?') }}
+              <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip"
+                 title="{{ __('Does this Margin Contract accept a bid requested by the Buyer. If no, then Buyer can only choose the settlement method and unit price stipulated in the contract to purchase the Margin Contract.') }}"></i>
+            </label>
+            <select class="selectpicker" name="is_bid" id="isBid">
+              <option value="1">Yes</option>
+              <option value="0">No</option>
+            </select>
+          </div>
+        </div>
+        <div class=" contract-list oris-row p30-t">
+          <div class="margin-contract contract-demo oris-row m30-b">
+            <div class="create-title">
+              <span class="Y-axis"></span>
+              Contract <span class="contract-num">1</span>
+              <span class="link-color  special-prompt">{{ __('Create up to three contract templates') }}</span>
+            </div>
+            <div class="oris-row overflow">
+              <div class="col-sm-4 p0-l">
+                <label class="oris-small-label required-before">{{ __('Contract Days') }}</label>
+                <input type="text" name="purchase" value="" placeholder="" class="oris-input" disabled>
+                <div class="error-prompt text-danger text-less days-error-msg"></div>
+              </div>
+              <div class="col-sm-4 reset-input selling-num">
+                <div class="col-sm-6 p0-l">
+                  <label class="oris-small-label required-before nowrap">{{ __('Minimum Selling Quantity') }}</label>
+                  <input type="text" name="minQty" value="" placeholder="" id="minQty1" class="oris-input" autocomplete="off">
+                  <div class="error-prompt text-danger text-less minQty-error-msg"></div>
+                </div>
+                <div class="col-sm-6 p0-r">
+                  <label class="oris-small-label required-before nowrap">{{ __('Maximum Selling Quantity') }}</label>
+                  <input type="text" name="maxQty" value="" placeholder="" id="maxQty1" class="oris-input" autocomplete="off">
+                  <div class="error-prompt text-danger text-less maxQty-error-msg"></div>
+                </div>
+              </div>
+              <div class="col-sm-4 p0-r reset-input contract-price">
+                <label class="oris-small-label required-before">{{ __('Contract price for Option') }} <span class="contract-order">A</span></label>
+                <div class="flex-default">
+                  <div class="flex1">
+                    <div class="oris-ingroup">
+                      <input type="text" name="price" value="" placeholder="" id="price1" class="oris-input" autocomplete="off">
+                      <span class="input-addon">{{ currency_code }}</span>
+                    </div>
+                    <div class="error-prompt text-danger text-less price-error-msg"></div>
+                  </div>
+                  <div class="contract-operate m16-l">
+                    <button class="oris-button oris-button-default" id="addContract">
+                      <i class="giga icon-iconfonticon02-copy"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="hr-40">
+        <div class="oris-row clear-col">
+          <div class="col-sm-4">
+            <label class="oris-small-label">
+              {{ __('Deposit Percentage') }}
+              <i class="giga icon-V10-wenhaotishi"
+                 data-toggle="tooltip" title="{{ __('The deposit percentage which should be paid by Buyer.') }}"></i>
+            </label>
+            <div class="oris-ingroup">
+              <input type="text" class="oris-input" value="" disabled name="deposit-percentage">
+              <span class="input-addon">%</span>
+            </div>
+            <div class="error-prompt text-danger text-less deposit-error-msg"></div>
+          </div>
+          <div class="col-sm-4">
+            <label class="oris-small-label">
+              {{ __('Margin Amount') }}
+              <i class="giga icon-V10-wenhaotishi"
+                 data-toggle="tooltip" title="{{ __('This price does not include fulfillment fee.') }}"></i>
+            </label>
+            <div class="oris-ingroup">
+              <input type="text" class="oris-input" value="" disabled id="margin-amount" readonly>
+              <span class="input-addon">{{ currency_code }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="m20-t none" id="box-confirm">
+        <div class="flex-layout">
+          <input class="oris-checkbox pointer" type="checkbox" id="confirmKnown">
+          <span class="m10-l">{{ __('I have read and agree to the terms and conditions of this policy.') }}</span>
+          <a class="link-color link" href="{{ url('information/information', {information_id: information_id}) }}" target="_blank"> &lt;{{ information_title }} &gt;</a>
+        </div>
+      </div>
+      <div class="m30-t text-center none" id="box-save">
+        <button type="button" class="oris-button oris-w120 oris-button-bigger" disabled id="btnSave">Save</button>
+        <input id="onsiteSller" value="{{ is_onsite_seller }}" type="hidden">
+      </div>
+    </div>
+  </div>
+</div>
+<div id="previewModule" class="none">
+  <div>Please review and confirm the details of the Margin Contract as below.</div>
+  <div class="m06-t">
+    <table class="oris-table no-hover border-table">
+      <thead>
+      <tr>
+        <th class="text-left">Item Code / MPN</th>
+        <th class="text-left">Attribute</th>
+        <th class="oris-w160">Does this contract <br> accept bid?</th>
+        <th class="text-right oris-w200">Margin Amount</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td class="text-left" width="30%">
+          <div class="image-td">
+            <img src="" width="100%" class="pro-image">
+            <div class="item-mpn">
+
+            </div>
+          </div>
+        </td>
+        <td class="text-left">
+          <div class="max-line1 model-attribute" title=""></div>
+        </td>
+        <td class="model-is-bid"></td>
+        <td class="model-contract-amount text-right"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="m16-t">
+    <table class="oris-table contract-table no-hover border-table">
+      <thead>
+      <tr>
+        <th class="oris-w220" >Contract Days</th>
+        <th>Selling Quantity</th>
+        <th class="text-right">Contract price</th>
+      </tr>
+      </thead>
+      <tbody id="contractTbody">
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    let onsiteflag = false;
+    var onsite = $("#onsiteSller").val();
+    if (!onsiteflag && onsite){
+      var onsiteTip = 'When buyer signs the Margin Agreement, the deposit will be\n' +
+        'deducted from the account receivables. If the amount is\n' +
+        'insufficient to pay, the buyer will not be able to sign the\n' +
+        'agreement.'
+      layer.alert(onsiteTip, {
+        title: 'Notice',
+        btn: 'OK',
+        btnAlign: 'c',
+        skin: 'oris-layer',
+        cancel: function () {
+          onsiteflag=true;
+        }
+      }, function (index) {
+        layer.close(index);
+        onsiteflag=true;
+      });
+    }
+
+  })
+
+  function hideDom() {
+    $('#product-detail').addClass('none');
+    $('#box-shadow').addClass('none');
+    $('#box-confirm').addClass('none');
+    $('#box-save').addClass('none');
+    clearInputAndCloneDom();
+  }
+
+  function showDom() {
+    $('#product-detail').removeClass('none');
+    $('#box-shadow').removeClass('none');
+    $('#box-confirm').removeClass('none')
+    $('#box-save').removeClass('none');
+    initSettings();
+  }
+
+  function initSettings(isContinue = true) {
+    let version = $('#setting-version').val();
+    let days = $('#setting-days').val();
+    let deposit = $('#setting-deposit').val();
+
+    let errorSettingNum = 0;
+    if (version === '') {
+      $('.version-error-msg').html('{{ __('Unavailable Version') }}')
+      $('input[name="version"]').addClass('error-border');
+      errorSettingNum++;
+    }
+    if (days === '') {
+      $('.days-error-msg').html('{{ __('Unavailable Contract Days') }}')
+      $('input[name="purchase"]').addClass('error-border');
+      errorSettingNum++;
+    }
+    if (deposit === '') {
+      $('.deposit-error-msg').html('{{ __('Unavailable Deposit Percentage') }}')
+      $('input[name="deposit-percentage"]').addClass('error-border');
+      $('#margin-amount').val('');
+      errorSettingNum++;
+    }
+
+    $('input[name="version"]').val(version);
+    $('input[name="purchase"]').val(days);
+    $('input[name="deposit-percentage"]').val(deposit);
+
+    if (!isContinue && errorSettingNum > 0) {
+      return false;
+    }
+
+    if (!isContinue) {
+      $('.version-error-msg').html('')
+      $('.days-error-msg').html('')
+      $('.deposit-error-msg').html('')
+      $('input[name="version"]').removeClass('error-border');
+      $('input[name="purchase"]').removeClass('error-border');
+      $('input[name="deposit-percentage"]').removeClass('error-border');
+    }
+
+    return true;
+  }
+
+  // 添加合约
+  $("#addContract").on('click', function () {
+    var deleteBtn = ` <button class="oris-button oris-button-default" id="deleteContract"><i class="giga icon-co_lajitong text-bold"></i></button>`
+    var num = $(".margin-contract").length + 1;
+    if (num == 2) {
+      var order = 'B'
+    } else {
+      var order = 'C'
+    }
+    var contractClone = $(".contract-demo").clone(true);
+    if ($("#maxQty2").length > 0) {
+      var maxVal = Number($("#maxQty2").val());
+    } else {
+      var maxVal = Number($(this).closest(".margin-contract").find('input[name=maxQty]').val());
+    }
+
+    contractClone.removeClass("contract-demo");
+    contractClone.find('.reset-input').find('input[type=text]').val('');
+    contractClone.find("#addContract").remove();
+    contractClone.find(".special-prompt").remove();
+    contractClone.find(".contract-num").html(num);
+    contractClone.find('#minQty1').attr('id','minQty'+num).attr('disabled', 'disabled').removeClass('error-border');
+    contractClone.find('#maxQty1').attr('id','maxQty'+num).removeClass('error-border');
+    contractClone.find('#price1').attr('id','price'+num).removeClass('error-border');
+    contractClone.find(".contract-order").html(order);
+    contractClone.find(".contract-operate").html(deleteBtn);
+    contractClone.find('.minQty-error-msg').html('');
+    contractClone.find('.maxQty-error-msg').html('');
+    contractClone.find('.price-error-msg').html('');
+    if (maxVal){
+      contractClone.find('input[name=minQty]').val(maxVal+1)
+    }
+    contractClone.appendTo(".contract-list");
+    if (num == 3) {
+      $(this).attr('disabled', true)
+    }
+  });
+
+  // 删除合约
+  $("body").on('click', '#deleteContract', function () {
+    $("#addContract").removeAttr('disabled');
+    var num = $(this).closest(".margin-contract").find('.contract-num').text();
+    var NextNum = Number(num) + 1;
+    var order = $(this).closest(".margin-contract").find('.contract-order').text();
+    var minVal = Number($(this).closest(".margin-contract").find('input[name=minQty]').val());
+    $(this).closest(".margin-contract").next().find('#minQty'+NextNum ).attr('id','minQty'+num).val(minVal);
+    $(this).closest(".margin-contract").next().find('#maxQty'+NextNum ).attr('id','maxQty'+num);
+    $(this).closest(".margin-contract").next().find('#price'+NextNum ).attr('id','price'+num);
+    $(this).closest(".margin-contract").next().find('.contract-num').html(num);
+    $(this).closest(".margin-contract").next().find('.contract-order').html(order);
+    $(this).closest(".margin-contract").remove();
+    expectedMarginAmount();
+  })
+
+  //修改协议已读
+  $('#confirmKnown').click(function () {
+    if ($(this).is(':checked')) {
+      $("#btnSave").removeAttr('disabled');
+    } else {
+      $("#btnSave").attr('disabled', true)
+    }
+  })
+
+  //监听输入框值变化
+  function monitor() {
+    var mpnSku = $("#inputMpnSku").val().trim();
+    if (mpnSku.length > 0) {
+      $("#mpnClear").removeClass('none')
+    } else {
+      $("#mpnClear").addClass('none')
+    }
+  }
+
+  $("#inputMpnSku").bind('input propertychange click', function () {
+    monitor()
+  });
+
+  //清空输入框
+  $("#mpnClear").on('click', function () {
+    $("#inputMpnSku").val('');
+    $(this).addClass('none');
+    hideDom();
+  })
+
+  //匹配product
+  function matchProduct(productId) {
+    if (!productId) {
+      return ;
+    }
+    $('#select-product-id').val(productId);
+
+    clearInputAndCloneDom();
+
+    let loadUrl = '{{ url("customerpartner/margin/contract/productDetail") }}'
+    $("#product-detail").load(loadUrl + "&product_id=" + productId, function () {
+      showDom();
+      monitor();
+      let randNum = "";
+      for (let i = 0; i < 6; i++) {
+        randNum += Math.floor(Math.random() * 10);
+      }
+      $("input[name='contractNo']").val('{{ no_prefix }}' + randNum);
+
+      let is_japan = '{{ is_japan }}';
+      $.ajax({
+        url: '{{ url('customerpartner/margin/contract/info') }}',
+        type: "GET",
+        data: "product_id=" + productId,
+        success: function (json) {
+          if (json.code != 200) {
+            return;
+          }
+          if (JSON.stringify(json.data.contract) == '{}' || !json.data.contract) {
+            return;
+          }
+
+          let contract = json.data.contract;
+          $("input[name='contractNo']").val(contract.contract_no);
+          $('#isBid').selectpicker('val', contract.is_bid)
+
+          let templatesLen = json.data.contract.templates.length;
+          for (let i = 1; i < templatesLen; i++) {
+            $('#addContract').trigger("click");
+          }
+          for (let j = 0; j < templatesLen; j++) {
+            let template = json.data.contract.templates[j];
+            $('#minQty' + (j + 1)).val(template.min_num);
+            $('#maxQty' + (j + 1)).val(template.max_num);
+            $('#price' + (j + 1)).val(Number(template.price).toFixed(is_japan ? 0 : 2))
+          }
+
+          let minMarginAmount = contract.min_contract_amount;
+          let maxMarginAmount = contract.max_contract_amount;
+
+          let bit = is_japan ? 0 : 2;
+          $('#margin-amount').val(minMarginAmount == maxMarginAmount ? number_format(minMarginAmount.toFixed(bit), bit) : number_format(minMarginAmount.toFixed(bit), bit) + ' - ' + number_format(maxMarginAmount.toFixed(bit), bit));
+        }
+      });
+    });
+  }
+
+  $('#inputMpnSku').autocomplete({
+    'source': function (request, response) {
+      $("#inputMpnSkuError").addClass('none');
+      $("#inputMpnSku").removeClass('error-border');
+      if (!($("#inputMpnSku").val()).trim()){
+        return;
+      }
+      $.ajax({
+        url: '{{ url('customerpartner/margin/contract/products') }}',
+        type: "GET",
+        data: "mpn_sku=" + $(this).val().trim(),
+        success: function (json) {
+          if (json.code != 200 || json.data.products.length == 0) {
+            $('#inputMpnSkuError').removeClass('none');
+            $("#inputMpnSku").addClass('error-border');
+            hideDom();
+          }
+          let products = (json.data && json.data.products) ? json.data.products : [];
+          response($.map(products, function (item) {
+            let li = '<span class="tags-image"><span class="product-sku m04-r">' + item.sku + '</span>' + (item.tags).join('') + '</span><span class="product-mpn">' + item.mpn + '</span><span class="none product-id">'+item.product_id+'</span>';
+            return {
+              label: li,
+              value: item.sku + '/' + item.mpn + item.product_id,
+            }
+          }));
+        }
+      });
+    },
+  });
+  $("#dataList").on('click','.dropdown-menu > li',function (item) {
+    var showProduct = $(this).find('.product-sku').text() + '/' + $(this).find('.product-mpn').text();
+    $('input[name="inputMpnSku"]').val(showProduct);
+    var productId = $(this).find('.product-id').text();
+    matchProduct(productId);
+  });
+
+  function checkMinQty(num, showMsg = true) {
+    let settingMin = Number($("#setting-min-qty").val());
+    let _this = '#minQty' + num;
+    let _that = '#maxQty' + num;
+    let val = $(_this).val();
+    let maxVal = $(_that).val();
+    if (val === '') {
+      if (showMsg) {
+        $(_this).next('.error-prompt').html('Minimum Selling Quantity is required.');
+        $(_this).addClass('error-border');
+      }
+      return false;
+    }
+    if (!(/(^[1-9]\d*$)/.test(val))) {
+      if (showMsg) {
+        $(_this).next('.error-prompt').html('The format of minimum selling quantity filled is incorrect, please fix.');
+        $(_this).addClass('error-border');
+      }
+      return false;
+    }
+    if(Number(val) < settingMin || Number(val) > 9999){
+      if (showMsg) {
+        $(_this).next('.error-prompt').html('Please enter an integer greater than or equal to ' + settingMin + ' or less than 9999.');
+        $(_this).addClass('error-border');
+      }
+      return false;
+    }
+    if (maxVal !== '' && Number(val) > Number(maxVal)) {
+      if (showMsg) {
+        $(_that).next('.error-prompt').html('The maximum quantity cannot be less than the minimum quantity.');
+        $(_that).addClass('error-border');
+      }
+    }
+
+    if (showMsg) {
+      $(_this).removeClass('error-border');
+      $(_this).next('.error-prompt').html('')
+    }
+    return true;
+  }
+
+  function checkMaxQty(num, showMsg = true) {
+    let _this = '#maxQty' + num;
+    let val = $(_this).val();
+    let minVal = Number($('#minQty' + num).val());
+    let settingMin = Number($("#setting-min-qty").val());
+    if (val === '') {
+      if (showMsg) {
+        $(_this).next('.error-prompt').html('Maximum Selling Quantity is required.');
+        $(_this).addClass('error-border');
+      }
+      return false;
+    }
+    if (!(/(^[1-9]\d*$)/.test(val))) {
+      if (showMsg) {
+        $(_this).next('.error-prompt').html('The format of maximum selling quantity filled is incorrect, please fix.');
+        $(_this).addClass('error-border');
+      }
+      return false;
+    }
+    if(val !== '' && Number(val) < minVal){
+      if (showMsg) {
+        $(_this).next('.error-prompt').html('The maximum quantity cannot be less than the minimum quantity.');
+        $(_this).addClass('error-border');
+      }
+      return false;
+    }
+    if(Number(val) > 9999){
+      if (showMsg) {
+        $(_this).next('.error-prompt').html('Please enter an integer greater than or equal to ' + (minVal > settingMin ?( minVal + ' or less than 9999.') : (settingMin + ' or less than 9999.')));
+        $(_this).addClass('error-border');
+      }
+      return false;
+    }
+
+    if (showMsg) {
+      $(_this).closest(".margin-contract").next().find('input[name=minQty]').val(Number(val) + 1);
+    }
+
+    for (let i = num+1; i <= 3; i++) {
+      let _that = '#maxQty' + i;
+      let numMinVal = $('#minQty' + i).val();
+      let numMaxVal = $(_that).val();
+      if(numMinVal !== '' && numMaxVal !== ''  && Number(numMaxVal) < Number(numMinVal)){
+        if (showMsg) {
+          $(_that).next('.error-prompt').html('The maximum quantity cannot be less than the minimum quantity.');
+          $(_that).addClass('error-border');
+        }
+      }
+    }
+
+    if (showMsg) {
+      $(_this).removeClass('error-border');
+      $(_this).next('.error-prompt').html('')
+    }
+    return true;
+  }
+
+  //合同数量递增及数量校验
+  $(".selling-num input[type=text]").on('blur',function () {
+    let name = $(this).attr('name');
+    let id = $(this).attr('id');
+    let num = Number(id.substr(id.length-1,1));
+    switch (name) {
+      case 'maxQty':
+        checkMaxQty(num);
+        break;
+      case 'minQty':
+        checkMinQty(num);
+        break;
+    }
+    expectedMarginAmount();
+  });
+
+  function verityRoundCountFun(string) {
+    let is_japan = '{{ is_japan }}';
+    let indexOf = String(string).indexOf('.');
+    if (is_japan && indexOf > -1) {
+      return true;
+    }
+
+    let roundCount = 0;
+    if (String(string).indexOf('.') !== -1) {
+      roundCount = String(string).length - (String(string).indexOf('.') + 1);
+    }
+
+    if (is_japan) {
+      return roundCount > 0;
+    } else {
+      return roundCount > 2
+    }
+  }
+
+  //金额校验
+  function checkPrice(num, showMsg = true) {
+    let is_japan = '{{ is_japan }}';
+    let _this = '#price' + num;
+    let price = $(_this).val();
+    let order = num === 1 ? 'A' : num === 2 ? 'B' : 'C';
+
+    if (price === '') {if (showMsg) {
+      $(_this).parent('.oris-ingroup').next('.error-prompt').html('Contract price for Option ' + order + ' is required.');
+        $(_this).addClass('error-border');
+      }
+      return false;
+    }
+
+    if ((isNaN(Number(price)) || !price.match(/^[\+\-]?\d*?\.?\d*?$/) || verityRoundCountFun(price))) {
+      if (showMsg) {
+        $(_this).parent('.oris-ingroup').next('.error-prompt').html('The format of contract price for option ' + order + ' filled is incorrect, please fix.');
+        $(_this).addClass('error-border');
+      }
+      return false;
+    }
+
+    if (is_japan) {
+      if ((Number(price) <= 0 || Number(price) > 999999)) {
+        if (showMsg) {
+          $(_this).parent('.oris-ingroup').next('.error-prompt').html('Please enter a number equal or greater than 0 and less than 999999 of current price.');
+          $(_this).addClass('error-border');
+        }
+        return false;
+      }
+    } else {
+      if ((Number(price) <= 0 || Number(price) > 99999.99)) {
+        if (showMsg) {
+          $(_this).parent('.oris-ingroup').next('.error-prompt').html('Please enter a number equal or greater than 0 and less than 99999.99 of current price.');
+          $(_this).addClass('error-border');
+        }
+        return false;
+      }
+    }
+
+    if (showMsg) {
+      $(_this).removeClass('error-border');
+      $(_this).parent('.oris-ingroup').next('.error-prompt').html('')
+
+      $(_this).val(Number(price).toFixed(is_japan ? 0 : 2));
+    }
+
+    return true;
+  }
+
+  $(".contract-price input[type=text]").on('blur',function () {
+    let id = $(this).attr('id');
+    let num = Number(id.substr(id.length-1,1));
+    checkPrice(num);
+    expectedMarginAmount();
+  });
+
+  function expectedMarginAmount(isShow = true) {
+    let is_japan = '{{ is_japan }}';
+    let minMarginAmount = 0;
+    let maxMarginAmount = 0;
+    let deposit = Number($('#setting-deposit').val());
+
+    for (let i = 1; i <= 3; i++) {
+      let minQty = $('#minQty' + i).val();
+      let maxQty = $('#maxQty' + i).val();
+      let price = $('#price' + i).val();
+      if (minQty === undefined || maxQty === undefined || price === undefined) {
+        continue;
+      }
+      if (checkMinQty(i, false) && checkMaxQty(i, false) && checkPrice(i, false)) {
+        let amount = Number(price * 0.01 * deposit).toFixed(is_japan ? 0 : 2);
+        let minAmount = amount * minQty;
+        let maxAmount = amount * maxQty;
+        if (i === 1) {
+          minMarginAmount = minAmount;
+          maxMarginAmount = maxAmount;
+          continue;
+        }
+        if (minAmount < minMarginAmount) {
+          minMarginAmount = minAmount;
+        }
+        if (maxAmount > maxMarginAmount) {
+          maxMarginAmount = maxAmount;
+        }
+      }
+    }
+
+    if (minMarginAmount >= 0 && isShow) {
+      let bit = '{{ is_japan }}' ? 0 : 2;
+      $('#margin-amount').val(minMarginAmount == maxMarginAmount ? number_format(minMarginAmount.toFixed(is_japan ? 0 : 2), bit) : number_format(minMarginAmount.toFixed(is_japan ? 0 : 2), bit) + ' - ' + number_format(maxMarginAmount.toFixed(is_japan ? 0 : 2), bit));
+    }
+
+    if (!isShow) {
+      return {
+        'min_amount': minMarginAmount,
+        'max_amount': maxMarginAmount,
+      }
+    }
+  }
+
+  function clearInputAndCloneDom() {
+    $(".selling-num input[type=text]").each(function () {$(this).val('')});
+    $(".contract-price input[type=text]").each(function () {$(this).val('')});
+    $(".error-prompt").each(function () {$(this).html('')});
+    var list = $(".margin-contract > .oris-row");
+    for (let n = 1; n < list.length; n++) {
+      $('#deleteContract').trigger("click");
+    }
+    $("#addContract").removeAttr('disabled');
+    $("#margin-amount").val('');
+    $('#isBid').selectpicker('val', '1')
+  }
+
+  $("#btnSave").on('click', function () {
+    let alarmPrice = $('#alarm-price').val();
+    let priceNotice = false;
+    $('#btnSave').attr('disabled', 'disabled');
+    // 获取最新配置
+    var arr = [];
+    var list = $(".margin-contract > .oris-row");
+    let checkErrorNum = 0;
+    for (let n = 1; n <= list.length; n++) {
+      if (!checkMinQty(n)) {
+        checkErrorNum++;
+      }
+      if (!checkMaxQty(n)) {
+        checkErrorNum++;
+      }
+      if (!checkPrice(n)) {
+        checkErrorNum++;
+      }
+    }
+    if (checkErrorNum > 0) {
+      $('#btnSave').removeAttr('disabled');
+      return ;
+    }
+    $.ajax({
+      url: '{{ url('customerpartner/margin/contract/setting') }}',
+      type: "GET",
+      async:false,
+      success: function (json) {
+        $('#setting-version').val(json.data['Version']);
+        $('#setting-days').val(json.data['Contract Days']);
+        $('#setting-deposit').val(json.data['Deposit Percentage']);
+        $('#setting-min-qty').val(json.data['Minimum Selling Quantity']);
+      }
+    });
+    if (!initSettings(false)) {
+      $('#btnSave').removeAttr('disabled');
+      return ;
+    }
+
+    $("#previewModule img").attr('src', $("#product_image").attr('src'));
+    $("#previewModule .item-mpn").html(($("#product-detail-sku-mpn").html()));
+    $("#previewModule .model-attribute").html($("#product-attribute").html()).attr('title',$("#product-attribute").html());
+    $('#previewModule .model-is-bid').html($('#isBid').val() === '1' ? 'Yes' : 'No');
+    let marginAmount = expectedMarginAmount(false);
+    $('#previewModule .model-contract-amount').html(marginAmount.min_amount == marginAmount.max_amount ? formatPrice(marginAmount.min_amount) : formatPrice(marginAmount.min_amount) + ' - ' + formatPrice(marginAmount.max_amount));
+
+    $.each(list, function () {
+      let order = $(this).find('input[name=purchase]').val();
+      let minQty = $(this).find('input[name=minQty]').val();
+      let maxQty = $(this).find('input[name=maxQty]').val();
+      let contractPrice = $(this).find('input[name=price]').val();
+      if (Number(contractPrice) < Number(alarmPrice)) {
+        priceNotice = true;
+      }
+      arr.push({
+        days: order,
+        min_qty: Number(minQty),
+        max_qty: Number(maxQty),
+        price: contractPrice
+      })
+    })
+
+    var trList = '';
+    for (var i in arr) {
+      trList += `<tr>
+                  <td>${arr[i].days}</td>
+                  <td>${arr[i].min_qty == arr[i].max_qty ? arr[i].max_qty : arr[i].min_qty + ' - ' + arr[i].max_qty}</td>
+                  <td class="text-right">${formatPrice(arr[i].price)}</td>
+               </tr>`
+    }
+    $("#contractTbody").html(trList);
+
+    if (priceNotice && '{{ is_show_notice }}') {
+      let msg = "The product price you would like to apply is too low. The marketplace may charge the Seller an increased fulfillment fee based on current industry standards*. Are you sure you wish to apply this price?<br><br>*To learn more, please visit the Help Center and view the 'Usage Fee Standard' terms.";
+      if ('{{ is_show_cwf_notice }}') {
+        msg = "The product price you would like to apply is too low. The Marketplace may charge the Seller an increased fulfillment fee based on current industry standards*. CWF shipping fee will incur an additional 25% surcharge.<br><br>*To learn more, please visit the Help Center and view the 'Usage Fee Standard' terms.";
+      }
+      let options = {
+        title: 'Attention',
+        content: msg,
+        btn: ['Yes', 'No'],
+        skin: 'oris-layer',
+      };
+      layerOris.confirmLayer(options,function () {
+        layer.closeAll();
+        handleSave(arr);
+      }, function () {
+        $('#btnSave').removeAttr('disabled');
+      }, function (arr) {
+        $('#btnSave').removeAttr('disabled');
+      });
+    } else {
+      handleSave(arr);
+    }
+  })
+  function handleSave(templates) {
+    var previewModule = $("#previewModule");
+    layer.open({
+      type: 1,
+      title: 'Margin Contract Preview',
+      skin: 'oris-layer',
+      offset: 'auto',
+      area: ['800px', 'auto'],
+      content: previewModule,
+      btn: ['Confirm', 'Cancel'],
+      yes:function () {
+        layer.closeAll();
+        let data = {
+          contract_no: $('#contractNo').val(),
+          version: $('#version').val(),
+          is_bid: Number($('#isBid').val()),
+          product_id: $('#select-product-id').val(),
+          deposit: $('input[name="deposit-percentage"]').val(),
+          templates: templates
+        }
+        $.ajax({
+          url: '{{ url("customerpartner/margin/contract/handleSave") }}',
+          data: data,
+          method: 'post',
+          dataType: 'json',
+          success: function (json) {
+            $('#btnSave').removeAttr('disabled');
+            if (json.code == 200) {
+              $.toast({
+                heading: false,
+                text: '{{ __('The Margin Contract has been created successfully.') }}',
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'success',
+                hideAfter: 3000,
+                allowToastClose: false,
+                loader: false,
+                afterHidden: function () {
+                  location.href = '{{ url('customerpartner/margin/contract') }}';
+                }
+              });
+            } else {
+              $.toast({
+                heading: false,
+                text: '{{ __('The Margin Contract has been created unsuccessfully.') }}',
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: 3000,
+                allowToastClose: false,
+                loader: false
+              });
+            }
+          }
+        })
+      },
+      btn2:function () {
+        $('#btnSave').removeAttr('disabled');
+      },
+      cancel:function () {
+        $('#btnSave').removeAttr('disabled');
+      }
+    });
+  }
+
+  function formatPrice(price) {
+    let left = '{{ currency_symbol_left }}';
+    let right = '{{ currency_symbol_right }}';
+    let bit = '{{ is_japan }}' ? 0 : 2;
+
+    return left + number_format(price, bit) + right;
+  }
+
+  function number_format(number, decimals, dec_point = '.', thousands_sep = ',') {
+    number = (number + '').replace(/[^0-9+-Ee.]/g, '');
+    var n = !isFinite(+number) ? 0 : +number,
+      prec = !isFinite(+decimals) ? 2 : Math.abs(decimals),
+      sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+      dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+      s = '',
+      toFixedFix = function(n, prec) {
+        var k = Math.pow(10, prec);
+        return '' + Math.round(n * k) / k;
+      };
+
+    s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+    var re = /(-?\d+)(\d{3})/;
+    while(re.test(s[0])) {
+      s[0] = s[0].replace(re, "$1" + sep + "$2");
+    }
+
+    if((s[1] || '').length < prec) {
+      s[1] = s[1] || '';
+      s[1] += new Array(prec - s[1].length + 1).join('0');
+    }
+    return s.join(dec);
+  }
+</script>

@@ -1,0 +1,75 @@
+<div class="page-header-invoice">
+  <table class="page-header-table" style="width:3365px;">
+    <tr>
+      <td width="600">
+        <table class="table-full">
+          <tr>
+            <td class="invoice-title">INVOICE</td>
+          </tr>
+          <tr>
+            <td class="height20"></td>
+          </tr>
+          <tr>
+            <td class="line-title"></td>
+          </tr>
+          <tr>
+            <td class="height30"></td>
+          </tr>
+          <tr>
+            <td class="invoice-date">Invoice Date:&nbsp;{{ invoiceDate }}</td>
+          </tr>
+        </table>
+      </td>
+      <td width="1919.5" class="padding-left100">
+        <table class="table-full">
+          <tr>
+            <td class="invoice-order line-height45">#{{ storeName }}{{ serialNumber }}</td>
+          </tr>
+          <tr>
+            <td class="height20"></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="invoice-payments">Payments:&nbsp;</span>
+              <span class="invoice-price">{{ totalAmount }}</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="height30"></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="sold-title">Sold By:&nbsp;</span>
+              <span class="sold-content">{{ screenName }} ({{ storeName }})</span>
+            </td>
+          </tr>
+          <tr class="height10"></tr>
+          <tr>
+            <td>
+              <span class="sold-title">Sold To:&nbsp;</span>
+              <span class="sold-content">{{ nickName }}</span>
+            </td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table class="table-full">
+          <tr>
+            <td width="100%%" class="table-text-right">
+              <img src="{{ logo }}" width="640" height="170">
+            </td>
+          </tr>
+          <tr>
+            <td class="height10"></td>
+          </tr>
+          <tr>
+            <td class="logo-url"><a href="https://www.gigab2b.com" target="_blank" class="text_underline">https://www.gigab2b.com</a></td>
+          </tr>
+          <tr>
+            <td class='height50'></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>

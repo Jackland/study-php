@@ -1,0 +1,99 @@
+.jq-toast-single {
+  border-radius: 2px;
+}
+
+.jq-toast-wrap {
+  width: unset;
+  min-width: 480px !important;
+  max-width: 50vw;
+  top: 60px !important;
+}
+
+.jq-toast-loader,
+.close-jq-toast-single {
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  top: calc(50% - 12px);
+  border-radius: initial;
+  background-color: initial;
+}
+
+.jq-toast-loader {
+  left: 20px;
+}
+
+.close-jq-toast-single {
+  color: #999;
+  line-height: inherit;
+  font-family: 'giga';
+  content: "\e697";
+  font-size: 23px;
+  font-weight: lighter;
+}
+
+/* error */
+.jq-icon-error {
+  background-image: initial;
+  color: #333;
+  background-color: #FFEDED;
+  border: 1px solid #FF5D5D;
+}
+
+.jq-icon-error span:first-child {
+  background-image: url('image/icon-error.png');
+}
+
+/* success */
+.jq-icon-success {
+  background-image: initial;
+  color: #333;
+  background-color: #E1FAF0;
+  border: 1px solid #2FBF85;
+}
+
+.jq-icon-success span:first-child {
+  background-image: url('image/icon-success.png');
+}
+
+/* info */
+.jq-icon-info {
+  background-image: initial;
+  color: #333;
+  background-color: #F2F5FC;
+  border: 1px solid #496DE5;
+}
+
+.jq-icon-info span:first-child {
+  background-image: url('image/icon-info.png');
+}
+
+/* warning */
+.jq-icon-warning {
+  background-image: initial;
+  color: #333;
+  background-color: #FFF0E5;
+  border: 1px solid #FF974B;
+}
+
+.jq-icon-warning span:first-child {
+  background-image: url('image/icon-warning.png');
+}
+
+/* default */
+.jq-icon-default {
+  background-image: initial;
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+}
+
+.jq-icon-default span:first-child {
+  background-image: url('image/icon-success.png');
+}
+
+.jq-has-icon {
+  padding: 14px 38px 14px 50px;
+}

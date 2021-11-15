@@ -1,0 +1,1315 @@
+{{ header }}
+<link href="catalog/view/javascript/select2/css/select2.min.css" rel="stylesheet"/>
+<script src="catalog/view/javascript/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/layui/layui.js"></script>
+<link rel="stylesheet" href="catalog/view/javascript/layui/css/layui.css">
+<link href="catalog/view/javascript/jquery/swiper/css/swiper.min.css" type="text/css" rel="stylesheet" media="screen">
+<link href="catalog/view/javascript/jquery/swiper/css/opencart.css" type="text/css" rel="stylesheet" media="screen">
+<script type="text/javascript">
+  window.addEventListener( "pageshow", function ( event ) {
+    var historyTraversal = event.persisted ||
+      ( typeof window.performance != "undefined" &&
+        window.performance.navigation.type === 2 );
+    if ( historyTraversal ) {
+      window.location.reload();
+    }
+  });
+</script>
+
+<style>
+  .btn-cart-qty {
+    width: 34px;
+    border: 1px solid #eee;
+  }
+
+  .btn-cart-btn {
+    width: 100%;
+  }
+
+  .notavailable {
+    color: gray;
+    white-space: nowrap;
+  }
+
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .breadcrumb-wrapper {
+    padding: 0 10%;
+  }
+
+  .breadcrumb {
+    padding: 15px 0;
+  }
+
+  .breadcrumb-wrapper h1 {
+    margin: 20px 0;
+  }
+
+  .nav-tabs.cart {
+    background-color: #f3f5f7;
+  }
+
+  .footer, .footer2 {
+    background-color: #fff;
+    padding: 0 10%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    box-shadow: 0 15px 15px -15px #000,
+    0 -15px 15px -15px #000;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+
+  .footer p, .footer2 p {
+    display: inline-block;
+    /*margin-right: 15px;*/
+  }
+
+  input[type=checkbox] {
+    position: relative;
+    width: 15px;
+    height: 15px;
+    margin: 0 5px;
+    vertical-align: sub;
+  }
+
+  input[type=checkbox]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    background-color: #fff;
+    border: 1px solid #aaa;
+  }
+
+  input[type=checkbox]:checked::before {
+    border: none;
+    content: '\e6ca';
+    background-color: #3a75dc;
+    font-family: "gcl";
+    font-size: 12px;
+  }
+  .beyond{
+    width: 80%;
+    background-color: #fff0e6;
+    color: #FA6400;
+    padding:5px 10px ;
+    margin: 6px auto;
+  }
+  .select2_new.form-control.select2-hidden-accessible{
+    width: 180px!important;
+    border: 1px solid #aaa!important;
+    border-radius: 4px!important;
+  }
+  .select2-container--default .select2-selection--single .select2-selection__rendered{
+    text-align: center;
+    height: 34px;
+    line-height: 34px;
+  }
+
+  /*轮播样式*/
+  .recommend-title {
+    margin: 0 auto 10px auto;
+    width: 90%;
+    color: #FA6400;
+    font-size: 20px;
+  }
+
+  .recommended .product-simple-grid {
+    height: 350px;
+    float: left;
+  }
+
+  .module-recommend-products {
+    background-color: #f7f7f7;
+    padding-top: 20px;
+  }
+
+  .module-recommend-products .swiper-button-prev,
+  .module-recommend-products .swiper-button-next {
+    top: 50%;
+    margin-top: -44px;
+  }
+
+  .module-recommend-products .swiper-button-prev:before,
+  .module-recommend-products .swiper-button-next:before {
+    content: none;
+  }
+
+  .icon-arrow-right-copy:before {
+    color: black;
+    opacity: 0.2;
+  }
+
+  .icon-arrow-left:before {
+    color: black;
+    opacity: 0.2;
+  }
+  /*轮播样式*/
+  .yzc_layer .layui-layer-ico{
+    background: none;
+  }
+  .yzc_layer .layui-layer-close.layui-layer-close1:after{
+    content: "\e6b4";
+    font-family: 'giga';
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  .yzc_layer .layui-layer-btn .layui-layer-btn0{
+    border-color: #3A75DC;
+    background-color: #3A75DC;
+  }
+  .yzc_layer .layui-layer-btn .layui-layer-btn0:hover{
+    background-color: #2d57a9;
+    opacity: 1;
+  }
+  .yzc_layer .layui-layer-btn .layui-layer-btn1{
+    color: #3A75DC;
+  }
+  .yzc_layer .layui-layer-btn .layui-layer-btn1:hover{
+    background-color: #3A75DC;
+    color: #fff;
+    opacity: 1;
+  }
+  .yzc_layer .layui-layer-content{
+    text-align: left;
+  }
+
+  .action-group a.btn-table{
+    width: 30px;
+    height: 30px;
+    border: 1px solid #eee;
+    background-color: #f3f5f7;
+    border-radius: 4px;
+    text-align: center;
+    line-height: 30px;
+  }
+  .action-group a.btn-table:hover{
+    background-color: #FA6400;
+    color: #fff;
+  }
+  .Non-price-agreement{
+    position: absolute;
+    display: none;
+    z-index: 99;
+    width: 230px;
+    background-color: #fff;
+    box-shadow: 0 0 3px #ccc;
+    padding: 5px 0;
+    font-weight: initial;
+    font-size: 12px;
+    left: 0;
+    top: 20px;
+  }
+  .contract-offer {
+    color: #FA6400;
+    display: flex;
+    align-items: center;
+    padding:  0 10px;
+    border-bottom: 1px solid #eee;
+  }
+  .quoted-price{
+    padding: 5px 25px;
+    color: #ccc;
+  }
+  .quoted-price > div,
+  .dropdown-freight > div{
+    display: flex;
+    padding: 2px;
+  }
+  .transaction-type-list > div{
+      padding: 5px 20px;
+    height: 45px;
+  }
+  .transaction-type-list > div:hover{
+    background-color: #fff0e6;
+  }
+  .transaction-type-list > div > div{
+      display: flex;
+  }
+
+  .ladder-section,
+  .price-ladder,
+  .cost-name,
+  .cost-price{
+    width: 50%;
+  }
+  .quoted-price .active-price{
+    color: #333;
+  }
+  .price.Non-agreement > .drop:hover .Non-price-agreement{
+    display: block;
+  }
+  #freight .service-charges{
+    justify-content: center;
+    font-weight: bold;
+    padding: 6px 0;
+    border-bottom: 2px solid #eee;
+  }
+  .show-type input{
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 34px;
+    line-height: 34px;
+    padding:0 20px 0 5px;
+    cursor: pointer;
+  }
+  .show-type .caret{
+    position: absolute;
+    right: 8px;
+    top: 14px;
+  }
+  .transaction-type-list{
+    position: absolute;
+    display: none;
+    background-color: #fff;
+    box-shadow: 0 0 3px #ccc;
+    padding: 0;
+    z-index: 99;
+    font-size: 12px;
+    width: 300px;
+    right: 0;
+    cursor: pointer;
+  }
+  .transaction-quantity{
+    width:-webkit-calc(100% - 80px);
+    width:-moz-calc(100% - 80px);
+    width:calc(100% - 80px);
+    color: #ccc;
+  }
+  .transaction-price{
+    width:80px ;
+    color: #ccc;
+  }
+  .transaction-type-list > div:not(:last-child){
+    border-bottom: 1px solid #eee;
+  }
+  #freight .dropdown-freight{
+    box-shadow: 0 0 3px #ccc;
+    border-radius: 2px;
+  }
+  .price.Non-agreement .popover{
+    font-size: 12px;
+    width: 250px;
+  }
+  /*#28282 期货履约流程调整*/
+  .input-group.disabled-qty{
+    cursor: not-allowed;
+  }
+  .input-group.disabled-qty span,
+  .input-group.disabled-qty span button{
+    pointer-events: none !important;
+    color: #ccc !important;
+    background-color: #eeeeee !important;
+  }
+  td.qty-td .popover-content{
+    min-width: 280px;
+    font-size: 12px;
+  }
+</style>
+<link rel="stylesheet" type="text/css" href="catalog/view/theme/yzcTheme/stylesheet/checkout/cart.css?v={{ app_version }}">
+<div id="page-cart-wrapper" class="page-seller-portal">
+  <div class="breadcrumb-wrapper clearfix">
+    {% include 'giga/template/_parts/breadcrumb.twig' %}
+    <h1>{{ shopping_cart }}</h1>
+  </div>
+
+  <div id="checkout-cart">
+    <div style="width: 80%;margin: 0 auto">
+      {% if attention %}
+        <div class="alert alert-info"><i class="fa fa-info-circle"></i>
+          {{ attention }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+      {% endif %}
+      {% if success and error_warning == '' %}
+        <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+      {% endif %}
+      {% if module_marketplace_status is defined and module_marketplace_status %}
+        {% if error_warning_seller_product %}
+          <div class="alert alert-danger"><i
+              class="fa fa-exclamation-circle"></i> {{ error_warning_seller_product }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+        {% endif %}
+      {% endif %}
+      {% if error_warning %}
+        <div class="alert alert-danger alert-dismissible"><i
+            class="fa fa-exclamation-circle"></i> {{ error_warning }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+      {% endif %}
+      {% if error_warning_final_cart %}
+        <div class="alert alert-danger alert-dismissible"><i
+            class="fa fa-exclamation-circle"></i> {{ error_warning_final_cart }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+      {% endif %}
+    </div>
+
+
+    <div class="row" style="width: 80%;margin: 0 auto">
+      {% set class = 'col-sm-12' %}
+      <div id="cartTab" class="{{ class }}" style="padding: 0">
+        {#Togglable tabs#}
+        <ul class="nav nav-tabs cart mt-2" role="tablist">
+          {% if isCollectionFromDomicile %}
+            <li id="home_pick_li" class="active" onclick="isShowSwiper('#home_pick_qty')"><a href="#tab-home-pick"
+                                                                                             data-toggle="tab">{{ tab_home_pick }}
+                &nbsp;(<span id="home_pick_qty" class="tab-cart-count">{{ home_pick_qty }}</span>)
+              </a></li>
+          {% else %}
+            <li id="drop_ship_li" class="active"  onclick="isShowSwiper('#drop_ship_qty')"><a href="#tab-drop-ship"
+                                                                                              data-toggle="tab">{{ tab_dropship }}
+                &nbsp;(<span id="drop_ship_qty" class="tab-cart-count">{{ drop_ship_qty }}</span>)
+              </a></li>
+            {% if has_cwf_freight %}
+              <li id="cloud_logistics_li"  onclick="isShowSwiper('#cloud_logistics_qty')"><a href="#tab-cloud-logistics"
+                                                                                             data-toggle="tab">{{ tab_cloud_logistics }}
+                  &nbsp;(<span id="cloud_logistics_qty"
+                               class="tab-cart-count">{{ cloud_logistics_qty }}</span>)
+                </a></li>
+            {% endif %}
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="row mb-4" style="margin-right: 0;margin-left: 0">
+      <div class="col-md-12" style="padding-left: 0">
+        <div id="myTabContent" class="tab-content">
+          {% if isCollectionFromDomicile %}
+            <div class="tab-pane fade in active" id="tab-home-pick">
+              <fieldset>
+                <div id="home-pick-list"></div>
+              </fieldset>
+            </div>
+          {% else %}
+            <div class="tab-pane fade in active" id="tab-drop-ship">
+              <fieldset>
+                <div id="drop-ship-list"></div>
+              </fieldset>
+            </div>
+            <div class="tab-pane fade in" id="tab-cloud-logistics">
+              <fieldset>
+                <div id="cloud-logistics-list"></div>
+              </fieldset>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-grey" id="myCartSwiperCon" style="width: 80%;margin: 0 auto ;display: none">
+    {% if products and products|length >= 5 %}
+      <div id="" class="recommend-products module-recommend-products">
+        <div class="recommend-title">
+          <i class="gcl gclicon_tuijian-xian" style="font-size: 25px;margin-right: 5px"></i><span>Recommended Products</span>
+        </div>
+        <div style="position: relative">
+          <div id="" class="swiper-container recommended12 recommended" style="width: 90%;padding-bottom: 100px">
+            <div class="swiper-wrapper">
+              {% for product in products %}
+                <div class="swiper-slide">
+                  {% include 'giga/template/_parts/product_simple_grid_recommend.twig' %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          {#          {% if products|length > 5 %}#}
+          <div id="" class="swiper-button-next payment-next">
+            <i class="giga icon-arrow-right-copy" style="font-size: 30px"></i>
+          </div>
+          <div id="" class="swiper-button-prev payment-prev">
+            <i class="giga icon-arrow-left" style="font-size: 30px"></i>
+          </div>
+          {#          {% endif %}#}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="inner_auto_buy_modal">
+  <div class="modal-dialog">
+    <div class="modal-content" id="inner_auto_buy_content">
+      <div class="modal-header">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="deleteConfirmation" data-delivery_type="">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title text-left" id="myModalLabel">Attention</h4>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to batch remove the following <span class="delNum"></span> Item(s) from your shopping
+        cart?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="modelConfirm"><span style="color: #fff">Remove</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="catalog/view/javascript/jquery/swiper/js/swiper.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+  let buildSwiperNum=0;
+  $(document).ready(
+    function () {
+      // 如果现在的选项卡购物车是0就显示轮播
+      if($('body #cartTab ul li.active .tab-cart-count').html()==0){
+        $("#myCartSwiperCon").show();
+        if(buildSwiperNum==0){
+          mySwiperWork();
+          buildSwiperNum=1;
+        }
+      }else{
+        $("#myCartSwiperCon").hide();
+      }
+    }
+  );
+
+  //批量删除
+  $("#modelConfirm").on('click', function () {
+    let delivery_type=$(this).attr('data-deliveryType')
+    let cartId = new Array();
+    $('*[name="select_cart_' + delivery_type + '"]:checked').each(function (i) {
+      cartId[i] = $(this).val();
+    });
+    let cart_id_str = cartId.join(',');
+    batchRemove(delivery_type, cart_id_str, cartId.length)
+  });
+
+  function mySwiperWork() {
+    let mySwiper = new Swiper('.recommended12', {
+      mode: 'horizontal',
+      slidesPerView: 5,
+      nextButton: '.payment-next',
+      prevButton: '.payment-prev',
+      paginationClickable: true,
+      spaceBetween: 20,
+      autoplay: 5000,
+      autoplayDisableOnInteraction: true,
+      loop: true,
+      roundLengths: true,
+      observer: true,
+      observeParents: true,
+    });
+  }
+  function isShowSwiper(idTab) {
+    if($(idTab).html()==0){
+      $("#myCartSwiperCon").show();
+      if(buildSwiperNum==0){
+        mySwiperWork();
+        buildSwiperNum=1;
+      }
+    }else{
+      $("#myCartSwiperCon").hide();
+    }
+  }
+</script>
+<input id="suc" value="" style="display:none">
+<script>
+  block.blockUI();
+  let isCollectionFromDomicile = '{{ isCollectionFromDomicile }}';
+  let has_cwf_freight = '{{ has_cwf_freight }}';
+  let show_cwf = '{{ show_cwf }}';
+  if (isCollectionFromDomicile) {
+    $('#home-pick-list').load('index.php?route=checkout/cart/cart_home_pick');
+  } else {
+    $('#drop-ship-list').load('index.php?route=checkout/cart/cart_drop_ship');
+    if (has_cwf_freight) {
+      $('#cloud-logistics-list').load('index.php?route=checkout/cart/cart_cloud_logistics');
+    }
+  }
+  if (show_cwf == 1) {
+    $('#cloud_logistics_li a[href="#tab-cloud-logistics"]').tab('show')
+  }
+
+  function loadInnerAutoBuyModal(delivery_type, cart_id_str = '') {
+    // $('#delivery_type').val(delivery_type) //存入input 用于inner_auto_buy_modal获取
+    var myModalSelector = $("#inner_auto_buy_modal");
+    //请求后台获取详细信息
+    myModalSelector.modal({
+      remote: "index.php?route=checkout/cart/checkPurchaseAndSales&delivery_type=" + delivery_type + "&cart_id_str=" + cart_id_str,
+      backdrop: 'static',
+      keyboard: false
+    });
+    // 每次隐藏时，清除数据。确保点击时，重新加载
+    myModalSelector.on("hidden.bs.modal", function () {
+      $(this).removeData("bs.modal");
+    });
+  }
+
+  function setProductPrice(cart_id, transaction_type = '', _this = null, delivery_type = 0, sku) {
+    if (_this && $(_this).children(".transaction-type").text().replace(/(^\s*)|(\s*$)/g, "") == $('#transaction_type_' + cart_id + '_' + delivery_type).val().replace(/(^\s*)|(\s*$)/g, "")) {
+      return;
+    }
+
+    if (0 == init) {
+      $.ajax({
+        url: "{{ url('checkout/cart/updateTransactionType') }}",
+        async: false,
+        type: 'POST',
+        dataType: "json",
+        data: {cart_id: cart_id, transaction_type: transaction_type},
+        success: function (json, textStatus, jqXHR) {
+          if (json.code) {
+            updateShow(json.data, cart_id);
+            let delivery_type = json.data.product.delivery_type;
+            let cartId = new Array();
+            let flag = false;
+            $('*[name="select_cart_' + delivery_type + '"]:checked').each(function (i) {
+              if ($(this).val() == cart_id) {
+                flag = true;
+              }
+              cartId[i] = $(this).val();
+            });
+            cart_id_str = cartId.join(',');
+            if (flag) {
+              totalByCartId(delivery_type, cart_id_str);
+            }
+            // #29414 限时限量活动 ->交易类型变更
+            var isDiscount=$('#limitTimeLimitQtyDicount-'+cart_id).attr('data-isDiscount');
+            if(json.data.product.discount ==null){
+              if(isDiscount === 'true'){ //判断上一次是否是有折扣
+                $('#timeLimitPopdownidType-'+cart_id).css('display','block');
+                $('#limitTimeLimitQtyDicount-'+cart_id).addClass('limit-display-none'); 
+                $('#limitTimeLimitQtyDicount-'+cart_id).children('.color-fa64').attr('limit-current-discount',0);
+                $('#limitTimeLimitQtyDicount-'+cart_id).children('.color-fa64').html(``);    
+                setTimeout(function(){
+                  $('#timeLimitPopdownidType-'+cart_id).css('display','none');
+                },3000);             
+              }
+            }else{
+              $('#limitTimeLimitQtyDicount-'+cart_id).removeClass('limit-display-none');
+              $('#limitTimeLimitQtyDicount-'+cart_id).children('.color-fa64').attr('limit-current-discount',100 - json.data.product.discount);
+              $('#limitTimeLimitQtyDicount-'+cart_id).children('.color-fa64').html(`&nbsp;${100 - json.data.product.discount}% OFF`);          
+            }
+            $('#limitTimeLimitQtyDicount-'+cart_id).attr('data-isDiscount',json.data.product.discount ==null ? 'false' :'true');
+          } else {
+            $.toast({
+              heading: false,
+              text: '{{ error_not_found_cart }}'.replace(/%s/, sku),
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: false,
+              allowToastClose: true,
+              loader: false,
+              afterHidden: function () {
+                location.reload();
+              }
+            });
+          }
+        }
+      });
+    }
+  }
+
+  function numberSub(cart_id, sku) {
+    let ipt = $('input[name="quantity[' + cart_id + ']"]');
+    var maximum = parseInt($(ipt).parentsUntil("tr").find(".maximum").html());
+    if (ipt) {
+      let num = parseInt($(ipt).val());
+      if (isNaN(num)) {
+        $(ipt).val(1);
+        return true;
+      }
+      if (num <= 1) {
+        $(ipt).val(1);
+        return true;
+      }
+      num--;
+      $(ipt).val(num);
+      updateQty(num, cart_id, sku);
+      if (num > maximum) {
+        $(ipt).css("color", "red")
+      } else {
+        $(ipt).css("color", "#333")
+      }
+      return true;
+    }
+    return true;
+  }
+
+  function numberAdd(cart_id, sku) {
+    let ipt = $('input[name="quantity[' + cart_id + ']"]');
+    var maximum = parseInt($(ipt).parentsUntil("tr").find(".maximum").html());
+    if (ipt) {
+      let num = parseInt($(ipt).val());
+      if (isNaN(num)) {
+        $(ipt).val(1);
+        return true;
+      }
+      num++;
+      $(ipt).val(num);
+      updateQty(num, cart_id, sku);
+      if (num > maximum) {
+        $(ipt).css("color", "red")
+      } else {
+        $(ipt).css("color", "#333")
+      }
+      return true;
+    }
+    return true;
+  }
+
+  function changeNumber(ipt, cart_id, sku) {
+    let num = parseInt($(ipt).val());
+    updateQty(num, cart_id, sku);
+  }
+
+  function updateQty(num, cart_id, sku) {
+    if (num > 0) {
+      $.ajax({
+        url: "{{ url('checkout/cart/updateQty') }}",
+        async: false,
+        type: 'POST',
+        dataType: "json",
+        data: {cart_id: cart_id, qty: num},
+        success: function (json, textStatus, jqXHR) {
+          if (json.code) {
+            updateShow(json.data, cart_id);
+            let delivery_type = json.data.product.delivery_type;
+            let cartId = new Array();
+            let flag = false;
+            $('*[name="select_cart_' + delivery_type + '"]:checked').each(function (i) {
+              if ($(this).val() == cart_id) {
+                flag = true;
+              }
+              cartId[i] = $(this).val();
+            });
+            cart_id_str = cartId.join(',');
+            if (flag) {
+              totalByCartId(delivery_type, cart_id_str);
+            }
+            //# 29414 数量变化影响折扣
+            var isDiscount=$('#limitTimeLimitQtyDicount-'+cart_id).attr('data-isDiscount');
+           
+            if(json.data.product.discount ==null){
+              if(isDiscount === 'true'){ //判断上一次是否是有折扣
+                $('#timeLimitPopdownid-'+cart_id).css('display','block');
+                $('#limitTimeLimitQtyDicount-'+cart_id).children('.color-fa64').attr('limit-current-discount',0);
+                $('#limitTimeLimitQtyDicount-'+cart_id).addClass('limit-display-none');
+                $('#limitTimeLimitQtyDicount-'+cart_id).children('.color-fa64').html(``);      
+                setTimeout(function(){
+                  $('#timeLimitPopdownid-'+cart_id).css('display','none');
+                },3000);             
+              }
+            }else{
+              $('#limitTimeLimitQtyDicount-'+cart_id).removeClass('limit-display-none');
+              $('#limitTimeLimitQtyDicount-'+cart_id).children('.color-fa64').attr('limit-current-discount',100 - json.data.product.discount);
+              $('#limitTimeLimitQtyDicount-'+cart_id).children('.color-fa64').html(`&nbsp;${100 - json.data.product.discount}% OFF`);
+            }
+            $('#limitTimeLimitQtyDicount-'+cart_id).attr('data-isDiscount',json.data.product.discount ==null ? 'false' :'true');
+          } else {
+            $.toast({
+              heading: false,
+              text: '{{ error_not_found_cart }}'.replace(/%s/, sku),
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: false,
+              allowToastClose: true,
+              loader: false,
+              afterHidden: function () {
+                location.reload();
+              }
+            });
+          }
+        }
+      });
+    }
+  }
+
+  function updateShow(data, cart_id) {
+    $("#available_" + cart_id).val(data.product.available_qty).text(data.product.available_qty);
+    $("#qty_type_" + cart_id).text(data.product.qty_type_str+' Qty:');
+    if (data.product.service_fee_per) {
+      $("#price_" + cart_id).val(data.product.product_price_per).text(data.product.product_price_per);
+      $("#service_fee_" + cart_id).text(data.product.service_fee_per);
+    } else {
+      $("#price_" + cart_id).val(data.product.price).text(data.product.price);
+    }
+    $("#total_" + cart_id).val(data.product.total).text(data.product.total);
+
+    if (data.total.hasOwnProperty("totalNum")) {
+      $("#header-totalNum").html(data.total.totalNum);
+    }
+    if (data.total.hasOwnProperty("totalMoney")) {
+      $("#header-totalMoney").html(data.total.totalMoney);
+    }
+    if (data.product.priceUp.status) {
+      $("#priceUp_" + cart_id).show();
+      $("#service_fee_priceUp_" + cart_id).show();
+    } else {
+      $("#priceUp_" + cart_id).hide();
+      $("#service_fee_priceUp_" + cart_id).hide();
+    }
+    if (data.enableQuote) {
+      if (data.product.type_id == 4) {
+        if (data.product.quoteFlag) {
+          $('input[name="quantity[' + cart_id + ']"]').val(data.product.quantity);
+        }
+        $("#discount_value_" + cart_id).text(data.product.str_quote_amount_per);
+        $("#service_fee_discount_value_" + cart_id).text(data.product.quote_service_fee_per);
+        $("#discount_" + cart_id).show();
+        $("#service_fee_discount_" + cart_id).show();
+        $('#transaction_type_' + cart_id + '_' + data.delivery_type).val('Spot Price:' + data.product.agreement_id);
+      } else {
+        if (data.product.type_id == 3 && data.product.futuresFlag) {
+          $('input[name="quantity[' + cart_id + ']"]').val(data.product.quantity);
+        }
+        $("#discount_" + cart_id).hide();
+        $("#service_fee_discount_" + cart_id).hide();
+        let transaction_type_text = $('#transaction_type_' + data.product.type_id + '_' + cart_id + '_' + data.product.agreement_id).children(".transaction-type").text();
+        if (transaction_type_text) {
+          $('#transaction_type_' + cart_id + '_' + data.delivery_type).val(transaction_type_text);
+        } else {
+          $('#transaction_type_' + cart_id + '_' + data.delivery_type).val('Normal Transaction');
+        }
+      }
+    }
+    let ipt = $('input[name="quantity[' + cart_id + ']"]');
+    if (data.product.quantity > data.product.available_qty) {
+      $(ipt).css("color", "red")
+    } else {
+      $(ipt).css("color", "#333")
+    }
+    if (data.product.quoteFlag || data.product.futuresFlag) {
+      $('input[name="quantity[' + cart_id + ']"]').attr('disabled', 'disabled');
+      $('.number-sub-' + cart_id).attr('disabled', 'disabled');
+      $('.number-add-' + cart_id).attr('disabled', 'disabled');
+    } else {
+      $('input[name="quantity[' + cart_id + ']"]').removeAttr('disabled');
+      $('.number-sub-' + cart_id).removeAttr('disabled');
+      $('.number-add-' + cart_id).removeAttr('disabled');
+    }
+    $('[data-toggle="popover"]').popover('destroy')
+    if (data.product.futuresFlag){
+      var content = 'The Quantity cannot be modified since the due amount of Future Goods Agreement must be paid in one time.';
+      $('input[name="quantity[' + cart_id + ']"]').parent('.input-group').addClass('disabled-qty').attr('data-toggle','popover').attr('data-content',content);
+      $('[data-toggle="popover"]').popover()
+    }else{
+      $('input[name="quantity[' + cart_id + ']"]').parent('.input-group').removeClass('disabled-qty').attr('data-toggle','').attr('data-content','');
+    }
+    if (data.product.show_tiered_pricing) {
+      $("#tiered-price-show-" + cart_id).css('display', 'inline-block')
+      $("#service-tiered-price-show-" + cart_id).css('display', 'inline-block')
+      let tieredPriceHtml = '';
+      let serviceTieredPriceHtml = '';
+      for (let y in data.product.tiered_prices) {
+        let tiered_price = data.product.tiered_prices[y];
+        tieredPriceHtml += '<div><div class="ladder-section';
+        if (tiered_price.selected) {
+          tieredPriceHtml += ' active-price';
+        }
+        tieredPriceHtml += '">' + tiered_price.msg + '</div><div class="price-ladder text-right';
+        if (tiered_price.selected) {
+          tieredPriceHtml += ' active-price';
+        }
+        tieredPriceHtml += '">' + tiered_price.format_price + '</div></div>'
+      }
+      for (let y in data.product.service_tiered_prices) {
+        let tiered_price = data.product.service_tiered_prices[y];
+        serviceTieredPriceHtml += '<div><div class="ladder-section';
+        if (tiered_price.selected) {
+          serviceTieredPriceHtml += ' active-price';
+        }
+        serviceTieredPriceHtml += '">' + tiered_price.msg + '</div><div class="price-ladder text-right';
+        if (tiered_price.selected) {
+          serviceTieredPriceHtml += ' active-price';
+        }
+        serviceTieredPriceHtml += '">' + tiered_price.format_price + '</div></div>'
+      }
+      $("#tiered-prices-" + cart_id).html(tieredPriceHtml);
+      $("#service-tiered-prices-" + cart_id).html(serviceTieredPriceHtml);
+    } else {
+      $("#tiered-price-show-" + cart_id).css('display', 'none')
+      $("#service-tiered-price-show-" + cart_id).css('display', 'none')
+    }
+    if (data.product.transaction_info.transaction_type.length > 0 && !data.product.isMarginAdvanceProduct && !data.product.isFuturesAdvanceProduct) {
+        $("#transaction_type_0_" + cart_id + "_").children().eq(1).text("Start from " + data.product.format_default_price);
+    }
+  }
+
+  function batchRemove(delivery_type, cart_id_str, length) {
+    if (cart_id_str) {
+      $.ajax({
+        url: "{{ url('checkout/cart/batchRemove') }}",
+        async: false,
+        type: 'POST',
+        dataType: "json",
+        data: {cart_id_str: cart_id_str},
+        success: function (json, textStatus, jqXHR) {
+          $("#modelConfirm").attr("disabled", false);
+          $("#deleteConfirmation").modal("hide");
+          if (json.code) {
+            if (0 == delivery_type) {
+              let drop_ship_qty = $("#drop_ship_qty").text();
+              drop_ship_qty = drop_ship_qty - length;
+              drop_ship_qty = drop_ship_qty > 0 ? drop_ship_qty : 0;
+              $("#drop_ship_qty").text(drop_ship_qty);
+              $('#drop-ship-list').load('index.php?route=checkout/cart/cart_drop_ship');
+            } else if (1 == delivery_type) {
+              let home_pick_qty = $("#home_pick_qty").text();
+              home_pick_qty = home_pick_qty - length;
+              home_pick_qty = home_pick_qty > 0 ? home_pick_qty : 0;
+              $("#home_pick_qty").text(home_pick_qty);
+              $('#home-pick-list').load('index.php?route=checkout/cart/cart_home_pick');
+            } else if (2 == delivery_type) {
+              let cloud_logistics_qty = $("#cloud_logistics_qty").text();
+              cloud_logistics_qty = cloud_logistics_qty - length;
+              cloud_logistics_qty = cloud_logistics_qty > 0 ? cloud_logistics_qty : 0;
+              $("#cloud_logistics_qty").text(cloud_logistics_qty);
+              $('#cloud-logistics-list').load('index.php?route=checkout/cart/cart_cloud_logistics');
+            }
+
+            if (json.data.total.hasOwnProperty("totalNum")) {
+              $("#header-totalNum").html(json.data.total.totalNum);
+            }
+            if (json.data.total.hasOwnProperty("totalMoney")) {
+              $("#header-totalMoney").html(json.data.total.totalMoney);
+            }
+          }
+        }
+      });
+    }
+  }
+
+  function changeCartProduct(delivery_type, cart_id, to_product_id) {
+    if (cart_id && to_product_id) {
+      $.ajax({
+        url: "{{ url('checkout/cart/changeCartProduct') }}",
+        async: false,
+        type: 'POST',
+        dataType: "json",
+        data: {cart_id: cart_id, to_product_id: to_product_id},
+        success: function (json, textStatus, jqXHR) {
+          if (json.code) {
+            let length = json.data.data;
+            if (0 == delivery_type) {
+              let drop_ship_qty = $("#drop_ship_qty").text();
+              drop_ship_qty = drop_ship_qty - length;
+              drop_ship_qty = drop_ship_qty > 0 ? drop_ship_qty : 0;
+              $("#drop_ship_qty").text(drop_ship_qty);
+              $('#drop-ship-list').load('index.php?route=checkout/cart/cart_drop_ship');
+            } else if (1 == delivery_type) {
+              let home_pick_qty = $("#home_pick_qty").text();
+              home_pick_qty = home_pick_qty - length;
+              home_pick_qty = home_pick_qty > 0 ? home_pick_qty : 0;
+              $("#home_pick_qty").text(home_pick_qty);
+              $('#home-pick-list').load('index.php?route=checkout/cart/cart_home_pick');
+            } else if (2 == delivery_type) {
+              let cloud_logistics_qty = $("#cloud_logistics_qty").text();
+              cloud_logistics_qty = cloud_logistics_qty - length;
+              cloud_logistics_qty = cloud_logistics_qty > 0 ? cloud_logistics_qty : 0;
+              $("#cloud_logistics_qty").text(cloud_logistics_qty);
+              $('#cloud-logistics-list').load('index.php?route=checkout/cart/cart_cloud_logistics');
+            }
+
+            if (json.data.total.hasOwnProperty("totalNum")) {
+              $("#header-totalNum").html(json.data.total.totalNum);
+            }
+            if (json.data.total.hasOwnProperty("totalMoney")) {
+              $("#header-totalMoney").html(json.data.total.totalMoney);
+            }
+          }
+        }
+      });
+    }
+  }
+
+  function totalByCartId(delivery_type, cart_id_str) {
+    $.ajax({
+      url: "{{ url('checkout/cart/totalByCartId') }}",
+      async: true,
+      type: 'POST',
+      dataType: "json",
+      data: {cart_id_str: cart_id_str},
+      success: function (json, textStatus, jqXHR) {
+        if (json.code) {
+          let totals = json.data.totals;
+          totals.forEach(function (v, k) {
+            $("#" + v.code + '_value_' + delivery_type).text(v.text);
+            if (v.code === 'giga_coupon' || v.code === 'promotion_discount') {
+                if (v.value === 0) {
+                    $("#" + v.code + '_value_' + delivery_type).parents('tr').css('display', 'none');
+                } else {
+                    $("#" + v.code + '_value_' + delivery_type).parents('tr').css('display', '');
+                }
+            }
+            if (v.code === 'promotion_discount') {
+                let html = '';
+                for (let i in v.discounts) {
+                  let discount = v.discounts[i];
+                  html += '<div class="line-table"><div class="text-left">' + discount.promotion_content + '</div> <div class="text-left">' + discount.format_price + '</div></div>';
+                }
+                $("#promotion-discount-content-" + delivery_type).html(html);
+            }
+            $("#footer_" + v.code + '_value_' + delivery_type).text(v.text);
+          });
+          if (!json.data.discounts_amount || json.data.discounts_amount.amount == 0) {
+              $("#footer_save_value_" + delivery_type).parent().css('display', 'none');
+          } else {
+              $("#footer_save_value_" + delivery_type).text(json.data.discounts_amount.amount_text);
+              $("#footer_save_value_" + delivery_type).parent().css('display', '');
+          }
+          //满送
+          let gifts = json.data.gifts;
+          if (!gifts || gifts.length === 0) {
+            $("#gift-content-" + delivery_type).parents('tr').css('display', 'none');
+          } else {
+            let giftHtml = '';
+            for (let j in gifts) {
+              let gift = gifts[j];
+              if (gift.is_coupon) {
+                giftHtml += '<span class="link-price">' + gift.format_coupon_price + '</span> coupon&nbsp;<img src="image/coupon/coupon.png"><span data-toggle="tooltip"  data-html="true" data-original-title="This order qualifies for a ' +gift.format_coupon_price + ' off coupon that you can use on your next purchase" class="toggle-mark"><i class="giga icon-V10-wenhaotishi"></i></span><br/>';
+              } else {
+                giftHtml += gift.condition_remark + '<br/>';
+              }
+            }
+            if (giftHtml) {
+              $("#gift-content-" + delivery_type).html(giftHtml);
+            }
+            $("#gift-content-" + delivery_type).parents('tr').css('display', '');
+          }
+        }
+      }
+    });
+
+  }
+  //单项删除
+  function removeCart(cart_id, delivery_type) {
+    $("#suc").val(0);
+    $("div .footer0").hide();
+    block.blockUI();
+    $.ajax({
+      url: 'index.php?route=checkout/cart/remove',
+      type: 'post',
+      data: 'key=' + cart_id + '&delivery_type=' + delivery_type,
+      dataType: 'json',
+      // beforeSend: function () {
+      //     $(".check-out").attr('disabled', true);
+      // },
+      // complete: function () {
+      //     $(".check-out").attr('disabled', false);
+      // },
+      success: function (json) {
+        // Need to set timeout otherwise it wont update the total
+        if (json.hasOwnProperty("totalNum")) {
+          $("#header-totalNum").html(json["totalNum"]);
+        }
+        if (json.hasOwnProperty("totalMoney")) {
+          $("#header-totalMoney").html(json["totalMoney"]);
+        }
+        if (json.hasOwnProperty("drop_ship_qty")) {
+          $("#drop_ship_qty").html(json["drop_ship_qty"]);
+        }
+        if (json.hasOwnProperty("home_pick_qty")) {
+          $("#home_pick_qty").html(json["home_pick_qty"]);
+        }
+        if (json.hasOwnProperty("cloud_logistics_qty")) {
+          $("#cloud_logistics_qty").html(json["cloud_logistics_qty"]);
+        }
+
+        if (getURLVar('route') == 'checkout/cart' || getURLVar('route') == 'checkout/checkout') {
+          if (delivery_type == 2) {
+            $('#cloud-logistics-list').load('index.php?route=checkout/cart/cart_cloud_logistics');
+          } else if (delivery_type == 1) {
+            $('#home-pick-list').load('index.php?route=checkout/cart/cart_home_pick');
+          } else {
+            $('#drop-ship-list').load('index.php?route=checkout/cart/cart_drop_ship');
+          }
+        } else {
+          $('#cart > ul').load('index.php?route=common/cart/info ul li');
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+
+    });
+
+  }
+
+  window.setTimeout(function() {
+    $('[data-dismiss="alert"]').alert('close');
+  }, 10000);
+
+  //虚拟表单实现post提交
+  var formSubmitUtil = {
+      post: function (URL, PARAMS) {
+          let temp = document.createElement("form");
+          temp.action = URL;
+          temp.method = "post";
+          temp.style.display = "none";
+          for (let x in PARAMS) {
+              let opt = document.createElement("textarea");
+              opt.name = x;
+              opt.value = PARAMS[x];
+              temp.appendChild(opt);
+          }
+          document.body.appendChild(temp);
+          temp.submit();
+          return temp;
+      }
+  };
+
+</script>
+
+<style>
+  .modal-dialog {
+    width: 50%;
+    height: 100%;
+  }
+
+  .shop table {
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+  }
+
+  .table > tbody > tr > th,
+  .table > tbody > tr > td {
+    border-top: none;
+  }
+
+  .shop th {
+    background-color: #f3f5f7;
+  }
+
+  .shop tbody tr {
+    border-bottom: 1px solid #ddd;
+    height: 90px;
+  }
+
+  td .name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    word-break: break-word;
+  }
+
+  td .name a:hover {
+    color: #3A75DC;
+  }
+
+  .priceList {
+    text-align: right;
+  }
+
+  .priceList table {
+    margin-bottom: 0;
+  }
+
+  .priceList td {
+    padding: 4px !important;
+  }
+
+  .priceList > p {
+    margin-bottom: 10px;
+  }
+
+  .priceList .list {
+    width: 120px;
+    display: inline-block;
+  }
+
+  .priceList .price {
+    width: 80px;
+    display: inline-block;
+  }
+
+  .total {
+    color: #FA6400;
+  }
+
+  .check-out, .check-out:hover {
+    width: 190px;
+    height: 50px;
+    background-color: #fA6400;
+    color: #fff;
+    border: none;
+  }
+  .footer .check-out, .footer .check-out:hover,
+  .footer1 .check-out, .footer1 .check-out:hover,
+  .footer2 .check-out, .footer2 .check-out:hover{
+    width: 100%;
+  }
+
+  .check-out[disabled] {
+    background-color: #ccc;
+    color: #fff;
+  }
+
+  .pro-td .options {
+    color: #777;
+    font-size: 12px;
+  }
+
+  .property {
+    width: fit-content;
+    border: 1px dashed transparent;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    color: #777;
+    font-size: 12px;
+    position: relative;
+    padding-right: 20px;
+
+  }
+
+  .property:hover {
+    padding: 0 20px 0 5px;
+    border: 1px dashed #ccc;
+    cursor: pointer;
+  }
+
+  .property i {
+    font-size: 12px;
+    background-color: #f3f5f7;
+    padding: 0 3px;
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .property:hover i {
+    display: inline-block;
+  }
+
+  .property-check {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: 1px dashed #fa6400;
+    top: 70px;
+    left:0;
+    width: auto;
+    max-width: 100%;
+    min-height: 100px;
+    z-index: 1000;
+    padding: 8px;
+  }
+
+  span.pro {
+    width: 95px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 5px;
+    border: 1px solid #eee;
+    margin: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    float: left;
+    font-size: 12px;
+  }
+  span.pro:hover{
+    cursor: pointer;
+  }
+
+  span.pro.active {
+    border: 1px solid #fa6400;
+  }
+
+  .property-check button {
+    width: 46px;
+    padding: 2px 6px !important;
+  }
+
+  .alert-danger, .alert-success {
+    position: fixed;
+    top: 250px;
+    width: 60%;
+    left: 20%;
+    z-index: 1000;
+  }
+
+  #page-cart-wrapper .quantity-tool {
+    margin: 0 auto;
+  }
+
+  .popover {
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 0 10px #aaa;
+  }
+
+  #deleteConfirmation .modal-dialog {
+    width: 25%;
+    height: auto;
+    top: 20%;
+  }
+
+  #deleteConfirmation .modal-header, #deleteConfirmation .modal-footer {
+    padding: 8px 15px;
+  }
+
+  #deleteConfirmation .modal-footer {
+    text-align: center;
+  }
+
+  #modelConfirm {
+    padding: 4px 6px;
+    font-size: 12px;
+    font-weight: inherit;
+  }
+
+  #deleteConfirmation .modal-header .close {
+    background-color: #183464;
+  }
+
+  .settle-accounts .priceList,
+  .settle-accounts2 .priceList {
+    font-size: 16px;
+    padding: 0;
+  }
+  .table-hover > tbody > tr:hover{
+    background-color: #fff8f3;
+  }
+
+  .jq-toast-wrap {
+    width: 800px!important;
+    top: 250px!important;
+  }
+  .close-jq-toast-single {
+    top: unset!important;
+  }
+</style>
+{{ footer }}
+

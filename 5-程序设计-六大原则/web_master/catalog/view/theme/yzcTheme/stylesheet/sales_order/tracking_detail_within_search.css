@@ -1,0 +1,281 @@
+.tracking-detail-dialog {
+  display: none;
+}
+
+.tracking-detail-dialog #swiper-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.tracking-detail-dialog .icon-Group-1 {
+  margin-right: 0;
+}
+
+.tracking-detail-dialog .detailed-view {
+  background-color: #092a57;
+  color: #fff;
+  height: 40px;
+  line-height: 40px;
+  padding: 10px 20px;
+}
+
+.tracking-detail-dialog .personal-information {
+  border-bottom: 1px solid #eee;
+  margin: 20px;
+  padding-bottom: 20px;
+}
+
+.tracking-detail-dialog .personal-information-list {
+  display: flex;
+  line-height: 30px;
+}
+
+.tracking-detail-dialog .nomal {
+  line-height: normal;
+}
+
+.tracking-detail-dialog .sales-order {
+  width: 110px;
+  color: #666;
+  text-align: right;
+  /*font-size: 18px;*/
+}
+
+.tracking-detail-dialog .sales-order-tel {
+  text-align: left;
+  margin-left: 40px;
+  width: 60%;
+  word-break: break-word;
+  /*font-size: 18px;*/
+}
+
+.tracking-detail-dialog .commodity-information {
+  display: flex;
+  margin: 20px;
+  padding-bottom: 20px;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.tracking-detail-dialog .commodity-img {
+  margin-right: 20px;
+}
+
+.tracking-detail-dialog .commodity-img img {
+  width: 60px;
+  height: 60px;
+}
+
+.tracking-detail-dialog .commodity-details {
+  display: flex;
+  width: 90%;
+  align-items: center;
+  /*font-size: 18px;*/
+}
+
+.tracking-detail-dialog .commodity-information-list,
+.tracking-detail-dialog .commodity-details {
+  margin-right: 20px;
+}
+
+.tracking-detail-dialog .commodity-information-list,
+.tracking-detail-dialog .glt {
+  font-size: 30px;
+  color: #ccc;
+  width: 5%;
+}
+
+.tracking-detail-dialog .glt {
+  text-align: right;
+}
+
+.tracking-detail-dialog .logistics-information {
+  width: 90%;
+  margin: 0 auto;
+  /*font-size: 18px;*/
+}
+
+.tracking-detail-dialog .personal-information-list:nth-child(1) .sales-order-tel {
+  color: #0b95f1;
+}
+
+.tracking-detail-dialog .logistics {
+  /*margin: 20px;*/
+  /*padding-left: 30px;*/
+  padding-left: 20px;
+  height: 206px;
+  overflow-y: scroll;
+}
+
+.tracking-detail-dialog .order-number {
+  text-align: left;
+}
+
+.tracking-detail-dialog .order-number span a {
+  color: #f15719;
+}
+
+.tracking-detail-dialog .order {
+  height: 30px;
+}
+
+.tracking-detail-dialog .order-fedex {
+  margin-left: 100px;
+}
+
+.tracking-detail-dialog .tracking-number {
+  margin-left: 18px;
+  color: #0b95f1;
+}
+
+.tracking-detail-dialog .order-carrier {
+  color: #666;
+}
+
+.tracking-detail-dialog .logistics-information li {
+  line-height: 18px;
+  text-align: left;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.tracking-detail-dialog .logistics-information-ul li:nth-child(1) {
+  color: #f15719;
+}
+
+.tracking-detail-dialog .order-status {
+  margin-left: 40px;
+}
+
+.tracking-detail-dialog .detail-dialog {
+  display: none;
+}
+
+.tracking-detail-dialog .swiper-button-prev {
+  color: #ccc;
+  width: 0;
+}
+
+.tracking-detail-dialog .swiper-button-next {
+  color: #ccc;
+  width: 0;
+}
+
+.tracking-detail-dialog .detail-row {
+  display: flex;
+}
+
+.tracking-detail-dialog .detail-title {
+  min-width: 160px;
+  text-align: left;
+  align-items: flex-start;
+}
+
+.tracking-detail-dialog .detail-content {
+  align-items: flex-start;
+  width: 128px;
+  text-align: left;
+  word-break: break-all;
+}
+
+.tracking-detail-dialog .commodity-content-container {
+  padding-left: 24px;
+}
+
+.tracking-detail-dialog .swiper-container {
+  display: flex;
+}
+
+.tracking-detail-dialog .swiper-wrapper {
+  flex: 1;
+}
+
+.tracking-detail-dialog .detailicon {
+  color: darkgrey;
+  font-size: 28px !important;
+  position: absolute;
+  top: calc(50% - 47px);
+}
+
+.tracking-detail-dialog .righticon {
+  right: 30px;
+}
+
+/* 点击两次全选问题 */
+.tracking-detail-dialog .lefticon {
+  padding-right: 12px;
+}
+
+
+/* 手机号显示部分 */
+.tracking-detail-dialog .touch-tel-fedex {
+  padding-right: 10px;
+}
+
+.tracking-detail-dialog .phone-hover {
+  position: relative;
+  font-size: 22px;
+  width: 359px;
+  border: 1px solid #3a75dc;
+  height: 50px;
+  line-height: 50px;
+  background-color: #fff;
+  position: absolute;
+  top: -58px;
+  right: -100px;
+  z-index: 10;
+  background-color: #fff;
+  display: none;
+}
+
+.tracking-detail-dialog .phone-display {
+  color: orange;
+  /*font-size: 18px;*/
+}
+
+.tracking-detail-dialog .red-phone {
+  position: relative;
+  display: flex;
+}
+
+.tracking-detail-dialog .red-phone:hover .phone-hover {
+  display: flex;
+}
+
+.tracking-detail-dialog .phone-tel {
+  width: 320px;
+  /*position: absolute;*/
+  background-color: #fff;
+}
+
+.tracking-detail-dialog .touch-tel {
+  display: flex;
+  text-align: center;
+}
+
+.tracking-detail-dialog .phone {
+  width: 50px;
+  background-color: #3a75dc;
+}
+
+.tracking-detail-dialog .white-phone {
+  font-size: 30px;
+  color: #fff;
+}
+
+.tracking-detail-dialog a {
+  color: #3a75dc;
+}
+
+.tracking-detail-dialog a:hover {
+  text-decoration: underline;
+}
+
+.tracking-detail-dialog .order-status {
+  display: inline-block;
+  width: 180px;
+}
+
+.tracking-detail-dialog #slide-item {
+  width: 100%;
+}

@@ -1,0 +1,123 @@
+
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead>
+    <tr>
+      <td class="text-center">No.</td>
+      <td class="text-center">Item Code</td>
+      <td class="text-center">MPN</td>
+      <td class="text-center">Price</td>
+      <td class="text-center">Quantity</td>
+      <td class="text-center">Dispatch Category</td>
+      <td class="text-center">Order ID</td>
+      <td class="text-center">Creation Time</td>
+      <td class="text-center">Nickname</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% if out_stocks %}
+      {% for out_stock in out_stocks %}
+        <tr>
+          <td class="text-center">
+            {{ out_stock.loopIndex }}
+            <input name="delivery_id" value="{{ out_stock.delivery_id }}" type="hidden">
+          </td>
+          <td class="text-center">{{ out_stock.sku }}</td>
+          <td class="text-center">{{ out_stock.mpn }}</td>
+          <td class="text-center">{{ out_stock.price }}</td>
+          <td class="text-center">{{ out_stock.qty }}</td>
+          <td class="text-center">{{ STOCK_OUT_TYPE[out_stock.stock_out_type] }}</td>
+          <td class="text-center">
+            {% if out_stock.order_id_href %}
+              <a href="{{ out_stock.order_id_href }}"> {{ out_stock.order_id_name  }} </a>
+            {% endif %}
+            {% if (out_stock.delivery_type==2) %}
+              <i class="giga icon-cwf" style="color: #1f5268;font-size: 15px" data-toggle="tooltip" data-original-title="{{ cwf }}"></i>
+            {% endif %}
+          </td>
+          <td class="text-center">{{ out_stock.CreateTime }}</td>
+          <td class="text-center">{{ out_stock.nickname }}</td>
+        </tr>
+      {% endfor %}
+    {% else %}
+      <td colspan="9" align="center">No records.</td>
+    {% endif %}
+    </tbody>
+  </table>
+</div>
+<div class="row" style="margin-right: 0">
+  <div class="col-sm-6 text-left">
+    <ul id="bos_pagination1"></ul></div>
+  <div class="col-sm-6 text-right">{{ results}}</div>
+</div>
+<script>
+    $(function () {
+        init();
+    });
+    function init() {
+        //分页链接
+        pagination();
+    }
+
+    function pagination(){
+        if({{ total_pages }}){
+            $('#bos_pagination1').bootstrapPaginator({
+                /*当前使用的是3版本的bootstrap*/
+                bootstrapMajorVersion: 3,
+                /*配置的字体大小是小号*/
+                size: 'normal',
+                /*当前页*/
+                currentPage: {{ page_num }},
+                /*一共多少页*/
+                totalPages: {{ total_pages }},
+                /*页面上最多显示几个含数字的分页按钮*/
+                numberOfPages: 5,
+                onPageClicked: function(event, originalEvent, type, page) {
+                    loadPage(page);
+                }
+            });
+        }
+    }
+
+    function exportCsv() {
+      {% if total_num==0 %}
+        alert('No records found.');
+        return;
+      {% endif %}
+        var downloadBtn = document.getElementById('downloadBtn');
+        if (downloadBtn != null) {
+            downloadBtn.click();
+            return;
+        }
+        $.ajax({
+            url: 'index.php?route=account/inventory_management/exportStockOutCsv',
+            type: 'post',
+            data: {
+                csv_filter_data: {{ csv_filter_data|json_encode|raw }},
+                itemCode:'{{ itemCode }}'
+            },
+            dataType: 'json',
+            beforeSend: function() {
+                $('#exportCsvBtn').prop('disabled', true);
+            },
+            complete: function() {
+                $('#exportCsvBtn').prop('disabled', false);
+            },
+            success: function(response) {
+                if(response['success']){
+                    var  downloadBtn = document.createElement('a');
+                    downloadBtn.setAttribute('id', 'downloadBtn');
+                    downloadBtn.setAttribute('download', response['download_name']);
+                    downloadBtn.setAttribute('href', response['download_href']);
+                    downloadBtn.click();
+                    document.getElementById('outStockRecord').appendChild(downloadBtn);
+                }else {
+                    alert(response['msg']);
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    }
+</script>

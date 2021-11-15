@@ -1,0 +1,81 @@
+{% if module_marketplace_status and marketplace_becomepartnerregistration %}
+
+<fieldset>
+  <legend>{{ text_register_becomePartner }}</legend>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">{{ text_register_douwant }}</label>
+    <div class="col-sm-10">
+      {% if tobecomepartner %}
+      <label class="radio-inline">
+        <input type="radio" name="tobecomepartner" value="1" checked="checked" />
+        {{ text_yes }}</label>
+      <label class="radio-inline">
+        <input type="radio" name="tobecomepartner" value="0" />
+        {{ text_no }}</label>
+      {% else %}
+      <label class="radio-inline">
+        <input type="radio" name="tobecomepartner" value="1" />
+        {{ text_yes }}</label>
+      <label class="radio-inline">
+        <input type="radio" name="tobecomepartner" value="0" checked="checked" />
+        {{ text_no }}</label>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="form-group required hide" id="fg-shoppartner">
+    <label class="col-sm-2 control-label" for="input-shop">{{ text_shop_name }}</label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+        <input type="text" name="shoppartner" value="{{ shoppartner }}" placeholder="{{ text_shop_name }}" id="input-shop" class="form-control" />
+      </div>
+      {% if error_shoppartner %}
+      <div class="text-danger">{{ error_shoppartner }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+</fieldset>
+
+<script>
+
+  {% if tobecomepartner %}
+    $('#fg-shoppartner').removeClass('hide');
+  {% endif %}
+
+  $('input[name=\'tobecomepartner\']').on('change', function() {
+    if ($(this).val() == 1) {
+      $('#fg-shoppartner').removeClass('hide');
+    } else {
+      $('#fg-shoppartner').addClass('hide');
+    }
+  });
+
+    $( "#input-shop" ).change(function() {
+      thisshop = this;
+      shop = $(thisshop).val();
+
+      if(shop){
+
+        jQuery(thisshop).prev().html('<i class="fa fa-spinner fa-spin"></i>');
+
+        $.ajax({
+               type: 'POST',
+               data: ({shop: shop}),
+               dataType: 'json',
+               url: 'index.php?route=customerpartner/sell/wkmpregistation',
+               success: function(data){
+
+                  if(data['success']){
+                    jQuery(thisshop).prev().html('<span data-toggle="tooltip" class="text-success" title="{{ text_avaiable }}"><i class="fa fa-thumbs-o-up"></i></span>');
+                  }else if(data['error']){
+                    jQuery(thisshop).prev().html('<span data-toggle="tooltip" class="text-danger" title="{{ text_no_avaiable }}"><i class="fa fa-thumbs-o-down"></i></span>');
+                  }
+
+                }
+            });
+      }
+    });
+</script>
+{% endif %}

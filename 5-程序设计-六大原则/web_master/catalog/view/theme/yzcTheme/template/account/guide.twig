@@ -1,0 +1,98 @@
+{{ header }}
+<div id="page-guide">
+  {% include 'giga/template/_parts/breadcrumb_simple.twig'%}
+
+  <div class="container mb-5">
+    <div class="row">
+      <div class="col-md-9">
+        <div class="action-section bg-white bg-shadow">
+
+          <div class="row-wrapper">
+            <a href="{{ url('information/information') }}">
+              <span class="icon">
+                <i class="giga icon-V10-wenhaotishi"></i>
+              </span>
+              <span class="name">Help<br>Center</span>
+            </a>
+
+            <a href="{{ url('account/edit') }}">
+              <span class="icon">
+                <i class="giga icon-guide-edit-account"></i>
+              </span>
+              <span class="name">Edit<br>Account</span>
+            </a>
+
+            <a href="{{ url('account/bill/sales_purchase_bill') }}">
+              <span class="icon">
+                <i class="fa fa-credit-card-alt" style="padding: 12px;"></i>
+              </span>
+              <span class="name">Billing <br> Management</span>
+            </a>
+
+            {#<a href="{{ url_order_fulfillment }}" style="position: relative;">#}
+            <a onclick="getSalesOrderManagementUrl(event)" style="position: relative;cursor:pointer;">
+              <span class="icon">
+                <i class="giga icon-guide-so"></i>
+              </span>
+              <span class="name">Sales Order<br>Management</span>
+              {% if order_display == 1 %}
+                <div onclick="getInventoryToBePaidUrl(event)" style="position: absolute;top: 10px;right: 10px;border-radius:12.5px;min-width:25px;height: 25px;background: red;color: white;text-align: center;overflow:hidden;line-height: 25px;cursor: pointer;" data-toggle="tooltip" title="{{ text_sale_order_tips }}">
+                  {{ order_amount }}
+                </div>
+              {% endif %}
+            </a>
+          </div>
+
+          <div class="row-wrapper">
+            <a href="{{ url('account/order') }}">
+              <span class="icon">
+                <i class="giga icon-guide-po"></i>
+              </span>
+              <span class="name">Purchase Order<br>Management</span>
+            </a>
+
+            <a href="{{ url('account/product_quotes/wk_quote_my') }}">
+              <span class="icon">
+                <i class="giga icon-guide-product-quotes"></i>
+              </span>
+              <span class="name">Bid List</span>
+            </a>
+
+            <a href="{{ url('account/rma_management') }}" style="position: relative;cursor:pointer;">
+              <span class="icon">
+                <i class="giga icon-guide-rma"></i>
+              </span>
+              <span class="name">RMA<br>Management</span>
+              {% if unresolved_rma_count is not empty %}
+                <div style="position: absolute;top: 10px;right: 10px;border-radius:12.5px;min-width:25px;height: 25px;background: red;color: white;text-align: center;overflow:hidden;line-height: 25px;cursor: pointer;" data-toggle="tooltip" title="{{ text_rma_tips }}">
+                  {{ unresolved_rma_count }}
+                </div>
+              {% endif %}
+            </a>
+
+            <a href="{{ url('account/inventory_management') }}">
+              <span class="icon">
+                <i class="giga icon-guide-inventory-management"></i>
+              </span>
+              <span class="name">Inventory<br>Management</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {{ column_notice }}
+    </div>
+  </div>
+</div>
+<script>
+
+  function getSalesOrderManagementUrl(ev) {
+    window.location.href = "{{ url('account/customer_order') }}";
+    ev.cancelBubble = true;
+  }
+  function getInventoryToBePaidUrl(ev) {
+    window.location.href = "{{ url('account/customer_order', {'action': 'guide'}) }}";
+    ev.cancelBubble = true;//取消冒泡
+  }
+</script>
+{{ footer }}

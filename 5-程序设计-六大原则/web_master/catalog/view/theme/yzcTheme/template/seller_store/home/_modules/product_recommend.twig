@@ -1,0 +1,27 @@
+{# 模板：产品推荐 ------Start #}
+<section class="recommend-module" id="module{{mIndex}}" data-mIndex="{{mIndex}}">
+  {% if module.data.title_show %}
+  <div class="common-title">{{ module.data.title_value }}</div>
+  {% endif %}
+  <div class="w1200 module-flex">
+    {% for i, item in module.data.products %}
+    <div class="rec-item m20-b">
+      <div class="rec-image scale-range">
+        <a href="{{ url('product/product',{'product_id': item.id}) }}" target="_blank">
+           <img class="scale" src="{{ item.image }}" title="{{ item.name }}">
+        </a>
+      </div>
+      <div class="rec-content">
+        <div class="flex-layout">Item Code:&nbsp;{{ item.sku }}{{ item.tags }}</div>
+        <div class="line26">
+          <span class="module-amount">{{ item.price }}</span>
+          <span class="module-grey p2-l">/Unit</span>
+        </div>
+        <div>Qty Available:&nbsp;{{ item.qty }}</div>
+        <div class="rec-mark">{{ module.data.angle_tip_value }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{# 模板：产品推荐 ------End #}

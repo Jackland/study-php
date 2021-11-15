@@ -1,0 +1,326 @@
+@charset "UTF-8";
+
+//
+// @copyright        2019 opencart.cn - All Rights Reserved
+// @link             http://www.guangdawangluo.com
+// @author           Sam Chen <sam.chen@opencart.cn>
+// @created          2019-10-22 11:14:17
+// @modified         2019-10-29 15:06:18
+//
+
+.product-simple-grid {
+  background-color: #fff;
+  border: 1px solid #eee;
+  margin-bottom: 20px;
+  @include transition(all .3s ease-in-out);
+
+  &:hover {
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.42);
+  }
+
+  .image {
+    position: relative;
+    padding: 10px;
+
+    .button-group {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+
+      a {
+        margin-right: 6px;
+
+        i {
+          display: inline-block;
+
+          width: 30px;
+          height: 30px;
+          line-height: 30px;
+          color: $color_orange;
+          border: 1px solid #fde8db;
+          border-radius: 30px * 0.5;
+          text-align: center;
+        }
+
+        &:hover {
+          i {
+            border-color: $color_orange;
+            background: $color_orange;
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+
+  .office-text {
+    display: none;
+  }
+
+  .caption {
+    padding: 10px;
+
+    span.red {
+      font-size: 12px;
+      color: red;
+    }
+
+    .code-group {
+      font-size: 12px;
+      text-align: center;
+      color: #707070;
+
+      i {
+        font-size: 10px;
+        color: #8add33;
+      }
+    }
+
+    .price-group {
+      .price {
+        font-size: 20px;
+        font-weight: bold;
+        color: red;
+      }
+    }
+
+    .quantity-group {
+      span.label-info {
+        float: right;
+        background: red;
+      }
+    }
+
+    .tag-group {
+      span {
+        margin-right: 10px;
+      }
+
+      i {
+        color: $color_orange;
+        font-size: 12px;
+      }
+    }
+
+    .rate-group {
+      display: flex;
+
+      span {
+        flex: 1;
+      }
+    }
+
+    .store-group {
+      position: relative;
+      display: flex;
+
+      div.store {
+        flex: 1;
+        line-height: 30px;
+        color: #6b6b6b;
+        cursor: pointer;
+        position: relative;
+        &:hover {
+          .store-pop {
+            display: block;
+          }
+        }
+
+        .store-pop {
+          position: absolute;
+          border: 1px solid $brand-primary;
+          background: #fff;
+          border-radius: 4px;
+          width: 200px;
+          display: none;
+          text-align: center;
+          padding: 10px;
+          box-shadow: 0 3px 9px rgba(0, 0, 0, 0.42);
+
+          .text {
+            font-size: 12px;
+            line-height: 20px;
+            margin-bottom: 10px;
+
+            i {
+              font-size: 13px;
+            }
+          }
+
+          .btn {
+            background: $brand-primary;
+            color: #fff;
+            font-weight: 400;
+          }
+        }
+      }
+
+      a.chat, a.email {
+        margin-right: 10px;
+
+        i {
+          display: inline-block;
+          line-height: 30px;
+          width: 30px;
+          height: 30px;
+          border: 1px solid #fde8db;
+          border-radius: 30px * 0.5;
+          text-align: center;
+          color: $color_orange;
+        }
+      }
+    }
+
+    .button-group {
+      padding: 20px 30px;
+
+      @media (max-width: 1200px) {
+        padding: 15px 10px;
+      }
+
+      a {
+        @media (max-width: 1200px) {
+          padding: 15px 10px;
+        }
+      }
+    }
+  }
+}
+
+.product-simple-grid {
+  height: 567px;
+
+  @media (max-width: 992px) {
+    height: 640px;
+  }
+
+  @media (max-width: 768px) {
+    height: auto;
+  }
+}
+
+.product-grid {
+
+ .office-text {
+   display: none;
+ }
+}
+
+.product-list {
+  .product-simple-grid {
+    height: auto;
+  }
+
+  .product-simple-grid {
+    display: flex;
+    margin-bottom: 20px;
+
+    .office-text {
+      display: block;
+    }
+
+    .code-price-wrapper {
+      position: relative;
+      flex: 1;
+      padding-right: 10px;
+      @media (max-width: 767px) {
+        flex: none;
+        width: 100%;
+      }
+
+      @media (min-width: 767px) {
+        .tag-group {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+        }
+      }
+    }
+
+    .store-group-button {
+      position: relative;
+      flex: 0 0 198px;
+
+      .button-group {
+        padding: 0 0 10px;
+
+        @media (min-width: 767px) {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+        }
+      }
+
+      .store-group {
+        display: block;
+        @media (max-width: 767px) {
+          margin-bottom: 10px;
+        }
+
+        @media (min-width: 767px) {
+          > a {
+            margin-left: 10px;
+            margin-right: 0;
+          }
+        }
+
+        .store {
+          float: right;
+        }
+      }
+    }
+
+    .image {
+      width: 280px;
+
+      @media (max-width: 992px) {
+        width: 240px;
+      }
+
+      @media (max-width: 768px) {
+        width: 180px;
+      }
+    }
+
+    .office-text {
+      height: 42px;
+      margin-bottom: 20px;
+      color: #666;
+
+      @media (max-width: 767px) {
+        height: auto;
+        margin-bottom: 10px;
+      }
+    }
+
+    .caption {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .price-group {
+      // display: none;
+    }
+
+    .code-group {
+      text-align: left;
+      font-size: 20px;
+      font-weight: bold;
+      color: red;
+    }
+
+    .quantity-group {
+      // display: none;
+    }
+
+    .store-group-button {
+      @media (min-width: 767px) {
+        height: calc(100% - 50px);
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+<div class="oris-row">
+  <div class="module-row">
+    <div class="module-title">
+      <span class="Y-axis"></span>Summary of Margin Orders Deposits
+    </div>
+    <div class="summary-list">
+      <div class="summary-details col-xs-12 ">
+        <span class="title">Order Status:</span>
+        <span class="txt text-larger text-bold " style="color: {{ order_detail.status_color }}">{{ order_detail.order_status }}</span>
+      </div>
+      <div class="summary-details col-xs-6 col-sm-4">
+        <span class="title">Order ID:</span>
+        {% if rest_order_url %}
+          <span class="txt"><a class="link" href="{{ rest_order_url }}" target="_blank">{{ order_detail.order_id }}</a></span>
+        {% else %}
+          <span class="txt"><a class="link" href="javascript:void(0);"style="text-decoration:none;cursor:default;">{{ order_detail.order_id }}</a></span>
+        {% endif %}
+      </div>
+      <div class="summary-details col-xs-6 col-sm-4">
+        <span class="title">Order Date:</span>
+        <span class="txt">{{ order_detail.date_paid }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="module-row">
+    <div class="module-title">
+      <span class="Y-axis"></span>Details of Margin Order Deposits
+    </div>
+    <div class="detail-table">
+      <table class="oris-table border-table no-hover">
+        <thead>
+          <tr>
+            <th class="text-left">Item Code of Deposited Product</th>
+            <th>Deposit Amount</th>
+            <th>Deposited Product Quantity</th>
+            <th class="text-right p60-r-i">Total Deposited Products</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left" width="30%">
+              <div class="flex-layout">
+                <div class="small-thumbnail">
+                  <img src="{{ margin_detail.show_image }}" width="100%">
+                </div>
+                <div class="m10-l">
+                  <div class="max-line1 tags-image" title="{{ margin_detail.sku }}">{{ margin_detail.sku }}
+                  {% for tagDetail in margin_detail.tag %}
+                  {{ tagDetail }}
+                  {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>{{ margin_detail.deposit_amount|formatPrice(currency) }}</td>
+            <td>{{ margin_detail.deposit_product_quantity }}</td>
+            <td class="text-right p60-r-i">{{ margin_detail.total_deposited_products|formatPrice(currency) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+$(function() {
+  //block.unBlockUI();
+});
+</script>

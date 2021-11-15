@@ -1,0 +1,454 @@
+{% trans_default_category 'catalog/view/customerpartner/seller_store/home/index' %}
+{# @file 轮播图 #}
+
+{{ css([
+  'static/customerpartner/seller_store/home/components/modules/complex_transactions.css'
+]) }}
+
+<script type="text/x-template" id="complex-transactions-module">
+  <div class="complex-module-container" v-loading="loading">
+    {# 首次进入显示骨架图 #}
+    <div v-if="isInit"> 
+      <div class="complex-module">
+        <img class="w1200" src="{{ asset('static/customerpartner/seller_store/home/images/blanks/complex-transactions.png') }}">
+      </div>
+    </div>
+    {# 编辑后内容显示模块 #}
+    <div v-else>
+      <div class="complex-module m20-b" v-if="complexDataShow&&complexDataShow.length>0">
+        <div v-if="data.title_show" class="common-title">Complex Transaction</div>
+        <div class="w1200 m20-t">
+          <div class="store-tabs">
+            <div v-for="(tab, tIndex) in complexDataShow" class="one-tab" :class="{'active':tIndex == 0}">
+              ${ tab.type }
+            </div>
+          </div>
+          <div>
+            <div class="module-flex">
+              <div v-for="ctItem in complexDataShow[0]['data']" class="complex-item">
+                <div class="left-image" :class="{'unaval160-image': !ctItem.available||ctItem.notApplicable, 'not-applicable': ctItem.notApplicable}">
+                  <div class="scale-range">
+                    <img class="scale" :src="ctItem['image']">
+                  </div>
+                  <div v-if="ctItem['discount']" class="percent-tag">
+                    <span class="text-small p6-l">UP TO</span>
+                    <div class="percent-content">
+                      <span class="percent-num font-number">${ctItem['discount']}</span>
+                      <span class=percent-desc>
+                        <span class="font-number module-largef">%</span>
+                        <span class="percent-off text-bold">Back</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="right-content">
+                  <div v-if="ctItem['name']" class="module-line2 text-bold m10-b">
+                    <span class="title-link">
+                      ${ ctItem['name'] }
+                    </span>
+                  </div>
+                  <div v-if="ctItem['item_code']" class="text-small break-all pos-top-img">Item Code:&nbsp;${ ctItem['item_code'] }<span v-html="ctItem['tags']"></span></div>
+                  <div v-if="ctItem['price']||ctItem['qty']" class="m14-b">
+                    <div v-if="ctItem['price']" class="text-small p3-t">Price:&nbsp;<span class="text-bold">${ ctItem['price'] }</span><span class="module-grey p2-l">/Unit</span></div>
+                    <div v-if="ctItem['qty']">Qty Available:&nbsp;${ ctItem['qty'] }</div>
+                  </div>
+                  <div v-if="ctItem['delivery_date']" class="text-small text-bold">Delivery Date:</div>
+                  <div v-if="ctItem['delivery_date']" class="p4-tb">
+                    <span class="complex-date">${ ctItem['delivery_date'] }</span>
+                  </div>
+                  <div v-if="ctItem['template_price']" class="text-small text-bold">contract price:</div>
+                  <div v-if="ctItem['template_price']" class="p4-tb"><span class="price">${ ctItem['template_price'] }</span><span class="module-grey p2-l">/Unit</span></div>
+                  <div v-if="ctItem['template_qty']&&ctItem['day']">${ctItem['template_qty']}&nbsp;PCS&nbsp;<span v-if="complexDataShow[0]['type']=='Rebates'">in&nbsp;${ctItem['day']}&nbsp;Days</span></div>
+                  <div v-else-if="ctItem['min_num']&&ctItem['max_num']">${ctItem['min_num']}-${ctItem['max_num']}&nbsp;PCS</div>
+                  <div v-if="ctItem['buy_now']" class="btn-buy m10-t">BUY NOW</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {# 编辑弹窗部分 #}
+    <div>
+      <el-dialog class="module-modal ele ele-modal complex-modal" :class="{'active-modal': showEdit}" title="{{__('复杂交易设置')}}" :visible="showEdit" :close-on-click-modal="false"
+        @close="closeEdit" append-to-body destory-on-close width="800px">
+        <div class="content-container">
+          <div class="module-modal-tip">
+            <ul>
+              <li>
+                {{__('本模块适用于返点、现货、期货等复杂交易展示。')}}
+              </li>
+              <li>
+                {{__('每种交易方式可选择<strong>:num</strong>个产品。', {num: 6})}}
+              </li>
+            </ul>
+          </div>
+          <div class="module-edit-container">
+            <el-tabs v-model="activeTab" class="ele ele-tabs">
+              <el-tab-pane label="{{__('内容设置')}}" name="tab1">
+                <div class="module-form-body complex-form scrollable-container">
+                  <div class="complex-item-container" v-for="(item, type) of complexData">
+                    <div class="complex-title-row">
+                      <div class="tag-icon"></div> 
+                      <div class="complex-title-text">${item.label}</div>
+                      <div class="oper-icon" @click="toggleList(type)" v-if="item.products.length != 0 && item.show"><i class="el-arrow-icon el-icon-arrow-up"></i></div>
+                      <div class="oper-icon" @click="toggleList(type)" v-if="item.products.length != 0 && !item.show"><i class="el-arrow-icon el-icon-arrow-down"></i></div>
+                      <div class="oper-icon" v-if="item.products.length == 0"></div>
+                      <div class="add-button ele ele-btn">
+                        <el-button class="outline add-button-item" @click="addProduct(type)" :disabled="complexData[type].products.length >= 6">
+                          {{__('添加产品')}}
+                        </el-button>
+                      </div>
+                      <div class="add-tip">
+                        <template v-if="item.products.length == 0">{{__('未添加产品，该模块将隐藏')}}</template>
+                        <template v-if="item.products.length != 0">
+                        {{__("已添加:num1个，还可添加:num2个", {num1:"<span class=\"strong-text\">${item.products.length}</span>",num2:"<span class=\"strong-text\">${6 - item.products.length}</span>"})}}
+                        </template>
+                      </div>
+                    </div>
+                    <div class="products-container" v-show="item.show" v-if="item.products.length != 0">
+                      <div v-for="(product, index) in item.products" class="product-item-container" :key="index">
+                        <div class="content">
+                          <div class="product-img-container">
+                            <img class="product-img" :src="product.image">
+                          </div>
+                          <div class="product-info">
+                            <div class="product-info__title" :title="product.hasOwnProperty('name') ? product.name : product.seller_edit_info.name">${product.hasOwnProperty('name') ? product.name : product.seller_edit_info.name}</div>
+                            <div class="product-info__code">${product.sku} / ${product.mpn}<span v-html="product.hasOwnProperty('tags') ? product.tags : product.seller_edit_info.tags"></span></div>
+                            <div class="product-info__footer">
+                              <span class="product-info__footer-price"><span v-html="product.hasOwnProperty('price') ? product.price : product.seller_edit_info.price"></span></span>
+                              <span class="product-info__footer-qty">Qty Available: ${product.qty}</span>
+                            </div>
+                          </div>
+                          <div class="product-oper">
+                            <i class="giga icon-xiangshangjiantou-01 ele ele-action-icon" :class="{'is-disabled': index <= 0}" @click="upProduct(type, index)"></i>
+                            <i class="giga icon-xiangxiajiantou-01 ele ele-action-icon" 
+                              :class="{'is-disabled': index >= item.products.length - 1}" @click="downProduct(type, index)"></i>
+                            <i class="giga icon-co_lajitong ele ele-action-icon" @click="delProduct(type, index)"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="{{__('显示设置')}}" class="display-setting-tab" name="tab2">
+                <div class="module-form-body ele ele-form featured-form">
+                  <el-form ref="form" label-width="145px" :model="model" :rules="rules">
+                    <el-form-item label="{{__('显示标题')}}" class="radio-form-item">
+                      <el-radio-group v-model="model.title_show" class="ele ele-radio-group">
+                        <el-radio :label="1">{{__('显示')}}</el-radio>
+                        <el-radio :label="0">{{__('不显示')}}</el-radio>
+                      </el-radio-group>
+                    </el-form-item>
+                    <el-form-item prop="title" label="{{__('标题')}}" v-if="model.title_show" 
+                      class="radio-form-item lform">
+                      <el-input value="Complex Transaction" disabled class="disabled-input"></el-input>
+                    </el-form-item>
+                    <el-form-item label="{{__('显示内容')}}" class="radio-form-item ele ele-form-item-required">
+                      <el-checkbox-group v-model="model.display" class="ele ele-checkbox-group">
+                        <el-checkbox v-for="i in displayOptions" :disabled="i.value == 'item_code' || i.value == 'template_info'" :label="i.value">${i.label}</el-checkbox>
+                      </el-checkbox-group>
+                    </el-form-item>
+                  </el-form>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+        </div>
+        <template slot="footer">
+          <div class="ele ele-btn ele-btn-group">
+            <el-button class="oper-btn" @click="closeEdit">{{__('取消')}}</el-button>
+            <el-button class="oper-btn" type="primary" @click="saveEdit" :loading="btnLoading">{{__('保存')}}</el-button>
+          </div>
+        </template>
+      </el-dialog>
+      {# 产品选择弹窗 #}
+      <product-select-dialog :showModal="showProductDialog" :type="searchType" :complex_transactions="complexType"
+        @close="handleCloseProductDialog" @choose="chooseProduct" :beforeChoose="beforeChooseProduct"></product-select-dialog>
+    </div>
+  </div>
+</script>
+<script>
+  const COMFLEX_TRANSLATE = {
+    PRODUCTS_EMPTY: "{{__('请选择产品')}}",
+    PRODUCT_EXIST: "{{__('您已选择该产品')}}"
+  }
+</script>
+<script>
+  const COMFLEX_DISPLAY_OPTIONS = [
+    {label:"{{__('产品名称')}}", value:"product_name"},
+    {label:"Item Code", value:"item_code"},
+    {label:"{{__('价格')}}", value:"price"},
+    {label:"{{__('合约信息')}}", value:"template_info"},
+    {label:"{{__('Buy Now按钮')}}", value:"buy_now"},
+    {label:"{{__('返点幅度')}}", value:"rebate"},
+  ]
+
+  Vue.component('complex-transaction', {
+    template: '#complex-transactions-module',
+    delimiters: ['${', '}'],
+    props: {
+      data: {
+        type: Object,
+        default: () => ({})
+      }
+    },
+    data: () => {
+      return {
+        showEdit: false,
+        activeTab: 'tab1',
+        loading: false, // 加载动画
+        btnLoading: false,
+        axios: null,
+        displayOptions: COMFLEX_DISPLAY_OPTIONS,
+        model: {
+          title_show: 1,
+          display: []
+        },
+        rules: {
+          display: {required: true, trigger: 'blur'},
+        },
+        //内容设置页
+        complexData: {
+          rebate: {label: 'Rebates', products: [], show:false},
+          margin: {label: 'Margin', products: [], show:false},
+          future: {label: 'Futures', products: [], show:false},
+        },
+        searchType: MODULE_TYPE.COMPLEX_TRANSACTION, //产品选择框类型
+        complexType: '',
+        showProductDialog: false, //是否显示产品选择框
+        complexDataShow: [], // 复杂交易重组数据展示
+      }
+    },
+    created() {
+      this.axios = axios.create({});
+    },
+    watch: {
+      showEdit: {
+        immediate: true,
+        handler: function(res) {
+          this.$nextTick(function() {
+            this.initDefault(this.data)
+            let height = $(".active-modal.module-modal .el-dialog__body").height() - $(".active-modal .module-modal-tip").height();
+            $(".active-modal .module-edit-container").height(height);
+          })
+        }
+      },
+    },
+    computed: {
+      isInit() {
+        return jQuery.isEmptyObject(this.data);
+      },
+    },
+    methods: {
+      _defaultProductHandler(products) {
+        products.map(item => {
+          item['sku'] = item['item_code']
+          return item
+        }) 
+        return products
+      },
+
+      /**
+      * 编辑时初始化默认值
+      */
+      initDefault(data) {
+        let that = this;
+        if(!jQuery.isEmptyObject(data)) {
+          this.complexData = {
+            rebate: {
+              label: 'Rebates', 
+              products: this._defaultProductHandler(_.cloneDeep(data.rebate.products)), 
+              show: data.rebate.products.length},
+            margin: {
+              label: 'Margin', 
+              products: this._defaultProductHandler(_.cloneDeep(data.margin.products)), 
+              show: data.margin.products.length},
+            future: {
+              label: 'Futures', 
+              products: this._defaultProductHandler(_.cloneDeep(data.future.products)), 
+              show: data.future.products.length},
+          }
+          this.model = {
+            title_show: this.data.title_show,
+            display: []
+          }
+          for (let key in data.display_value) {
+            if (data.display_value[key]) {
+              this.model['display'].push(key);
+            }
+          }
+        } else {
+          this.model.display = [];
+          this.displayOptions.map(function(d) {
+            that.model.display.push(d.value);
+          })
+        }
+        // 重组页面展示数据
+        that.complexDataShow = [];
+        if (that.data.rebate && that.data.rebate.products.length > 0) {
+          that.complexDataShow.push({
+            type: 'Rebates',
+            data: that.data.rebate.products
+          })
+        }
+        if (that.data.margin && that.data.margin.products.length > 0) {
+          that.complexDataShow.push({
+            type: 'Margin',
+            data: that.data.margin.products
+          })
+        }
+        if (that.data.future && that.data.future.products.length > 0) {
+          that.complexDataShow.push({
+            type: 'Futures',
+            data: that.data.future.products
+          })
+        }
+      },
+
+      validateProducts(data) {
+        if (data.data.rebate.products.length <= 0 && data.data.margin.products.length <= 0 
+          && data.data.future.products.length <= 0) {
+          this.$message({...ALERT_OPTION, message: COMFLEX_TRANSLATE.PRODUCTS_EMPTY});
+          this.activeTab = 'tab1';
+          return false 
+        }
+        return true;
+      },
+
+      /**
+      * 编辑操作
+      */
+      handleEdit() {
+        this.showEdit = true;
+      },
+
+      closeEdit() {
+        this.clearModal();
+        this.showEdit = false;
+      },
+
+      //清空弹窗
+      clearModal() {
+        this.complexData = {
+          rebate: {label: 'Rebates', products: [], show:false},
+          margin: {label: 'Margin', products: [], show:false},
+          future: {label: 'Futures', products: [], show:false},
+        }
+        this.model = {
+          title_show: 1,
+          display: []
+        }
+        this.activeTab = "tab1";
+      },
+
+      //保存弹窗按钮
+      saveEdit() {
+        this.$refs['form'].validate((valid) => {
+          let that = this;
+          if(valid) {
+            let data = { 
+              type: MODULE_TYPE.COMPLEX_TRANSACTION,
+              data: {
+                title_show: this.model.title_show,
+                display_value: {},
+                rebate: { products: this.complexData.rebate.products },
+                margin: { products: this.complexData.margin.products },
+                future: { products: this.complexData.future.products },
+              }
+            }
+            this.displayOptions.map(function(d) {
+              if(that.model.display.includes(d.value)){
+                data.data.display_value[d.value] = 1;
+              } else {
+                data.data.display_value[d.value] = 0;
+              }
+            });
+
+            if(!this.validateProducts(data)) {
+              return 
+            }
+
+            this.contentError = false;
+            this.btnLoading = true;
+            that.axios.post(API.MODULE_SAVE, data).then(res => {
+              if(res.data.code == 200) {
+                that.closeEdit();
+                that.$emit("set-module", _.cloneDeep(res.data.data));
+              } else {
+                that.$message({...ALERT_OPTION, message: res.data.msg});
+              }
+              that.btnLoading = false;
+            }).catch(err => {
+              that.$message.error(err);
+              that.btnLoading = false;
+            })
+          } else {
+            that.activeTab = 'tab2';
+            that.btnLoading = false;
+          }
+        })
+      },
+
+      //添加产品
+      addProduct(type) {
+        this.complexType = type;
+        this.showProductDialog = true;
+      },
+
+      //产品选择框操作
+      handleCloseProductDialog() {
+        this.showProductDialog = false;
+      },
+
+      //选择产品
+      chooseProduct(product) {
+        this.complexData[this.complexType].products.push(product);
+        this.complexData[this.complexType].show = true;
+        this.handleCloseProductDialog();
+      },
+
+      //展开收起列表
+      toggleList(type) {
+        this.complexData[type].show = !this.complexData[type].show;
+      },
+
+      //产品选择校验
+      beforeChooseProduct(product) {
+        for(let p of this.complexData[this.complexType].products) {
+          if(p.id == product.id) {
+            this.$message({...ALERT_OPTION, message: COMFLEX_TRANSLATE.PRODUCT_EXIST});
+            return false;
+          }
+        }
+        return true;
+      },
+
+      //小图标操作部分
+      upProduct(type, index) {
+        if (index > 0) {
+          let temp = this.complexData[type].products[index];
+          this.complexData[type].products[index] = this.complexData[type].products[index-1];
+          this.complexData[type].products[index-1] = temp;
+        }
+        this.$forceUpdate();
+      },
+
+      downProduct(type, index) {
+        if (index < this.complexData[type].products.length - 1) {
+          let temp = this.complexData[type].products[index];
+          this.complexData[type].products[index] = this.complexData[type].products[index+1];
+          this.complexData[type].products[index+1] = temp;
+        }
+        this.$forceUpdate();
+      },
+
+      delProduct(type, index) {
+        this.complexData[type].products.splice(index, 1);
+      },
+    }
+  })
+</script>
+
+

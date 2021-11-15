@@ -1,0 +1,318 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <div class="dropdown pull-left" style="margin-right:5px">
+          <label for="limit_dropdown">{{ entry_show_limit}}</label>
+          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+            {{ limit}}
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" id="limit_dropdown" role="menu" aria-labelledby="dropdownMenu1">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ limit_ten}}">10</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ limit_twentyfive}}">25</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ limit_fifty}}">50</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ limit_hundred}}">100</a></li>
+          </ul>
+        </div>
+        <button type="submit" form="form-transaction" data-toggle="tooltip" title="{{ button_save}}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel}}" data-toggle="tooltip" title="{{ button_cancel}}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title}}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning}}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ heading_title}}</h3>
+      </div>
+
+      <div class="panel-body">
+
+        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ info_transaction_select}} <br>
+        &nbsp;&nbsp; &nbsp;You can see Transaction Price changing after selecting / deselecting order products (with order status which you selected Complete in Marketplace module)
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+
+        <form action="{{ save}}" method="post" enctype="multipart/form-data" id="form-transaction" class="form-horizontal">
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-amount">
+              {{ entry_seller_name}}
+            </label>
+            <div class="col-sm-10">
+              <input name="customer_id" type="hidden" value="{% if customers %}{{ customers['customer_id'] }}{%endif %}" />
+              <label class="control-label" name="" value="" >
+                {% if customers %}{{ customers['firstname'] ~ ' ' ~ customers['lastname'] }}{%endif %}
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-amount">
+              {{ entry_seller_email}}
+            </label>
+            <div class="col-sm-10">
+              <!-- <input type="text" id="input-amount" readonly class="form-control" name="amount" value="{{ amount}}" /> -->
+              <label class="control-label" name="" value="" >
+                {% if customers %}{{ customers['email'] }}{%endif %}
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-amount">
+              {{ entry_payable_amount}}
+            </label>
+            <div class="col-sm-10">
+              <input type="hidden" id="input-amount" readonly class="form-control" name="amount" value="{{ amount}}" />
+              <label class="control-label" name="amount" value="" >
+                {{ amount}}
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-details">
+              {{ entry_details}}
+            </label>
+            <div class="col-sm-10">
+              <textarea id="input-details" class="form-control" name="details" rows="3">{{ details}}</textarea>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <th width="1"></th>
+                <th>
+                  <a href="{{ order_id_url}}" class="{% if sort_order is defined and sort_order == 'op.order_id' %}{{ sort }}{%endif %}" >
+                    {{ entry_order_id}}
+                  </a>
+                </th>
+                <th>
+                  <a href="{{ product_name_url}}" class="{% if sort_order is defined and sort_order == 'o.firstname' %}{{ sort }}{%endif %}" >
+                    {{ entry_product_name}}
+                  </a>
+                </th>
+
+                <th>
+                  <a href="{{ commission_applied_url}}" class="{% if sort_order is defined and sort_order == 'c2o.commission_applied' %}{{ sort }}{%endif %}" >
+                    {{ entry_commission_applied}}
+                  </a>
+                </th>
+
+
+                <th>
+                  <a href="{{ payable_amount_url}}" class="{% if sort_order is defined and sort_order == 'c2o.customer' %}{{ sort }}{%endif %}" >
+                    {{ entry_payable_amount}}
+                  </a>
+                </th>
+                <th>
+                  <a href="{{ quantity_url}}" class="{% if sort_order is defined and sort_order == 'op.quantity' %}{{ sort }}{%endif %}" >
+                    {{ entry_quantity}}
+                  </a>
+                </th>
+                <th>
+                  <a href="{{ date_added_url}}" class="{% if sort_order is defined and sort_order == 'o.date_added' %}{{ sort }}{%endif %}" >
+                    {{ entry_order_date}}
+                  </a>
+                </th>
+                <th>
+                  <a href="{{ order_status_url}}" class="{% if sort_order is defined and sort_order == 'os.name' %}{{ sort }}{%endif %}" >
+                    {{ entry_order_status}}
+                  </a>
+                </th>
+                <th>
+                  <a href="{{ paid_status_url}}" class="{% if sort_order is defined and sort_order == 'c2o.paid_status' %}{{ sort }}{%endif %}" >
+                    {{ entry_transaction_status}}
+                  </a>
+                </th>
+                <th></th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td><input type="text" name="filter_order_id" value="{{ order_id}}" class="form-control"></td>
+                  <td></td>
+                  <td></td>
+                  <td><input type="text" class="form-control" name="filter_payable_amount" value="{% if payable_amount is defined %}{{ payable_amount }}{%endif %}"></td>
+                  <td><input type="text" class="form-control" name="filter_quantity" value="{% if quantity is defined %}{{ quantity }}{%endif %}"></td>
+                  <td>
+                    <input type="text" class="datetime form-control" name="filter_date_added_from" value="{% if date_added_from is defined %}{{ date_added_from }}{%endif %}" placeholder="{{ entry_from}}">
+                    <br/>
+                    <input type="text" class="datetime form-control" name="filter_date_added_to" value="{% if date_added_to is defined %}{{ date_added_to }}{%endif %}" placeholder="{{ entry_to}}">
+                  </td>
+                  <td>
+                    <select name="filter_order_status" class="form-control">
+                      <option></option>
+                      {% if order_statuses %}
+                          {% for key, status in order_statuses %}
+                            <option value="{{ status['name']}}" {% if status['name'] == order_status %}{{ 'selected' }}{%endif %} >
+                              {{ status['name']  }}
+                            </option>
+                          {% endfor %}
+                      {% endif %}
+                    </select>
+                  </td>
+                  <td>
+                    <select name="filter_paid_status" class="form-control">
+                      <option></option>
+                      <option value="paid" {% if paid_status == 'paid' %}{{ 'selected' }}{%endif %} >{{ text_paid}}</option>
+                      <option value="notpaid" {% if paid_status == 'notpaid' %}{{ 'selected' }}{%endif %} >{{ text_not_paid}}</option>
+                    </select>
+                  </td>
+                  <td><button type="button" class="btn btn-primary" onclick="filter();"><i class="fa fa-filter"></i> Filter</button></td>
+                </tr>
+                {% if orders %}
+                  {% for key, order in orders %}
+                    <tr>
+                      <td class="text-center" width="1">
+                        <input type="checkbox" name="select[{{ order['order_id'] }}][]" value="{{ order['order_product_id']}}" {% if order['status'] %}{{ "disabled='true'" }}{%elseif order['order_status'] == marketplace_complete_order_status %}{{ "checked='true'" }}{%endif %} />
+                        <!-- <input type="hidden" name="order_id[]" value="{{ order['order_id'] }}"> -->
+                      </td>
+                      <td class="text-left">{{ order['order_id'] }}</td>
+                      <td class="text-left">
+                        {{ order['product_name'] }}
+                        <br/>
+                        {% if order['product_value'] %}
+                          {% for option in order['product_value'] %}
+                              - <small>{{ option['value'] }}</small>
+                            <br/>
+                            {% endfor %}
+                        {% endif %}
+                      </td>
+                      <td class="text-left">{{ order['commission_applied'] ~ '%' }}</td>
+                      <td class="text-left">
+                      <input type="hidden" value="{{ order['price'] }}" id="price-{{ order['order_product_id'] }}" />
+                        {{ order['price'] }}
+                      </td>
+                      <td class="text-left">{{ order['quantity'] }}</td>
+                      <td class="text-left">{{ order['date_added'] }}</td>
+                      <td class="text-left">
+                        <input type="hidden" value="{{ order['order_status']}}" id="order-status-{{ order['order_product_id']}}" />
+                        {{ order['order_status_name']}}
+                      </td>
+                      <td class="text-left" colspan="2">
+                        <input type="hidden" value="{{ order['status']}}" id="paid-status-{{ order['order_product_id']}}" />
+                        {{ order['paid_status']}}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                    <tr><td colspan="10" class="text-center">{{ text_no_record}}</td></tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+          {#分页#}
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="pull-left">
+              </div>
+              <div class="pull-right">{{ pagination }}</div>
+            </div>
+          </div>
+
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer}}
+
+<script type="text/javascript">
+
+
+function filter() {
+  url = "index.php?route=customerpartner/transaction/addtransaction&user_token={{ user_token}}&seller_id= {% if customers %}{{ customers['customer_id'] }}{%endif %}";
+
+  order_id = $('input[name=\'filter_order_id\']').val();
+  if(order_id) {
+    url += '&order_id='+order_id;
+  }
+
+  payable_amount = $('input[name="filter_payable_amount"]').val();
+  if(payable_amount) {
+    url += '&payable_amount='+payable_amount;
+  }
+
+  quantity = $('input[name="filter_quantity"]').val();
+  if(quantity) {
+    url += '&quantity='+quantity;
+  }
+
+  date_added_from = $('input[name="filter_date_added_from"]').val();
+  if(date_added_from) {
+    url += '&date_added_from='+date_added_from;
+  }
+
+  date_added_to = $('input[name="filter_date_added_to"]').val();
+  if(date_added_to) {
+    url += '&date_added_to='+date_added_to;
+  }
+
+  order_status = $('select[name="filter_order_status"]').val();
+  if(order_status) {
+    url += '&order_status='+order_status;
+  }
+
+  paid_status = $('select[name="filter_paid_status"]').val();
+
+  if(paid_status) {
+    url += '&paid_status='+paid_status;
+  }
+
+  location = url;
+}
+
+let total_price = 0;
+$('[name="amount"]').text('{{ currency_code }}' + total_price);
+$('input[type="checkbox"]').on('click', function (){
+  if($(this). prop("checked") == true){
+    that = $(this).parent().parent().find("input[id^='price']").val();
+    total_price += parseFloat(that);
+  } else {
+    that = $(this).parent().parent().find("input[id^='price']").val();
+    total_price -= parseFloat(that);
+  }
+  $('label[name="amount"]').text('{{ currency_code }}' + total_price);
+  $('input[name="amount"]').val(total_price);
+});
+
+$('.datetime').datetimepicker({
+  pickTime:true,
+  format:"YYYY-MM-DD HH:MM:SS",
+});
+
+amount = {{ amount ? amount : 0 }};
+mp_order_status = '{% if marketplace_complete_order_status %}{{ marketplace_complete_order_status }}{%endif %}';
+$('table input[type="checkbox"]').on('change',function(){
+  order_id = $(this).val();
+  price = $('#price-'+order_id).val();
+  order_status = $('#order-status-'+order_id).val();
+  paid_status = $('#paid-status-'+order_id).val();
+  if(order_status == mp_order_status && paid_status == 0){
+    if( $(this).is(":checked") ){
+      amount = parseFloat(amount) + parseFloat(price);
+    }else{
+      amount = parseFloat(amount - price);
+    }
+    $('label[name="amount"]').text(amount.toFixed(2));
+    $('input[name="amount"]').val(amount.toFixed(2));
+  }
+})
+
+</script>

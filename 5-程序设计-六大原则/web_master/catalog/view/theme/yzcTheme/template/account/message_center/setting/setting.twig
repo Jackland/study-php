@@ -1,0 +1,298 @@
+{% set titleStr = 'Message Alerts' %}
+{{ this.title(titleStr) }}
+{{ this.params('breadcrumbs', [
+    'home',
+    {
+        text: 'Message Center',
+        href: url('account/message_center/seller'),
+    },
+    {
+        text: titleStr,
+        href: url('account/message_center/setting'),
+    }
+]) }}
+
+{{ css([
+  'css/common/common.css',
+  'css/common/common-ext.css',
+  'static/message/message-common.css',
+  'static/message/setting/setting.css',
+  'static/message/buyer-message-common.css',
+]) }}
+
+<script type="text/javascript" src="/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid" id="content" style="margin-left: 235px">
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="container ">
+        {% endif %}
+        <div class="row">{{ column_left }}
+            {% if column_left and column_right %}
+                {% set class = 'col-sm-6' %}
+            {% elseif column_left or column_right %}
+                {% set class = 'col-sm-9' %}
+            {% else %}
+                {% set class = 'col-sm-12' %}
+            {% endif %}
+            {% if separate_view == 0 %}
+                {% set table_div_class = 'overflow: hidden;' %}
+            {% endif %}
+            <div ng-app="app" id="setting-content">
+              <div id="content" class="{{ class }} msgb">{{ content_top }}
+                  {{ message_column }}
+                  <div id="table_content" style="{{ table_div_class }}" class="msgcent msg-card msg-h508">
+                    <div class="msgcent msg-detail__header msgb msg-card__title">
+                        Message Alerts
+                    </div>
+                    <div class="msgb msg-card__content">
+                        <div class="setting"  id="input">
+                            <div class="message_setting">
+                                <div class="title-tip-container"> A popup Window will alert you to any new messages received in real time.</div>
+                                <p class="set-sub">Select which message categories you would like to receive message alerts from. If you do not make a selection, you will not receive pop-up alerts.
+                                </p>
+                                <div class="set-item">
+                                    <input type="checkbox" class="oris-checkbox-mini" name="ststore" {% if(messageSetting.setting_formatted.store) %}checked {% endif %} />Remind me about
+                                    messages from
+                                    sellers
+                                </div>
+                                <div class="set-item">
+                                    <input type="checkbox" class="oris-checkbox-mini" name="stsystem" {% if(messageSetting.setting_formatted.system) %}checked {% endif %}/>Remind me about messages from system alerts
+                                </div>
+                                <div class="set-item">
+                                    <input type="checkbox" class="oris-checkbox-mini" name="stplatformnotice" {% if(messageSetting.setting_formatted.platformNotice) %}checked {% endif %} />Remind me about messages from marketplace notifications
+                                </div>
+                                <div class="set-item">
+                                    <input type="checkbox" class="oris-checkbox-mini" name="ststationletter" {% if(messageSetting.setting_formatted.station_letter) %}checked {% endif %} />Remind me about messages from announcements
+                                </div>
+                            </div>
+
+                            <div class="email_setting">
+                                <div class="title-tip-container">Select which email notifications you would like to receive. </div>
+                                <p class="set-sub">To opt out of email notifications, do not make any selections.  {#<span> If you didn’t select any types, you will not receive any notification emails.</span>#}
+                                </p>
+                                <div class="set-item">
+                                    <input type="checkbox" class="oris-checkbox-mini" name="email_store" {% if(messageSetting.email_setting_formatted.store) %}checked {% endif %} />Notification email of messages from the
+                                    store
+                                </div>
+                                <div class="set-item">
+                                    <input type="checkbox" class="oris-checkbox-mini" name="system" onclick="setAll(this)"/>Notification email of messages from the system
+                                    <div class="set-item-list system">
+                                        <input type="checkbox" class="oris-checkbox-mini" name="system_product" {% if(messageSetting.email_setting_formatted.system.product) %}checked {% endif %}/>Product
+                                        <input type="checkbox" class="oris-checkbox-mini" name="rma" {% if(messageSetting.email_setting_formatted.system.rma) %}checked {% endif %}/>RMA
+                                        <input type="checkbox" class="oris-checkbox-mini" name="bid" {% if(messageSetting.email_setting_formatted.system.bid) %}checked {% endif %}/>Bid
+                                        <input type="checkbox" class="oris-checkbox-mini" name="order" {% if(messageSetting.email_setting_formatted.system.order) %}checked {% endif %}/>Order
+                                        <input type="checkbox" class="oris-checkbox-mini" name="other" {% if(messageSetting.email_setting_formatted.system.other) %}checked {% endif %}/>Other
+                                    </div>
+
+                                </div>
+                                <div class="set-item ">
+                                    <input type="checkbox" class="oris-checkbox-mini" name="platformnotice" onclick="setAll(this)"/>Notification email of messages from the marketplace notification
+                                    <div class="set-item-list platformnotice">
+                                        {#102075 修改类型#}
+                                        <input type="checkbox" class="oris-checkbox-mini" name="policy" {% if(messageSetting.email_setting_formatted.platform.policy) %}checked {% endif %}/>Policy
+                                        <input type="checkbox" class="oris-checkbox-mini" name="system" {% if(messageSetting.email_setting_formatted.platform.system) %}checked {% endif %}/>System
+                                        {#<input type="checkbox" class="oris-checkbox-mini" name="product" {% if(messageSetting.email_setting_formatted.platform.product) %}checked {% endif %}/>Product#}
+                                        <input type="checkbox" class="oris-checkbox-mini" name="holiday" {% if(messageSetting.email_setting_formatted.platform.holiday) %}checked {% endif %}/>Holiday Calendar
+                                        <input type="checkbox" class="oris-checkbox-mini" name="logistics" {% if(messageSetting.email_setting_formatted.platform.logistics) %}checked {% endif %}/>Logistics Services
+                                        <input type="checkbox" class="oris-checkbox-mini" name="platform_other" {% if(messageSetting.email_setting_formatted.platform.other) %}checked {% endif %}/>Other
+                                    </div>
+                                </div>
+                                {#102275 增加通知类站内信#}
+                                <div class="set-item ">
+                                    <input type="checkbox" class="oris-checkbox-mini" name="station_letter" onclick="setAll(this)"/>Notification email of messages from the announcements
+                                    <div class="set-item-list station_letter">
+                                        <input type="checkbox" class="oris-checkbox-mini" name="station_letter_system" {% if(messageSetting.email_setting_formatted.station_letter.system) %}checked {% endif %}/>System Updates
+                                        <input type="checkbox" class="oris-checkbox-mini" name="station_letter_shipping" {% if(messageSetting.email_setting_formatted.station_letter.shipping) %}checked {% endif %}/>Fee Changes
+                                        <input type="checkbox" class="oris-checkbox-mini" name="station_letter_holiday" {% if(messageSetting.email_setting_formatted.station_letter.holiday) %}checked {% endif %}/>Holiday Calendar
+                                        <input type="checkbox" class="oris-checkbox-mini" name="station_letter_policy" {% if(messageSetting.email_setting_formatted.station_letter.policy) %}checked {% endif %}/>Policy Changes
+                                        <input type="checkbox" class="oris-checkbox-mini" name="station_letter_other" {% if(messageSetting.email_setting_formatted.station_letter.other) %}checked {% endif %}/>Other
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="email_other ">
+                                <span class="set-sub">Select an email to receive notifications.</span>
+                                <div class="set-item">
+                                    <input type="checkbox" class="oris-checkbox-mini" name="default_email"
+                                          {% if(messageSetting.email_setting_formatted.sendmail.default_email) %}checked {% endif %} />{{ email }}
+                                    <span class="giga icon-V10-wenhaotishi" data-toggle="tooltip" style="" title="Current logged email."></span>
+                                </div>
+                                <div class="set-item form-inline">
+                                    <input type="checkbox" class="oris-checkbox-mini" name="other_email"
+                                          {% if(messageSetting.email_setting_formatted.sendmail.other_email) %}checked {% endif %} />Other
+                                    <input type="email" name="other_email1" value="{{ messageSetting.other_email_formatted[0] }}" class="form-control oris-input" style="margin-left: 16px;">
+                                    <input type="email" name="other_email2" value="{{ messageSetting.other_email_formatted[1] }}" class="form-control oris-input">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div>
+                      <div class="msgb msg-card__bottom">
+                        <button class="oris-button msg-card__bottom-btn oris-button-default oris-w120 oris-button-bigger" onclick="cancelSetting()">Cancel</button>
+                        <button class="oris-button msg-card__bottom-btn oris-w120 oris-button-bigger" onclick="saveSetting()">Save</button>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ footer }}
+
+<script type="text/javascript">
+    $(function () {
+        selected();
+        $('.set-item-list').children('input').click(selected)
+    });
+
+    function selected() {
+        if ($('.system').children('input').length == $('.system').children('input:checked').length) {
+            $('.system').siblings('input').prop('checked', true);
+        } else {
+            $('.system').siblings('input').prop('checked', false);
+        }
+        if ($('.platformnotice').children('input').length == $('.platformnotice').children('input:checked').length) {
+            $('.platformnotice').siblings('input').prop('checked', true);
+        } else {
+            $('.platformnotice').siblings('input').prop('checked', false);
+        }
+        if ($('.station_letter').children('input').length == $('.station_letter').children('input:checked').length) {
+            $('.station_letter').siblings('input').prop('checked', true);
+        } else {
+            $('.station_letter').siblings('input').prop('checked', false);
+        }
+    }
+
+    function setAll(obj) {
+        if ($(obj).prop('checked')) {
+            $(obj).siblings('.set-item-list').children('input').prop('checked', true)
+        } else {
+            $(obj).siblings('.set-item-list').children('input').prop('checked', false)
+        }
+    }
+
+    function cancelSetting() {
+      window.location.reload();
+    }
+
+    function saveSetting() {
+        let other = $('input[name=other_email]').is(':checked') ? 1 : 0;
+        let other_email1 = $('input[name=other_email1]').val()
+        let other_email2 = $('input[name=other_email2]').val()
+        let reg = /^([a-zA-Z]|[0-9])(\w|\-|\.)+@[a-zA-Z0-9\-]+\.([a-zA-Z]{2,5})$/;
+        let setting = {
+            store: $('input[name=ststore]').is(':checked') ? 1 : 0,
+            system: $('input[name=stsystem]').is(':checked') ? 1 : 0,
+            platformNotice: $('input[name=stplatformnotice]').is(':checked') ? 1 : 0,
+            station_letter: $('input[name=ststationletter]').is(':checked') ? 1 : 0,
+            intervalTime: $('input:radio[name=interval_time]:checked').val(),
+        }
+        let email_setting = {
+            store: $('input[name=email_store]').is(':checked') ? 1 : 0,
+            system: {
+                product: $('input[name=system_product]').is(':checked') ? 1 : 0,
+                rma: $('input[name=rma]').is(':checked') ? 1 : 0,
+                bid: $('input[name=bid]').is(':checked') ? 1 : 0,
+                order: $('input[name=order]').is(':checked') ? 1 : 0,
+                other: $('input[name=other]').is(':checked') ? 1 : 0,
+            },
+            platform: {
+                policy: $('input[name=policy]').is(':checked') ? 1 : 0,
+                system: $('input[name=system]').is(':checked') ? 1 : 0,
+                holiday: $('input[name=holiday]').is(':checked') ? 1 : 0,
+                logistics: $('input[name=logistics]').is(':checked') ? 1 : 0,
+                other: $('input[name=platform_other]').is(':checked') ? 1 : 0,
+            },
+            station_letter: {
+                system: $('input[name=station_letter_system]').is(':checked') ? 1 : 0,
+                shipping: $('input[name=station_letter_shipping]').is(':checked') ? 1 : 0,
+                holiday: $('input[name=station_letter_holiday]').is(':checked') ? 1 : 0,
+                policy: $('input[name=station_letter_policy]').is(':checked') ? 1 : 0,
+                other: $('input[name=station_letter_other]').is(':checked') ? 1 : 0,
+            },
+            sendmail: {
+                default_email: $('input[name=default_email]').is(':checked') ? 1 : 0,
+                other_email: other,
+            }
+        }
+        // 邮箱验证
+        if ((other_email1 && !reg.test(other_email1)) || (other_email2 && !reg.test(other_email2))) {
+            layer.msg('Email address you have entered is invalid!', {time: 2000, icon: 5,area : ['360px', '68px']});
+            return;
+        }
+        if (other) {
+            if (!other_email1) {
+                layer.msg('Email can not be left blank.', {time: 2000, icon: 5});
+                return;
+            }
+            var other_email = [other_email1]
+            if (other_email2) {
+                other_email.push(other_email2);
+            }
+        }
+
+        var layerIndex = layer.confirm('Are you sure you want to save this message setting?', {
+          title: 'Confirm',
+          skin: 'oris-layer',
+          btn: ['Confirm', 'Cancel'],
+          area: ['480px'],
+          scrollbar: false
+        }, function () {
+          var data = {
+              setting: setting,
+              email_setting: email_setting,
+              other_email: other_email,
+          };
+          $.ajax({
+              data: JSON.stringify(data),
+              type: "POST",
+              dataType: 'json',
+              contentType: "application/json; charset=utf-8",
+              url: "{{ url('account/message_center/setting/saveSetting') }}",
+              success: function (res) {
+                  let type = "success";
+                  let msg = "";
+                  if (res) {
+                    type = "success"
+                    msg = "Saved successfully."
+                  } else {
+                    type = "error"
+                    msg = "Save failed."
+                  }
+                  $.toast({
+                    heading: false,
+                    text: msg,
+                    position: 'top-center',
+                    showHideTransition: 'fade',
+                    icon: type,
+                    hideAfter: 2000,
+                    allowToastClose: false,
+                    loader: false,
+                  });
+                  layer.close(layerIndex);
+              },
+              error: function (e) {
+                  $.toast({
+                    heading: false,
+                    text: "Save failed.",
+                    position: 'top-center',
+                    showHideTransition: 'fade',
+                    icon: "error",
+                    hideAfter: 2000,
+                    allowToastClose: false,
+                    loader: false,
+                  });
+                  layer.close(layerIndex);
+              }
+          });
+        });
+    }
+</script>

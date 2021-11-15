@@ -1,0 +1,47 @@
+{{ header }}
+<div id="information-information" class="container">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+    {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">
+      {% if tree_html is defined %}
+        {% if tree_html %}
+           {{ tree_html }}
+        {% else %}
+            {{ text_no_results }}
+        {% endif %}
+      {% else %}
+        {{ content_top }}
+        {% if fileName and fileUrl %}
+          <a class=".btn-link" style="font-size: 20px;padding-top: 25px;text-decoration: underline" href="{{ fileUrl }}">{{ fileName }}</a>
+        {% endif %}
+        <h1>{{ heading_title }}</h1>
+          {{ description |replace({'&nbsp;': ' '}) }}
+        {{ content_bottom }}
+      {% endif %}
+    </div>
+    {{ column_right }}
+  </div>
+</div>
+<style>
+  p,span{
+    word-wrap: break-word;
+    word-break: normal;
+  }
+</style>
+{{ footer }}
+<script type="text/javascript">
+  function downloadFile(path) {
+    window.location.href = "index.php?route=information/information/downloadInformationFile&filePath=" + path.trim();
+  }
+</script>

@@ -1,0 +1,116 @@
+<link href="admin/view/stylesheet/bootstrap.css" rel="stylesheet">
+<script type="text/javascript" src="admin/view/javascript/jquery/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<link href="admin/view/stylesheet/bootstrap.css" rel="stylesheet">
+<link href="public/fonts/giga/iconfont.css" rel="stylesheet">
+
+<link href="public/css/common/common.css" rel="stylesheet">
+<link href="public/static/message/message-common.css" rel="stylesheet">
+<link href="public/static/customerpartner/message_center/my-message-common.css" rel="stylesheet">
+
+<link href="admin/view/stylesheet/stylesheet_giga.css" rel="stylesheet">
+
+<style>
+  .text-left {
+    text-align: left !important;
+  }
+
+  #mass-receive-container .search-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #mass-receive-container .search-button {
+    margin-left: 12px;
+    height: 40px
+  }
+
+  #mass-receive-container .search-input-container {
+    width: 100%;
+  }
+
+  #mass-receive-container .search-input {
+    padding-left: 30px;
+  }
+
+  #mass-receive-container .search-input-icon {
+    position: absolute;
+    color: #999;
+    top: 9px;
+    left: 8px
+  }
+</style>
+
+<div class="oris-buyer msgcent msg-layer__content" id="mass-receive-container">
+  <div class="mass-receive-search-container">
+    <div class="oris-row search-row">
+      <div class="search-input-container">
+        <input class="oris-input search-input" placeholder="Search seller" id="filter-mass-receive" value="{{ search.filter_receiver }}"></input>
+        <i class="giga icon-V10_sousuotubiao search-input-icon"></i>
+      </div>
+      <button class="oris-button search-button" id="mass-receive-search">Filter</button>
+    </div>
+  </div>
+  <div class="msgcent msg-table__container">
+    <table class="table-hover oris-table">
+      <thead>
+        <tr>
+          <th class="text-left" style="width: 60px;">
+            #
+          </th>
+          <th class="text-left" style="width: 240px;">Recipient name</th>
+         {# <th class="text-center">Recipient ID</th>#}
+          <th class="text-left" style="width: 142px;">Time</th>
+          <th class="text-center">Send result</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% if list|length > 0 %}
+        {% for key,receive in list %}
+          <tr>
+            <td class="text-left" style="width: 60px;">
+              {{ ((paginator.getPage() - 1) * paginator.getPageSize()) + key + 1 }}
+            </td>
+            <td class="text-left" style="width: 240px;">
+              {% if receive.receiver.seller.screenname %}
+                <span class="msg-subject-tdspan">{{ receive.receiver.seller.screenname }}</span>
+              {% else %}
+                <span class="msg-subject-tdspan">{{ receive.receiver.nickname }}</span>
+              {% endif %}
+            </td>
+           {# <td class="text-center" >{{ receive.receiver.user_number }}</td>#}
+            <td class="text-left" style="width: 142px;">{{ receive.create_time }}</td>
+            <td class="text-center">Success</td>
+          </tr>
+        {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        </tbody>
+      </table>
+      <div class="msg-empty">
+        <div class="msg-empty-container">
+          <div class="msg-empty-icon">
+            <img src="{{ asset("image/icons/empty.png") }}"></img>
+          </div>
+          <div class="msg-empty-title">No Records Found !</div>
+        </div>
+      </div>
+      {% endif %}
+  </div>
+  <div class="oris-row oris-pagination">
+    <ul id="mass-receive_pagination"
+        data-url="{{ paginator.getUrlWithNoPage() }}"
+        data-total="{{ paginator.getTotalCount() }}"
+        data-total_pages="{{ max(paginator.getPageCount(), 1) }}"
+        data-page="{{ paginator.getPage() }}"
+        data-page_size="{{ paginator.getPageSize() }}"
+    ></ul>
+  </div>
+</div>
+
+<script>
+
+
+</script>

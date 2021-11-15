@@ -1,0 +1,246 @@
+{{ header }}{{ separate_column_left }}
+{% set categoryDivs = {
+  1 : {id:'tab-rma',div:'show-lists-rma',load_url:url('account/ticket/showListsRma',{'submit_ticket_for':'1'})},
+  2 : {id:'tab-sales-order',div:'show-lists-sales-order',load_url:url('account/ticket/showListsSalesOrder',{'submit_ticket_for':'2'})},
+  21 : {id:'tab-safeugard',div:'show-lists-safeguard',load_url:url('account/ticket/showListsOthers',{'submit_ticket_for':'21'})},
+  3 : {id:'tab-others',div:'show-lists-others',load_url:url('account/ticket/showListsOthers',{'submit_ticket_for':'3'})}
+} %}
+<style>
+  .submit-ticket-right-btn {
+    cursor: pointer;
+    position: absolute;
+    right: 30px !important;
+    top: 47px !important;
+    line-height: 25px !important;
+  }
+  .submit-ticket-right {
+    /*width: 130px;*/
+    /*text-align: center;*/
+    /*height: 40px;*/
+    /*line-height: 40px;*/
+    border-radius: 4px !important;
+    position: absolute;
+    top: unset;
+  }
+
+    .ticket-lists-left{
+        min-height: 100px;
+    }
+    .ticket-lists-right{
+        min-height: 100px;
+        padding-right: 0px;
+        border-left: 1px solid #dddddd;
+    }
+
+    .ticket-lists-left ul{
+        padding: 0px;
+    }
+
+
+    .ticket-lists-left ul li {
+        font-size: 12px;
+        /*height: 30px;*/
+        line-height: 30px;
+    }
+    .li-active {
+        /*background: #f5f5f5;*/
+    }
+    .li-active a{
+        color:#FF5722;
+    }
+    .ticket-lists-right-form{
+        min-width: 270px; margin-bottom: 20px;
+    }
+    .hot-color{
+        color:#FF5722
+    }
+    /*ul li:hover span.count, ul li.active span.count{*/
+    /*  background-color: #fff;*/
+    /*  color: #3A75DC;*/
+    /*  border-color: #3A75DC;*/
+    /*}*/
+    ul span.count{
+      padding: 3px 7px;
+      color: #fff;
+      background: #fa6400;
+      font-size: 12px;
+      font-style: normal;
+      border-radius: 8px;
+      color: #fff;
+      position: absolute;
+      top: -10px;
+      right: -5px;
+      z-index: 9;
+      display: inline-block;
+      min-width: 10px;
+      line-height: 1;
+      vertical-align: middle;
+      white-space: nowrap;
+      text-align: center;
+    }
+  .my-box2{
+    padding: 0 10px;
+  }
+  .my-title{
+    font-weight: bold;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    font-size: 24px;
+    font-family: "Roboto", Helvetica, Arial, serif;
+    color: #183464;
+  }
+  .nav-tabs{
+    margin-left: 5px;
+  }
+  .nav-tabs li a{
+    height: 40px !important;
+  }
+  .nav-tabs > li > a{
+    border: unset !important;
+  }
+  .row .form-group input:not([type=checkbox]):not([type=radio]), .row .form-group select {
+    height: 40px !important;
+    border-radius: 4px !important;
+    background-color: #f3f5f7;
+  }
+</style>
+{% for style in styles %}
+  <link href="{{ style }}" type="text/css" rel="stylesheet"/>
+{% endfor %}
+{% if separate_view is defined and separate_view %}
+{{ ticketBuyer }}
+<div class="container-fluid" id="content" style="margin-left: 235px">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+{% else %}
+<div class="container">
+    {#面包屑#}
+    {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+    {#END 面包屑#}
+{% endif %}
+    {% if rma_edit_error %}
+        <div class="alert alert-warning alert-dismissible"><i class="fa fa-check-circle"></i> {{ error }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    {% endif %}
+
+
+    <div class="row">
+        {% set class = 'col-sm-12' %}
+        {% if separate_view == 0 %}
+          {% set table_div_class = 'overflow: hidden;' %}
+        {% endif %}
+        <div id="content" class="{{ class }}">{{ content_top }}
+          {{ message_column }}
+          <div id="table_content" style="{{ table_div_class }}" {% if is_seller==false %} class="my-box2" {% endif %}>
+              <div class="my-title">
+                {{ heading_name }}
+              </div>
+
+            <div class="container-fluid " style="padding: 0px;margin-top: 10px">
+
+
+              {# Tabs #}
+              <ul class="nav nav-tabs ticket-tabs">
+                {% for key,category in categories %}
+                  {% if categoryDivs[category.category_id] is not empty %}
+                    <li id="category_li_{{ category.category_id }}"
+                        class="{{ key == 0 ? 'active' : '' }} submit_ticket_for_count_{{ category.category_id }}"
+                        value="{{ category.category_id }}" submit_ticket_for="{{ category.category_id }}">
+                      <a href="#{{ categoryDivs[category.category_id]['id'] }}" data-toggle="tab">
+                        {{ category.name }}
+                        {% if ticket_for_noread[category.category_id].total %}
+                          <span class="count">{{ ticket_for_noread[category.category_id].total }}</span>
+                        {% endif %}
+                      </a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+              <div class="btn btn-submit submit-ticket-right submit-ticket-right-btn" style="margin-right: -10px;margin-top: 18px;font-size: 14px;width: auto;">Submit a Request</div>
+
+              <div class="panel panel-default " id="box-shadow" style="padding: 10px;position: relative">
+                <div class="tab-content">
+                  {% for key,category in categories %}
+                    {% if categoryDivs[category.category_id] is not empty %}
+                      <div class="tab-pane {{ key == 0 ? 'active' : '' }}" id="{{ categoryDivs[category.category_id]['id'] }}">
+                        <fieldset>
+                          <div id="{{ categoryDivs[category.category_id]['div'] }}"></div>
+                        </fieldset>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <content_bottom></content_bottom>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="ticket_page_is_need_reload" value="1">
+
+{{ footer }}
+<script>
+    var txtPleaseSelect = "{{ __('请选择', {}, 'common') }}";
+    $(function () {
+      block.unBlockUI();
+
+      {% for key,category in categories %}
+      {% if categoryDivs[category.category_id] is not empty %}
+      $('#{{ categoryDivs[category.category_id]['div'] }}').load('{{ categoryDivs[category.category_id]["load_url"] }}');
+      {% endif %}
+      {% endfor %}
+    });
+    function hideReset_() {
+        $('#submit_ticket_for').val(0);
+        $('#ticket_type').html(`<option value="0">--${txtPleaseSelect}--</option>`);
+        $('#ticket_type').val(0);
+        $("#tipInterceptSalesOrder").hide();
+        $('div[group="parent-rma"]').hide();
+        $('div[group="parent-sales-order"]').hide();
+        $('div[group="parent-sales-item-code"]').hide();
+        $('div[group="parent-tracking_number"]').hide();
+        $('div[group="parent-item-code"]').hide();
+        $('div[group="parent-safeguard-claim"]').hide();
+        $('#ticket_group_description').hide();
+        $('.ticket_group_attachments').hide();
+        $(".ticket_group_attachments").find(".ticket-upload-file").html('');
+        $(".ticket_group_attachments").find("textarea").val('');
+        $('#myModalTicketFooter').hide();
+    }
+
+    function clearTicketInputs_(){
+        $('#submit_ticket_for').val(0);
+        $('#ticket_type').html(`<option value="0">--${txtPleaseSelect}--</option>`);
+        $('#ticket_type').val(0);
+        $("#tipInterceptSalesOrder").hide();
+        $('#rma_id').val("");
+        $('#sales_order_id').val("");
+        $('#sales_item_code').html("");
+        $('#tracking_number').val("");
+        $('#seller_item_code').val("");
+        $('#parent-safeguard-claim').val("");
+        $('#processing_method').val(0);
+        $('#ticket_description').val("");
+        $('#ticket_description_tips').html("0/1000");
+        $(".ticket_group_attachments").find(".ticket-upload-file").html('');
+        $(".ticket_group_attachments").find("textarea").val('');
+    }
+    {% if is_others %}
+        $("#myModalTicket").modal({backdrop: 'static', keyboard: false});
+        hideReset_();
+        clearTicketInputs_();
+        $('#myModalTicket').modal('show');
+        setTimeout(function () {
+            $('#submit_ticket_for').val(3).trigger('change')
+        },500);
+        setTimeout(function () {
+            $('#ticket_type').val(8).trigger('change')
+        },500);
+    {% endif %}
+</script>

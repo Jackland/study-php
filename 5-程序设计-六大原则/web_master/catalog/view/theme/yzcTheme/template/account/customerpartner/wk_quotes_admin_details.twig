@@ -1,0 +1,491 @@
+{{ header }}
+{{ assetBundle('Seller\\VatAsset') }}
+<style>
+    div#tab-images td {
+        display: inline-table;
+    }
+
+    div#tab-images .thumbnail {
+        margin: 3px;
+    }
+
+    div#alert-view div.alert {
+        color: #000;
+    }
+
+    div#alert-view div.col-sm-10 {
+        padding: 0;
+    }
+
+    @media (max-width: 767px) {
+        div#alert-view .pull-right {
+            float: none !important;
+        }
+    }
+  #tab-general>.table tr>td:first-child{
+    min-width: 220px;
+  }
+</style>
+{{ separate_column_left }}
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid" id="content" style="margin-left: 15%">
+    {% else %}
+{{ column_left }}
+{% set statusClass = result_quoteadmin.status == 0 ? 'text-warning' : result_quoteadmin.status == 1 ? 'text-success' : result_quoteadmin.status == 2 ? 'text-danger' : result_quoteadmin.status == 3 ? 'text-info' : 'text-danger' %}
+<div class="container">
+    {% endif %}
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }} </a></li>
+        {% endfor %}
+    </ul>
+    {% if success %}
+        <div class="alert alert-success"><i class="fa fa-check-circle"></i>{{ success }} </div>
+    {% endif %}
+    {% if error_warning %}
+        <div class="alert alert-warning">{{ error_warning }} </div>
+    {% endif %}
+    <div class="row">
+        {{ column_left }}
+        {% if column_left and column_right %}
+            {% set class = 'col-sm-6' %}
+        {% elseif column_left or column_right %}
+            {% set class = 'col-sm-9' %}
+        {% else %}
+            {% set class = 'col-sm-12' %}
+        {% endif %}
+
+        <div id="content" class="{{ class }}">
+            {{ content_top }}
+            <h1>{{ heading_title_view }}
+                <div class="pull-right">
+                    <a href="{{ back }}" data-toggle="tooltip" title="{{ button_back }}" class="btn btn-default"
+                       data-original-title="Cancel"><i class="fa fa-reply"></i></a>
+                </div>
+            </h1>
+            <fieldset>
+              <ul class="nav nav-tabs" id="ulTab" style="border: none" >
+                <li class="{% if not tab or tab=='tab-general'%}active{% endif %}" ><a href="#tab-general" data-toggle="tab">Spot Price Bid Details </a></li>
+                <li class="{% if tab=='tab-messages'%}active{% endif %}" ><a href="#tab-messages" data-toggle="tab">{{ text_message }} </a></li>
+              </ul>
+                <div class="panel panel-default" id="box-shadow">
+                    <div class="panel-body">
+                        <div class="tab-content">
+                            <div id="tab-general" class="tab-pane {% if not tab or tab=='tab-general'%}active{% endif %}" >
+                                <table class="table">
+                                    {% if result_quoteadmin %}
+                                    <tbody>
+                                    <tr>
+                                        <td>{{ text_id }}:</td>
+                                        <td><input type="hidden" name="quote_id" value="{{ result_quoteadmin.id }}">{{ result_quoteadmin.agreement_id }} </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>{{ text_status }} :</td>
+                                        <td class="{{ statusClass }}"><b>{{ result_quoteadmin.status_text }} </b></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>{{ text_customer_name }} :</td>
+                                        <td>
+                                          <span class="user_portrait" data-user_customer_id="{{ result_quoteadmin.customer_id }}" >
+                                          {{ result_quoteadmin.customer_name }}
+                                          </span>
+                                          <span>
+                                            <img data-toggle="tooltip" style="padding-left: 1px"
+                                                 src="{{ result_quoteadmin.is_home_pickup ? asset('image/icons/HomePickup/home_pickup-15x15.png') : asset('image/icons/HomePickup/drop_shipping-15x15.png') }}"
+                                                 data-original-title="{{ result_quoteadmin.is_home_pickup?tip_home_pickup_logo:tip_drop_shipping_logo }}">
+                                          </span>
+                                          {{ result_quoteadmin.ex_vat }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ text_product_name }} :</td>
+                                        <td>
+                                            <div style="background:url({{ result_quoteadmin.image }} );background-repeat:no-repeat;background-position:center;min-height: 200px;">
+                                                <a href="{{ result_quoteadmin.product_href }}">{{ result_quoteadmin.product_name }} </a>
+                                                {% if result_quoteadmin.options %}
+                                                    {% for key, option in result_quoteadmin %}
+                                                        <br/>&nbsp;&nbsp;  -<small>{{ option.name }} {{ option.value }} </small>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td>{{ text_base_price }} :</td>
+                                        <td>{{ result_quoteadmin.baseprice }} </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>{{ text_quote_message }} :</td>
+                                        <td>{{ result_quoteadmin.message }} </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>{{ text_quantity }} :</td>
+                                        <td>{{ result_quoteadmin.quantity }} </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>{{ text_quotes_price }}     <i
+                                            class="giga icon-V10-wenhaotishi"
+                                            style="font-size: 12px;"
+                                            data-toggle="tooltip"
+                                            title="The spot price excluding fulfillment requested by buyer.">
+                                          </i> :</td>
+                                        <td>
+                                          {{ result_quoteadmin.price }}
+                                        </td>
+                                    </tr>
+
+
+                                    {% if result_quoteadmin.status == '3' %}
+                                        <tr>
+                                            <td colspan="2"><b class="text-info">{{ text_sold_info }} </b></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><b>{{ text_order_id }} </b></td>
+                                            <td> # <a href="{{ result_quoteadmin.orderhref }}" target="_blank">{{ result_quoteadmin.order_id }} </a></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><b>{{ text_discount }} </b></td>
+                                            <td>{{ result_quoteadmin.amount }} </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><b>{{ text_date_used }} </b></td>
+                                            <td>{{ result_quoteadmin.date_used }} </td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            <div id="tab-messages" class="tab-pane {% if tab=='tab-messages'%}active{% endif %}" >
+                                <div class="well">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                              <label class="control-label" >MESSAGE CONTENT</label>
+                                                <input type="text" name="filter_message" value="{{ filter_message }}" placeholder="{{ text_message_history }}"
+                                                       id="input-msg" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                          <div class="form-group">
+                                            <label class="control-label col-sm-10" style="padding: 0" >MESSAGE DATE</label>
+                                            <div class='input-group date col-sm-6' style="float: left">
+                                              <input type='text' name="filter_date_from" value="{{ filter_date_from }}" placeholder="{{ text_date_from }}" id="input-date_from"
+                                                     class="form-control"/>
+                                              <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                              </span>
+                                            </div>
+                                            <div class='input-group date col-sm-6' style="float: left">
+                                              <input type='text' name="filter_date_to" value="{{ filter_date_to }}" placeholder="{{ text_date_to }}" id="input-date_to"
+                                                     class="form-control"/>
+                                              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="col-sm-4 text-right" style="margin-top: 40px">
+                                            <div class="btn-group">
+                                                <button type="button" id="alert-view-button" class="btn btn-default"
+                                                        data-toggle="tooltip" title="{{ button_alert }}"><i class="fa fa-th-list"></i></button>
+                                                <button type="button" id="table-view-button" class="btn btn-default" data-toggle="tooltip" title="{{ button_table }}">
+                                                    <i class="fa fa-th"></i>
+                                                </button>
+                                            </div>
+                                            <button type="button" onclick="clrfilter();" class="btn btn-default" data-toggle="tooltip" title="{{ button_clrfilter }}">
+                                              <i class="fa fa-refresh"></i></button>
+                                            <button type="button" onclick="filter();" class="btn btn-primary">
+                                              {{ button_filter }} </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive hide" id="table-view">
+                                    <table class="table table-hove">
+                                        <thead>
+                                        <tr>
+                                            <td class="text-left">
+                                                {% if sort  ==  'pqm.writer' %}
+                                                    <a href="{{ sort_name }}"
+                                                       class="{{ order|lower }}">{{ text_column_name }} </a>
+                                                {% else %}
+                                                    <a href="{{ sort_name }}">{{ text_column_name }}  </a>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-left">
+                                                {% if sort  ==  'pqm.message' %}
+                                                    <a href="{{ sort_message }}"
+                                                       class="{{ order|lower }}">{{ text_message_history }} </a>
+                                                {% else %}
+                                                    <a href="{{ sort_message }}">{{ text_message_history }}  </a>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-left">
+                                                {% if sort  ==  'pqm.date' %}
+                                                    <a href="{{ sort_date }}"
+                                                       class="{{ order|lower }}">{{ text_date }} </a>
+                                                {% else %}
+                                                    <a href="{{ sort_date }}">{{ text_date }}  </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if results_message %}
+                                            {% for results_messages in results_message %}
+                                                <tr>
+                                                    <td class="text-left">
+                                                      {% if results_messages.writer %}
+                                                        {% if results_messages.screenname %}
+                                                          {{ results_messages.screenname }}
+                                                        {% else %}
+                                                          {{ results_messages.name }}
+                                                        {% endif %}
+                                                      {% else %}
+                                                        {{ admin_name }}
+                                                      {% endif %}</td>
+                                                    <td class="text-left" style="word-wrap: break-word;word-break: break-all;">{{ results_messages.message }} </td>
+                                                    <td class="text-left" style="box-shadow: none">{{ results_messages.date }} </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td class="text-center" colspan="4">{{ text_no_recored }} </td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="alert-view" class="hide">
+                                    {% for res_message in results_message %}
+                                        {% if res_message.writer == seller_id %}
+                                            <div class="col-sm-10 pull-right" style="word-wrap: break-word;word-break: break-all;">
+                                                <div class="alert alert-success">
+                                                    <label data-toggle="tooltip" title="{{ res_message.name|capitalize }}"> <i class="fa fa-user"></i></label>
+                                                    <label class="pull-right"><i class="fa fa-clock-o"></i>{{ res_message.date }}</label>
+                                                    <br/>
+                                                    {{ res_message.message }}
+                                                </div>
+                                            </div>
+                                        {% elseif res_message.writer %}
+                                            <div class="col-sm-10" style="word-wrap: break-word;word-break: break-all;">
+                                                <div class="alert alert-warning">
+                                                    <label data-toggle="tooltip" title="{{ res_message.name|capitalize }}"><i class="fa fa-user-plus"></i></label>
+                                                    <label class="pull-right"><i class="fa fa-clock-o"></i>{{ res_message.date }}</label>
+                                                    <br/>
+                                                    {{ res_message.message }}
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="col-sm-10" style="word-wrap: break-word;word-break: break-all;">
+                                                <div class="alert alert-info">
+                                                    <label data-toggle="tooltip" title="{{ admin_name }}"><i class="fa fa-home"></i></label>
+                                                    <label class="pull-right"><i class="fa fa-clock-o"></i>{{ res_message.date }}</label>
+                                                    <br/>
+                                                    {{ res_message.message }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 text-right">{{ pagination }} </div>
+                                </div>
+                                <br>
+                                {% if result_quoteadmin %}
+                                    <form action="{{ save }}" id="quoteForm" method="post" enctype="multipart/form-data"
+                                          class="form_msg">
+
+                                        <div class="row required">
+                                            <label class="col-sm-12 text-left control-label">{{ text_status }} </label>
+                                            <div class="col-sm-12">
+                                                <select name="status" class="form-control" {{ result_quoteadmin.status == 0 ?'':'disabled' }}>
+                                                    {% if quote_status %}
+                                                        {% for key, value in quote_status %}
+                                                            <option {% if key  ==  result_quoteadmin.status %}{{ 'selected' }}{% endif %}
+                                                                    value="{{ key }}">{{ value }} </option>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {{ text_no_option }}
+                                                    {% endif %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="row required">
+                                            <label class="col-sm-12 text-left control-label">{{ text_ask }} </label>
+                                            <div class="col-sm-12">
+                                                <input type="hidden" name="quote_id" value="{{ result_quoteadmin.id }}">
+                                                <input type="hidden" name="update_time" value="{{ result_quoteadmin.update_time }}">
+                                                <textarea name="message" id="messageArea" rows="4" class="form-control textarea-drag-none" required {{ result_quoteadmin.status == 0 ?'':'disabled' }}>{{ update_quote_data.message?update_quote_data.message:'' }}</textarea>
+                                                <br/>
+                                                <button type="button" onclick="submitForm(this)" class="btn btn-primary pull-right"
+                                                        data-toggle="tooltip" title="{{ text_send_message }}" {{ result_quoteadmin.status == 0 ?'':'disabled' }}>
+                                                    <i class="fa fa-envelope-o"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        {{ content_bottom }}
+        {{ column_right }}
+    </div>
+</div>
+{{ footer }}
+  <style>
+    .form-group .date{
+      position: relative;
+    }
+    .form-group .date .input-group-addon{
+      background-color: #fff;
+      color: #3975db;
+      padding: 13px 15px;
+      padding-right: 27px;
+      position: absolute;
+      height: 40px;
+      z-index: 100;
+      top: 0;
+      right: 0;
+      border: 1px solid #ccc;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+  </style>
+<script type="text/javascript">
+    let update_status = '{{ update_quote_data.status }}';
+    if (update_status !== '') {
+        $('select[name="status"]').val(update_status);
+    }
+    //表单自动提交改手动提交 添加loading
+    function submitForm(button) {
+      $(button).button('loading');
+      let message = $("#messageArea").val().trim();
+      if (message == undefined || message == '') {
+        $(button).button('reset');
+        layer.msg('Message can not be empty!');
+        return false;
+      }
+      if (parseInt('{{ is_check_price_freight }}') && $('select[name="status"]').val() == 1) {
+        layer.confirm('{{ is_show_cwf_notice ? error_product_price_proportion_cwf : error_product_price_proportion }}', {
+          btn: ['Yes', 'No'],
+          btnAlign: 'c',
+          skin: 'yzc_layer',
+          title: 'Confirm',
+          area: '500px',
+          end: function () {
+            layer.closeAll('confirm');
+            $(button).button('reset');
+          }
+        }, function () {
+          $("#quoteForm").submit();
+        });
+      }else{
+        $("#quoteForm").submit();
+      }
+    }
+
+    // Message Alert List
+    $('#alert-view-button').click(function () {
+        localStorage.setItem('display', 'alert');
+        $('#alert-view').removeClass('hide');
+        $('#table-view').addClass('hide');
+    });
+
+    // Message Table Grid
+    $('#table-view-button').click(function () {
+        localStorage.setItem('display', 'table');
+        $('#table-view').removeClass('hide');
+        $('#alert-view').addClass('hide');
+
+    });
+
+    if (localStorage.getItem('display') == 'alert') {
+        $('#alert-view').removeClass('hide');
+    } else {
+        $('#table-view').removeClass('hide');
+    }
+
+    $('#input-date_from').datetimepicker({
+      pickDate: true,
+      pickTime: false,
+      format: 'YYYY-MM-DD 00:00:00'
+    });
+    $('#input-date_to').datetimepicker({
+      pickDate: true,
+      pickTime: false,
+      format: 'YYYY-MM-DD 23:59:59'
+    });
+
+    function clrfilter() {
+        location = "{{ url('account/customerpartner/wk_quotes_admin/update', {'id':result_quoteadmin.id, 'tab':'tab-messages'}) }}";
+    }
+
+    function filter() {
+      url = "{{ url('account/customerpartner/wk_quotes_admin/update') }}";
+
+      var filter_message = $('input[name=\'filter_message\']').val();
+
+      if (filter_message) {
+        url += '&filter_message=' + encodeURIComponent(filter_message);
+      }
+
+      var filter_date_from = $('input[name=\'filter_date_from\']').val();
+      if (filter_date_from) {
+        url += '&filter_date_from=' + encodeURIComponent(filter_date_from);
+      }
+      var filter_date_to = $('input[name=\'filter_date_to\']').val();
+      if (filter_date_to) {
+        url += '&filter_date_to=' + encodeURIComponent(filter_date_to);
+      }
+
+      url += "&id={{ result_quoteadmin.id }}&tab=tab-messages";
+
+      window.location.href = url;
+    }
+
+    $("#ulTab").find('li a').click(function(){
+      let tab=$(this).attr("href").toString().substr(1);
+      switch (tab) {
+        case 'tab-general':
+          window.history.pushState({}, '', changeURLArg(window.location.href, 'tab', 'tab-general'));
+          break;
+        case 'tab-messages':
+          window.history.pushState({}, '', changeURLArg(window.location.href, 'tab', 'tab-messages'));
+          break;
+        default:
+          window.history.pushState({}, '', changeURLArg(window.location.href, 'tab', 'tab-general'));
+          break;
+      }
+    });
+    function changeURLArg(url,arg,arg_val){
+      var pattern=arg+'=([^&]*)';
+      var replaceText=arg+'='+arg_val;
+      if(url.match(pattern)){
+        var tmp='/('+ arg+'=)([^&]*)/gi';
+        tmp=url.replace(eval(tmp),replaceText);
+        return tmp;
+      }else{
+        if(url.match('[\?]')){
+          return url+'&'+replaceText;
+        }else{
+          return url+'?'+replaceText;
+        }
+      }
+    }
+</script>

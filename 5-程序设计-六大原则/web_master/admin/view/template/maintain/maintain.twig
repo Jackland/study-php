@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Maintain</title>
+  <link href="/image/catalog/Logo/icon.png" rel="icon"/>
+  {{ this.head() }}
+  {{ css('css/maintain/maintain.css') }}
+  {{ js('js/common/jquery/jquery-2.1.1.min.js') }}
+</head>
+<body>
+<div class="show-content">
+  <div class="content1">
+    <img src="{{ asset('image/maintain/maintainImg.png') }}" alt="under-construction">
+  </div>
+  <div class="content2">
+    <input type="hidden" id="countDownTime" value="{{ leftSeconds }}">
+    <div class="title">System maintenance in progress</div>
+    <div class="tip-title">Please come back in</div>
+    <div id="counter" class="countdown-timer">
+      <div id="countDays" class="countdown none">
+        <div class="time-num">00</div>
+        <div class="time-unit">Days</div>
+      </div>
+      <div id="countHours" class="countdown">
+        <div class="time-num">00</div>
+        <div class="time-unit">Hours</div>
+      </div>
+      <div id="countMinutes" class="countdown">
+        <div class="time-num">00</div>
+        <div class="time-unit">Minutes</div>
+      </div>
+      <div id="countSeconds" class="countdown">
+        <div class="time-num">00</div>
+        <div class="time-unit">Seconds</div>
+      </div>
+    </div>
+    <div class="contact-service">
+      Estimated maintenance time: {{ downEstimateTime }} (PST). You may visit again later.</br>
+      If you have any questions or concerns, please feel free to contact us via
+      <a class="customer-service onlineChatPlatformTrigger">Customer Service</a>.
+    </div>
+  </div>
+</div>
+</body>
+{{ widget('ThirdPart\\SevenMoorWidget',{'isMaintain':1}) }}
+{{ this.endBody() }}
+<script>
+  $(function() {
+    countDown();
+    setInterval(countDown, 1000);
+  });
+  //倒计时
+  function countDown(){
+    let stopSeconds = $("#countDownTime").val();
+    $("#countDownTime").val(--stopSeconds);
+    let day = stopSeconds / (60 * 60 * 24);
+    if (day > 1){
+      //倒计时大于一天的，天显示出来
+      $("#countDays").show();
+    }else{
+      //倒计时小于一天的，只显示时分秒
+      $("#countDays").hide();
+    }
+    secToTime(stopSeconds);
+  };
+  //获取时分秒
+  function secToTime(secs){
+    if (secs <= 0) return ;
+    let second = parseInt(secs);
+    let minute = 0;// 分
+    let hour = 0;// 小时
+    let day = 0;// 天
+    if (second >= 60){
+      minute = parseInt(second / 60);
+      second = parseInt(second % 60);
+      if (minute >= 60) {
+        hour = parseInt(minute / 60);
+        minute = parseInt(minute % 60);
+        if (hour >= 24) {
+          //大于24小时
+          day = parseInt(hour / 24);
+          hour = parseInt(hour % 24);
+        }
+      }
+    }
+    day = day > 9 ? day :'0'+day;
+    hour = hour > 9 ? hour :'0'+hour;
+    minute = minute > 9 ? minute :'0'+minute;
+    second = second > 9 ? second :'0'+second;
+    $("#countDays").children('.time-num').html(day);
+    $("#countHours").children('.time-num').html(hour);
+    $("#countMinutes").children('.time-num').html(minute);
+    $("#countSeconds").children('.time-num').html(second);
+  };
+  //每五分钟自动刷新一次防止页面更新
+  setInterval(function () {
+    window.location.reload();
+  }, 1000 * 60 * 5)
+</script>
+</html>

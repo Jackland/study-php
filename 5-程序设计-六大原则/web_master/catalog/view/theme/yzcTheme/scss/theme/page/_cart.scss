@@ -1,0 +1,190 @@
+@charset "UTF-8";
+
+//
+// @copyright        2019 opencart.cn - All Rights Reserved
+// @link             http://www.guangdawangluo.com
+// @author           Sam Chen <sam.chen@opencart.cn>
+// @created          2019-11-07 11:37:37
+// @modified         2019-11-07 11:40:49
+//
+
+#page-cart-wrapper {
+  background: #fff;
+
+  .tag-red {
+    background: #d61212;
+    color: #fff;
+    font-size: 12px;
+    padding: 0 2px;
+    margin: 0 3px;
+    text-align: center;
+    font-weight: 400;
+    display: inline-block;
+  }
+
+  .cart-top {
+    padding: 12px 0;
+    display: flex;
+    align-items: center;
+    margin-top: 30px;
+    border-bottom: 1px solid #bbb;
+    justify-content: space-between;
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      color: $brand-primary;
+    }
+
+    .check-out {
+      color: #fff;
+      font-size: 15px;
+      background: #888;
+      padding: 7px 14px;
+      border-radius: 4px;
+    }
+  }
+
+  .name {
+    margin-bottom: 4px;
+  }
+
+  .quantity-tool {
+    width: 100px;
+
+    input {
+      height: 32px;
+      padding: 0 2px;
+      text-align: center;
+    }
+
+    .btn {
+      color: #333 !important;
+      font-weight: 400;
+      height: 30px;
+      line-height: 30px;
+      padding: 0 10px;
+      border: none;
+      font-size: 20px;
+      box-shadow: none;
+      background: #fff;
+    }
+
+    span.right {
+      button {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .price {
+    font-weight: bold;
+  }
+
+  .total {
+    font-weight: bold;
+    color: #fa6400;
+  }
+
+  .btn-link {
+    color: #000;
+    box-shadow: none;
+  }
+
+  .cart-product-wrapper {
+    td {
+      padding: 17px 8px;
+    }
+
+    .product-img {
+      padding: 17px 20px;
+    }
+
+    tbody {
+      tr {
+        &:nth-child(2n+2) {
+          background: #eee;
+        }
+      }
+    }
+  }
+
+  .check-out-btn {
+    text-align: right;
+
+    .btn {
+      color: #fff;
+      font-size: 16px;
+      background: #999;
+    }
+  }
+
+  .cart-product-bottom {
+    display: flex;
+    margin-top: 30px;
+    justify-content: space-between;
+
+    .checkout-total-wrapper {
+
+      td {
+        border: none;
+        padding: 14px 8px;
+
+        @media (min-width: 768px) {
+          min-width: 120px;
+
+          &:nth-child(2n+2) {
+            padding-right: 0;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+
+    .total-price {
+      color: #fa6400;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  }
+
+  .checkbox-plus-2 {
+    color: #000;
+
+    label {
+      padding: 0;
+    }
+
+    input {
+      display: none;
+
+      & + span.icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 1px solid #aaa;
+        cursor: pointer;
+        font-weight: 500;
+        margin-right: 10px;
+        margin-top: -3px;
+      }
+
+      &:checked +span {
+        background: #666;
+        border-color: #666;
+      }
+
+      &:checked +span:before {
+        content: "\f00c";
+        font-family: fontawesome;
+        margin-left: 3px;
+        margin-top: 3px;
+        color: #fff;
+      }
+    }
+
+    span {
+      float: left;
+    }
+  }
+}

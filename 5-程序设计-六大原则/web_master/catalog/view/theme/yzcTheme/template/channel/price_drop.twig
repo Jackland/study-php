@@ -1,0 +1,52 @@
+{{ cssOrigin(['/catalog/view/javascript/layui/css/layui.css']) }}
+{{ css(['css/common/common.css']) }}
+{{ css(['css/buyer/channel/index.css']) }}
+{# 公共组件做特殊化处理 #}
+{# drop-price #}
+<div class="drop-price pb-20">
+  <div class="section">
+    <h1></h1>
+  </div>
+  {% from 'yzcTheme/template/extension/module/featured_components/no_records.twig' import no_record %}
+  {{ no_record( productsInfo.data|length ,categories.0.amount) }}
+  {% if productsInfo.data|length == 0 and categories.0.amount == 0 %}
+  <div class="main">
+  {% else %}
+  <div class="main min-height332">
+  {% endif %}  
+    <div class="center-module">
+      <div class="heightCoop p10-t">
+      {% if productsInfo.data %}
+          <div class="center-module-content">
+            <div class="pos-rela p20-t">
+              <div class="channel-module-title">{{ __('最新降价产品', {}, 'product/channel') }}</div>
+            </div>
+            <div class="channel-module-details">
+              {% for product in productsInfo.data %}
+                <div class="item">
+                  <div class="item-content"> {% include 'giga/template/_parts/home.twig' %}</div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>      
+      {% endif %}
+     </div>
+      {# 16460分类导航 #}
+      {% if categories[0]['amount'] > 0 %}
+        {% include 'yzcTheme/template/extension/module/featured_components/category_nav.twig' %}
+        <!--search content-->
+        <div class="search-content center-module-content m10-t">
+          <div id="data-load" class="channel-module-details" page="1" data-loadsuccess="true">
+
+          </div>
+        </div>
+        <!--END-->
+        <!-- <div class="load"></div> -->
+        <input type="hidden" id="url" value="{{ url('product/channel/getChannelSynData',{'type':'price_drop'}) }}">
+        <script src="/public/static/channel/channel.js"></script>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{{ footer }}

@@ -1,0 +1,161 @@
+<div class="panel-group cloud-upload" id="cloudUploadPanel" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="collapseUploadCloud">
+      <h4 class="panel-title tab-title" data-toggle="collapse">
+        <div class="tab-title-left">
+          <i class="giga icon-batch-export"></i>
+          <span class="sub-title">Batch Order Upload</span>
+          <span class="sub-des">Upload multiple orders together</span>
+        </div>
+      </h4>
+    </div>
+    <div id="collapseBatchCloud" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapseUploadCloud">
+      <div lass="panel-body batch-con">
+        <div class="form-wrapper">
+          Order From
+          <span class="m30-l">
+            <label class="radio-inline">
+              <input name="cloudOrderFrom" type="radio" value="0" checked disabled />
+              <span>Non FBA</span>
+            </label>
+            <span class="hover-pointer" data-toggle="tooltip" data-html="true" title="1. Buyer's brick-and-mortar store<br>2. Buyer's private warehouse<br>3. If delivering to a residential address, please note the Marketplace will provide only updated transportation statuses.">
+              <i class="giga icon-V10-wenhaotishi"></i>
+            </span>
+          </span>
+        </div>
+      </div>
+      <div class="panel-body batch-con" id="cloudPlatform">
+        <button class="btn btn-primary mr20" id="upload_button_cloud">Upload</button>
+        <input type="file" id="upload_file_cloud" name='upload_file_cloud' accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display:none;">
+        <a href="{{ url('account/sales_order/CloudWholesaleFulfillment/downloadUploadTemplateFile') }}" class="mr20 btn-link btn-link-active">Download Template</a>
+        <a href="{{ url('account/sales_order/CloudWholesaleFulfillment/uploadFileInstructions') }}" target="_blank" class="mr20 btn-link btn-link-active">Instructions</a>
+        <a href="index.php?route=information/information&information_id=130" class="mr20 btn-link btn-link-active" target="_blank">Shipping Information</a>
+        <a href="javascript:void(0);" class="btn-link btn-link-active pop-down-new pos-rela">
+          View the Inventory Matching Rules
+          <div class="popover pop-down">
+            <div class="arrow"></div>
+            <div class="pop-content">
+              <div>1) When matching the inventory to the uploaded sales order, the spot price items with sufficient quantity will be matched first, followed by the Margin items, and finally the items with lowest price.</div>
+              <div>2) If there is any change made to the inventory matched to the sales order before the payment, please re-upload the sales order. From there, the system will match the latest inventory according to the rule above.</div>
+              <div>3) If the shipping address of multiple orders are the same, the Marketplace will combine the orders and make the delivery together. The shipping fee will be calculated separately according to the shipping address. If you wish to deliver your orders to the same address, please keep all the addresses exactly the same. (Note: the same address refers to the condition when 'ShipToName, ShipToEmail, ShipToPhone, ShipToPostalCode, ShipToAddressDetail, ShipToCity, ShipToState and ShipToCountry' of diffenrent orders are all the same).</div>
+            </div>
+          </div>
+        </a>
+        <div class="upload-process" id="uploadProcessCloud" style="display: none">
+          <div class="progress">
+            <div id='progress-bar-upload-cloud' class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0;">
+            </div>
+          </div>
+          <div class="process-tip-error-cloud"></div>
+          <div class="process-tip-success-cloud"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+var cloudUploadPage = {
+  $page: $('#cloudUploadPanel'),
+  bindClick: function() {
+    this.$page.on('click', '#upload_button_cloud', function(event) {
+      $('#upload_file_cloud').trigger('click');
+      event.preventDefault();
+    })
+  },
+  bindChanged: function() {
+  	// 文件变更
+  	$('#upload_file_cloud').change(function(){
+      cloudUploadPage.handleFileChanged($(this));
+    })
+  },
+  handleFileChanged: function($file) {
+  	if ($file.length === 0) {
+  		return false;
+  	}
+  	let files = $file[0].files;
+    $('.process-tip-error-cloud').html('');
+    $('.process-tip-success-cloud').html('');
+    $('#progress-bar-upload-cloud').removeClass('error');
+    $('#upload_button_cloud').button('loading');
+    var formFile = new FormData();
+    var index = files[0]['name'].lastIndexOf(".");
+    var suffix = files[0]['name'].substr(index + 1);
+    if (suffix != 'xls' && suffix != 'xlsx') {
+      layerMsg('The order file should be .xls or.xlsx');
+      $('#upload_button_cloud').button('reset');
+      return false;
+    }
+    $('#progress-bar-upload-cloud').css({ 'width': '30%' });
+
+    formFile.append("file", files[0]);
+    //一件代发
+    formFile.append("upload_type", 0);
+    var data = formFile;
+    $.ajax({
+      url: "{{ url('account/sales_order/CloudWholesaleFulfillment/uploadCwfFile') }}",
+      data: data,
+      type: "Post",
+      dataType: "json",
+      cache: false, //上传文件无需缓存
+      processData: false, //用于对data参数进行序列化处理 这里必须false
+      contentType: false, //必须
+      beforeSend: function() {
+        $("#uploadProcessCloud").show();
+        layer.load(1, { shade: [0.3, '#000'] });
+      },
+      success: function(result) {
+        $('#upload_file_cloud').val('');
+        $('#upload_button_cloud').button('reset');
+        if (result.error) {
+          $('.process-tip-error-cloud').html(result.error);
+          $('#progress-bar-upload-cloud').addClass('error');
+        } else {
+          $('#progress-bar-upload-cloud').css({ 'width': '100%' });
+          $('.process-tip-success-cloud').html(result.text);
+          window.open(result.next);
+        }
+        layer.closeAll('loading');
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        $('#upload_file_cloud').val('');
+        $('#upload_button_cloud').button('reset');
+        $('#progress-bar-upload-cloud').addClass('error').css({ 'width': '61.8%' });
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    })
+  },
+  checkCloudOrder: function(url, process) {
+    $('#progress-bar-upload-cloud').removeClass('error').css({'width': process});
+    $.ajax({
+      url: url,
+      data: [],
+      type: "Post",
+      dataType: "json",
+      cache: false,//上传文件无需缓存
+      success: function (result) {
+        layer.closeAll('loading');
+        if (result.error) {
+          $('#progress-bar-upload-cloud').addClass('error');
+          $('.process-tip-error-cloud').html(result.error);
+          $('.process-tip-success-cloud').html('');
+        } else {
+          $('.process-tip-success-cloud').html(result.text);
+          $('.process-tip-error-cloud').html('');
+          $('#progress-bar-upload-cloud').css({'width': '100%'});
+
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        $('#progress-bar-upload-cloud').addClass('error').css({'width': '61.8%'});
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    })
+  }
+}
+$(function() {
+  cloudUploadPage.bindClick();
+  cloudUploadPage.bindChanged();
+});
+</script>

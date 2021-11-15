@@ -1,0 +1,533 @@
+{% trans_default_category 'account/sidebar/price_calculator' %}
+{% include 'yzcTheme/template/account/customerpartner/sidebar/price_calculator/components/calc_modal.twig' %}
+{{ css(['/css/admin/price_calculator/cost_form.css']) }}
+<script type="text/x-template" id="cost-form">
+  <div class="cost-form">
+    <div class="dividing-line">
+      <span class="header-title"> {{ __('成本&费用') }} </span>
+      <span class="amount-label-gray">（{{ __('成本&费用小计') }}:
+        <span class="amount-label-orange">${ symbolleft + cost + symbolright }</span>)
+      </span>
+    </div>
+    <el-row class="pd-t-24">
+      <el-col :span="12">
+        <el-form-item label="{{ __('FOB') }}">
+          <el-input v-model="form.FOB" @blur="onBlurAmount" :oninput="countryid!=107?validNumber2:validNumber3">
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="{{ __('海运费') }}">
+          <el-input v-model="form.seaFreight" :disabled="isdisabled" @blur="onBlurAmount"
+                    :oninput="countryid!=107?validNumber2:validNumber3">
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="12">
+        <el-form-item label="{{ __('目的港费') }}">
+          <el-input v-model="form.destinationFee" :disabled="isdisabled" @blur="onBlurAmount"
+                    :oninput="countryid!=107?validNumber2:validNumber3">
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="{{ __('关税') }}">
+          <el-input v-model="form.dutyFee" :disabled="isdisabled" @blur="onBlurAmount"
+                    :oninput="countryid!=107?validNumber2:validNumber3">
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="12">
+        <el-form-item label="{{ __('卸货费') }}">
+          <el-input v-model="form.unloadFee" :disabled="isdisabled" @blur="onBlurAmount"
+                    :oninput="countryid!=107?validNumber2:validNumber3">
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="{{ __('Bond 费') }}">
+          <el-input v-model="form.bondFee" @blur="onBlurAmount" :oninput="countryid!=107?validNumber2:validNumber3">
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="12">
+        <el-form-item label="{{ __('平台费') }}">
+          <el-input v-model="form.platformFee" disabled>
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="{{ __('仓租费') }}">
+          <el-input v-model="form.warehouseRent" @blur="onBlurAmount" :oninput="countryid!=107?validNumber2:validNumber3">
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="12">
+        <el-form-item label="">
+          <span class="input-label">{{ __('平台费用比例') }}</span>
+          <el-input v-model="form.platformFeeProportion" :oninput="validNumber1" @blur="computeFee('platformFee')">
+            <template slot="suffix">%</template>
+          </el-input>
+          <span class="cost-tip" data-toggle="tooltip"
+                data-original-title="{{ __('平台费用比例默认值参考上个自然月已产生的平台费用比例均值，
+                每月1号生成上个自然月数据，如有延迟则取上上个自然月数据。') }}">
+            <i class="giga icon-V10-wenhaotishi"></i>
+          </span>
+        </el-form-item>
+      </el-col>
+      <el-col v-if="countryid==223" :span="12">
+        <el-form-item label="">
+          <span class="input-label">{{ __('平均售出天数') }}</span>
+          <el-input v-model="form.soldDay" @blur="onBlurDay" :oninput="validNumber4" placeholder="1-9999">
+            <template slot="append">{{ __('天') }}</template>
+          </el-input>
+          <span class="cost-tip" data-toggle="tooltip" data-original-title="{{ __('平均售出天数指存货放在仓库里的平均天数') }}">
+            <i class="giga icon-V10-wenhaotishi"></i>
+          </span>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="12">
+        <el-form-item label="{{ __('RMA货损') }}">
+          <el-input v-model="form.RMADamage" disabled>
+            <template slot="append">${ currency }</template>
+          </el-input>
+          <span class="cost-tip" data-toggle="tooltip" data-original-title="{{ __('RMA货损=退返品率×成本小计（不含RMA货损）') }}">
+            <i class="giga icon-V10-wenhaotishi"></i>
+          </span>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="{{ __('B2B平台物流费') }}">
+          <el-input v-model="form.B2BLogisticsFee" disabled>
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="12">
+        <el-form-item label="">
+          <span class="input-label">{{ __('退返品率') }}</span>
+          <el-input v-model="form.returnRate" @blur="onBlurProportion" :oninput="validNumber1">
+            <template slot="suffix">%</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="">
+          <span class="input-label">{{ __('运费') }}</span>
+          <el-input v-model="form.freight" @blur="onBlurAmount" :oninput="countryid!=107?validNumber2:validNumber3"
+                    @change="computeB2BLogisticsFee('')">
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="12">
+        <el-form-item label="{{ __('其他成本') }}">
+          <el-input v-model="form.otherCost" :oninput="countryid!=107?validNumber2:validNumber3"
+                    @blur="onchangeOtherCost('otherCost','otherCostProportion','productValue',1)" >
+            <template slot="append">${ currency }</template>
+          </el-input>
+          <span class="cost-tip" data-toggle="tooltip"
+                data-original-title="{{ __('其他成本指上述未明确的某一项或某几项支出的合计金额') }}">
+            <i class="giga icon-V10-wenhaotishi"></i>
+          </span>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="">
+          <span class="input-label">{{ __('打包费') }}</span>
+          <el-input v-model="form.packFee" @blur="onBlurAmount" :oninput="countryid!=107?validNumber2:validNumber3"
+                    @change="computeB2BLogisticsFee('')">
+            <template slot="append">${ currency }</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="12">
+        <el-form-item label="">
+          <span class="input-label">{{ __('其他成本比例') }}</span>
+          <el-input v-model="form.otherCostProportion" :oninput="validNumber1"
+                    @blur="onchangeOtherCost('otherCost','otherCostProportion','productValue',2)">
+            <template slot="suffix">%</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <div class="cost-expense dividing-line">
+      <div>
+        <span class="header-title"> {{ __('收入') }} </span>
+        <span class="amount-label-gray">（{{ __('收入小计') }}:
+          <span class="amount-label-orange">${ symbolleft + income + symbolright}</span>)
+        </span>
+      </div>
+      <div class="pd-t-24">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="{{ __('B2B平台物流费') }}">
+              <el-input v-model="form.B2BLogisticsFee2" disabled>
+                <template slot="append">${ currency }</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="{{ __('产品货值') }}">
+              <el-input v-model="form.productValue" @blur="onBlurProductValue" :oninput="countryid!=107?validNumber2:validNumber3">
+                <template slot="append">${ currency }</template>
+              </el-input>
+              <span @click="openModal" class="suggest-price">{{ __('获取建议价') }}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="">
+              <span class="input-label">{{ __('运费') }}</span>
+              <el-input v-model="form.freight2" @blur="onBlurAmount" :oninput="countryid!=107?validNumber2:validNumber3"
+                        @change="computeB2BLogisticsFee(2)">
+                <template slot="append">${ currency }</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="">
+              <span class="input-label">{{ __('打包费') }}</span>
+              <el-input v-model="form.packFee2" @blur="onBlurAmount" :oninput="countryid!=107?validNumber2:validNumber3"
+                        @change="computeB2BLogisticsFee(2)">
+                <template slot="append">${ currency }</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+    </div>
+
+    <!-- 获取建议价格 -->
+    <calc-modal :visible="visible" :currency="currency" :freight="form.freight2" :packfee="form.packFee2"
+      :countryid="countryid" :symbolleft="symbolleft" :symbolright="symbolright" @getPrice="getPrice"
+      @closeCalcModal="closeCalcModal">
+    </calc-modal>
+
+  </div>
+</script>
+<script>
+  Vue.component('cost-form', {
+    template: '#cost-form',
+    delimiters: ['${', '}'],
+    props: {
+      isdisabled: {
+        type: Boolean,
+        default: false
+      },
+      currency: String,
+      symbolleft: String,
+      symbolright: String,
+      countryid: [Number,String],
+    },
+    data: () => {
+      return {
+        form: { },
+        visible: false,
+
+        // 0.1-100.0
+        validNumber1: 'this.value= this.value.match(/(100|((([1-9][0-9]{0,1}|\\d)(\\.\\d{0,1})?)?))/)?' +
+          'this.value.match(/(100|((([1-9][0-9]{0,1}|\\d)(\\.\\d{0,1})?)?))/)[0]:\'\'',
+
+        // 0.01-99999.99
+        validNumber2: 'this.value= this.value.match(/(([1-9][0-9]{0,4}|\\d)(\\.\\d{0,2})?)?/)?' +
+          'this.value.match(/(([1-9][0-9]{0,4}|\\d)(\\.\\d{0,2})?)?/)[0]:\'\'',
+        // 1-9999999
+        validNumber3: 'this.value= this.value.match(/([1-9]\\d{0,6}|0)?/) ? this.value.match(/([1-9]\\d{0,6}|0)?/)[0] : \'\'',
+        // 1-9999
+        validNumber4: 'this.value= this.value.match(/([1-9]\\d{0,3})?/) ? this.value.match(/([1-9]\\d{0,3})?/)[0] : \'\'',
+
+        // 正整数
+        validNumber5: 'this.value= this.value.match(/(([1-9][0-9]{0,}|0)(\\.\\d{0,2})?)?/)?' +
+          'this.value.match(/(([1-9][0-9]{0,}|0)(\\.\\d{0,2})?)?/)[0]:\'\'',
+        // 包含两位小数
+        validNumber6: 'this.value= this.value.match(/([1-9]\\d{0,}|0)?/) ? this.value.match(/([1-9]\\d{0,}|0)?/)[0] : \'\'',
+        // 成本&费用
+        cost: '{{ countryId }}'==107?0:'0.00',
+        // 收入
+        income: '{{ countryId }}'==107?0:'0.00',
+      }
+    },
+    methods: {
+      // 初始化数据
+      initData(){
+        this.form = {
+          /** 成本&费用 **/
+          FOB: '0.00',
+          seaFreight: '0.00', //海运费
+          destinationFee: '0.00', //目的港费
+          dutyFee: '0.00', //关税
+          unloadFee: '0.00', //卸货费
+          bondFee: '0.00', //bond费
+          platformFee: '0.00', //平台费
+          warehouseRent: '0.00', //仓租费
+          platformFeeProportion: '5', //平台费用比例
+          soldDay: '45', //平均售出天数
+          RMADamage: '0.00', //RMA货损
+          B2BLogisticsFee: '0.00', //b2b平台物流费
+          returnRate: '0', //退返品率
+          freight: '0.00', //运费
+          otherCost: '0.00', //其他成本
+          packFee: '0.00', //打包费
+          otherCostProportion: '0', //其他成本比例
+          /** 收入 **/
+          B2BLogisticsFee2: '0.00',
+          productValue: '0.00', //产品货值
+          freight2: '0.00', //运费
+          packFee2: '0.00', //打包费
+        };
+        this.cost = this.countryid==107?0:'0.00';
+        this.income = this.countryid==107?0:'0.00';
+
+        if(this.countryid==107){
+          for(var key in this.form){
+            this.$set(this.form,[key],parseInt(this.form[key]));
+          }
+        }
+      },
+      // 根据国别进行小数位保留（四舍五入）
+      toFixedNum(val){
+        let result = this.countryid == 107 ? mathematical.MathToFixed(val,0): mathematical.MathToFixed(val,2);
+        result = this.countryid == 107 ? mathematical.formatDecimal(result,0): mathematical.formatDecimal(result,2);
+        return result;
+      },
+      // 保留两位小数
+      toFiexed2(num){
+        return this.countryid == 107 ? mathematical.formatDecimal(num,0): mathematical.formatDecimal(num,2);
+      },
+      /*************输入框失焦事件**************/
+      // 金额失焦置为0
+      onBlurAmount(e) {
+        if (e.target.value == '') {
+          e.target.value = this.countryid !=107 ? '0.00':0;
+        }else{
+          e.target.value = this.toFiexed2(e.target.value);
+        }
+        this.computeB2BLogisticsFee(1);
+        this.computeB2BLogisticsFee(2);
+        // 计算收入小计
+        this.computedIncome();
+        this.computedAllCostFee();
+        this.computedTotal();
+        this.computedRMA();
+      },
+      // 百分比、平均售出天数失焦置为0,
+      onBlurProportion(e){
+        if (e.target.value == '') {
+          e.target.value = 0;
+        }
+        this.computedTotal();
+        this.computedAllCostFee();
+        this.computedRMA();
+      },
+      // 天数
+      onBlurDay(e){
+        if(e.target.value==''){
+          this.form.warehouseRent = this.toFiexed2(0);
+        }else{
+          this.$parent.$parent.getFee();
+          this.computedTotal();
+          this.computedAllCostFee();
+          this.computedRMA();
+        }
+      },
+      // 产品货值失焦
+      onBlurProductValue(e){
+        this.onBlurAmount(e);
+        this.computeFee('platformFee');
+        this.computeFee('otherCost');
+        // 计算收入小计
+        this.computedIncome();
+        this.computedAllCostFee();
+      },
+
+      /******************弹窗部分********************/
+      // 打开弹窗-获取建议价
+      openModal() {
+        this.visible = true;
+        $('.myPriceModal').modal('show')
+      },
+      // 关闭弹窗
+      closeCalcModal() {
+        this.visible = false;
+        $('.myPriceModal').modal('hide')
+      },
+
+      // 获取建议价格
+      getPrice(val) {
+        this.$set(this.form, 'productValue', val);
+        this.computedIncome();
+        this.closeCalcModal();
+        this.computeFee('platformFee');
+        this.onchangeOtherCost('otherCost','otherCostProportion','productValue',2);
+        this.computedAllCostFee();
+      },
+
+      /***************计算公式*****************/
+      // RMA货损=RMA率×成本合计（不含RMA货损）
+      computedRMA(){
+        this.computedTotal();
+        let arg2 = mathematical.accMul(this.computedTotal(),mathematical.accMul(this.form.returnRate,0.01));
+        let result = this.toFixedNum(arg2);
+        this.$set(this.form,'RMADamage',result);
+        this.computedAllCostFee();
+      },
+      // 平台费 = 平台费用比例*产品货值,其他成本=其他成本比例*产品货值
+      computeFee(key){
+        // 判断平台费用比例和其他成本比例是否为空
+        if(key == 'platformFee'|| key == 'otherCost'){
+          if(this.form[key+'Proportion']==''){
+            this.$set(this.form,[key+'Proportion'],0);
+          }
+        }
+        let args = parseFloat(this.form[key+'Proportion']);
+        let productValue = parseFloat(this.form.productValue);
+        let lastValue = 0;
+        if(productValue>0&&args>0){
+          lastValue =  mathematical.accMul(mathematical.accMul(args,0.01),productValue);
+        }
+        this.$set(this.form,[key],this.toFixedNum(lastValue));
+        this.computedAllCostFee();
+        this.computedRMA();
+      },
+      // 监听其他成本、其他成本比例, key1 其他成本 key2 其他成本比例 key3 产品货值，type 1 除数 2 乘
+      onchangeOtherCost(key1,key2,key3,type){
+        if(key1=='otherCost'){
+          this.form[key1]=this.toFiexed2(this.form[key1]);
+          if(this.form[key1+'Proportion']==''){
+            this.$set(this.form,[key1+'Proportion'],0);
+          }
+        }
+        let arg1 = parseFloat(this.form[key1]);
+        let arg2 = parseFloat(this.form[key2]);
+        let arg3 = parseFloat(this.form[key3]);
+        let indexKey = '';
+        let lastValue = 0;
+        let reg = /^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$/;
+
+        if(type==1){
+          if(reg.test(arg3)&&reg.test(arg1)){
+            lastValue = arg3>0? arg1 / arg3 : 0;
+          }
+          lastValue = lastValue>=0&&arg3>0? mathematical.accMul(lastValue,100):'N/A';
+          indexKey = key2;
+        }else if(type==2&&reg.test(arg2)&&reg.test(arg3)){
+          let num1 = mathematical.accMul(arg2,0.01);
+          lastValue = mathematical.accMul(num1,arg3);
+          indexKey = key1;
+        }
+        this.form[indexKey] =lastValue!='N/A'?this.toFixedNum(lastValue):lastValue;
+        this.computedTotal();
+        this.computedAllCostFee();
+        this.computedRMA();
+      },
+      // B2B平台物流费 = 运费+打包费
+      computeB2BLogisticsFee(suffix){
+        let value = parseFloat(this.form['freight'+suffix]||0) + parseFloat(this.form['packFee'+suffix]||0);
+        this.$set(this.form,'B2BLogisticsFee'+suffix,this.toFixedNum(value));
+      },
+      // 收入小计
+      computedIncome(){
+        let value = mathematical.accAdd(this.form.productValue,this.form.B2BLogisticsFee2);
+        this.income = this.toFixedNum(value);
+        this.income = mathematical.formatDecimal(this.income,this.countryid==107?0:2);
+        return this.income;
+      },
+      // 成本&费用小计=FOB+海运费+目的港费+关税+卸货费+Bond费+平台费+仓租费+RMA货损+B2B平台物流费+其他成本
+      computedAllCostFee(){
+        let arg1 = mathematical.accAdd(this.computedTotal(),this.form.RMADamage);
+        this.cost = mathematical.MathToPrice(arg1,2);
+        this.cost = mathematical.formatDecimal(this.cost,this.countryid==107?0:2);
+        return this.cost;
+      },
+      // 成本合计（不包含RAM货损）
+      computedTotal(){
+        let arg1 = mathematical.accAdd(this.form.FOB,this.form.seaFreight);
+        let arg2 = mathematical.accAdd(arg1,this.form.destinationFee);
+        let arg3 = mathematical.accAdd(arg2,this.form.dutyFee);
+        let arg4 = mathematical.accAdd(arg3,this.form.unloadFee);
+        let arg5 = mathematical.accAdd(arg4,this.form.bondFee);
+        let arg6 = mathematical.accAdd(arg5,this.form.platformFee);
+        let arg7 = mathematical.accAdd(arg6,this.form.warehouseRent);
+        let arg8 = mathematical.accAdd(arg7,this.form.B2BLogisticsFee);
+        let arg9 = mathematical.accAdd(arg8,this.form.otherCost);
+        return arg9;
+      },
+      // 净利润=收入小计- 成本&费用小计；
+      computedIncomeProfit(){
+        let value = mathematical.accSub(this.computedIncome(),this.computedAllCostFee());
+        let result = mathematical.MathToPrice(value,2);
+        result = mathematical.formatDecimal(result,this.countryid==107?0:2);
+        return result;
+      },
+      // 利润率=(净利润÷收入小计)×100%
+      computedProfitMargin(){
+        let value = parseFloat(this.income)>0? this.computedIncomeProfit()/this.computedIncome():0;
+        let result = mathematical.accMul(value,100);
+        result = mathematical.MathToFixed(result,this.countryid==107?0:2);
+        return result;
+      },
+
+      /************************返回净利润、利润率*************************/
+      // 获取结计算结果
+      getResult(){
+        if(parseFloat(this.cost)>0){
+          let obj = {
+            incomeProfit: this.computedIncomeProfit()||0,
+            profitMargin: 0
+          };
+          if(parseFloat(this.income)>0){
+            obj.profitMargin = this.computedProfitMargin()||0
+          }
+          return obj;
+        }else{
+          return {
+            incomeProfit: this.countryid==107?0:'0.00',
+            profitMargin: ''
+          }
+        }
+      },
+    },
+    created(){
+      this.initData();
+    }
+  })
+</script>

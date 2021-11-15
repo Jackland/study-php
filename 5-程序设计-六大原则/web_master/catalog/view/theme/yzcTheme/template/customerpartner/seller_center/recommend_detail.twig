@@ -1,0 +1,305 @@
+{% trans_default_category 'catalog/view/customerpartner/seller_center/recommend_detail' %}
+
+{{ this.title(__('Buyer推荐', {}, 'catalog/document')) }}
+{{ this.params('breadcrumbs', [
+  'home',
+  'seller_center',
+  'current'
+]) }}
+{{ this.params('pageTitle', {show: false}) }}
+{{ cssOrigin(['catalog/view/javascript/layer/theme/yzc/layuiOris.css']) }}
+{{ css(['static/customerpartner/seller_center/recommend_detail.css']) }}
+
+<div class="main buyer-info">
+  <div class="buyer-info-left">
+    <div class="buyer-info-left-main">
+      <div class="percent-val row">
+        <div class="col-sm-6"></div>
+        <div class="col-sm-6  pad-l-280">
+          <div class="per-val">
+            <div>
+              <span>{{ recommend.match_score }}</span><span class="unit">%</span>
+            </div>
+          </div>
+          <div class="per-dis">
+            <div>
+              {{ __('匹配度') }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 text-right">
+          <div class="flag-tab pad-r-70">
+            <span class="user-flag text-left">
+              <i class="flag-title">{{ __('退返品率') }}: </i>
+              <i class="flag-value">{{ userPortraitFormatted.return_rate }}</i>
+            </span>
+          </div>
+          <div class="flag-tab pad-r-90">
+            <span class="user-flag  text-left">
+              <i class="flag-title">{{ __('购买关系') }}: </i>
+              <i class="flag-value">{{ extra.is_connected ? __('已建立') : __('未建立') }}</i>
+            </span>
+          </div>
+          <div class="flag-tab pad-r-70">
+            <span class="user-flag  text-left">
+              <i class="flag-title">{{ __('与我最近一次站内信沟通') }}:  </i>
+              <i class="flag-value">
+                {{ extra.last_message_date ? extra.last_message_date.diffForHumans() : __('N/A', {}, 'common') }}
+              </i>
+            </span>
+          </div>
+          <div class="flag-tab pad-r-90">
+            <span class="user-flag  text-left">
+              <i class="flag-title">{{ __('与我最近一次交易') }}:  </i>
+              <i class="flag-value">
+                {{ extra.last_transaction_date ? extra.last_transaction_date.diffForHumans() : __('无记录') }}
+              </i>
+            </span>
+          </div>
+          <div class="flag-tab pad-r-130">
+            <span class="user-flag  text-left">
+              <i class="flag-title">{{ __('产品匹配度') }}:  </i>
+              <i class="flag-value">{{ recommend.match_score }}%</i>
+            </span>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="flag-tab pad-l-70">
+            <span class="user-flag">
+              <i class="flag-title">{{ __('GIGA Index') }}: </i>
+              <i class="flag-value">{{ buyer.performance_score|round(2) }}</i>
+            </span>
+          </div>
+          <div class="flag-tab pad-l-90">
+            <span class="user-flag">
+              <i class="flag-title">{{ __('平台活跃度') }}: </i>
+              <i class="flag-value">{{ extra.platform_active }}</i>
+            </span>
+          </div>
+          <div class="flag-tab pad-l-70">
+            <span class="user-flag">
+              <i class="flag-title">{{ __('首次平台交易') }}: </i>
+              <i class="flag-value">{{ userPortraitFormatted.first_order }}</i>
+            </span>
+          </div>
+          <div class="flag-tab pad-l-90">
+            <span class="user-flag">
+              <i class="flag-title">{{ __('近30天销售量') }}: </i>
+              <i class="flag-value">{{ userPortraitFormatted.monthly_sales }}</i>
+            </span>
+          </div>
+          <div class="flag-tab pad-l-130">
+            <span class="user-flag">
+              <i class="flag-title">{{ __('复杂交易参与度') }}: </i>
+              <i class="flag-value">{{ userPortraitFormatted.complex_complete }}</i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="text-center">
+        <div class="buyer-type">{{ extra.buyer_type }}</div>
+        <div class="flag-tab">
+          <span class="user-flag">
+            <i class="flag-title">{{ __('主营品类') }}: </i>
+            <i class="flag-value">{{ userPortraitFormatted.main_category }}</i>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="buyer-info-tips">
+      <div class="tip-title">{{ __('小贴士') }}:</div>
+      <div class="tip-item">
+        <div>
+          <div class="tip-item-index">1</div>
+        </div>
+        <div class="tip-item-text">
+          {{ __('匹配度由产品的品类计算得出，仅供参考；若无匹配度，请先完善您上架产品的品类；') }}
+        </div>
+      </div>
+      <div class="tip-item">
+        <div>
+          <div class="tip-item-index">2</div>
+        </div>
+        <div class="tip-item-text">
+          {{ __('您可以通过页面提供的选品负责人微信联系Buyer的采购人员，向他们推荐您的产品；') }}
+        </div>
+      </div>
+      <div class="tip-item">
+        <div>
+          <div class="tip-item-index">3</div>
+        </div>
+        <div class="tip-item-text">
+          {{ __('您可以通过页面提供的联系电话联系Buyer，获得进一步的沟通；') }}
+        </div>
+      </div>
+      <div class="tip-item">
+        <div>
+          <div class="tip-item-index">4</div>
+        </div>
+        <div class="tip-item-text">
+          {{ __('您也可以通过“联系Buyer”按钮给Buyer发送产品推荐站内信；') }}
+        </div>
+      </div>
+      <div class="tip-item">
+        <div>
+          <div class="tip-item-index">5</div>
+        </div>
+        <div class="tip-item-text">
+          {{ __('如需帮助，请联系在线客服或您的运营顾问。') }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="buyer-info-right">
+    <div class="buyer-info-right-top-guid"></div>
+    <div class="buyer-info-right-main">
+      <div class="buyer-name">{{ buyerCustomer.full_name }}</div>
+      <div class="buyer-id">
+        ID: {{ buyerCustomer.user_number }}
+        <div class="circle c-left"></div>
+        <div class="circle c-right"></div>
+      </div>
+      <div class="account-type">
+        <span class="account-label">{{ __('账户类型') }}:</span>
+        <span class="account-value">{{ extra.buyer_type }}</span>
+      </div>
+      <div class="main-category">
+        <span class="account-label">{{ __('主营品类') }}:</span>
+        <span class="account-value">{{ userPortraitFormatted.main_category }}</span>
+      </div>
+      {% if buyer.selector_cellphone %}
+        <div class="user-info">
+          <i class="giga icon-V10_dianhua-01 icon-phone"></i>
+          <span class="val-phone">{{ buyer.selector_cellphone ?: __('N/A', {}, 'common') }}</span>
+        </div>
+      {% endif %}
+      {% if buyer.selector_wechat %}
+        <div class="user-wx">
+          <i class="giga icon-V10_weixin-01 icon-wx"></i>
+          <span class="val-wx">
+              {{ buyer.selector_wechat ?: __('N/A', {}, 'common') }}
+              <span data-toggle="tooltip" data-original-title="{{ __('选品负责人微信') }}">
+                <i class="giga icon-V10-wenhaotishi"></i>
+              </span>
+            </span>
+        </div>
+      {% endif %}
+      {% if buyer.selector_qq %}
+        <div class="user-qq">
+          <i class="giga icon-qq-copy icon-qq"></i>
+          <span class="val-wx">
+              {{ buyer.selector_qq ?: __('N/A', {}, 'common') }}
+              <span data-toggle="tooltip" data-original-title="{{ __('选品负责人QQ') }}">
+                <i class="giga icon-V10-wenhaotishi"></i>
+              </span>
+            </span>
+        </div>
+      {% endif %}
+      <a href="{{ url('message/seller/addMessage', {receiver_id: buyer.buyer_id}) }}" target="_blank"
+         data-cnzz-event="推荐Buyer信息详情|ContactBuyer"
+         class="button button-org">{{ __('联系Buyer') }}</a>
+    </div>
+    <div class="no-interest">
+      <span class="link-text-color" id="noInterest">{{ __('不感兴趣') }}</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  var noInterest = {
+    _html: `
+    <p>{{ __('请选择不感兴趣的原因，以便我们给您提供更好的服务') }}</p>
+    <p>
+        <span class="reason-tab">{{ __('重复推荐') }}</span>
+        <span class="reason-tab">{{ __('已有交易往来') }}</span>
+        <span class="reason-tab">{{ __('不是目标客户') }}</span>
+    </p>
+    <p>
+        <input type="text" class="form-control border-raduis-2 reason-input" placeholder="{{ __('请输入自定义原因') }}" maxlength="50">
+    </p>
+  `,
+    init() {
+      this._initShow();
+      this._initReason();
+    },
+    _initShow() {
+      var _this = this
+      $("body").on("click", '#noInterest', function () {
+        layer.open({
+          area: '400px',
+          title: '{{ __('反馈') }}',
+          skin: 'yzc_layer submit_disabled',
+          content: _this._html,
+          btnAlign: 'c',
+          btn: ['{{ __('提交') }}', '{{ __('取消') }}'],
+          yes: function () {
+            if (!_this._checkCanSubmit()) {
+              return;
+            }
+            var reason = _this._getReason();
+            layer.load();
+            $.post('{{ url('customerpartner/seller_center/recommend/notInterest') }}', {
+              id: {{ recommend.id }},
+              reason: reason,
+            }, function (data) {
+              if (data.code !== 200) {
+                $.toast({
+                  heading: false,
+                  text: data.msg,
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'error',
+                  hideAfter: 5000,
+                  allowToastClose: false,
+                  loader: false,
+                });
+                return;
+              }
+              $.toast({
+                heading: false,
+                text: '{{ __('提交成功') }}',
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'success',
+                hideAfter: 5000,
+                allowToastClose: false,
+                loader: false,
+              });
+              layer.closeAll();
+            });
+          }
+        });
+      });
+    },
+    _initReason() {
+      var _this = this
+      $('body').on('click', '.reason-tab', function () {
+        $(this).toggleClass('active');
+        _this._checkCanSubmit();
+      })
+      $('body').on('keyup', '.reason-input', function () {
+        _this._checkCanSubmit();
+      })
+    },
+    _checkCanSubmit() {
+      var canSubmit = this._getReason() !== '';
+      if (!canSubmit) {
+        $('.yzc_layer').addClass('submit_disabled');
+      } else {
+        $('.yzc_layer').removeClass('submit_disabled');
+      }
+      return canSubmit;
+    },
+    _getReason() {
+      var text = [];
+      $('.reason-tab.active').each(function () {
+        text.push($(this).text());
+      });
+      text.push($.trim($('.reason-input').val()));
+      return text.filter(item => !!item).join(',');
+    }
+  }
+  noInterest.init()
+</script>

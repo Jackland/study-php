@@ -1,0 +1,572 @@
+{% trans_default_category 'catalog/view/customerpartner/message_center/new_message' %}
+
+{{ this.title('Compose') }}
+{{ this.params('breadcrumbs', [
+  {
+    text: 'Message Center',
+    href: 'javascript:void(0)',
+  },
+  'current'
+]) }}
+
+{{ this.params('pageTitle', {
+  show: true,
+  title: 'Compose',
+  backUrl: '',
+  buttons: []
+}) }}
+
+{{ css([
+  'css/common/common.css',
+  'css/common/common-ext.css',
+  'static/message/message-common.css',
+  'static/customerpartner/message_center/new-message.css'
+]) }}
+
+{{ this.registerAssets(['App\\Assets\\Common\\SummernoteAsset']) }}
+
+<style>
+#content-textarea-container p {
+  margin-bottom: 0px;
+}
+</style>
+
+<div id="page-new-message" class="msgcent msg-page-container msgcent">
+  <div class="form-container">
+    <div>
+      <div class="recipient-label-container">
+        <div class="msgcent msg-form__label-sm">
+          Recipient:
+        </div>
+        <div class="btn-container btn-container-group">
+          <div class="msgcent msg-btn__text add-btn" onclick="addGroup()">Add contact group</div>
+          <div class="split-line"></div>
+          <div class="msgcent msg-btn__text add-btn" onclick="addContracts()">Add contacts</div>
+        </div>
+      </div>
+      <div id="receiver-input-container"> 
+        <div class="msgcent msg-receive__container msg-form" id="receiver-container" data-type=""><span class="msg-receive-placeholder">Click the button on the right to add recipients</span></div>
+        <div class="error-tip text-danger hidden">Recipient can not be blank.</div>
+      </div>
+    </div>
+    <div class="msgcent msg-form__item mt-16">
+      <div class="msgcent msg-form__label-sm">
+        Subject:
+      </div>
+      <div class="msgcent msg-form__content" id="subject-input-container">
+        <input class="oris-input msg-form" maxlength="200" id="message-subject" placeholder="Please enter the message subject" value="{{ subject }}">
+        <div class="error-tip text-danger hidden">Subject can not be blank.</div>
+      </div>
+    </div>
+    <div class="msgcent msg-form__item mt-16">
+      {% if words_type %}
+        <div class="msgcent msg-form__label-sm">
+          Content:
+        </div>
+        <div class="msgcent msg-form__label-sm common-words-label">
+          Specific Scenario Corpus:
+        </div>
+        <div class="common-words-container">
+          {% include 'yzcTheme/template/customerpartner/message_center/common/common-words/index.twig' %}
+        </div>
+      {% endif %}
+      <div class="content-container" id="content-textarea-container">
+        <textarea class="content-textarea msg-form" id="content-textarea" data-toggle="summernote"></textarea>
+        <div class="error-tip text-danger hidden">Content can not be blank.</div>
+      </div>
+
+      <div class="btn-container">
+        {% include 'yzcTheme/template/customerpartner/message_center/common/file-upload/index.twig' %}
+        {# <button class="oris-button btn-item oris-button-default upload-btn"><i class="giga icon-shangchuan upload-icon"></i>Upload Files</button> #}
+        <button class="oris-button oris-w120 oris-button-bigger" type="button" onclick="sendMsg()" id="send-btn">Send</button>
+      </div>
+    </div>
+
+
+    <div id="file-list-container" style="display:none">
+    </div>
+  </div>
+</div>
+
+{# 分组选择弹窗 #}
+<div id="group-picker-dialog" style="display: none">
+  {% if buyer_group %}
+    {% for group in buyer_group %}
+      <div>
+        <div class="group-item-row">
+          <div style="margin-right: 8px">
+            <input class="oris-checkbox-mini" type="checkbox" name="all_select" data-id="{{ group.id }}" data-name="{{ group.name }}" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);"/>
+          </div>
+          <div class="group-item-label">{{ group.name }}</div>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+
+<script>
+window.addEventListener('pageshow', (e) => {
+    if (e.persisted || (window.performance && 
+        window.performance.navigation.type == 2)) {
+        location.reload()
+    }
+}, false)
+
+var customerId = '{{ customer_id }}';
+var is_jump = {{ is_jump }};
+var buyers = '{{ buyers }}';
+
+//清除localstorage中对应的收件人信息
+function clearLocalCustomer() {
+  localStorage.removeItem('new-message-from-' + customerId);
+}
+
+//绑定联系人删除事件
+$('#receiver-container').on('click', '.msg-receive__item .msg-receive__clear', function() {
+  $(this).parent().remove();
+  clearLocalCustomer();
+  if($('.msg-receive__item').length <= 0) {
+    $(".msg-receive__container").html(`<span class="msg-receive-placeholder">Click the button on the right to add recipients</span>`)
+  }
+})
+
+$(document).ready(function () {
+  // 清除富文本编辑框默认换行
+  $("#content-textarea").val("");
+  // 发送限制
+  let remain_send_count = {{ remain_send_count }}
+  if (remain_send_count == 0) {
+    layer.alert("The number of messages sent has reached its maximum limit for the day. ", {
+        closeBtn: 0,
+        btnAlign: 'c',
+        title: 'Attention',
+        btn: ['I Know'],
+        skin: 'oris-layer'},
+        function () {
+          location.href = '{{ url('customerpartner/message_center/my_message/buyers') }}'
+        });
+    return;
+  }
+  if (remain_send_count > 0) {
+    var hintStr = ':number times remaining to send messages';
+    if (remain_send_count == 1) {
+      hintStr = ':number time remaining to send messages';
+    }
+    hintStr = hintStr.replace(':number', remain_send_count);
+
+    layer.msg(hintStr, {time: 2000});
+  }
+
+  // 从buyer list那边过来的群发操作
+  if(buyers) {
+    var customers = JSON.parse(buyers);
+    var html = "";
+    if (customers) {
+      for (let customer of customers) {
+        html += `<div class="msgcent msg-receive__item" data-customer="${customer.buyer_id}" data-id="${customer.buyer_id}" data-name="${customer.nickname}">
+          ${customer.nickname}
+          <i class="giga icon-sidebar-clear msg-receive__clear"></i>
+        </div>`
+      }
+      $(".msg-receive__container").html(html);
+      $(".msg-receive__container").data('type', 'buyer');
+    }
+  }
+
+  if(is_jump) {
+    var customers = JSON.parse(localStorage.getItem('new-message-from-' + customerId));
+    var html = "";
+    if (customers) {
+      for (let customer of customers) {
+        html += `<div class="msgcent msg-receive__item" data-customer="${customer.buyer_id}" data-id="${customer.buyer_id}" data-name="${customer.nickname}">
+          ${customer.nickname}
+          <i class="giga icon-sidebar-clear msg-receive__clear"></i>
+        </div>`
+      }
+      $(".msg-receive__container").data('type', 'buyer')
+      $(".msg-receive__container").html(html)
+    }
+  }
+  clearLocalCustomer();
+})
+
+// 获取勾选分组
+function getGroups() {
+  var selectedGroup = [];
+  $('#group-picker-dialog input:checked').each(function() {
+    selectedGroup.push($(this).attr('name'));
+  });
+}
+
+//输入时清空局部的错误提示
+$('#message-subject').on('input', function(){
+  if ($('#message-subject').val().trim()) {
+    toggleFormError(formValidateMap.subject, false);
+  }
+})
+
+$("#content-textarea").on("summernote.change", function (e) {   // callback as jquery custom event 
+  if ($("#content-textarea").val().trim()) {
+    toggleFormError(formValidateMap.content, false, true);
+  }
+});
+
+function checkSendMsg() {
+  var isSendMsg = false;
+  $.ajax({
+    type: "get",
+    url: "{{ url('customerpartner/message_center/extension/isSendMsg') }}",
+    async: false,
+    success: function (res) {
+      if (res.data.is_send_msg == 1) {
+        isSendMsg = true;
+      }
+    }
+  });
+  if (!isSendMsg) {
+    layer.alert("The number of messages sent has reached its maximum limit for the day. ", {
+        closeBtn: 0,
+        btnAlign: 'c',
+        title: 'Attention',
+        btn: ['I Know'],
+        skin: 'oris-layer'},
+      function () {
+        location.href = '{{ url('customerpartner/message_center/my_message/buyers') }}'
+      });
+  }
+
+  return isSendMsg;
+}
+
+// 设置当前默认选中的
+function setDefaultLocalReceivers() {
+  if($(".msg-receive__container").data('type') !== 'buyer_group') {
+    let receivers = new Set();
+    $(".msg-receive__item").each(function(){
+      receivers.add(JSON.stringify({
+        id: $(this).data('id'),
+        name: $(this).data('name')
+      }))
+    });
+    localStorage.setItem('temp-receivers', JSON.stringify(Array.from(receivers)));
+  }
+}
+
+//弹窗选择后添加联系人到收件人框
+function setReceivers() {
+  let receivers = localStorage.getItem('temp-receivers') ? new Set(JSON.parse(localStorage.getItem('temp-receivers'))) : new Set();
+  if(receivers.size > 0){
+    let html = '';
+    receivers.forEach(function(receiver) {
+        let r = JSON.parse(receiver);
+        html += `<div class="msgcent msg-receive__item" data-customer="${r.id}" data-id="${r.id}" data-name="${r.name}">
+        ${r.name}
+        <i class="giga icon-sidebar-clear msg-receive__clear"></i>
+        </div>`
+    })
+    $("#receiver-container").html(html);
+  } else {
+    $("#receiver-container").html(`<span class="msg-receive-placeholder">Click the button on the right to add recipients</span>`)
+  }
+
+  localStorage.removeItem('temp-receivers');
+  $(".msg-receive__container").data('type', 'buyer')
+}
+
+function addContracts() {
+  if (!checkSendMsg()) {
+    return;
+  }
+  //window.location.href = "{{ url('account/customerpartner/buyer_management/list') }}";
+
+  //弹窗中设置默认勾选的联系人
+  setDefaultLocalReceivers();
+  
+  //打开群发收件人列表弹窗
+  layer.open({
+    type: 2,
+    area: ['1000px', '800px'],
+    title: 'All Contacts',
+    fixed: false,
+    skin: 'oris-layer msgcent msg-layer',
+    scrollbar: true,
+    content: `index.php?route='customerpartner/message_center/message/buyers'`,
+    cancel: function() {
+      localStorage.removeItem('temp-receivers');
+    }
+  });
+}
+
+
+
+// 打开弹窗前勾选默认分组
+function setDefaultGroupCheck() {
+  if($(".msg-receive__container").data('type') == 'buyer_group') {
+    $("input[name='all_select']").removeAttr("checked");
+    $(".msg-receive__item").each(function(){
+      var outter = this;
+      $("input[name='all_select']").each(function () {
+        if($(this).data('id') == $(outter).data('customer')) {
+          $(this).prop("checked", true);
+        }
+      });
+    });
+  }
+}
+
+// 打开选择分组弹窗
+function addGroup() {
+  if (!checkSendMsg()) {
+    return;
+  }
+  setDefaultGroupCheck()
+  var index = layer.open({
+    type: 1,
+    title: 'Select contact group',
+    closeBtn: 1,
+    skin: 'oris-layer',
+    shadeClose: false,
+    offset: 'auto',
+    area: ['480px', 'auto'],
+    // 需要翻译
+    content: $("#group-picker-dialog"),
+    btn: ['Add to', 'Cancel'],
+    yes: function() {
+      var groups = [];
+      $("input[name='all_select']:checked").each(function () {
+        groups.push({id: $(this).data('id'), name: $(this).data('name')});
+      });
+      if (groups.length > 0) {
+        var html = "";
+        for (let group of groups) {
+          html += `<div class="msgcent msg-receive__item" data-customer="${group.id}">
+          <i class="giga icon-qun msg-receive__groupicon"></i>
+          ${group.name}
+          <i class="giga icon-sidebar-clear msg-receive__clear"></i>
+        </div>`
+        }
+        $(".msg-receive__container").html(html);
+        $(".msg-receive__container").data('type', 'buyer_group');
+        clearLocalCustomer();
+        toggleFormError(formValidateMap.receiver, false);
+      }
+
+      layer.close(index)
+    },
+    btn2: function() {
+      $("input[name='all_select']").removeAttr('checked');
+    },
+    cancel: function(index, layero) {
+      $("input[name='all_select']").removeAttr('checked');
+    }
+  });
+}
+
+// 显示错误提示
+// @params isRich 是否是富文本
+// @params show 显示错误或者影藏错误
+function toggleFormError(el, show=true, isRich=false) {
+  show ? $(el + " .error-tip").removeClass("hidden") : $(el + " .error-tip").addClass("hidden");
+  let formRed = isRich ? el + " .note-frame" : el + " .msg-form";
+  show ? $(formRed).addClass("error-input") : $(formRed).removeClass("error-input");
+}
+
+// 表单验证字段dom对应
+var formValidateMap = {
+  receiver: "#receiver-input-container",
+  subject: "#subject-input-container",
+  content: "#content-textarea-container"
+}
+
+function resetFormValidate() {
+  $('.error-tip').addClass('hidden');
+  $('.note-frame').removeClass("error-input");
+  $('.msg-form').removeClass("error-input");
+}
+
+function sendMsg() {
+  resetFormValidate();
+
+  let formData = new FormData();
+  let content = $('#content-textarea').val();
+  let hasError = false;
+  // if (content.replace(/<.*?>/g,"") === '') {
+  if (content.trim() === '') {
+    toggleFormError(formValidateMap.content,true,true);
+    hasError = true;
+  }
+  formData.append('content', content);
+
+  let subject = $('#message-subject').val().trim();
+  if (!subject) {
+    toggleFormError(formValidateMap.subject);
+    hasError = true;
+  }
+  formData.append('subject', subject);
+
+  if ($('.msg-receive__item').length <= 0) {
+    toggleFormError(formValidateMap.receiver);
+    hasError = true;
+  }
+
+  let ids = [];
+  $(".msg-receive__item").each(function () {
+    ids.push($(this).data('customer'))
+  })
+  formData.append('ids', ids.join());
+
+  let type = $('#receiver-container').data('type');
+  if (type !== 'buyer' && type !== 'buyer_group') {
+    toggleFormError(formValidateMap.receiver);
+    hasError = true;
+  }
+  formData.append('id_type', type);
+
+  let files = getUploadFiles();
+  for (let i=0; i < files.length; i++) {
+    formData.append('files[]', files[i]);
+  }
+
+  if(hasError) {
+    return;
+  }
+
+  block.blockUI();
+  $.ajax({
+    url: "{{ url('customerpartner/message_center/message/saveVerify') }}",
+    type: "POST",
+    data: formData,
+    dataType:'json',
+    contentType: false,
+    processData: false,
+    enctype: 'multipart/form-data',
+    success: function(res) {
+      let text = '';
+      switch (res.code) {
+        case 200:
+          buildMsg(formData);
+          return;
+        case 410:
+          // 发送频次限制
+          layer.alert("The number of messages sent has reached its maximum limit for the day. ", {
+            closeBtn: 0,
+            btnAlign: 'c',
+            title: 'Attention',
+            btn: ['I Know'],
+            skin: 'oris-layer'},
+          function () {
+            location.href = '{{ url('customerpartner/message_center/my_message/buyers') }}'
+          });
+          return;
+        case 420:
+          // 提示语言不符合后无法点击下一步发送
+          block.unBlockUI();
+          layer.alert(res.msg, {
+              closeBtn: 1,
+              btnAlign: 'c',
+              title: 'Attention',
+              btn: ['I Know'],
+              skin: 'oris-layer'});
+          return;
+        case 430:
+          // 提示语言不符合后点击下一步发送
+          block.unBlockUI();
+          layer.confirm(res.msg, {
+            closeBtn: 1,
+            btnAlign: 'c',
+            title: 'Message',
+            btn: ['Yes', 'No'],
+            skin: 'oris-layer',
+            yes: function (index) {
+              layer.closeAll();
+              buildMsg(formData);
+            },
+            btn2: function () {
+              layer.closeAll();
+            }
+          });
+          return;
+        default:
+          text = res.msg;
+      }
+      if (text !== '') {
+        block.unBlockUI();
+        $.toast({
+          heading: false,
+          text: text,
+          position: 'top-center',
+          showHideTransition: 'fade',
+          icon: 'error',
+          hideAfter: 3000,
+          allowToastClose: false,
+          loader: false,
+        });
+      }
+    },
+    error: function() {
+      block.unBlockUI();
+      layer.alert("Oop! Something went wrong and it wa probably our fault. Please try again later or report the problem to us!", {
+        closeBtn: 1,
+        btnAlign: 'c',
+        title: 'Message',
+        btn: ['OK'],
+        skin: 'oris-layer'
+      });
+    }
+  })
+}
+
+function buildMsg(formData) {
+  $("#send-btn").prop("disabled", true);
+  $.ajax({
+    url: "{{ url('customerpartner/message_center/message/save') }}",
+    type: "POST",
+    data: formData,
+    dataType: 'json',
+    contentType: false,
+    processData: false,
+    enctype: 'multipart/form-data',
+    success: function (res) {
+      block.unBlockUI();
+      if (res.code == 200) {
+        $.toast({
+          heading: false,
+          text: 'Send Successfully!',
+          position: 'top-center',
+          showHideTransition: 'fade',
+          icon: 'success',
+          hideAfter: 3000,
+          allowToastClose: false,
+          loader: false,
+        });
+        window.location.href = '{{ url('customerpartner/message_center/my_message/buyers', {tab_type:'sent'}) }}'
+        clearLocalCustomer();
+      } else {
+        $.toast({
+          heading: false,
+          text: res.msg,
+          position: 'top-center',
+          showHideTransition: 'fade',
+          icon: 'error',
+          hideAfter: 3000,
+          allowToastClose: false,
+          loader: false,
+        });
+        $("#send-btn").prop("disabled", false);
+      }
+    },
+    error: function () {
+      block.unBlockUI();
+      layer.alert("Oop! Something went wrong and it wa probably our fault. Please try again later or report the problem to us!", {
+        closeBtn: 1,
+        btnAlign: 'c',
+        title: 'Message',
+        btn: ['OK'],
+        skin: 'oris-layer'
+      });
+    }
+  });
+}
+
+</script>

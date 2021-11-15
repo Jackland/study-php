@@ -1,0 +1,57 @@
+.main-con-box {
+  background: #fff;
+}
+.invoice-tip {
+  margin: 16px 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ff6600;
+}
+.msg-empty {
+  text-align: center;
+}
+.mr-25 {
+  margin-right: 25px;
+}
+.action-hover a{
+  color: #004BD8;
+}
+.action-hover:hover a{
+  text-decoration: underline;
+}
+.invoice-list-circle{
+  display: inline-block;
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+  margin-bottom: 2px;
+  margin-right: 4px;
+}
+.circle-pending{
+  background: #666666;
+}
+.circle-completed{
+  background: #0AAD4F;
+}
+.circle-failed{
+  background: #E64545;
+}
+.invoice-list-name{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  margin-right: 10px;
+  flex-shrink: 3000;
+  word-break: break-all;
+}
+.invoice-w280{
+  width:280px
+}
+.invoice-w180{
+  width: 180px;
+}
+.msg-empty-title{
+  color: #333;
+}

@@ -1,0 +1,95 @@
+<section class="featured-stores-section mb-20">
+  <div class="section-title">
+    <h3 class="module-title text-bold font-size24">
+      {% if featuredStoresEnd == 0 %}
+        <a
+          target="_blank"
+          href="{{ url('product/channel/getChannelData',{'type':'feature_stores'}) }}"
+          data-cnzz-event="">Featured Stores
+        </a>
+      {% else %}
+        Featured Stores
+      {% endif %}
+    </h3>
+    {% if featuredStoresEnd == 0 %}
+      <a class="view-more"
+         target="_blank"
+         href="{{ url('product/channel/getChannelData',{'type':'feature_stores'}) }}"
+         data-cnzz-event="">
+        View More&nbsp;<i class="giga icon-V10_youjiantougengduo text-small"></i>
+      </a>
+    {% endif %}
+  </div>
+  <div class="channel-module-details">
+    {% for data in featureStores.data %}
+      {% include 'yzcTheme/template/extension/module/featured_components/store_module.twig' %}
+    {% endfor %}
+  </div>
+</section>
+<style>
+  .mb-20{
+    margin-bottom: 20px;
+  }
+  .featured-stores-section .font-size24{
+    font-size: 24px;
+  }
+  .featured-stores-section .new-store-item-content {
+    background-color: #f5f5f5;
+  }
+
+  .featured-stores-section .mf-icon {
+    border-left: 40px solid #f5f5f5;
+  }
+
+  .featured-stores-section .section-title {
+    margin-bottom: 2px;
+    padding-left: 20px;
+    padding-top: 20px;
+  }
+
+  .featured-stores-section .channel-module-details {
+    padding: 0 10px 10px 10px;
+  }
+
+  .featured-stores-section .channel-module-details .new-store-item {
+    width: 25% !important;
+  }
+
+  .featured-stores-section .item-img {
+    overflow: hidden;
+    flex-wrap: inherit !important;
+  }
+
+  .featured-stores-section .new-store-item-content .img-module {
+    width: 50% !important;
+  }
+
+  .featured-stores-section .pop-down {
+    left: calc(50% - 115px);
+    /* left: -70px; */
+  }
+  .featured-stores-section .store-group .score{
+    margin-right: 0;
+  }
+
+  @media (max-width: 1440px) {
+    .featured-stores-section .store-pop > div {
+      margin-right: 20px !important;
+    }
+  }
+
+  @media (min-width: 1500px) {
+    .item-msg .item-group .item-name {
+      /* max-width: 58% !important; */
+      /* max-width: 100% !important; */
+      max-width: calc(100% - 78px) !important;
+    }
+  }
+
+  /*适配1200px*/
+  @media (max-width: 1440px) {
+    .item-msg .item-img-box {
+      display: none;
+    }
+  }
+</style>

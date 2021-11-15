@@ -1,0 +1,470 @@
+<link href="/catalog/view/javascript/datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet"
+      media="screen">
+<style>
+  /*.recharge .form-wrapper .form-group > label{*/
+  /*    text-transform: none;*/
+  /*    color: #333;*/
+  /*    font-weight: inherit;*/
+  /*}*/
+  .recharge .form-wrapper label.radio-inline input[type="radio"]::before {
+    font-size: 14px;
+  }
+
+  .recharge .form-wrapper label.radio-inline span {
+    margin-left: 0;
+  }
+
+  .table .btn-view,
+  .table .btn-delete{
+    background-color: #f3f5f7;
+    font-size: 16px;
+    padding: 0;
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    border: 1px solid #eee;
+  }
+  .table .btn-view:hover, .table .btn-delete:hover{
+    background: #fb6400;
+    border: 1px solid #fb6400;
+    color: #fff;
+  }
+
+  .table .btn-view i {
+    font-size: 16px;
+  }
+
+  .week, .month, .year {
+    color: #3A75DC;
+    font-size: 12px;
+    text-transform: capitalize;
+  }
+
+  .week:hover, .month:hover, .year:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .datetimepicker {
+    padding: 0;
+  }
+
+  .fees {
+    font-size: 12px;
+    color: #ccc;
+  }
+
+  .voucher-name {
+    text-overflow: ellipsis;
+    max-width: 100px;
+    overflow: hidden;
+    display: inline-block;
+    color: #3A75DC;
+    text-decoration: none;
+  }
+  .voucher-name:hover{
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .oddNumber {
+    color: #FA6400;
+  }
+
+  #applyId {
+    margin-top: 20px;
+  }
+  #prviewPic::-webkit-scrollbar{
+    display: none;
+  }
+  .nearly{
+    margin-right: 10px;
+  }
+</style>
+<div class="tab-content main">
+  <div role="tabpanel" class="tab-pane active" id="tab">
+    <div class="bg-white p-2 recharge">
+      <div class="filter-wrapper form-wrapper">
+        <div class="row">
+
+          {#查询条件#}
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label class="control-label" style="width: 100%">
+                CREDIT LINE FLOW
+              </label>
+              <select class="form-control" name="status_rc" id="status_rc">
+                <option value="0" {% if 0 == status_rc %} selected {% endif %}>All</option>
+                {% for statusIndex,statusValue in recharge_apply_status_arr %}
+                  <option value="{{ statusIndex }}" {% if statusIndex == status_rc %} selected {% endif %}>{{ statusValue }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" style="width: 100%">
+                EXCHANGE HOUR
+                <div id="dateError" style="display: none;float: right">{{ error_date }}</div>
+              </label>
+              <div class="datetimepicker-range">
+                <div class="datetimepicker">
+                  <input id="datetimeFrom" type="text" class="form-control date"
+                         placeholder="Pick a date..." name="filter_effectTimeFromRc"
+                         value="{{ TimeFrom }}"/>
+                  <span class="title">From</span>
+                  <span class="icon"><i class="giga icon-date-icon"></i></span>
+                </div>
+                <div class="datetimepicker">
+                  <input id="datetimeTo" type="text" class="form-control date"
+                         placeholder="Pick a date..." name="filter_effectTimeToRc"
+                         value="{{ TimeTo }}"/>
+                  <span class="title">To</span>
+                  <span class="icon"><i class="giga icon-date-icon"></i></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <div style=" margin-top: 50px">
+                <a class="nearly week" id="week2">ONE WEEK</a>
+                <a class="nearly month" id="month2">ONE MONTH</a>
+                <a class="nearly year" id="year2">ONE YEAR</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-2" >
+            <div class="form-group pull-right">
+              <label class="control-label" style="width: 100%">&nbsp;</label>
+              <button type="button" onclick="filterRC(this);"
+                      class="btn btn-primary">{{ button_filter }}</button>
+              <a onclick="cleanFilterRC(this);" class="btn btn-default"
+                 data-toggle="tooltip" title="Reset"><i class="giga icon-reset3 fontw"></i></a>
+              <button onclick="downloadExcel();" class="btn btn-default" data-toggle="tooltip"
+                      title="{{ button_download }}">
+                <i class="giga icon-xiazai fontw"></i></button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th class="text-left">{{ recharge_order_title }}</th>
+          <th class="text-center">Date</th>
+          <th class="text-center">Method</th>
+          <th class="text-center">{{ title_bank_voucher }}</th>
+          <th class="text-right">Account</th>
+          <th class="text-center">Amount <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title="Actual amount received will be shown after add account funds"></i></th>
+          <th class="text-center">Status</th>
+          <th class="text-center" width="90x">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if record_list %}
+          {% for record in record_list %}
+            <tr>
+              <td class="text-left color-blank-gray">
+                {{ record.serial_number }}
+                {% if record.is_brother==1 %}
+                  <i class="giga icon-guanlian"></i>
+                {% endif %}
+              </td>
+              <td class="text-center">{{ record.apply_date }}</td>
+              <td class="text-center">
+                {{ record.rechargeMethod }}
+                {% if record.commission>0 %}
+                  <br><span class="fees">{{ title_commission }}${{ record.commission }}</span>
+                {% endif %}
+              </td>
+              <td class="text-center voucher" style="position: relative">
+                {% if  record.payment_voucher_arr %}
+                  {% for payment_voucher in record.payment_voucher_arr %}
+                    <span>
+                      <a class="voucher-name voucher-preview" data-pic="{{ payment_voucher.path }}"
+                         title="{{ payment_voucher.name }}" >{{ payment_voucher.name }}</a>
+                    </span><br>
+                  {% endfor %}
+                {% endif %}
+              </td>
+
+              <td class="text-right" style="width: 220px">
+                <span style="display: block">{{ record.firstname }}{{ record.lastname }}, {{ record.country }}</span>
+                <span style="display: block">{{ record.email }}</span>
+              </td>
+              <td class="text-center color-blank-gray">{{ record.money }}</td>
+              <td class="text-center color-blank-gray">{{ record.applyStatus }}</td>
+              <td class="text-left" style="text-align: right">
+                {% if record.delete==1 %}
+                  <a class="btn btn-delete" onclick="deleteApply({{ record.recharge_apply_id }})" style="cursor:pointer;">
+                    {#                  <a href="" class="" data-toggle="modal" data-target="#delModal">#}
+                    <i class="giga icon-lajitong"></i>
+                  </a>
+                {% endif %}
+                <a class="btn btn-view" href="{{ record.detailUrl }}" title="" style="margin-right: 5px">
+                  <i class="giga icon-mimaxianshi"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="7" class="text-center">No Record.</td>
+          </tr>
+        {% endif %}
+        </tbody>
+      </table>
+
+      <div class="row" style="margin-right: 0">
+        <div class="col-sm-12 text-right">
+          <ul id="bos_pagination_rc"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <input type="hidden" id="hiddenId" value="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Attention</h4>
+      </div>
+      <div class="modal-body" style="padding: 15px 30px">
+        {{ delete_recharge_order_tips }}
+        <div id="applyId">
+          {#        <p class="oddNumber">单号 <span>11111111</span></p>#}
+          {#        <p class="oddNumber">单号 <span>11111111</span></p>#}
+        </div>
+      </div>
+      <div class="modal-footer " style="text-align: center">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="btnDel()" id="btnDel">{{ delete_recharge_order_btn }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{#图片的模态框#}
+<div id="prviewPic" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content" style="border: none;box-shadow: none;background: transparent">
+      <div class="modal-body">
+              <img id="previewImgTag" class="img-responsive" src="" alt="previewPic">
+      </div>
+    </div>
+  </div>
+</div>
+{#图片的模态框#}
+<script type="text/javascript" src="/catalog/view/javascript/datetimepicker/bootstrap-datetimepicker.min.js"
+        charset="UTF-8"></script>
+<script>
+  function deleteApply(apply_id) {
+    $.ajax({
+      url: "/index.php?route=account/balance/recharge/brotherSerialNumber",
+      type: 'post',
+      dataType: 'json',
+      data: {'apply_id': apply_id},
+      async: true,
+      beforeSend: function () {
+        layer.load(1, {shade: [0.3, '#000']});
+      },
+      success: function (result) {
+        layer.closeAll('loading');
+        if (result.error === 0) {
+          $('#delModal').modal('show');
+          $('#hiddenId').val(apply_id);
+          $('#applyId').html('');
+          result.info.forEach(function (item) {
+            $('#applyId').append("<p class='oddNumber'>{{ recharge_order_title }} <span>" + item.serial_number + "</span></p>");
+          })
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+
+  function btnDel() {
+    let page={{ page_num }};
+    let apply_id = $('#hiddenId').val();
+    block.blockUI();
+    $('#btnDel').prop('disabled', true);
+
+    $.ajax({
+      url: "/index.php?route=account/balance/recharge/applyDelete",
+      type: 'post',
+      dataType: 'json',
+      data: {'apply_id': apply_id },
+      async : true,
+      beforeSend: function () {
+        layer.load(1,{shade: [0.3,'#000']});
+      },
+      success: function (result) {
+        console.log(result);
+        layer.closeAll('loading');
+
+        if (result.code === 200) {
+          myToastFn(result.msg, 'success');
+        } else {
+          myToastFn(result.msg, 'error');
+        }
+        $('.modal-backdrop').removeClass('fade');
+        $('.modal-backdrop').removeClass('in');
+        $('.modal-backdrop').removeClass('modal-backdrop');
+        $('#btnDel').prop('disabled', false);
+        let url = getUrlRC(list_recharge_url, page);
+        $('#bid-recharge').load(url);
+        paginationRC();
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+
+  }
+
+
+  // 提示框
+  function myToastFn(message, type) {
+    $.toast({
+      heading: false,
+      text: message,
+      position: 'top-center',
+      showHideTransition: 'fade',
+      icon: type,
+      hideAfter: 3000,
+      allowToastClose: false,
+      loader: false
+    })
+  }
+
+  let list_recharge_url = 'index.php?route=account/balance/recharge/tab_recharge';
+  let list_recharge_down_url = 'index.php?route=account/balance/recharge/downloadExcel';
+  $('#datetimeFrom').datetimepicker({
+    minView: 2,
+    format: 'yyyy-mm-dd',
+    autoclose: true,
+  });
+  $('#datetimeTo').datetimepicker({
+    minView: 2,
+    format: 'yyyy-mm-dd',
+    autoclose: true,
+  });
+
+  {% if TimeFrom %}
+  var time_1 = "{{ TimeFrom }}";
+  time_1 = time_1.split(" ")[0];
+  $('#datetimeFrom').val(time_1);
+  {% endif %}
+  {% if TimeTo %}
+  var time_2 = "{{ TimeTo }}";
+  time_2 = time_2.split(" ")[0];
+  $('#datetimeTo').val(time_2);
+  {% endif %}
+
+  var now = new Date();
+  $('#week2').click(function () {
+
+    var sdtime3 = new Date().setDate((new Date().getDate() - 7));
+    $('#datetimeFrom').datetimepicker('setDate', new Date(sdtime3));
+    $('#datetimeTo').datetimepicker('setDate', new Date());
+  });
+  $('#month2').click(function () {
+
+    var sdtime4 = new Date().setMonth((new Date().getMonth() - 1));
+    $('#datetimeFrom').datetimepicker('setDate', new Date(sdtime4));
+    $('#datetimeTo').datetimepicker('setDate', new Date());
+
+  });
+  $('#year2').click(function () {
+    var yeartime = new Date().setFullYear((new Date().getFullYear() - 1));
+    $('#datetimeFrom').datetimepicker('setDate', new Date(yeartime));
+    $('#datetimeTo').datetimepicker('setDate', new Date());
+
+  })
+
+  $(function () {
+    block.unBlockUI();
+    paginationRC();
+  });
+
+  function paginationRC() {
+    if ({{ total_pages }}) {
+      //total_pages
+      $('#bos_pagination_rc').bootstrapPaginator({
+        /*当前使用的是3版本的bootstrap*/
+        bootstrapMajorVersion: 3,
+        /*配置的字体大小是小号*/
+        size: 'normal',
+        /*当前页*/
+        currentPage: {{ page_num }},
+        /*一共多少页*/
+        totalPages: {{ total_pages }},
+        /*页面上最多显示几个含数字的分页按钮*/
+        numberOfPages: 5,
+        total: {{ total }},
+        rowsOfPage: {{ page_limit | default(100) }},
+
+        onPageClicked: function (event, originalEvent, type, page) {
+          block.blockUI();
+          let url = getUrlRC(list_recharge_url, page);
+          $('#bid-recharge').load(url);
+        }
+      });
+    }
+  }
+
+  function getUrlRC(url, page) {
+    // let statusRc = $("input[name='status_rc']:checked").val();
+    let statusRc = $("#status_rc option:selected").val();
+    if (statusRc) {
+      url += '&recharge_status=' + encodeURIComponent(statusRc);
+    }
+    let timeFrom = $("input[name='filter_effectTimeFromRc']").val();
+    if (timeFrom) {
+      url += '&timeFrom=' + encodeURIComponent(timeFrom + " 00:00:00");
+    }
+    let timeTo = $("input[name='filter_effectTimeToRc']").val();
+    if (timeTo) {
+      url += '&timeTo=' + encodeURIComponent(timeTo + " 23:59:59");
+    }
+    if (page) {
+      url += "&page_num=" + page;
+    }
+    return url;
+  }
+
+  function downloadExcel() {
+    let url = getUrlRC(list_recharge_down_url);
+    location = url;
+  }
+
+  function filterRC(button) {
+    block.blockUI();
+    let url = getUrlRC(list_recharge_url);
+    $('#bid-recharge').load(url);
+    // $(button).button('loading');
+  }
+
+  function cleanFilterRC(button) {
+    block.blockUI();
+    $('#bid-recharge').load(list_recharge_url);
+  }
+
+  // 图片预览
+  $(".voucher-preview").click(function () {
+    console.log($(this).attr("data-pic"));
+    $("#previewImgTag").attr("src","");
+    $("#previewImgTag").attr("src",$(this).attr("data-pic"));
+    $("#prviewPic").modal('show');
+  })
+</script>

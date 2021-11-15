@@ -1,0 +1,287 @@
+<style>
+  .div-wrap-content {
+    width: 100%;
+    display: inline-flex;
+  }
+
+  .div-content {
+    margin: 10px 0 0 20px;
+  }
+
+  .div-header {
+    font-size: 15px;
+    width: 16%;
+    padding: 0 20px;
+  }
+
+  .div-detail {
+    width: 25%;
+  }
+
+  .div-detail-label {
+    margin-right: 5px;
+  }
+
+  .div-view-all {
+
+  }
+</style>
+<div class="modal fade" id="myModal-notification" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+            class="sr-only">{{ text_close }}</span></button>
+        <h3
+          class="modal-title">{{ 'Hi ' }}{% if sellerProfile['firstname'] is defined %}{{ sellerProfile['firstname'] }}{% endif %} {% if sellerProfile['lastname'] is defined %}{{ sellerProfile['lastname'] }}{% endif %}</h3>
+      </div>
+
+      <div class="modal-body">
+        {% if seller_notifications is defined %}
+          <div class="form-group">
+            <div class="div-wrap-content">
+              <div class="dropdown-header div-header"><b>{{ text_order }}</b></div>
+              <div class="div-detail"><a href="{{ view_all ~ '&tab=order&options=2' }}"><span
+                    id="processing_status_total" class="label label-warning div-detail-label"
+                  >{{ processing_status_total }}</span>{{ text_processing_status }}</a></div>
+              <div class="div-detail"><a href="{{ view_all ~ '&tab=order&options=5' }}">
+                  <span id="complete_status_total" class="label label-success div-detail-label">
+                    {{ complete_status_total }}
+                  </span>{{ text_complete_status }}
+                </a>
+              </div>
+            </div>
+            {% if seller_notifications is defined %}
+              <div id="seller_notifications" class="div-content">
+                {% for seller_notification in seller_notifications %}
+                  <div>{{ seller_notification }}</div>
+                {% endfor %}
+                <div class="div-view-all"><a href="{{ view_all ~ '&tab=order' }}">{{ text_view_all }}</a></div>
+              </div>
+            {% endif %}
+          </div>
+          <hr/>
+        {% endif %}
+        {% if seller_product_reviews is defined %}
+          <div class="form-group">
+            <div class="div-wrap-content">
+              <div class="dropdown-header div-header" style="font-size:15px;"><b>{{ text_product }}</b></div>
+              <div class="div-detail">
+                <a href="{{ view_all ~ '&tab=product' }}">
+                  <span id="product_stock_total"
+                        class="label label-warning div-detail-label">{{ product_stock_total }}</span>
+                  {{ text_stock }}
+                </a>
+              </div>
+              <div class="div-detail">
+                <a href="{{ view_all ~ '&tab=product' }}">
+                  <span
+                    id="review_total"
+                    class="label label-success div-detail-label"
+                  >{{ review_total }}
+                  </span>
+                  {{ text_entry_review }}
+                </a>
+              </div>
+            </div>
+            {% if seller_product_reviews is defined %}
+              <div id="seller_product_reviews" class="div-content">
+                {% for seller_product_review in seller_product_reviews %}
+                  <div>{{ seller_product_review }}</div>
+                {% endfor %}
+                <div class="div-view-all"><a
+                    href="{{ view_all ~ '&tab=product' }}">{{ text_view_all }}</a></div>
+              </div>
+            {% endif %}
+          </div>
+          <hr/>
+        {% endif %}
+        {% if rma_list is defined %}
+          <div class="form-group">
+            <div class="div-wrap-content">
+              <div class="dropdown-header div-header" style="font-size:15px;"><b>{{ text_rma }}</b></div>
+              <div class="div-detail"><a href="{{ view_all ~ '&tab=rma&flag=2' }}">
+                  <span
+                    id="rma_unread_total"
+                    class="label label-warning div-detail-label"
+                  >
+                    {{ rma_unread_total }}
+                  </span>
+                  Pending
+                </a>
+              </div>
+            </div>
+            {% if rma_list is defined %}
+              <div id="rma_list" class="div-content">
+                {% for li in rma_list %}
+                  <div>{{ li }}</div>
+                {% endfor %}
+                <div class="div-view-all"><a
+                    href="{{ view_all ~ '&tab=rma' }}">{{ text_view_all }}</a></div>
+              </div>
+            {% endif %}
+          </div>
+          <hr/>
+        {% endif %}
+        {% if bid_list is defined %}
+          <div class="form-group">
+            <div class="div-wrap-content">
+              <div class="dropdown-header div-header" style="font-size:15px;"><b>{{ text_bid }}</b></div>
+              <div class="div-detail"><a href="{{ view_all ~ '&tab=bid&flag=2' }}">
+                  <span
+                    id="bid_unread_total"
+                    class="label label-warning div-detail-label"
+                  >
+                    {{ bid_unread_total }}
+                  </span>
+                  Pending
+                </a>
+              </div>
+            </div>
+            <div id="bid_list" class="div-content">
+              {% for li in bid_list %}
+                <div>{{ li }}</div>
+              {% endfor %}
+              <div class="div-view-all"><a
+                  href="{{ view_all ~ '&tab=bid' }}A">{{ text_view_all }}</a></div>
+            </div>
+          </div>
+          <hr/>
+        {% endif %}
+        {% if seller_reviews is defined and seller_reviews %}
+          <div class="form-group">
+            <div class="div-wrap-content">
+              <div class="dropdown-header" style="font-size:15px;"><b>{{ text_entry_seller }}</b></div>
+              <div style="display: block; overflow: auto;margin-right:40px;margin-top:5px;">
+                <a href="{{ view_all ~ '&tab=seller' }}">
+                  <span
+                    id="seller_review_total"
+                    class="label label-success"
+                    style="margin-right: 5px;"
+                  >
+                    {{ seller_review_total }}
+                  </span>{
+                  { text_entry_review }}
+                </a>
+              </div>
+            </div>
+            {% if seller_reviews is defined and seller_reviews %}
+              <div id="seller_reviews" class="div-content">
+                {% for seller_review in seller_reviews %}
+                  <div>{{ seller_review }}</div>
+                {% endfor %}
+                <div class="div-view-all"><a
+                    href="{{ view_all ~ '&tab=seller' }}">{{ text_view_all }}</a></div>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+        {% if (seller_notifications is not defined and seller_product_reviews is not defined and seller_reviews is not defined) or ( not seller_notifications and not seller_product_reviews and not seller_reviews ) %}
+          <center><h4>{{ text_no_notification }}</h4></center>
+        {% endif %}
+      </div>
+
+      <div class="modal-footer">
+        <a href="{{ view_all }}" class="btn btn-primary button btn-submit"
+           style="color:white;">{{ text_view_all_notificatins }}</a>
+        <button type="button" class="btn btn-default button" data-dismiss="modal">{{ text_close }}</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script type="text/javascript">
+  let time_interval = 1000 * 300; //毫秒
+  $(document).ready(function () {
+    getNotification(setHtml, new Date().getTime());
+    setInterval(wk_notify, time_interval);
+  });
+
+  // 主方法 判断是否需要执行
+  function wk_notify() {
+    let this_timestamp = new Date().getTime();
+    let storage_timestamp = localStorage.getItem('notification_timestamp');
+    let storage_data = localStorage.getItem('notification_data');
+    storage_timestamp = (storage_timestamp == null || storage_timestamp == undefined) ? 0 : storage_timestamp;
+    storage_data = (storage_data == null || storage_data == undefined) ? '' : storage_data;
+    if (this_timestamp - storage_timestamp > time_interval || storage_data === '') {
+      getNotification(setHtml, new Date().getTime());
+    } else {
+      storage_data = JSON.parse(storage_data);
+      setHtml(storage_data);
+    }
+  }
+
+  // 获取 notification
+  function getNotification(setHtml, now_timestamp) {
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/notification/notifications&json_notification=true',
+      type: 'get',
+      methodType: 'json',
+      success: function (data) {
+        setHtml(data);
+        localStorage.setItem('notification_data', JSON.stringify(data));
+        localStorage.setItem('notification_timestamp', now_timestamp);
+      }
+    });
+  }
+
+  //填充到HTML
+  function setHtml(data) {
+    var isFromHome = 'home' == $("#notification").attr('data-from');
+    if (data['notification_total']) {
+      if (!isFromHome) {
+        $("#notification").html('<span class="label label-danger pull-left">' + data['notification_total'] + '</span> <img src="admin/view/image/notify.png" title="{{ text_notifications }}">');
+      } else {
+        $("#notification").html('{{ text_notifications }}' + ' <span class="badge">' + data['notification_total'] + '<span>');
+      }
+    } else {
+      if (!isFromHome) {
+        $("#notification").html('<img src="admin/view/image/notify.png" title="{{ text_notifications }}">');
+      } else {
+        $("#notification").text('{{ text_notifications }}');
+      }
+    }
+
+    if ($('#admin-notification-total').length > 0) {
+      var admin_notification = $('#admin-notification-total');
+      var notification_total =  parseInt(data['notification_total']);
+      admin_notification.html(data['notification_total']);
+      if (notification_total <= 0){
+        admin_notification.hide();
+      } else{
+        admin_notification.show();
+      }
+    }
+
+    $("span").each(function (index, element) {
+      var span_id = $(this).attr('id');
+      if (span_id && data[span_id]) {
+        $("#" + span_id).text(data[span_id]);
+      }
+    });
+
+    $(".div-content").each(function (index, element) {
+      var ul_id = $(this).attr('id');
+      if (ul_id && data[ul_id]) {
+        var html = '';
+        for (var i = 0; i < data[ul_id].length; i++) {
+          html += '<div>' + data[ul_id][i] + '</div>';
+        }
+        if (ul_id == 'seller_product_reviews') {
+          html += '<div class="div-view-all"><a href="{{ view_all }}&tab=product">{{ text_view_all }}</a></div>';
+        } else if (ul_id == 'seller_notifications') {
+          html += '<div class="div-view-all"><a href="{{ view_all }}&tab=order">{{ text_view_all }}</a></div>';
+        } else if (ul_id == 'rma_list') {
+          html += '<div class="div-view-all"><a href="{{ view_all }}&tab=rma">{{ text_view_all }}</a></div>';
+        }else if (ul_id == 'bid_list') {
+          html += '<div class="div-view-all"><a href="{{ view_all }}&tab=bid">{{ text_view_all }}</a></div>';
+        } else {
+          html += '<div class="div-view-all"><a href="{{ view_all }}">{{ text_view_all }}</a></div>';
+        }
+        $("#" + ul_id).html(html);
+      }
+    });
+  }
+</script>

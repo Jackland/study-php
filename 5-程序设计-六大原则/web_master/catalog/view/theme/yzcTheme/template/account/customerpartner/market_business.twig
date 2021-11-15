@@ -1,0 +1,84 @@
+{{ header }}{{ separate_column_left }}
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid" id="content" style="margin-left: 15%">
+  {% else %}
+  <div class="container">
+    {% endif %}
+    <ul class="breadcrumb">
+      {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+      {% endfor %}
+    </ul>
+
+    {% if error_warning %}
+      <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ error_warning }}</div>
+    {% endif %}
+    {% if success %}
+      <div class="alert alert-success"><i class="fa fa-check-circle"> </i> {{ success }}</div>
+    {% endif %}
+
+    <div class="row">{{ column_left }}
+      {% if column_left and column_right %}
+        {% set class = 'col-sm-6' %}
+      {% elseif column_left or column_right %}
+        {% set class = 'col-sm-9' %}
+      {% else %}
+        {% set class = 'col-sm-12' %}
+      {% endif %}
+      <div id="content" class="{{ class }}">
+        {{ content_top }}
+        <fieldset>
+          <legend>
+{#            <i class="fa fa-list"></i> #}
+            <h1>{{ heading_title_MS }}</h1>
+          </legend>
+          <div class="table-responsive" id="table-shadow" style="margin-top: 0px">
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <td class="text-left" style="width: 75%">{{ column_tag_name }}</td>
+                <td class="text-left">{{ column_seller_status }}</td>
+                <td class="text-left">{{ column_action }}</td>
+              </tr>
+              </thead>
+              <tbody>
+              {% if promotion_relation %}
+                {% for promotion in promotion_relation %}
+                  {% if promotion.promotion_status == 1 %}
+                    <tr>
+                  {% else %}
+                    <tr style="background-color: lightgrey">
+                  {% endif %}
+                    <td class="text-left" style="word-break: break-word">{{ promotion.promotion_name }}</td>
+                    <td class="text-left">
+                      {% if promotion.seller_status == 1 %}
+                        {{ text_enable_status }}
+                      {% else %}
+                        {{ text_disable_status }}
+                      {% endif %}
+                    </td>
+                    <td class="text-left">
+                      {% if promotion.promotion_status == 1 %}
+                        <a href="{{ promotion.edit }}" data-toggle="tooltip" title="{{ button_edit_attribute }}" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
+                      {% else %}
+                        <a disabled="disabled" data-toggle="tooltip" title="{{ button_edit_attribute }}" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td class="text-center" colspan="4">{{ text_no_results }}</td>
+                </tr>
+              {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </fieldset>
+        {{ content_bottom }}
+      </div>
+      {{ column_right }}
+    </div>
+  </div>
+</div>
+{{ footer }}

@@ -1,0 +1,9 @@
+<div>
+<h3>{{ heading_title | default('UNKNOWN') }}</h3>
+{% if fileName and fileUrl %}
+  <a class="btn btn-primary" href="{{ fileUrl }}">download</a>
+{% endif %}
+</div>
+<div style="margin-top: 25px;">
+  {{ description |replace({'&nbsp;': ' '}) }}
+</div>

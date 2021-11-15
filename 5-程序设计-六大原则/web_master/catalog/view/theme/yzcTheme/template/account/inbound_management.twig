@@ -1,0 +1,49 @@
+{{ header }}
+<style>
+    .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+        background-color: #FA6400;
+        color: #fff;
+    }
+
+    .nav-tabs > li > a:hover {
+        background-color: #FA6400;
+        color: #fff;
+    }
+</style>
+<div id="account-customer-order" class="container">
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+    <div class="row">{{ column_left }}
+        {% if column_left and column_right %}
+            {% set class = 'col-sm-6' %}
+        {% elseif column_left or column_right %}
+            {% set class = 'col-sm-9' %}
+        {% else %}
+            {% set class = 'col-sm-12' %}
+        {% endif %}
+        <div id="content" class="{{ class }}">{{ content_top }}
+            <h2>{{ text_title_inbound_management }}</h2>
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab-import" data-toggle="tab">Stock-In List</a></li>
+                {#<li><a href="#tab-orders" data-toggle="tab">Orders</a></li>#}
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab-import">
+                    <fieldset>
+                        <legend>Stock-In Management</legend>
+                        <div id="inbound_management"></div>
+                    </fieldset>
+                </div>
+            </div>
+            {{ content_bottom }}
+        </div>
+        {{ column_right }}
+    </div>
+</div>
+{{ footer }}
+<script>
+    $('#inbound_management').load('index.php?route=account/inbound_management/queryList&filter_inboundOrderStatus={{ filter_inboundOrderStatus }}&filter_inboundOrderNumber={{ filter_inboundOrderNumber }}&show_detail={{ show_detail }}');
+</script>

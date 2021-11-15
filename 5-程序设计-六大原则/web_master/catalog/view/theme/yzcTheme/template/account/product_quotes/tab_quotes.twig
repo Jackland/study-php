@@ -1,0 +1,452 @@
+<style>
+  .status_approve {
+    color: #008000;
+  }
+  .status_reject {
+    color: #FF0000;
+  }
+  .add-to-cart > .dropdown-menu > li > a:hover, .add-to-cart > .dropdown-menu > li > a:focus {
+    text-decoration: none;
+    background-color: #3a75dc;
+    cursor: pointer;
+    color: white;
+  }
+  img.thumbnail{
+    max-height: 100%;
+    margin-bottom: 0;
+    margin-right: 10px;
+  }
+  .shopping-type > li > a{
+    text-align: center !important;
+  }
+  td .name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    word-break: break-word;
+  }
+  .text-info{
+    color: #333;
+  }
+  tr td a.link{
+    color: #333;
+  }
+  tr td a.link:hover{
+    color: #3A75DC;
+  }
+  .tab-pane .btn.btn-primary{
+    padding: 6px 15px;
+  }
+  .add-to-cart-btn{
+    border-bottom: 1px solid #e5e5e5;
+  }
+  .tab-pane table.table.main .action-group .dropdown-menu>li.add-to-cart-btn>a,.tab-pane table.table.main .action-group .dropdown-menu>li.add-to-cart-ysc-btn>a{
+    padding: 8px 20px;
+  }
+  .icon-btn{
+    width: 40px;
+  }
+</style>
+<div role="tabpanel" class="tab-pane active text-small" id="spot-price-bid">
+  <div class="bg-white">
+    <div class="filter-wrapper form-wrapper mb-3">
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label" for="input-id">{{ text_id }} </label>
+            <input type="text" name="filter_id" value="{{ filter_id }}" placeholder="{{ text_id }}" id="input-id" class="form-control"/>
+          </div>
+          <div class="form-group">
+            <label for="">{{ text_date }}</label>
+            <div class="datetimepicker-range">
+              <div class="datetimepicker">
+                <input type="text" name="filter_date_from" value="{{ filter_date_from }}" placeholder="Pick a date..." id="input-date_from"
+                       class="form-control"/>
+                <span class="title">From</span>
+                <span class="icon"><i class="giga icon-date-icon"></i></span>
+              </div>
+              <div class="datetimepicker">
+                <input type="text" name="filter_date_to" value="{{ filter_date_to }}" placeholder="Pick a date..." id="input-date_to"
+                       class="form-control"/>
+                <span class="title">To</span>
+                <span class="icon"><i class="giga icon-date-icon"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label" for="input-order">{{ text_product_name }} </label>
+            <input type="text" name="filter_product" value="{{ filter_product }}" placeholder="{{ text_product_name }}" id="input-order"
+                   class="form-control"/>
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="input-status">{{ text_status }} </label>
+            <select name="filter_status" class="form-control" id="input-status">
+              <option value="*">--- {{ __('请选择', {}, 'common') }} ---</option>
+              {% if quote_status %}
+                {% for key, status_value in quote_status %}
+                  <option
+                    value="{{ key }}" {% if filter_status == key and filter_status is not null %}{{ 'selected' }}{% endif %}>{{ status_value }} </option>
+                {% endfor %}
+              {% endif %}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label" for="input-sku_mpn">{{ text_sku_mpn }} </label>
+            <input type="text" name="filter_sku_mpn" value="{{ filter_sku_mpn }}" placeholder="{{ text_sku_mpn }}" id="input-sku_mpn"
+                   class="form-control"/>
+          </div>
+          <div class="form-group pull-right">
+            <label class="control-label"></label>
+            <div>
+              <a onclick="filter(this);" class="btn btn-primary" data-toggle="tooltip" title="{{ button_filter }}" id="quote-filter-btn">{{ button_filter }} </a>
+              <a onclick="clrfilter();" class="btn btn-default" data-toggle="tooltip" title="{{ button_clrfilter }}"><i class="giga giga icon-reset3"></i></a>
+              <a onclick="downloadQuotes(this);" class="btn btn-default icon-btn" data-toggle="tooltip" title="Download ">
+                <i class="giga icon-download"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-product">
+      <div class="table-responsive">
+        <table class="table main table-hover">
+          <thead>
+          <tr>
+            <th class="text-center">
+              {% if sort  ==  'pd.id' %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_id }}')" class="{{ order|lower }}">{{ text_id }} </a>
+              {% else %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_id }}')">{{ text_id }}  </a>
+              {% endif %}
+            </th>
+            <th class="text-center" style="width:30%">
+              {% if sort  ==  'pd.name' %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_product }}')" class="{{ order|lower }}">{{ text_product_name }} </a>
+              {% else %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_product }}')">{{ text_product_name }}  </a>  {% endif %}
+            </th>
+            <th class="text-center">
+              Seller
+            </th>
+            <th class="text-left" style="width: 110px">
+              {% if sort  ==  'pd.quantity' %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_qty }}')" class="{{ order|lower }}">{{ text_quanity }} </a>
+              {% else %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_qty }}')">{{ text_quanity }}  </a>
+              {% endif %}
+            </th>
+            <th class="text-left" style="width: 110px">
+              {% if sort  ==  'pd.price' %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_price }}')" class="{{ order|lower }}">
+                  {{ text_quotes_price }}
+                </a>
+              {% else %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_price }}')">{{ text_quotes_price }}</a>
+              {% endif %}
+            </th>
+            <th class="text-center">
+              {% if sort  ==  'pd.status' %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_status }}')" class="{{ order|lower }}">{{ text_status }} </a>
+              {% else %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_status }}')">{{ text_status }}  </a>
+              {% endif %}
+            </th>
+            <th class="text-center"  style="width: 110px">
+              {% if sort  ==  'pd.date_added' %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_date }}')" class="{{ order|lower }}">{{ text_date }} </a>
+              {% else %}
+                <a href="javascript:void(0)" onclick="columnSort('{{ sort_date }}')">{{ text_date }}  </a>
+              {% endif %}
+            </th>
+            <th class="text-center">{{ text_action }} </th>
+          </tr>
+          </thead>
+
+          {% if result_quotelist %}
+            {% for result in result_quotelist %}
+              <tbody>
+              <tr>
+                <td class="text-center">{{ result.agreement_no }}</td>
+                <td class="text-left">
+                  <div style="display: flex;align-items: center">
+                    <img src="{{ result.image }}" class="thumbnail pull-left"/>
+                    <div>
+                      <a href="{{ result.href }}" target="_blank" class="name link">{{ result.name }}</a>
+                      <span style="color: #ccc">{{ result.sku }}</span>
+                    </div>
+
+                  </div>
+                </td>
+                <td class="text-center">{{ result.screenname }} </td>
+                <td class="text-center">{{ result.quantity }} </td>
+                <td class="text-center">{{ result.price }} </td>
+                <td class="text-center">
+                  {% set statusClass = result.status == 0 ? 'text-warning' :  result.status == 1 ? 'text-success' :  result.status == 2 ? 'text-danger' : '' %}
+                  <span class="{{ statusClass }}">{{ result.status_text }} </span>
+                </td>
+                <td class="text-center" id="rma_date">
+                  <div>{{ result.date }}</div>
+                </td>
+                <td class="text-center" style="width: 100px">
+                  <div class="action-group" style="display: flex">
+                    <a href="{{ result.action.href }}" class="btn-table" data-toggle="tooltip" title="{{ result.action.text }}" style="margin-right: 0">
+                      <i class="giga icon-chakan1"></i>
+                    </a>
+                    {% if result.status == 0 %}
+                      <a onclick="cancel(this)" class="btn-table" data-id="{{ result.id }}" data-update_time="{{ result.update_time }}" data-toggle="tooltip"
+                         title="{{ result.action_cancel.text }}" style="margin-left: 5px;">
+                        <i class="giga icon-lajitong" ></i>
+                      </a>
+                    {% endif %}
+                    {% if result.status == 1 %}
+                      {% if is_home_pickup %}
+                        <a class="btn btn-table" data-toggle="tooltip" title="Add to cart"
+                           onclick="addToCartQuote('{{ result.id }}',this,1)" style="margin: 0 0 0 6px"><i class="giga icon-gouwuche-fuben"></i></a>
+                      {% else %}
+                        {% if is_USA %}
+                          {% if result.unsupport_stock%}
+                            <a data-toggle="tooltip" title="This Seller’s products cannot be directly purchased for stock up. You must first upload a sales order and pay for the items, then ship the items immediately."
+                              class="btn-action-disabled m6-l">
+                              <i class="giga icon-gouwuche-fuben"></i>
+                            </a>
+                          {% else %}
+                            <div class="btn-group" style="padding: 0" data-toggle="tooltip" title="Add to cart">
+                              <a type="button" class="dropdown-toggle btn-table" data-toggle="dropdown" title="" aria-haspopup="true" >
+                                <i class="giga icon-gouwuche-fuben" ></i>
+                              </a>
+                              <ul class="dropdown-menu shopping-type" style="left: auto;right: 0">
+                                <li class="add-to-cart-btn"><a onclick="addToCartQuote('{{ result.id }}',this,0)">{{ text_drop_shipping }}</a></li>
+                                <li class="add-to-cart-ysc-btn"><a onclick="addToCartQuote('{{ result.id }}',this,2)">{{ text_ysc }}</a></li>
+                              </ul>
+                            </div>
+                          {% endif %}
+                        {% else %}
+                          {% if result.unsupport_stock%}
+                            <a  data-toggle="tooltip" title="This Seller’s products cannot be directly purchased for stock up. You must first upload a sales order and pay for the items, then ship the items immediately."
+                               class="btn-action-disabled"
+                              style="margin: 0 0 0 6px">
+                              <i class="giga icon-gouwuche-fuben"></i>
+                            </a>
+                          {% else %}
+                            <a class="btn btn-table" data-toggle="tooltip" title="Add to cart"
+                               onclick="addToCartQuote('{{ result.id }}',this,0)" style="margin: 0 0 0 6px"><i class="giga icon-gouwuche-fuben"></i></a>
+                          {% endif %}
+                        {% endif %}
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            {% endfor %}
+          {% else %}
+            <tbody>
+            <tr>
+              <td colspan="8" class="text-center">{{ text_empty }} </td>
+            </tr>
+            </tbody>
+          {% endif %}
+        </table>
+      </div>
+    </form>
+    {#{% include 'giga/template/_parts/pagination_simple.twig' %}#}
+    <div class="oris-row oris-pagination">
+      <ul id="buyer_quote_pagination"></ul>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('.row input').keydown(function (e) {
+    if (e.keyCode == 13) {
+      filter($('#quote-filter-btn'));
+    }
+  });
+
+  $('#input-date_from').datetimepicker({
+    pickDate: true,
+    pickTime: false,
+    format: 'YYYY-MM-DD 00:00:00'
+  });
+  $('#input-date_to').datetimepicker({
+    pickDate: true,
+    pickTime: false,
+    format: 'YYYY-MM-DD 23:59:59'
+  });
+
+  $(function () {
+    $('#quote-filter-btn').button('reset');
+    block.unBlockUI();
+    quote_pagination();
+  });
+
+  function columnSort(url) {
+    block.blockUI();
+    $('#bid-quotes').load(url,"page_limit={{ page_limit }}");
+  }
+
+  function clrfilter() {
+    quote_pagination();
+    block.blockUI();
+    url = '{{ action }}';
+    $('#bid-quotes').load(url,"page_limit={{ page_limit }}");
+    block.unBlockUI();
+  }
+
+    function quote_pagination(){
+        if ({{ total_pages }}) {
+            $('#buyer_quote_pagination').bootstrapPaginator({
+                /*当前使用的是3版本的bootstrap*/
+                bootstrapMajorVersion: 3,
+                /*配置的字体大小是小号*/
+                size: 'normal',
+                /*当前页*/
+                currentPage: {{ page_num }},
+                /*一共多少页*/
+                totalPages: {{ total_pages }},
+                total: {{ total }},
+                rowsOfPage:{{ page_limit | default(15) }},
+                /*页面上最多显示几个含数字的分页按钮*/
+                numberOfPages: 5,
+                onPageClicked: function (event, originalEvent, type, page) {
+                    let url = "{{ pagination_url }}";
+                    if (page) {
+                        url += "&page=" + page;
+                    } else {
+                        url += "&page=" + {{ page_num }};
+                    }
+                    block.blockUI();
+                    $('#bid-quotes').load(url, "page_limit=" + originalEvent['page_info']['page_limit'],function () {
+                      block.unBlockUI();
+                    });
+                }
+            });
+        }
+    }
+
+  //下载
+  function downloadQuotes(_this) {
+    window.location.href = getUrlFilterQuotes('{{ url('account/product_quotes/wk_quote_my/download') }}');
+  }
+
+  //搜索
+  function filter(button = undefined) {
+    block.blockUI();
+    $('#bid-quotes').load(getUrlFilterQuotes('{{ action }}'), "page_limit={{ page_limit }}");
+    if (button) {
+      $('.alert').remove();
+      $(button).button('loading');
+    }
+  }
+
+  function getUrlFilterQuotes(url) {
+    var filter_id = $('input[name=\'filter_id\']').val();
+
+    if (filter_id) {
+      url += '&filter_id=' + encodeURIComponent(filter_id);
+    }
+
+    var filter_product = $('input[name=\'filter_product\']').val();
+
+    if (filter_product) {
+      url += '&filter_product=' + encodeURIComponent(filter_product);
+    }
+
+    var filter_sku_mpn = $('input[name=\'filter_sku_mpn\']').val();
+    if (filter_sku_mpn) {
+      url += '&filter_sku_mpn=' + encodeURIComponent(filter_sku_mpn);
+    }
+
+    var filter_status = $('select[name=\'filter_status\']').val();
+
+    if (filter_status != '*') {
+      url += '&filter_status=' + encodeURIComponent(filter_status);
+    }
+
+    var filter_date_from = $('input[name=\'filter_date_from\']').val();
+    if (filter_date_from) {
+      url += '&filter_date_from=' + encodeURIComponent(filter_date_from);
+    }
+    var filter_date_to = $('input[name=\'filter_date_to\']').val();
+    if (filter_date_to) {
+      url += '&filter_date_to=' + encodeURIComponent(filter_date_to);
+    }
+    return url;
+  }
+
+  function addToCartQuote(id, _this,type) {
+    if (window.CNZZ) {
+      window.CNZZ.triggerEvent('Bid List', 'BL_AddtoCart', 'Spot Price Bids');
+    }
+    $.ajax({
+      url: '{{ addToCartQuote }}',
+      type: 'post',
+      data: {id:id,type:type},
+      dataType: 'json',
+      success: function (json) {
+        $('.alert').remove();
+
+        if (json['error']) {
+          $('.breadcrumb-simple').after('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
+          if (json['timeout_html'] !== undefined && json['timeout_html'] !== '') {
+            $(_this).parents('tr').children('td').eq(5).html(json['timeout_html']);
+            {% if is_home_pickup %}
+            $(_this).remove();
+            {% else %}
+            {% if is_USA %}
+            $(_this).parent().parent().parent().remove();
+            {% else %}
+            $(_this).remove();
+            {% endif %}
+            {% endif %}
+          }
+        }
+
+        if (json['success']) {
+          $('.breadcrumb-simple').after('<div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> ' + json['success'] + '</div>');
+          $('#cart').load('index.php?route=common/cart/info');
+        }
+
+        $('html, body').animate({scrollTop: 0}, 'slow');
+      }
+    });
+  }
+
+  // 取消
+  function cancel(_this) {
+    let confirm_content = '{{ text_r_u_sure_cancel }}';
+    let id = $(_this).data('id');
+    let update_time = $(_this).data('update_time');
+    let url = '{{ cancel_url }}';
+    if (confirm(confirm_content)) {
+      $.ajax({
+        url: url,
+        type: 'POST',
+        data: {id: id, update_time: update_time},
+        dataType: 'json',
+        success: function (json) {
+          $('.alert').remove();
+
+          if (json['error']) {
+            $('.breadcrumb-simple').after('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
+          }
+
+          if (json['success']) {
+            $('.breadcrumb-simple').after('<div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> ' + json['success'] + '</div>');
+          }
+
+          filter(undefined);
+          $('html, body').animate({scrollTop: 0}, 'slow');
+        }
+      });
+    }
+  }
+</script>

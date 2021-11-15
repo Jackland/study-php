@@ -1,0 +1,85 @@
+/* buyer 端消息中心样式 */
+.msgb.msg-card__title {
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+}
+
+.msgb.msg-card__content {
+  padding: 16px 24px;
+}
+
+.msgb.msg-card__bottom {
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid #E5E5E5;
+}
+
+.msgb .msg-card__bottom-btn {
+  margin: 0px 5px;
+}
+
+.msgb.msg-card__tab {
+  padding-inline-start: 12px;
+  margin-top: 0px;
+}
+
+.msgb.msg-card__tab::after {
+  height: 1px;
+}
+
+.msgb.msg-card__tab .oris-tab-pane, 
+.msgb.msg-card__tab .oris-tab-pane a{
+  height: 49px;
+  line-height: 49px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+}
+
+.msgb.msg-card__tab .oris-tab-pane:hover a,
+.msgb.msg-card__tab .oris-tab-pane.oris-pane-active,
+.msgb.msg-card__tab .oris-tab-pane.oris-pane-active a{
+  color: #004BD8;
+  /* font-weight: 700; */
+}
+
+.msgb.msg-card__tab .msg-card__tab-notice {
+  background-color: #FF6A00;
+  width: 6px;
+  height: 6px;
+  border-radius: 6px;
+  display: block;
+  position: absolute;
+  top: 21px;
+  right: 10px;
+}
+
+/* 统一样式修改 */
+.msgcent-border .tab-content {
+  background: #fff;
+  padding-top: 0px !important;
+  min-height: 200px;
+  border: none !important;
+}
+
+/* buyer 端边框样式 */
+.msgcent-border {
+  border: 1px solid #dcdcdc;
+  background: #fff;
+}
+
+.msg-pt-0 {
+  padding-top: 0px !important;
+}
+
+/* buyer 消息中心表格样式覆盖 */
+.table > tbody > tr > td {
+  border-top: 0px;
+}
+
+.table > thead > tr > th {
+  border-bottom: 0px;
+}

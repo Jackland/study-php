@@ -1,0 +1,583 @@
+{% trans_default_category 'catalog/view/customerpartner/message_center/common/detail/chat' %}
+
+{% set titleStr = '' %}
+{% set pageTitle = '' %}
+{% if prev_route == 'customerpartner/message_center/my_message/buyers' %}
+  {% set titleStr = 'Messages From Buyers' %}
+  {% set pageTitle = 'My Messages' %}
+  {{ this.params('breadcrumbs', [
+    {
+      text: 'Message Center',
+      href: 'javascript:void(0)',
+    },
+    {
+      text: 'My Messages',
+      href: 'javascript:void(0)',
+    },
+    {
+      text: titleStr,
+      href: url(prev_route),
+    }
+  ]) }}
+{% elseif prev_route == 'customerpartner/message_center/my_message/trash' %}
+  {% set titleStr = 'Trash' %}
+  {% set pageTitle = 'My Messages' %}
+  {{ this.params('breadcrumbs', [
+    'home',
+    'seller_center',
+    {
+      text: 'Message Center',
+      href: 'javascript:void(0)',
+    },
+    {
+      text: 'My Messages',
+      href: 'javascript:void(0)',
+    },
+    {
+      text: titleStr,
+      href: url(prev_route),
+    }
+  ]) }}
+{% elseif prev_route == 'customerpartner/message_center/platform_secretary' %}
+  {% set titleStr = 'Giga Help Desk' %}
+  {% set pageTitle = 'Giga Help Desk' %}
+  {{ this.params('breadcrumbs', [
+    'home',
+    'seller_center',
+    {
+      text: 'Message Center',
+      href: 'javascript:void(0)',
+    },
+    {
+      text: titleStr,
+      href: url(prev_route),
+    }
+  ]) }}
+{% endif %}
+
+{{ this.title(titleStr) }}
+
+{{ this.params('pageTitle', {
+  show: true,
+  title: pageTitle,
+  backUrl: '',
+  buttons: []
+}) }}
+
+{# 富文本引用 #}
+{{ this.registerAssets(['App\\Assets\\Common\\SummernoteAsset']) }}
+
+{{ css([
+  'static/message/message-common.css',
+  'static/customerpartner/message_center/my-message-common.css'
+]) }}
+
+<style>
+#page-chat .msg-detail__header a {
+  color: #333;
+}
+
+{# 按钮操作部分 #}
+#page-chat .btn-item {
+  height: 36px;
+  margin: 0px 5px;
+}
+
+#page-chat .btn-group {
+  justify-content: flex-end;
+}
+
+#page-chat .upload-btn {
+  padding: 0px 12px;
+  min-width: 120px;
+  height: 40px;
+}
+
+#page-chat .upload-btn .upload-icon {
+  padding-right: 8px;
+}
+
+#page-chat .btn-container {
+  margin: 0px -5px;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#page-chat .common-words-container {
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
+#page-chat .common-words-label {
+  color: #999;
+  font-size: 14px;
+  margin-top: 4px;
+  margin-bottom: 10px;  
+  font-weight: 400;
+}
+
+#page-chat .reply-input {
+  margin-top: 10px;
+}
+
+#content-textarea-container .panel {
+  margin-bottom: 6px;
+}
+
+#content-textarea-container p {
+  margin-bottom: 0px;
+}
+
+#page-chat .form-group {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+</style>
+
+<div id="page-chat" class="msgcent-mymessage">
+  <div id="table_content" class="msgcent msg-detail__container">
+    <div>
+      <div>
+        <div>
+          <div class="msgcent msg-detail__header">
+            <div class="msgcent msg-detail__backbtn"><a href="{{ prev_url }}" data-toggle="tooltip" title="back"><i class="giga icon-V10_zuocejiantou"></i></a></div>
+            <div class="msgcent msg-detail__healer-title">
+              {{ header }}
+            </div>
+            <div class="msgcent msg-detail__header__btn-group">
+            </div>
+          </div>
+          <div class="talk-list msgcent msg-detaildialog__container">
+            {% for message in  body %}
+              <div class="talk clearfix msgcent msg-detaildialog__item">
+                <div class="msgcent msg-detaildialog__logo 
+                {% if  customer_id == message.sender_id %} msg-detaildialog-r {% else %} msg-detaildialog-l {% endif %}"
+                {% if customer_id != message.sender_id and message.sender_id == -1 %} style="background-color: #fff" {% endif %}>
+                  {% if customer_id == message.sender_id %}
+                    <img src="{{ asset('image/icons/chat/default.png') }}" alt="">
+                  {% else %}
+                    {% if message.sender_id == -1 %}
+                      <img src="{{ asset('image/icons/chat/gigi-help-desk.png') }}" alt="">
+                    {% else %}
+                      <img src="{{ asset('image/icons/chat/buyer.png') }}" alt="">
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <div class="msgcent msg-detaildialog__card-container {% if customer_id == message.sender_id %} msg-detaildialog-r {% else %} msg-detaildialog-l {% endif %}">
+                  <div class="msgcent msg-detaildialog__card">
+                    <div class="subject-content {% if customer_id == message.sender_id %} frbg {% else %}  flbg {% endif %} ">
+                      <label><b>Subject:</b></label>
+                      <p class="textd">{{ message.subject }}</p>
+                      <label class="mt-8"><b>Messages:</b></label><br>
+                      <table class="tablep">{{ message.content }}</table>{# 数据中有缺失table结束标签的 #}
+                      <div class="attachment">
+                        {% if message.files %}
+                          {% for file in message.files %}
+                            <a href="{{ file.url }}" target="_blank" class="attachment-link" style="display: block">
+                              <i class="giga icon-attachment" aria-hidden="true"></i>&nbsp;{{ file.name }}<br/></a>
+                          {% endfor %}
+                        {% endif %}
+                      </div>
+                    </div>
+                    
+                    {% if is_send_email and titleStr != 'Trash' and customer_id != message.sender_id %}
+                    <div class="msg-detaildialog-form__operation">
+                      <i class="giga icon-fayoujian-01 msg-detaildialog__sendicon" 
+                      data-toggle="tooltip" 
+                      data-placement="right"
+                      title="By clicking on this button, an alert email will be sent to your related mailbox" 
+                      aria-hidden="true" onclick="sendEmail('{{ message.msg_id }}', '{{ message.receiver_id }}')"></i>
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div class="msgcent msg-detaildialog__cardtime">
+                    {{ message.post_time }}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          {% if not readonly and titleStr != 'Trash' %}
+          <div id="message_form" class="msgcent msg-detaildialog-form__container">
+            {% if not is_build_relation %}
+              <form method="POST" ng-hide="!selection" enctype="multipart/form-data">
+                <div id="seller-contact">
+                  <input type="hidden" value="{{ messages[0].message_id }}" name="parent_id">
+                  <input type="hidden" value="{{ receiver_id }}" name="receiver_id">
+                  <div id="subject-input-container">
+                    <div class="msgcent msg-form__label-sm"><span class="required-before"></span>Reply</div>
+                    <input type="text" name="subject" value="{{ subject }}" id="message-subject" maxlength="250" required class="oris-input reply-input msg-form"/>
+                    <div class="error-tip text-danger hidden">Subject can not be blank.</div>
+                  </div>
+                  <div class="msgcent msg-form__item mt-16">
+                    {% if words_type %}
+                      <div class="msgcent msg-form__label-sm">
+                        Content:
+                      </div>
+                      <div class="msgcent msg-form__label-sm common-words-label">
+                        Specific Scenario Corpus:
+                      </div>
+                      <div class="common-words-container">
+                        {% include 'yzcTheme/template/customerpartner/message_center/common/common-words/index.twig' %}
+                      </div>
+                    {% endif %}
+                    <div class="form-group" style="padding: 0;" id="content-textarea-container">
+                      <textarea class="content-textarea msg-form" id="content-textarea" data-toggle="summernote"></textarea>
+                      <div class="error-tip text-danger hidden">Content can not be blank.</div>
+                    </div>
+ 
+                    <div class="btn-container">
+                      {% include 'yzcTheme/template/customerpartner/message_center/common/file-upload/index.twig' %}
+                      <button class="oris-button oris-w120 oris-button-bigger" type="button" id="send-btn" onclick="sendMsg()">Send</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="file-list-container" style="display:none"></div>
+
+              </form>
+            {% else %}
+              <div class="btn-container" style="justify-content: center">
+                <div class="btn-group">
+                  <button onclick="returnEstablishResult(1,{{ msg_id }})" class="oris-button oris-button-bigger width120" style="margin-right: 20px;">Agree</button>
+                  <button onclick="returnEstablishResult(0,{{ msg_id }})" class="oris-button oris-button-bigger oris-button-default width120">Rejected</button>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="returnEstablishModal" style="display: none; ">
+  <div class="form-group required">
+    <label class="col-sm-12 control-label" for="returnEstablishComment">Comments</label>
+    <div class="col-sm-12">
+      <textarea id="returnEstablishComment" maxlength="200" style="resize:none;width:385px;height:110px;" onkeyup="this.value=this.value.substring(0, 200)"></textarea>
+      <span id="returnEstablishCount"></span>/200
+    </div>
+  </div>
+  <div class="form-group required set_group" style="display: none">
+    <label class="col-sm-12 control-label" for="input_buyer_group">Set buyer group</label>
+    <div class="col-sm-12">
+      <select name="input_buyer_group" id="input_buyer_group" class="form-control">
+        <option value="0" data-product_group="No Group" data-product_group_num="0"> No Group</option>
+        {% if buyer_groups %}
+          {% for buyer_group in buyer_groups %}
+            <option data-product_group="{{ buyer_group.product_group_name }}" data-product_group_num="{{ buyer_group.product_group_num }}" value="{{ buyer_group.id }}" {{ buyer_group.is_default == 1 ? 'selected' : '' }}>
+              {{ buyer_group.name ~ (buyer_group.is_default?'(Default)' : '') }}</option>
+          {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+  </div>
+  <div class="form-group set_group" style="display: none;">
+    <label class="col-sm-12 control-label">Invisible products to the buyer</label>
+    <div class="col-sm-12">
+      <span class="invisible_product_group invisible-background"> No Group </span>
+      <span style="margin-left: 15px;margin-bottom: 15px" class="invisible_product_group_num invisible-background">0</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    // 清除富文本编辑框默认换行
+    $("#content-textarea").val("");
+    // 默认滚动到底部
+    $('.msg-detaildialog__container').scrollTop($('.msg-detaildialog__container')[0].scrollHeight);
+
+    document.getElementById('returnEstablishComment').onkeyup = function () {
+      document.getElementById('returnEstablishCount').innerHTML = this.value.length;
+    };
+  })
+
+  function showMsg(isSuccess, msg) {
+    $.toast({
+      heading: false,
+      text: msg,
+      position: 'top-center',
+      showHideTransition: 'fade',
+      icon: isSuccess ? 'success' : 'error',
+      hideAfter: 3000,
+      allowToastClose: false,
+      loader: false
+    });
+  }
+
+  //输入时清空局部的错误提示
+  $('#message-subject').on('input', function(){
+    if ($('#message-subject').val().trim()) {
+      toggleFormError(formValidateMap.subject, false);
+    }
+  })
+
+  $("#content-textarea").on("summernote.change", function (e) {   // callback as jquery custom event 
+    if ($("#content-textarea").val().trim()) {
+      toggleFormError(formValidateMap.content, false, true);
+    }
+  });
+
+  // 显示错误提示
+  // @params isRich 是否是富文本
+  // @params show 显示错误或者影藏错误
+  function toggleFormError(el, show=true, isRich=false) {
+    show ? $(el + " .error-tip").removeClass("hidden") : $(el + " .error-tip").addClass("hidden");
+    let formRed = isRich ? el + " .note-frame" : el + " .msg-form";
+    show ? $(formRed).addClass("error-input") : $(formRed).removeClass("error-input");
+  }
+
+  // 表单验证字段dom对应
+  var formValidateMap = {
+    subject: "#subject-input-container",
+    content: "#content-textarea-container"
+  }
+
+  function resetFormValidate() {
+    $('.error-tip').addClass('hidden');
+    $('.note-frame').removeClass("error-input");
+    $('.msg-form').removeClass("error-input");
+  }
+
+  function sendMsg() {
+    resetFormValidate();
+
+    let formData = new FormData();
+
+    let content = $('#content-textarea').val();
+    let hasError = false;
+
+    // if (content.replace(/<.*?>/g,"") === '') {
+    if (content.trim() === '') {
+      toggleFormError(formValidateMap.content,true,true);
+      hasError = true;
+    }
+    formData.append('content', content);
+
+    let subject = $('#message-subject').val();
+    if (!subject) {
+      toggleFormError(formValidateMap.subject);
+      hasError = true;
+    }
+
+    if(hasError) {
+      return;
+    }
+
+    formData.append('subject', subject);
+    formData.append('msg_id', '{{ msg_id }}');
+    formData.append('receiver_id', '{{ receiver_id }}');
+
+    let files =  getUploadFiles();
+    for (let i=0; i < files.length; i++) {
+      formData.append('files[]', files[i]);
+    }
+
+    block.blockUI();
+    $("#send-btn").prop('disabled', true);
+    $.ajax({
+      url: "{{ url('customerpartner/message_center/message/reply') }}",
+      type: "POST",
+      data: formData,
+      dataType:'json',
+      contentType: false,
+      processData: false,
+      enctype: 'multipart/form-data',
+      success: function(res) {
+        block.unBlockUI();
+        if (res.code == 200) {
+          $.toast({
+            heading: false,
+            text: 'Reply Successfully!',
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+            afterHidden: function () {
+              let pageTitle = '{{ pageTitle  }}';
+              if (pageTitle === 'My Messages') {
+                location.href = '{{ url('customerpartner/message_center/my_message/buyers', {tab_type:'sent'}) }}'
+              } else if (pageTitle === 'Giga Help Desk') {
+                location.href = '{{ url('customerpartner/message_center/platform_secretary', {tab:'sent'}) }}'
+              } else {
+                location.reload();
+              }
+            }
+          });
+        } else {
+          showMsg(0, res.msg);
+          $("#send-btn").prop('disabled', false);
+        }
+      },
+      error: function() {
+        block.unBlockUI();
+        layer.alert("Oop! Something went wrong and it wa probably our fault. Please try again later or report the problem to us!", {
+          closeBtn: 1,
+          btnAlign: 'c',
+          title: 'Message',
+          btn: ['OK'],
+          skin: 'oris-layer'
+        });
+        $("#send-btn").prop('disabled', false);
+      }
+    })
+  }
+
+  function goback() {
+    window.location.href = '{{ url(prev_route) }}';
+  }
+
+  function returnEstablishResult(returnType, messageId) {
+    let layer_area;
+    if (returnType == 1) {
+      change_invisible_display();
+      //同意
+      var title = 'Approve the application of &nbsp;{{ chat_username|e('js') }}({{ chat_user_number }})';
+      var comment = 'Welcome to establish relationship with [{{ store_name|e('js') }}]. Look forward to future cooperation.'
+      $(".set_group").show();
+      layer_area = ['480px', '360px'];
+    } else {
+      var title = 'Reject the application of &nbsp;{{ chat_username|e('js') }}({{ chat_user_number }})';
+      var comment = 'Sorry this store is not in business so far. It\'s currently not availble to be accessed.'
+      $(".set_group").hide();
+      layer_area = ['480px', 'auto'];
+    }
+    $("#returnEstablishComment").val(comment);
+    $("#returnEstablishCount").html(comment.length);
+    layer.open({
+      type: 1,
+      title: title,
+      closeBtn: 0,
+      skin: 'yzc_layer',
+      shadeClose: false,
+      area: layer_area,
+      offset: 'auto',
+      content: $("#returnEstablishModal"),
+      btn: ['OK', 'Cancel'],
+      btnAlign: 'center',
+      resize: false,
+      scrollbar: false,
+      yes: function (index, layero) {
+        var body = layero.find('textarea').val();
+        let buyer_group_id = $("#input_buyer_group").val();
+        layer.close(index);
+        if (returnType == 1) {
+          isRefine = layer.confirm("Do you want to take refined management to the buyer?", {
+            btn: ['Yes', 'No,with default settings'],
+            title: 'Message',
+            skin: 'yzc_layer',
+          }, function (index, layero) {
+            establishReply(returnType, messageId, 1, body, buyer_group_id);
+            layer.close(index);
+          }, function (index) {
+            establishReply(returnType, messageId, 0, body, buyer_group_id);
+            layer.close(index);
+          });
+        } else {
+          establishReply(returnType, messageId, 0, body, buyer_group_id);
+        }
+      }
+    });
+  }
+
+
+  function establishReply(returnType, messageId, isRefine = 0, body, buyer_group_id) {
+    var formData = new FormData();
+    formData.append('status', returnType);
+    formData.append('msg_id', messageId);
+    formData.append('content', body);
+    formData.append('buyer_group_id', buyer_group_id);
+
+    //发送站内信
+    $.ajax({
+      url: "{{ url('customerpartner/message_center/message/establishContact') }}",
+      data: formData,
+      cache: false,
+      contentType: false,
+      processData: false,
+      type: "post",
+      dataType: 'json',
+      success: function (response) {
+        if (response.code == 200) {
+          if (isRefine == 1 && response.data.buyer_id) {
+            window.location.href = "{{ url('account/customerpartner/delicacymanagement') }}&buyer_id=" + response.data.buyer_id;
+          } else {
+            location.reload();
+          }
+        } else {
+          showMsg(false, response.msg);
+        }
+      },
+      error: function (response) {
+        showMsg(false, 'operation failed');
+      }
+    })
+  }
+
+  $("#input_buyer_group").change(function () {
+    change_invisible_display();
+  });
+
+  function change_invisible_display() {
+    if ($("#input_buyer_group").val() == 0) {
+      $(".invisible_product_group").hide();
+      $(".invisible_product_group_num").hide();
+      return;
+    } else {
+      $(".invisible_product_group").show();
+      $(".invisible_product_group_num").show();
+    }
+    let option_selected = $("#input_buyer_group option:selected");
+    let product_group = option_selected.data('product_group');
+    let product_group_num = option_selected.data('product_group_num');
+    $(".invisible_product_group").text(product_group ? product_group : ' -- None -- ');
+    if (product_group_num <= 1) {
+      $(".invisible_product_group_num").hide();
+    } else {
+      $(".invisible_product_group_num").show().text('+' + (product_group_num - 1));
+    }
+  }
+
+  function sendEmail(msgId, receiverId) {
+    $.ajax({
+      url: '{{ url("customerpartner/message_center/message/sendEmail") }}',
+      data: {msg_id: msgId, receiver_id: receiverId},
+      dataType: 'json',
+      type: "post",
+      success: function (json) {
+        if (json.code == 200) {
+          $.toast({
+            heading: false,
+            text: 'Email sent successfully.',
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+          });
+        } else {
+          $.toast({
+            heading: false,
+            text: 'Email sent failed.',
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+          });
+        }
+      }
+    });
+  }
+</script>

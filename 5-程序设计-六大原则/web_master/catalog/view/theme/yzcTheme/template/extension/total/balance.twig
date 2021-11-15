@@ -1,0 +1,200 @@
+<link href="catalog/view/javascript/bootstrap/css/bootstrap-switch.min.css" rel="stylesheet">
+<script src="catalog/view/javascript/bootstrap/js/bootstrap-switch.min.js"></script>
+<style>
+  .switch {
+    display: inline-block;
+  }
+
+  .bootstrap-switch {
+    border-radius: 22px;
+    width: 52px !important;
+    height: 22px !important;
+    margin-left: 50px;
+  !important;
+  }
+
+  .bootstrap-switch .bootstrap-switch-handle-off, .bootstrap-switch .bootstrap-switch-handle-on, .bootstrap-switch .bootstrap-switch-label {
+    padding: 0px;
+    font-size: 12px;
+    display: inline-block;
+  }
+
+  .bootstrap-switch .bootstrap-switch-label {
+    width: 42px !important;
+    border-radius: 11px !important;
+    position: relative;
+  }
+
+  .bootstrap-switch .bootstrap-switch-handle-on {
+    width: 52px !important;
+    margin-right: -22px;
+    padding-right: 22px;
+  }
+
+  .bootstrap-switch .bootstrap-switch-handle-off {
+    width: 52px !important;
+    border-radius: 11px;
+    margin-left: -11px;
+    padding-right: 2px;
+    position: relative;
+    color: #FFFFFF !important;
+  }
+
+  .bootstrap-switch-offColor {
+    background-color: #BFBFBF;
+  }
+</style>
+<div style="display: flex">
+  <div class="checkbox-plus" style="width: 25%">
+    <label class="checkbox-inline">
+      <input type="checkbox" id="my-checkbox{{ delivery_type }}"><span class="icon"></span>
+      {#<i class="fa fa-credit-card" style="margin-top: 11px"></i>#}
+      <span style="margin-top: 11px">Use Line Of Credit:(<b>{{ balance }}</b> available)</span>
+    </label>
+  </div>
+  <div  id="use-balance{{ delivery_type }}" style="display: none;width: 60%">
+    <div style="display: flex">
+      <div style="line-height: 35px; text-align: left;width: 20%">
+        {#    <span style="font-size: 14px"><strong>Use({{ currency }}):</strong></span>#}
+        <span style="font-size: 14px">Amount to use</span>
+      </div>
+      <div style="height: 35px;margin-left: -40px;">
+        <form id="useBalanceForm{{ delivery_type }}" method="POST" action="{% if delivery_type == 2 %}{{ cwf_url }}{% else %}{{ checkout }}{% endif %}">
+          <div class="input-group">
+            {% if symbolLeft %}
+              <span id="symbol-left" class="input-group-addon">{{ symbolLeft }}</span>
+            {% endif %}
+            <input class="form-control" aria-label="" id="balanceValue{{ delivery_type }}" max="{{ balance_max }}"
+                   value="{{ balance_max }}"
+                   type="number" name="balanceValue"
+                   onkeyup="judgmentAmount{{ delivery_type }}(this)" onchange="calculateTotal{{ delivery_type }}(this)"/>
+            {% if symbolRight %}
+              <span id="symbol-right" class="input-group-addon">{{ symbolRight }}</span>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+  let delivery_type = {{ delivery_type }};
+
+  function calculateTotal{{ delivery_type }}(obj) {
+    // 获取输入的金额
+    var balance = $(obj).val();
+    var balanceValue = symbolLeft + toDecimal(balance) + symbolRight;
+    $("#user-balance"+delivery_type).text("-" + balanceValue);
+    if(delivery_type == 0) {
+      var totalValue = total_0;
+    }else if(delivery_type == 1){
+      var totalValue = total_1;
+    }else if(delivery_type == 2){
+      var totalValue = total_2;
+    }
+    totalValue = totalValue - balance;
+    var totalText = symbolLeft + toDecimal(totalValue) + symbolRight;
+    $("#total-value"+delivery_type).text(totalText);
+  }
+
+  /**
+   * 强制保留2位小数，不足补 0
+   */
+  function toDecimal(x) {
+    var f = parseFloat(x);
+    if (isNaN(f)) {
+      return false;
+    }
+    var f = Math.round(x * 100) / 100;
+    var s = f.toString();
+    var rs = s.indexOf('.');
+    if (rs < 0) {
+      rs = s.length;
+      s += '.';
+    }
+    while (s.length <= rs + 2) {
+      s += '0';
+    }
+    return s;
+  }
+
+  {% if country == 107 %}
+  function judgmentAmount{{ delivery_type }}(obj) {
+    obj.value = obj.value.replace(/[^\d]/g, "");  //清除“数字”以外的字符
+    obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+    obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3');//只能输入两个小数
+    if (obj.value.indexOf(".") < 0 && obj.value != "") {//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+      obj.value = parseFloat(obj.value);
+    }
+    if (obj.value > {{ balance_max }}) {
+      obj.value = {{ balance_max }};
+    }
+    if (obj.value == '') {
+      obj.value = 0;
+    }
+  }
+  {% else %}
+  function judgmentAmount{{ delivery_type }}(obj) {
+    obj.value = obj.value.replace(/[^\d.]/g, "");  //清除“数字”和“.”以外的字符
+    obj.value = obj.value.replace(/\.{2,}/g, "."); //只保留第一个. 清除多余的
+    obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+    obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3');//只能输入两个小数
+    if (obj.value.indexOf(".") < 0 && obj.value != "") {//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+      obj.value = parseFloat(obj.value);
+    }
+    console.log({{ balance_max }});
+    if (obj.value > {{ balance_max }}) {
+      obj.value = {{ balance_max }};
+    }
+    if (obj.value == '') {
+      obj.value = 0;
+    }
+  }
+  {% endif %}
+
+  {% if total %}
+  if(delivery_type == 0) {
+    var total_0 = {{ total }};
+  }else if(delivery_type == 1){
+    var total_1 = {{ total }};
+  }else if(delivery_type == 2){
+    var total_2 = {{ total }};
+  }
+  {% endif %}
+  // symbol left
+  var symbolLeft = '{{ symbolLeft }}';
+  // symbol right
+  var symbolRight = '{{ symbolRight }}';
+
+  $("#my-checkbox"+delivery_type).change(function () {
+    if($("#my-checkbox"+delivery_type).is(':checked')){
+      $("#use-balance"+delivery_type).show();
+      // set use balance
+      $("#balanceValue"+delivery_type).val({{ balance_max }});
+      // show balance
+      // balanve value
+      var balanceValue = symbolLeft + toDecimal({{ balance_max }}) + symbolRight;
+      $("#total-order"+delivery_type).before("<tr id='balance-order"+delivery_type+"'><td style='border-top: 0px;border-bottom: 1px solid #eee' class=\"text-right\"><strong>Use Line Of Credit (Balance):</strong></td><td id='user-balance"+delivery_type+"' class=\"text-right\">-" + balanceValue + "</td></tr>");
+      // total value
+      var totalValue = parseFloat($("#total-value"+delivery_type).text().replace(/[^\d.]/g, ""));
+      console.log({{ balance_max }});
+      totalValue = totalValue - {{ balance_max }};
+      var totalText = symbolLeft + toDecimal(totalValue) + symbolRight;
+      $("#total-value"+delivery_type).text(totalText);
+    }else{
+      // 不使用余额支付
+      $("#balance-order"+delivery_type).remove();
+      $("#use-balance"+delivery_type).hide();
+      if(delivery_type == 0) {
+        var totalText = symbolLeft + toDecimal(total_0) + symbolRight;
+      }else if(delivery_type == 1){
+        var totalText = symbolLeft + toDecimal(total_1) + symbolRight;
+      }else if(delivery_type == 2){
+        var totalText = symbolLeft + toDecimal(total_2) + symbolRight;
+      }
+      $("#total-value"+delivery_type).text(totalText);
+    }
+  })
+
+</script>

@@ -1,0 +1,60 @@
+{{ header }}
+<link href="catalog/view/theme/default/stylesheet/account/stock/management_index.css?v={{ app_version }}" rel="stylesheet" type="text/css">
+<link href="catalog/view/theme/default/stylesheet/account/stock/stock_tab.css?v={{ app_version }}" rel="stylesheet" type="text/css">
+<link href="catalog/view/theme/default/stylesheet/account/stock/discrepancy_tab.css?v={{ app_version }}" rel="stylesheet" type="text/css">
+<div class="page-seller-portal">
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>{{ heading_title }}</h1>
+        <div class="row">
+          <div class="col-sm-8">
+            {# Togglable tabs #}
+            <ul class="nav nav-tabs main" role="tablist" id="stockManagementTabs">
+              <li role="presentation">
+                <a
+                  href="#tab_stock"
+                  aria-controls="purchase-order"
+                  role="tab"
+                  data-url="{{ stock_url }}"
+                  data-toggle="tab-ajax">
+                  {{ text_inventory_lookup_title }}
+                </a>
+              </li>
+              <li role="presentation">
+                <a href="#tab_discrepancy"
+                   aria-controls="fee-order"
+                   role="tab"
+                   data-url="{{ discrepancy_url }}"
+                   data-toggle="tab-ajax">
+                  {{ text_discrepancy_title }}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-sm-4 text-right">
+            {% if storage_fee_description_id %}
+              <a
+                href="{{ url('information/information',{'information_id':storage_fee_description_id}) }}"
+                class="detail-tip link-color" target="_blank">
+                <i class="giga icon-V10-wenhaotishi mr4"></i>
+                {{ text_storage_fee_description }}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {# tab页对应内容 #}
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="tab-content main">
+          <div class="tab-pane" id="tab_stock"></div>
+          <div class="tab-pane" id="tab_discrepancy"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}

@@ -1,0 +1,35 @@
+<div class="col-md-3">
+  <div class="bg-white bg-shadow">
+    <div class="module-notice">
+      <h3 class="title">MARKETPLACE NOTIFICATIONS</h3>
+{#      <h4>Policy</h4>#}
+      <ul style="margin-top: 20px">
+        {% for notice in notices %}
+          <li class="module-notice-li">
+            <a href="javascript:void(0);" onclick="noticeForm('{{ notice.notice_href }}')">
+              {% if notice.is_read==0%}
+                <i class="notice-dot"></i>
+              {% endif %}
+              {# 置顶标志 #}
+              {% if notice.top_status and "now"|date("Y-m-d H:i:s") < notice.effective_time %}
+                <i class='giga icon-zhiding' style="color: #FF0000"></i>
+              {% endif %}
+              <span style="color: #FA6400">[{{ notice.type_name }}]</span>
+              {{ notice.title }}
+              <div class="text-muted">{{ notice.publish_date }}</div>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+      <a href="{{ notice_action }}" class="btn-all">View All Marketplace Notifications</a>
+    </div>
+  </div>
+</div>
+<style>
+  .module-notice-li{
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>

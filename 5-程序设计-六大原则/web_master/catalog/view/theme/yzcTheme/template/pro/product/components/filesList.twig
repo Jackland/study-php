@@ -1,0 +1,411 @@
+{% trans_default_category 'catalog/view/theme/yzcTheme/template/pro/product/components/filesModal' %}
+<script type="text/x-template" id="filesList">
+  <div class="files-list">
+      <div class="files-menu">
+          <span class="my-menus">
+            <span v-for="(menu, i) in menus" @click="handleMenuClick(i)">
+             ${i==0 ? menu.name : ' > ' + menu.name}
+            </span>
+          </span>
+          <span v-if="mySearch" class="my-search"> > {{ __('搜索') }}: "${mySearch}"</span>
+          {# 选中个数描述 #}
+          <span class="pull-right">
+            <span v-if="isEnd">{{ __('已全部加载，共 :num 个', {num: "${listData.length}"}) }}</span>
+            <span v-else>{{ __('已加载 :num 个', {num: "${listData.length}"}) }}</span>
+          </span>
+      </div>
+      <div v-if="currentTab==='all'" class="all-types">
+        <span v-for="one in allTabFilter" :class="{'active': one.value==allTabType}" @click="refreshAllTab(one.value)">${one.name}</span>
+      </div>
+      <div v-if="listData.length>0" class="select-line" 
+           :class="{'no-border': currentTab=='image'||((currentTab==='all'&&allTabType==='image'))}">
+          <div>
+            <input type="checkbox" name="selectAll" class="oris-checkbox-mini" 
+            :checked="isSelectAll" @change="selectAllChanged(!isSelectAll)">
+            <span v-if="!selectedCount">{{ __('全选') }}</span>
+            <span v-else>{{ __('已选择 :num 个', {num: "${selectedCount}"}) }}</span>
+          </div>
+          <div class="operation-btn">
+            <span class="upload-btn" @click="uploadFilesClick">+{{ __('上传本地文件') }}</span>
+            <span v-if="menus.length < 4 && allTabType==='all'" class="logo-min"></span>
+            <span v-if="menus.length < 4 && allTabType==='all'" class="upload-btn" @click="handleNewFolder">+{{ __('新建文件夹') }}</span>
+          </div>
+      </div>
+       <div class="scroll-content" :class="{'h300': currentTab=='all' }"  infinite-scroll-disabled="scrollDisabled" :immediate-check="false" infinite-scroll-distance="40">
+        {# 文件形式 #}
+        <div class="scroll-loading" v-if="scrollLoading"><i class="el-icon-loading mr-octal1"></i> {{ __('加载中') }}…</div>
+       
+        {# 图片形式 #}
+        <div  class="image-line">
+          <div v-for="item,index in listData" class="image-one">
+            <div class="myimage" :class="{'checkeded-box': item.isSelected}" @click="item.suffix==''? (item.is_add?'': handleFolderClick(item))
+            : selectOneChanged(item, index)">
+              <div class="show-img">
+                 <img :src="item.thumb"  v-if="item.suffix=='jpg'||item.suffix=='jpeg'||item.suffix=='png'||item.suffix=='gif'" alt=""/>
+                 <img :src="getFileType(item.name, false)" class="document-img" v-else  alt=""/>
+              </div>
+              <input v-if="item.suffix!=''" type="checkbox" class="oris-checkbox-mini" :name="item.id" :checked="item.isSelected" 
+              :disabled="item.isDisabled">
+            </div>
+            <span class="image-name" v-show="!item.is_add" :title="item.name">${item.name}</span>
+            <div v-show="item.is_add" class="rename-input">
+              <input type="text"  ref="seach_input" id="confirmNewFolder" maxLength="50" @keyup.enter="confirmName" @keyup.esc="cancelName(index)" @blur="cancelName(index)">
+            </div>
+          </div>
+        </div>
+        {# 分页 #}
+          <div class="page" v-if="listData.length>0">
+             <el-pagination
+                background
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page.sync="pageIndex"
+                :page-sizes="[20, 50, 100, 200, 500]"
+                :page-size="10"
+                layout="prev, pager, next, sizes"
+                :total="total">
+              </el-pagination>
+              <span class="page-item">${listData.length>0?(pageIndex-1) * pageSize +1 : 0}-${(pageIndex-1) * pageSize +listData.length} of ${total}</span>
+          </div>
+        <div class="scroll-loading" v-if="isEnd">
+          <div v-if="listData.length==0">
+            <img src="{{ asset('image/icons/empty.png') }}" class="empty-img"></img>
+            <div class="empty-title">{{ __('没有结果') }}
+                <span class="operation-btn">
+                <span class="upload-btn" @click="uploadFilesClick">{{ __('上传本地文件') }}</span>
+                <span v-if="menus.length < 4 && allTabType==='all'" class="upload-btn" @click="handleNewFolder">{{ __('新建文件夹') }}</span>
+               </span>
+            </div>
+          </div>
+        </div>
+       </div>
+    </div>
+</script>
+<script>
+  Vue.component('files-list', {
+    template: '#filesList',
+    delimiters: ['${', '}'],
+    props: {
+      currentTab: { // 当前Tab页面
+        type: String,
+        default: ''
+      },
+      filesTab: { // 文件类型，默认全部文件
+        type: String,
+        default: 'all'
+      },
+      menus: { // 所在目录, 默认根目录
+        type: Array,
+        default: null
+      },
+      listData: {
+        type: Array,
+        default: []
+      },
+      getFileType: {
+        type: Function,
+        default: null
+      },
+      searchValue: {
+        type: String,
+        default: ''
+      }
+    },
+    data: () => {
+      return {
+        axios: null,
+        mySearch: '',
+        isSelectAll: false, // 是否全选
+        isEnd: false, // 是否加载完毕
+        scrollLoading: false, //流加载底部loading,
+        pageIndex: 1,
+        pageSize: 20,
+        selectedCount: 0, // 选中的个数
+        selectedMaxCount: 0, // 可选中的总数
+        allTabType: 'all',
+        allTabFilter: [{
+            name: "{{ __('全部') }}",
+            value: 'all'
+          },
+          {
+            name: "{{ __('图片') }}",
+            value: 'image'
+          },
+          {
+            name: "{{ __('文档') }}",
+            value: 'document'
+          },
+          {
+            name: "{{ __('其他') }}",
+            value: 'other'
+          }
+        ],
+        source: null,
+        total:0
+      }
+    },
+    watch: {
+      listData: {
+        handler: function (listData) {
+          let num = 0;
+          let max = 0; // 可选中的总数（非文件总数）
+          listData.forEach(one => {
+            if (this.getFileType(one.name, true) !== 'file') {
+              max++;
+            };
+            if (one.isSelected) {
+              num++;
+            };
+          })
+          this.selectedMaxCount = max;
+          this.selectedCount = num;
+          this.isSelectAll = this.selectedCount && this.selectedMaxCount === this.selectedCount;
+          this.$emit("changedListData", this.currentTab, this.listData);
+        },
+        deep: true
+      },
+    },
+    computed: {
+      scrollDisabled() {
+        return this.scrollLoading || this.isEnd || (this.currentTab !== this.filesTab);
+      },
+    },
+    created() {
+      this.axios = axios.create({});
+      this.mySearch = this.searchValue;
+      this.handleScroll();
+    },
+    methods: {
+      async getFileDataService(pageIndex,pageSize) {
+        this.scrollLoading = true;
+        let url =
+          `/index.php?route=account/file_manage/index/list&page=${pageIndex}&page_size=${pageSize}&keyword=${this.mySearch}`;
+        // 只有全部文件下才需要传parentId
+        if (this.currentTab === 'all') {
+          let lastMemu = this.menus[this.menus.length - 1];
+          url += `&parent_id=${lastMemu?lastMemu['id']:0}&file_type=${this.allTabType}`;
+        } else {
+          url += `&file_type=${this.currentTab}`;
+        }
+        this.source = axios.CancelToken.source();
+        let res = await this.axios.get(url, {
+          cancelToken: this.source.token
+        });
+        if (res['data']['code'] !== 200) {
+          this.toastTips(false, res['data']['msg']);
+          this.isEnd = true;
+          return [];
+        }
+        if (res['data']['data']['count'] === res['data']['data']['loaded']) {
+          this.isEnd = true;
+        }
+        if (this.isSelectAll && res['data']['data']['list'] && res['data']['data']['list'].length > 0) {
+          this.isSelectAll = false;
+        }
+        this.total = res['data']['data']['count'] 
+        this.listData = res['data']['data']['list']
+        console.log(this.listData)
+        this.$nextTick(() => {
+          this.scrollLoading = false;
+        })
+        //return res['data']['data']['list'];
+      },
+      // 执行父级数据加载
+      async loadData(isRefresh = false) {
+        if (this.scrollLoading) {
+          return;
+        }
+        this.scrollLoading = true;
+        if (isRefresh) {
+          this.isEnd = false;
+          this.pageIndex = 1;
+          this.pageSize = 20;
+          // 数据清除
+          this.listData.length = 0;
+        }
+        let data = await this.getFileDataService(this.pageIndex,this.pageSize);
+        //this.pageIndex++;
+        //this.listData.push(...data);
+        this.$nextTick(() => {
+          this.scrollLoading = false;
+        })
+      },
+      // 流加载
+      handleScroll() {
+        this.loadData();
+      },
+      // 全部文件Tab点击
+      refreshAllTab(value) {
+        if (this.scrollLoading && this.source) {
+          this.source.cancel('Operation canceled by the user.');
+          this.scrollLoading = false;
+        }
+        this.allTabType = value;
+        this.loadData(true);
+      },
+      // 全选
+      selectAllChanged(value) {
+        this.isSelectAll = value;
+        let list = JSON.parse(JSON.stringify(this.listData));
+        let that = this;
+        list.forEach(one => {
+          if (that.getFileType(one.name, true) !== 'file') {
+            one['isSelected'] = that.isSelectAll;
+          } else {
+            one['isSelected'] = false;
+          }
+        })
+        this.listData = list;
+      },
+      // 单个选中
+      selectOneChanged(item, index) {
+        item.isSelected = !item.isSelected;
+        this.$set(this.listData, index, item);
+      },
+      toastTips(isSuccess, msg) {
+        $.toast({
+          heading: false,
+          text: msg,
+          position: 'top-center',
+          showHideTransition: 'fade',
+          icon: isSuccess ? 'success' : 'error',
+          hideAfter: 3000,
+          allowToastClose: false,
+          loader: false
+        });
+      },
+      // 点击文件夹
+      handleFolderClick(item) {
+        this.$parent.$parent.searchValue = ''
+        this.mySearch=''
+        if (this.getFileType(item.name, true) === 'file') {
+          this.menus.push(item);
+          this.$emit('intoFolder', this.menus);
+          // 重新刷新
+          this.refreshAllTab(this.allTabType);
+        }
+      },
+      // 点击文件路径
+      handleMenuClick(i) {
+        // 如果是最后一级，return
+        if (this.menus.length === i + 1) {
+          return;
+        }
+        this.menus.length = i + 1;
+        this.$emit('intoFolder', this.menus);
+        // 重新刷新
+        this.refreshAllTab(this.allTabType);
+      },
+      cancelName(index) {
+         $('#confirmNewFolder').val('')
+        this.$emit('cancelName', index)
+      },
+      //校验新建文件名称
+      nameJudge(val){
+        const patter = 'A-Za-z0-9\\u4e00-\\u9fa5'
+        const otherChar = '\\-\\_\\s\(\)\（\）'
+        const renameReg = new RegExp(`^[${patter}][${patter}${otherChar}]{0,99}$`)
+        let errtip ={msg:'',isadd:true}
+        if(val.length>50){
+          errtip = {msg:"{{ __('文件夹名称不能超过50字符') }}",isadd:false}
+        }
+        if (!renameReg.test(val)){
+          errtip = {msg:"{{ __('文件夹名称只能包含数字、中英文、空格、（）- 或者 _') }}",isadd:false}
+        }
+        if (!new RegExp(`^[${patter}]`).test(val)){
+          errtip = {msg:"{{ __('文件夹名称只能以中英文或者数字开头') }}",isadd:false}
+        }
+        if (val === ''){
+          errtip = {msg:"{{ __('文件夹名称不能为空') }}",isadd:false}
+        }
+        return errtip
+      },
+      confirmName(){
+        let value = $('#confirmNewFolder').val()
+        let errMsg = this.nameJudge(value)
+        if(errMsg.isadd){
+          this.confirmNewFolder();
+        }else{
+           value = $('#confirmNewFolder').val('')
+           $.toast({
+              heading: false,
+              text: errMsg.msg,
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: 3000,
+              allowToastClose: false,
+              loader: false,
+          });
+        }
+      },
+      // 提交新建文件夹
+      async confirmNewFolder() {
+        let parent = this.menus
+        let value = $('#confirmNewFolder').val()
+        let url = '/index.php?route=account/file_manage/index/makeDir'
+        let ret = await this.axios.post(url, {
+          name: value,
+          parent_id: parent[parent.length - 1].id,
+        });
+        let result = ret.data
+        if (result.code === 200) {
+          value = $('#confirmNewFolder').val('')
+          $.toast({
+            heading: false,
+            text: result.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+          });
+          this.$nextTick(() =>{
+            this.pageIndex =1
+            this.getFileDataService(this.pageIndex,this.pageSize);
+            this.getFileDataService(this.pageIndex,this.pageSize);
+          })
+        } else {
+          value = $('#confirmNewFolder').val('')
+          $.toast({
+            heading: false,
+            text: result.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+          });
+        }
+      },
+      uploadFilesClick() {
+        this.$emit('uploadFilesClick')
+      },
+      handleNewFolder() {
+        $('.scroll-content').scrollTop(0)
+        if (this.listData.length==0){
+            this.$emit('handleNewFolder')
+        } else if(!this.listData[0].is_add){
+            this.$emit('handleNewFolder')
+        }
+      },
+      handleSizeChange(val){
+          this.pageIndex = 1
+          this.pageSize = val
+          this.getFileDataService(this.pageIndex,this.pageSize)
+       },
+      handleCurrentChange(val){
+          this.pageIndex = val
+          this.getFileDataService(this.pageIndex,this.pageSize)
+        },
+    },
+    beforeDestroy() {
+      // 组件销毁阶段调用cancelToken方法取消请求
+      this.source && this.source.cancel('Operation canceled by the user.');
+    }
+  })
+
+
+</script>

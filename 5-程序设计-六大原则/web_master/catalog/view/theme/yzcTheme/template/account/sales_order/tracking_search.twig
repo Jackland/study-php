@@ -1,0 +1,619 @@
+{{ header }}
+<link href="/catalog/view/theme/yzcTheme/stylesheet/sales_order/tracking_search.css" type="text/css" rel="stylesheet"/>
+
+{#detail#}
+{% include 'yzcTheme/template/account/sales_order/tracking_details_within_search.twig' %}
+{#END detail#}
+
+<div class="page-seller-portal tracking-search-container">
+  {#菜单#} {% include 'giga/template/_parts/breadcrumb_simple.twig' %} {#END 菜单#}
+  <div class="tracking-search-outter-container">
+    <h1>Track Shipment</h1>
+    <div class="tracking-search-container">
+      <div class="tracking-search-notice">
+        <ul>
+          <li>
+            Only available for Drop Shipping and Will Call orders.
+          </li>
+          <li>There may be a discrepancy in the shipment tracking information on the Marketplace versus the associated
+           logistics company. For the most accurate tracking, please check the official website of the logistics company
+            used for your order.
+          </li>
+          <li>Giga Cloud is not the carrier for the order. Concerning logistics issues, please contact the associated
+            carrier. The phone number of the carrier shown on Marketplace is for general contact only. Please refer to
+            information on their official website for direct contact.
+          </li>
+        </ul>
+      </div>
+      <div class="tracking-search-radio">
+        <form>
+          <input type="radio" name="tracking-search-method" onChange="handleSearchType('text')" class="order-number"
+                 checked="checked"><span class="mr-20">Tracking by Sales Order ID</span>
+          <input type="radio" name="tracking-search-method" onChange="handleSearchType('file')" class="order-form">Import
+          Sales Order Form
+        </form>
+      </div>
+      <div class="tracking-search-document">
+        <div>
+          <div class="click-to-upload" id="upload_button">CLICK TO UPLOAD</div>
+          <input type="file" id="upload_file" name='upload_file'>
+          <div class="flex docm">
+            <div class="document"></div>
+            <div class="doc-icon" id="doc-icon">
+              <button data-id="" type="button" class="btn del-btn none" id="delBtn"><i class="giga icon-lajitong"
+                                                                                       aria-hidden="true"></i></button>
+              <button type="button" id="checkBtn" class="btn check-btn"><i class="giga icon-duigou"
+                                                                           aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="click-to-example" id="download">Download Sample File</div>
+      </div>
+      <div>
+        <div class="tracking-search-all">
+          <input type="text" class="search-tel" id="trackId"
+                 placeholder="Enter Sales Order ID. Separate multiple IDs with a comma(,).">
+          <input type="button" class="search-btn-track" id="track" value="TRACK">
+        </div>
+      </div>
+      <div class="order-table">
+        <div class="sub-table-tr">
+          <div class="table-th">Sales Order</div>
+          <div class="table-th">Recipient</div>
+          <div class="table-th">Address</div>
+          <div class="table-th">Item Code</div>
+          <div class="table-th">Carrier</div>
+          <div class="table-th">Tracking Number</div>
+          <div class="table-th">Status</div>
+        </div>
+        <div class="order-table-bottom">
+
+        </div>
+        <div class="no-records" id="no-records">No records.</div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}
+<script>
+  function layerMsg(message, time = 3000) {
+    layer.msg(message, {time: time, skin: ''});
+  }
+
+  function getUrlParams(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return decodeURIComponent(r[2].replace(/\+/g, '%20'));
+    return null;
+  }
+
+  var slideIndex = 0; //用于详情页切换slide
+  var activeIndex = 0; //当前活动的slide
+  $(document).ready(function () {
+    var orderId = getUrlParams('sales_order_id');
+    console.log(orderId);
+    if (orderId) {
+      $("#trackId").val(orderId);
+      $("#track").click();
+    }
+    bindEnterEvent()
+  });
+
+
+  function bindEnterEvent() {
+    $(document).on('keyup', function(event) {
+      if(event.keyCode == 13){
+        $("#track").click();
+      }
+    });
+  }
+
+  function unbindEnterEvent() {
+    $(document).off('keyup');
+  }
+
+  //加载表格数据
+  function loadTable(data) {
+    var innerHtml = '';
+    var dialogHtml = '';
+    slideIndex = 0;
+    activeIndex = 0;
+    for (let order of data) {
+      if (!order.hasOwnProperty("salesOrder")) {
+        continue;
+      }
+
+      if (order.flag) {
+        var innerHtml = '';
+        var dialogHtml = '';
+        innerHtml += `
+               <div class="order-table-tr">
+                   <div class="order-table-left">`
+        if (order.linkUrl != '') {
+          innerHtml += `<span><a href="${order.linkUrl}" target="_blank">${order.salesOrder}</a></span>`;
+        } else {
+          innerHtml += `<span>${order.salesOrder}</span>`;
+        }
+        innerHtml += `<span>${order.recipient}</span>
+                     <span>${order.address}</span>
+                   </div>
+              <div class="order-table-right">`
+        // console.log(t)
+        if (order.itemList.length == 0) {
+          innerHtml += `<div class="noitemtip">No tracking information currently. </div></div>`
+        } else {
+          for (let item of order.itemList) {
+            innerHtml += `
+             <div class="commodity-information">
+               <div class="commodity-img">
+                  <img src="${item.itemCodeImg}" alt="">
+                <span class="img-number"><a href="${item.linkUrl}" target="_blank">${item.itemCode}</a></span>
+               </div>
+               <div>`
+            //无运单号的情况 或 只有一个运单号，但是该运单号的状态列表为空也不显示
+            if (item.trackList.length == 0
+              || (item.trackList.length == 1 && item.trackList[0].statusList.length == 0)) {
+              innerHtml += `
+              <div class="noitemtip">
+    No tracking information currently.
+    </div>
+                `;
+            } else {
+              for (let track of item.trackList) {
+                let statusObj = returnStatus(track.statusList[0].status);
+                innerHtml += `
+                 <div class="commodity">
+                    <div class="touch-tel">
+                        <span class="touch-tel-fedex">${track.carrier}</span>`
+                if (track.carrier.trim().toLowerCase() == 'ups') {
+                  innerHtml += `<div class="red-phone">
+                            <i class="giga icon-dianhua phone-display"></i>
+                            <div class="phone-hover">
+                                <div class="phone"><i class="giga icon-dianhua white-phone"></i></div>
+                                <div class="phone-tel">Ask UPS: 1-800-742-5877</div>
+                            </div>
+                        </div>`
+                } else if (track.carrier.trim().toLowerCase() == 'fedex') {
+                  innerHtml += `<div class="red-phone">
+                            <i class="giga icon-dianhua phone-display"></i>
+                            <div class="phone-hover">
+                                <div class="phone"><i class="giga icon-dianhua white-phone"></i></div>
+                                <div class="phone-tel">Ask FedEx: 1-800-463-3339</div>
+                            </div>
+                        </div>`
+                }
+
+                innerHtml += `</div>`
+                if (track.linkUrl != '') {
+                  innerHtml += `<div class="touch-tel"><a href="${track.linkUrl}" target="_blank">${track.trackingNumber}</a></div>`;
+                } else {
+                  innerHtml += `<div class="touch-tel">${track.trackingNumber}</div>`;
+                }
+
+                innerHtml += `<div class="touch-tel fexed">
+                        <div> <i class="giga status-icon ${statusObj.icon}" style="color:${statusObj.color}"></i></div>
+                        <div class="order-status">
+                            <div class='open-detail' data-index=${slideIndex}>${statusObj.name}</div>
+                            <div>${track.statusList[0].create_time}</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            `
+                dialogHtml += `
+      <div class="swiper-slide" id="slide-item-${slideIndex}">
+        <div>
+          <div class="personal-information">
+            <div class="personal-information-list">
+              <div class="sales-order">Sales Order:</div>`
+                    if (order.linkUrl != '') {
+                      dialogHtml += `<div class="sales-order-tel"><a href="${order.linkUrl}" target="_blank">${order.salesOrder}</a></div>`;
+                    } else {
+                      dialogHtml += `<div class="sales-order-tel">${order.salesOrder}</div>`;
+                    }
+                    dialogHtml += `</div>
+            <div class="personal-information-list">
+              <div class="sales-order">Recipient:</div>
+              <div class="sales-order-tel">${order.recipient}</div>
+            </div>
+            <div class="personal-information-list">
+              <div class="sales-order">Address:</div>
+              <div class="sales-order-tel">${order.address}</div>
+            </div>
+          </div>
+          <div class="commodity-information">
+            <div class="commodity-information-list">
+            </div>
+            <div class="commodity-details">
+              <div class="commodity-img">
+                <img src="${item.itemCodeImg}" alt="">
+              </div>
+              <div class="commodity-content-container">
+                <div class="detail-row">
+                    <div class="detail-title order-number"><span><a href="${item.linkUrl}" target="_blank">${item.itemCode}</a></span></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-title">Carrier:</div>
+                    <div class="detail-content">
+                        <div class="touch-tel">
+                            <span class="touch-tel-fedex">${track.carrier}</span>`
+                    if (track.carrier.trim().toLowerCase() == 'ups') {
+                      dialogHtml += `<div class="red-phone">
+                                <i class="giga icon-dianhua phone-display"></i>
+                                <div class="phone-hover">
+                                    <div class="phone"><i class="giga icon-dianhua white-phone"></i></div>
+                                    <div class="phone-tel">Ask UPS: 1-800-742-5877</div>
+                                </div>
+                            </div>`
+                    } else if (track.carrier.trim().toLowerCase() == 'fedex') {
+                      dialogHtml += `<div class="red-phone">
+                                <i class="giga icon-dianhua phone-display"></i>
+                                <div class="phone-hover">
+                                    <div class="phone"><i class="giga icon-dianhua white-phone"></i></div>
+                                    <div class="phone-tel">Ask FedEx: 1-800-463-3339</div>
+                                </div>
+                            </div>`
+                    }
+                    dialogHtml += `</div>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-title">Tracking Number:</div>`
+                    if (track.linkUrl != '') {
+                      dialogHtml += `<div class="detail-content"> <a href="${track.linkUrl}" target="_blank">${track.trackingNumber}</a></div>`;
+                    } else {
+                      dialogHtml += `<div class="detail-content">${track.trackingNumber}</div>`;
+                    }
+                dialogHtml += `</div>
+              </div>
+            </div>
+            <div class="glt"></div>
+          </div>
+        </div>
+        <div class="logistics">
+          <div class="logistics-information">
+            <ul class="logistics-information-ul">
+        `;
+                for (let status of track.statusList) {
+                  let statusObj = returnStatus(status.status);
+                  let addressArr=[];
+                  if(status.city){
+                    addressArr.push(status.city)
+                  }
+                  if(status.state){
+                    addressArr.push(status.state)
+                  }
+                  if(status.country){
+                    addressArr.push(status.country)
+                  }
+                  let addressstr=addressArr.join(',')
+                  dialogHtml += `
+<!--                  <li><span>${status.create_time}</span><span class="order-status">${statusObj.name}</span></li>-->
+                    <li>
+                        <div class="flex-start">
+                            <div class="logistics-date">${status.create_time}</div>
+                            <div class="logistics-detail">
+                                <p class="logistics-detail-status">${statusObj.name}</p>
+                                <p class="logistics-detail-dec">${status.event_description}</p>
+                                <p class="logistics-deyail-address">${addressstr}</p>
+                            </div>
+                        </div>
+                    </li>
+                `
+                }
+                    dialogHtml += `
+                          </ul>
+                      </div>
+                    </div>
+                  </div>`
+                    slideIndex += 1;
+                  }
+                }
+                innerHtml += '</div> </div>'
+              }
+            }
+            innerHtml += '</div></div>'
+            $('.order-table-bottom').append(innerHtml)
+            $('#swiper-wrapper').append(dialogHtml);
+          } else {
+            var innerHtml = '';
+            innerHtml += `
+                    <div class="order-table-tr" style="width:1062px">
+                      <div class="order-table-left">`
+            if (order.linkUrl != '') {
+              innerHtml += `<span><a href="${order.linkUrl}" target="_blank">${order.salesOrder}</a></span>`;
+            } else {
+              innerHtml += `<span>${order.salesOrder}</span>`;
+            }
+            innerHtml += `<p>${order.message}</p>
+                      </div>`;
+            innerHtml += '</div>';
+            $('.order-table-bottom').append(innerHtml)
+          }
+        }
+      }
+
+  $("#track").click(function () {
+    unbindEnterEvent();
+    let trackId = $("#trackId").val().trim();
+    if (trackId == "") {
+      return;
+    }
+
+    resetTableData();
+    block.blockUI();
+    $.ajax({
+      type: 'POST',
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        'sales_order_id_list': trackId
+      }),
+      url: 'index.php?route=account/sales_order/tracking_search/search',
+      success: function (data) {
+        // loadDetail(data);
+        if(data.data.length == 0) {
+          $("#no-records").show();
+        } else {
+          $("#no-records").hide();
+        }
+        if (data.notice) {
+          $.toast({
+            heading: false,
+            text: data.notice,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: false,
+            allowToastClose: true,
+            loader: false,
+          });
+        }
+        loadTable(data.data);
+        block.unBlockUI();
+        setTimeout(function(){ bindEnterEvent() }, 1000);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        block.unBlockUI();
+        setTimeout(function(){ bindEnterEvent() }, 1000);
+      }
+    })
+  })
+
+  //打开弹窗事件
+  $('body').on('click', '.open-detail', function () {
+    let index = parseInt($(this).attr("data-index"));
+    activeIndex = index;
+    openDialog(index);
+  })
+
+  //弹窗部分，放弃layui layer iframe，改用内容模式
+  function openDialog(curIndex) {
+    layer.open(
+      {
+        type: 1,
+        area: ['520px', '560px'],
+        title: 'Detailed View',
+        fixed: false, //不固定Change
+        maxmin: false,
+        offset: "80px",
+        skin: 'yzc_layer',
+        scrollbar: false,
+        resize:false,
+        shadeClose: true,
+        content: $('.detail-dialog'),
+        cancel: function (index, layer) {
+
+        },
+        success: function () {
+          showCurrentDetail(curIndex);
+        }
+      }
+    );
+  }
+
+</script>
+<script>
+
+  $('#download').click(function () {
+    location.href = '/index.php?route=account/sales_order/tracking_search/downloadTemplateFile';
+  });
+
+  //打开文件选择框
+  $('#upload_button').click(function () {
+    $('#upload_file').click();
+  });
+
+
+  var file = null;
+
+  $("#upload_file").change(function () {
+    if ($("#upload_file")[0].files.length) {
+      file = $("#upload_file")[0].files[0];
+      $(".document").append(file.name)
+      $('#upload_button').hide();
+      $('#doc-icon').show();
+      handleFiles(file)
+    } else {
+      $(".document").empty();
+      $('#upload_button').show();
+      $('#doc-icon').hide();
+    }
+  })
+
+  $("#delBtn").click(function (e) {
+    e.stopPropagation();
+    $('#upload_file').val('');
+    $(".document").empty();
+    $('#upload_button').show();
+    $('#doc-icon').hide();
+  });
+
+  //文件上传处理
+  function handleFiles(file) {
+    resetTableData();
+    var formFile = new FormData();
+    var index = file['name'].lastIndexOf(".");
+    var suffix = file['name'].substr(index + 1);
+    var size = file['size'];
+    if (suffix != 'xls' && suffix != 'xlsx') {
+      // layerMsg('Upload files in .xls / .xlsx format only');
+      $.toast({
+        heading: false,
+        text: 'Upload files in .xls / .xlsx format only',
+        position: 'top-center',
+        showHideTransition: 'fade',
+        icon: 'error',
+        hideAfter: 7000,
+        allowToastClose: false,
+        loader: false,
+      });
+      $('#delBtn').click();
+      return false;
+    }
+
+
+    // feature/#21695 限制文件上传大小
+    if (size >= 10 * 1000 * 1000) {
+      $.toast({
+        heading: false,
+        text: 'File size shall be less than 10M .',
+        position: 'top-center',
+        showHideTransition: 'fade',
+        icon: 'error',
+        hideAfter: 7000,
+        allowToastClose: false,
+        loader: false,
+      });
+      $('#delBtn').click();
+      return false;
+    }
+
+    formFile.append("file", file);
+    formFile.append("upload_type", 0);
+    var data = formFile;
+    block.blockUI();
+    $.ajax({
+      url: "/index.php?route=account/sales_order/tracking_search/uploadSearch",
+      data: data,
+      type: "Post",
+      dataType: "json",
+      cache: false,//上传文件无需缓存
+      processData: false,//用于对data参数进行序列化处理 这里必须false
+      contentType: false, //必须
+      success: function (data) {
+        // loadDetail(data);
+        // todo 这里写成需要要求的
+        if(data.data.length == 0) {
+          $("#no-records").show();
+        } else {
+          $("#no-records").hide();
+        }
+        if (data.notice) {
+          $.toast({
+            heading: false,
+            text: data.notice,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: false,
+            allowToastClose: true,
+            loader: false,
+          });
+        }
+        loadTable(data.data);
+        block.unBlockUI();
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        block.unBlockUI();
+      }
+    })
+  }
+
+  //搜索类型选择
+  var searchType = 'text';
+
+  function handleSearchType(type) {
+    let fileDom = '.tracking-search-document';
+    let textDom = '.tracking-search-all';
+    let activeSearch = type == 'file' ? fileDom : textDom;
+    let inactiveSearch = type == 'file' ? textDom : fileDom;
+    $(activeSearch).css("display", "flex");
+    $(activeSearch).css("visibility", "visible");
+    $(inactiveSearch).hide();
+    $(inactiveSearch).css("visibility", "hidden");
+    //清空搜索数据
+    if (type == "file") {
+      $('#trackId').val('');
+    } else if (type == "text") {
+      $('#delBtn').click();
+    }
+  }
+
+  //返回运送单状态名称,图标，颜色
+  function returnStatus(statusCode) {
+    switch (statusCode) {
+      case 1:
+        return {
+          'name': 'Label Created',
+          'icon': 'icon-wuliuzhuangtai-shengchengbiaoqian',
+          'color': '#fa6400'
+        };
+        break;
+      case 2:
+        return {
+          'name': 'In Prep',
+          'icon': 'icon-wuliuzhuangtai-yibeihuo',
+          'color': '#fa6400'
+        };
+        break;
+      case 3:
+        return {
+          'name': 'Shipped from warehouse',
+          'icon': 'icon-wuliuzhuangtai-chuku',
+          'color': '#fa6400'
+        };
+        break;
+      case 4:
+        return {
+          'name': 'Picked Up',
+          'icon': 'icon-wuliuzhuangtai-yiquhuo',
+          'color': '#3a75dc'
+        };
+        break;
+      case 5:
+        return {
+          'name': 'In Transit',
+          'icon': 'icon-wuliuzhuangtai-yunshuzhong',
+          'color': '#3a75dc'
+        };
+        break;
+      case 6:
+        return {
+          'name': 'Delivered',
+          'icon': 'icon-wuliuzhuangtai-songda',
+          'color': '#65b017'
+        };
+        break;
+      case 7:
+        return {
+          'name': 'Exception',
+          'icon': 'icon-wuliuzhuangtai-chuxianyichang',
+          'color': '#ff414d'
+        };
+        break;
+      default:
+        return;
+    }
+  }
+
+  //清空表格数据
+  function resetTableData() {
+    $('.order-table-bottom').empty();
+    $('#swiper-wrapper').empty();
+  }
+</script>

@@ -1,0 +1,2862 @@
+{{ header }}
+{{ assetBundle('Seller\\VatAsset') }}
+{{ separate_column_left }}
+<style>
+  .bs-bars.pull-left {
+    float: none !important;
+  }
+
+  .btn-add {
+    /*background-color: #169bd5;*/
+    /*color: white;*/
+  }
+
+  .btn-remove {
+    background-color: #e3503e;
+    color: white;
+  }
+
+  .btn-set-price {
+    background-color: #3c933c;
+    color: white;
+  }
+
+  .width_100 {
+    width: 100%;
+  }
+
+  #tb_delicacy_list_buyers .th-inner {
+    white-space: normal;
+  }
+
+  #tb_delicacy_list_products .th-inner {
+    white-space: normal;
+  }
+
+  #tb_select_list_products .th-inner {
+    white-space: normal;
+  }
+
+  #list_products .bootstrap-table .fixed-table-container .table thead th .th-inner {
+    white-space: normal;
+  }
+
+  .help {
+    font-size: 15px;
+    margin-right: 20px;
+    color: #183464;
+  }
+
+  .help .giga.icon-V10-wenhaotishi {
+    margin-right: 2px;
+  }
+
+  .layui-layer-btn .layui-layer-btn0 {
+    border-color: #1E9FFF !important;
+    background-color: #1E9FFF !important;
+    color: #fff !important;
+
+  }
+
+  .layui-layer-btn-c {
+    text-align: center !important;
+  }
+
+  .input_time_only_pick {
+    background-color: #fff !important;
+  }
+
+  .break_line {
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+
+  .img_logo {
+    font-weight: bold;
+    color: red;
+    padding-left: 1px
+  }
+
+  .tooltip {
+    position: absolute;
+    z-index: 20191029;
+    display: block;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: left;
+    text-align: start;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    letter-spacing: normal;
+    word-break: normal;
+    word-spacing: normal;
+    word-wrap: normal;
+    white-space: normal;
+    filter: alpha(opacity=0);
+    opacity: 0;
+
+    line-break: auto;
+  }
+
+  /*.tb_delicacy_list_buyers_pickup_price {*/
+  /*  background-color: #FFFF0033;*/
+  /*}*/
+
+  /*.tb_delicacy_list_products_pickup_price {*/
+  /*  background-color: #FFFF0033;*/
+  /*}*/
+
+  table label {
+    margin-bottom: 0;
+  }
+
+  #delicacy_products_select_div div.row .fixed-table-toolbar .search{
+    margin-bottom: 0;
+  }
+
+  .p-window_set_price{
+    text-align: left;
+    color: #4879a9;
+    font-size: 15px;
+    font-weight: bold;
+  }
+  .form-group label{
+    text-transform: none !important;
+  }
+
+  .a_link {
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  {# vat icon 展示样式 #}
+  .overflow-visible .fixed-table-body {
+    overflow: visible !important;
+  }
+
+</style>
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<link rel="stylesheet" href="catalog/view/javascript/bootstrap-table/bootstrap-table.min.css">
+<script type="text/javascript" src="catalog/view/javascript/bootstrap-table/bootstrap-table.js"></script>
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid" id="content" style="margin-left: 15%">{% else %}
+  <div class="container">
+    {% endif %}
+    <ul class="breadcrumb">
+      {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+      {% endfor %}
+    </ul>
+    <div class="row">
+      {{ column_left }}
+      {% if column_left %}
+        {% set class = 'col-sm-6' %}
+      {% else %}
+        {% set class = 'col-sm-12' %}
+      {% endif %}
+      <div id="content" class="{{ class }}">
+        {{ content_top }}
+        <h1>{{ heading_title }} </h1>
+
+        {#tab#}
+        <ul class="nav nav-tabs" style="border: none">
+          <li class="active" onclick="tabClick('buyers')"><a href="#tab-buyers" data-toggle="tab">Buyers</a></li>
+          <li class="" onclick="tabClick('products')"><a href="#tab-products" data-toggle="tab">Products</a></li>
+{#          <a class="help pull-right" href="{{ url_help }}" target="_blank"#}
+{#             style="font-size: medium;margin-right: 20px"><i class="giga icon-V10-wenhaotishi"></i>What is Refined management?</a>#}
+        </ul>
+        <div id="box-shadow">
+          {# Select-buyers #}
+          <div id="list_buyers" class="well" style="padding-top: 3px;max-height: 510px">
+            <div class="row">
+              <div style="margin-left: 15px">
+                <table id="tb_select_list_buyers" class="table table-striped table-hover" style="">
+                </table>
+              </div>
+            </div>
+          </div>
+          {# Select-products #}
+          <div id="list_products" class="well hidden" style="padding-top: 3px">
+            <div class="row">
+              <div style="margin-left: 15px">
+                <table id="tb_select_list_products" class="table table-striped table-hover" style="">
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {#精细化管理表格#}
+          <p style="color: #183464;font-size: 20px">{{ delicacy_management_list }}</p>
+
+          {# window-buyers #}
+          <div class="well" id="delicacy_buyers_select_div" style="display: none;margin-bottom:0;padding-top: 5px;padding-bottom: 0">
+            {# Delicacy Lists Buyers #}
+            <div class="row">
+              <div style="margin-left: 15px">
+                <table id="tb_window_buyers" class="table table-striped table-hover" style="">
+                </table>
+              </div>
+            </div>
+          </div>
+          {#Delicacy-list-buyers#}
+          <div class="well div_delicacy_list_buyers">
+            <div class="row" id="delicacy_list_buyers_toolbar">
+              <div class="col-md-4">
+                <input type="text" name="input_filter_delicacy" placeholder="{{ input_select_product }}"
+                       class="form-control"/>
+              </div>
+              <div class="col-md-1">
+                <button type="button" onclick="input_filter_delicacy(this,'tb_delicacy_list_buyers');" class="btn btn-primary pull-right">
+                  Filter
+                </button>
+              </div>
+              <div class="col-md-7 text-right">
+                <button type="button" class="btn btn-add" onclick="showSelectProductsWindow(this)" data-toggle="tooltip"
+                        title="{{ tip_add_product }}">
+                  <i class="fa fa-plus"></i></button>
+                <button type="button" class="btn btn-remove" onclick="func_batch_remove(this,'tb_delicacy_list_buyers')"
+                        data-toggle="tooltip" title="{{ tip_batch_remove_product }}">
+                  <i class="fa fa-trash-o"></i></button>
+                <button type="button" class="btn btn-remove hide"
+                        onclick="func_batch_set_invisible(this,'tb_delicacy_list_buyers')" data-toggle="tooltip"
+                        title="Invisible">
+                  <i class="fa fa-eye-slash"></i></button>
+              </div>
+            </div>
+            {# 表格结果 #}
+            <div class="row">
+              <div style="margin-left: 15px">
+                <table id="tb_delicacy_list_buyers" class="table table-striped table-hover"></table>
+              </div>
+            </div>
+          </div>
+
+          {# window-buyers #}
+          <div class="well" id="delicacy_products_select_div" style="display: none;margin-bottom:0;padding-top: 5px;padding-bottom: 0">
+            <div class="row" style="margin-bottom: 20px">
+              <div style="margin-left: 15px">
+                <table id="tb_window_product_header" class="table table-striped table-hover">
+                </table>
+              </div>
+            </div>
+            {# Delicacy Lists Buyers #}
+            <div class="row">
+              <div style="margin-left: 15px">
+                <table id="tb_window_products" class="table table-striped table-hover">
+                </table>
+              </div>
+            </div>
+          </div>
+          {#Delicacy-list-products#}
+          <div class="well div_delicacy_list_products hidden overflow-visible">
+            <div class="row" id="delicacy_list_products_toolbar">
+              <div class="col-md-4">
+                <input type="text" name="input_filter_delicacy" placeholder="{{ input_select_buyer }}"
+                       class="form-control"/>
+              </div>
+              <div class="col-md-1">
+                <button type="button" onclick="input_filter_delicacy(this,'tb_delicacy_list_products');"
+                        class="btn btn-primary pull-right" data-toggle="tooltip" title="">
+                  Filter
+                </button>
+              </div>
+              <div class="col-md-7 text-right">
+                <button type="button" class="btn btn-add" onclick="showSelectBuyersWindow(this)" data-toggle="tooltip"
+                        title="{{ tip_add_buyer }}"><i class="fa fa-plus"></i></button>
+                <button type="button" class="btn btn-remove" onclick="func_batch_remove(this,'tb_delicacy_list_products')"
+                        data-toggle="tooltip" title="{{ tip_batch_remove_buyer }}"><i class="fa fa-trash-o"></i></button>
+                <button type="button" class="btn btn-remove hide" onclick="func_batch_set_invisible(this,'tb_delicacy_list_products')"
+                        data-toggle="tooltip"
+                        title="Invisible"><i class="fa fa-eye-slash"></i></button>
+                <button type="button" class="btn btn-set-price" data-toggle="tooltip" title="{{ tip_set_price }}"
+                        onclick="func_batch_set_price(this,'tb_delicacy_list_products')"><i class="fa fa-dollar"></i>
+                </button>
+              </div>
+            </div>
+            {# 表格结果 #}
+            <div class="row">
+              <div style="margin-left: 15px">
+                <table id="tb_delicacy_list_products" class="table table-striped table-hover"></table>
+              </div>
+            </div>
+          </div>
+
+          <div class="well" id="window_set_price" style="display: none;margin-bottom:0;padding-top: 5px;padding-bottom: 0">
+            <div class="row">
+              <div style="margin-left: 15px">
+                <table id="tb_window_set_price" class="table table-striped table-hover"></table>
+              </div>
+            </div>
+            <hr>
+            <p class="p-window_set_price">_for_selected_buyers_ </p>
+            <form class="form-horizontal">
+              <div class="row" style="width: 100%">
+                <div class="form-group" style="padding-bottom: 0">
+                  <label for="set_price_delicacy_price" class="col-xs-6 control-label">
+                    <i style="color:red;">*</i>Mod Exclusive Price:
+                    <span data-toggle="tooltip" title="{{ tip_mod_exc_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>
+                  </label>
+                  <div class="col-xs-6">
+                    <input class="form-control" onkeyup="func_set_price_drop_shipping_price(this,{{ isJapan?1:0 }})" type="number"
+                           id="set_price_delicacy_price" name="delicacy_price" autocomplete="off"/>
+                  </div>
+                </div>
+              </div>
+              <div class="row" style="width: 100%" hidden>
+                <div class="form-group" style="padding-bottom: 0">
+                  <label for="set_price_drop_shipping_price" class="col-xs-6 control-label">
+                    Ref. Exclusive Dropshipping Price:
+                    <span data-toggle="tooltip" title="{{ tip_ref_exc_drop_shipping_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>
+                  </label>
+                  <div class="col-xs-6">
+                    <input class="form-control" type="number" id="set_price_drop_shipping_price" name="delicacy_price" autocomplete="off" readonly/>
+                  </div>
+                </div>
+              </div>
+              <div class="row" style="width: 100%">
+                <div class="form-group" style="padding-bottom: 0">
+                  <label for="set_price_effective_time" class="col-xs-6 control-label">
+                    Time of Effect:
+                    <span data-toggle="tooltip" title="{{ tip_table_effective_time }}"><i class="giga icon-V10-wenhaotishi"></i></span>
+                  </label>
+                  <div class="col-xs-6">
+                    <input class="form-control input_time_only_pick" type="text" id="set_price_effective_time" name="effective_time"
+                           autocomplete="off" readonly/>
+                  </div>
+                </div>
+              </div>
+              <div class="row" style="width: 100%">
+                <div class="form-group" style="padding-bottom: 0">
+                  <label for="set_price_expiration_time" class="col-xs-6 control-label">
+                    Time of Failure:
+                    <span data-toggle="tooltip" title="{{ tip_table_expiration_time }}"><i class="giga icon-V10-wenhaotishi"></i></span>
+                  </label>
+                  <div class="col-xs-6">
+                    <input class="form-control input_time_only_pick" type="text" id="set_price_expiration_time" name="expiration_time"
+                           autocomplete="off" readonly/>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          {{ content_bottom }}
+          {#{{ column_right }}#}
+        </div>
+      </div>
+    </div>
+
+    {% if separate_view is defined and separate_view %}
+  </div>{% else %}
+</div>{% endif %}
+{{ footer }}
+<script>
+  layer.config({
+    // shadeClose:true,
+    closeBtn: 1,
+    // extend: 'yzc/style.css',
+    // skin: 'yzc_layer',
+    scrollbar: false,
+    offset: 'auto',
+    title: 'Message',
+    // resize: false,
+  });
+  //region 全局变量
+  let timestamp_server_load = str_to_timestamp('{{ time_server }}');
+  let timestamp_local_load = Date.parse(new Date());
+
+  let tb_select_list_products_is_init = false;
+  let tb_select_list_buyers_is_init = false;
+
+  let tb_delicacy_list_buyers_is_init = false;
+  let tb_delicacy_list_products_is_init = false;
+
+  let this_product_id = {{ product_id ? product_id : 0 }};
+  let this_buyer_id = {{ buyer_id ? buyer_id : 0 }};
+
+  let is_buyer_tab = {{ buyer_id == 0 ? 0 : 1 }};
+  let is_product_tab = {{ product_id == 0 ? 0 : 1 }};
+
+  let input_filter_delicacy_buyers = null;  // search Item Code or Mpn
+  let input_filter_delicacy_products = null;  // search Buyer Nickname
+
+  let btn_filter_delicacy_buyers = null;
+  let btn_filter_delicacy_products = null;
+
+  let url_batch_add_by_set_invisible_buyers = '{{ url_batch_add_by_set_invisible_buyers }}';
+  let url_batch_add_by_set_invisible_products = '{{ url_batch_add_by_set_invisible_products }}';
+  let url_batch_add_by_set_invisible = '{{ url_batch_add_by_set_invisible }}';
+  let url_remove = '{{ url_batch_remove }}';
+  let url_add = '{{ url_add }}';
+  let url_batch_add = '{{ url_batch_add }}';
+  let url_edit = '{{ url_edit }}';
+  let url_window_buyers = '{{ url_get_products_except_in_delicacy }}';
+  let url_window_products = '{{ url_get_buyers_except_in_delicacy }}';
+  let url_set_price = '{{ url_set_price }}';
+  let url_add_by_set_price = '{{ url_add_by_set_price }}';
+
+  let num_add_new_delicacy_buyers = 0;
+  let num_add_new_delicacy_products = 0;
+
+  let this_product_price = 0;
+  let this_product_freight = 0;
+
+  let _price = '';
+  let _effective_time = '';
+  let _expiration_time = '';
+
+  let is_home_pickup_buyer = 0;
+  let precision = '{{ isJapan }}' ? 0 : 2;
+
+  let is_non_inner_account = {{ is_non_inner_account ? 1 : 0 }};
+
+  let data_select_product;
+
+  // #31737 德国免税新增提示
+  var mode_exc_price = "Modify Exclusive Price (excluding fulfillment fee). Note: even if you set the exclusive price for VAT-free Buyers, please use the price including VAT. The system will automatically calculate the price excluding tax in accordance with the VAT rate and provide it VAT free for Buyers.";
+
+  //endregion
+
+  $(function () {
+    if (is_buyer_tab || !is_product_tab) {
+      init_tb_select_list_buyers();
+    }
+    init_tb_window_buyers();
+   // init_tb_window_products();
+    if (!is_buyer_tab && is_product_tab) {
+      $(".nav-tabs li:eq(0)").removeClass('active');
+      $(".nav-tabs li:eq(1)").trigger('click').addClass('active');
+    }
+  });
+
+  // 切换 Tab
+  function tabClick(tab) {
+    if (!$(this).hasClass('active')) {
+      $(this).siblings().removeClass('active');
+      $(this).addClass('active');
+      if (tab === 'buyers') {
+        $("#list_buyers").removeClass('hidden');
+        $(".div_delicacy_list_buyers").removeClass('hidden');
+        $("#list_products").addClass('hidden');
+        $(".div_delicacy_list_products").addClass('hidden');
+        if (!tb_select_list_buyers_is_init) {
+          init_tb_select_list_buyers();
+        }
+      } else {
+        $("#list_buyers").addClass('hidden');
+        $(".div_delicacy_list_buyers").addClass('hidden');
+        $("#list_products").removeClass('hidden');
+        $(".div_delicacy_list_products").removeClass('hidden');
+        if (!tb_select_list_products_is_init) {
+          init_tb_window_products();
+          init_tb_select_list_products();
+        }
+      }
+    }
+  }
+
+  //region Tab-buyers
+
+  function init_tb_select_list_buyers() {
+    tb_select_list_buyers_is_init = true;
+    $("#tb_select_list_buyers").bootstrapTable({
+      url: 'index.php?route=account/customerpartner/delicacymanagement/getAllBuyers',
+      queryParams: function (params) {
+        return {
+          keywords:params.search,
+          pageSize: params.limit,
+          page: parseInt((params.offset + 1) / params.limit + 1)
+        };
+      },
+      // queryParams: "queryParams",
+      // toolbar: "",
+      sidePagination: "server",
+      striped: true, // 是否显示行间隔色
+      search: "true",
+      searchAlign: "left",
+      uniqueId: "buyer_id",
+      idField: "num",
+      pageNumber: 1,    //初始化加载第一页，默认第一页
+      pageSize: 15,     //每页的记录行数（*）
+      showRefresh: true,
+      pagination: true, // 是否分页
+      sortable: false, // 是否启用排序
+      height: 340,
+      selectItemName: 'buyer',
+      columns: [
+        {
+          field: '',
+          title: '',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          radio: true
+        },
+        {
+          field: 'num',
+          title: 'No.',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true,
+          width:'50'
+        },
+        {
+          field: 'nickname',
+          title: 'Name',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true,
+          width:'230',
+          formatter: function (value, row, index) {
+            let html = row.nickname;
+            let img_url;
+            let tip_content;
+            if (row.is_home_pickup) {
+              img_url = '{{ asset('image/icons/HomePickup/home_pickup-15x15.png') }}';
+              tip_content = '{{ tip_home_pickup_logo }}';
+            } else {
+              img_url = '{{ asset('image/icons/HomePickup/drop_shipping-15x15.png') }}';
+              tip_content = '{{ tip_drop_shipping_logo }}';
+            }
+            html += '<span class="img_logo"><img class="oris-tooltip" data-toggle="tooltip" style="padding-left: 1px" src="' + img_url + '" data-original-title="' + tip_content + '"></span>';
+            return html + row.ex_vat;
+          }
+        },
+        {
+          field: 'is_home_pickup',
+          title: 'Buyer Type',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true,
+          width:'110',
+          formatter: function (value, row, index) {
+            if (value == 1) {
+              return 'Home Pickup';
+            }else{
+              return 'Dropshipping';
+            }
+          }
+        },
+        {
+          field: 'buyer_group_name',
+          title: 'Buyer Group',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true,
+          width:'200',
+          formatter: function (value, row, index) {
+            if (row.buyer_group_id) {
+              let bg_name = row.buyer_group_name + (row.is_default ? '(Default)' : '');
+                            return "<a target='_blank' href='{{ url_buyer_group }}" + row.buyer_group_id + "'>" + bg_name + "</a>";
+            } else {
+              return '-';
+            }
+          }
+        },
+        {
+          field: 'remark',
+          title: 'Remark',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+                    align: 'center',
+        },
+        {
+          field: 'add_time',
+          title: 'Date Added<span data-toggle="tooltip" title="{{ tip_update_time }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true,
+        },
+      ],
+      singleSelect: true,
+      clickToSelect: true,
+      maintainSelected: true,
+      onCheck: function (row, ele) {
+        this_buyer_id = row.buyer_id;
+        if (tb_delicacy_list_buyers_is_init) {
+          func_table_refresh('tb_delicacy_list_buyers');
+        } else {
+          init_tb_delicacy_list_buyers();
+        }
+        is_home_pickup_buyer = row.is_home_pickup;
+      },
+      onUncheck: function (row, ele) {
+        this_buyer_id = 0;
+      },
+      onLoadSuccess: function (data) {
+        let this_table = $("#tb_select_list_buyers");
+        // No data no checking.
+        let rows = this_table.bootstrapTable('getData');
+        if (data.length === 0 || rows.length === 0) {
+          if (tb_delicacy_list_buyers_is_init) {
+            $("#tb_delicacy_list_buyers").bootstrapTable('removeAll');
+          }
+          this_buyer_id = 0;
+          return;
+        }
+
+        let checkRow = this_table.bootstrapTable('getRowByUniqueId', this_buyer_id);
+        if (this_buyer_id === '' || this_buyer_id === undefined || this_buyer_id === 0 || checkRow == null) {
+          this_table.bootstrapTable('check', 0);
+        } else {
+          this_table.bootstrapTable('checkBy', {field: 'buyer_id', values: [this_buyer_id]});
+          let elems = $("#tb_select_list_buyers tr[data-uniqueid=" + this_buyer_id + "]").prevAll('tr');
+          let height = 0;
+          $.each(elems, function (_index, elem) {
+            height += $(elem).height();
+          });
+          this_table.bootstrapTable('scrollTo', height);
+        }
+
+        let this_div = $("#list_buyers");
+        if (this_div.find('.fixed-table-toolbar>button').length <= 0) {
+          let btn_html = '<button type="button" class="btn btn-default pull-right" onclick="func_download(this,1)" ' +
+            'style="margin:10px 0 0 15px"  data-toggle="tooltip" title="Download"><i class="fa fa-download"></i></button>';
+          this_div.find(".fixed-table-toolbar .search").after(btn_html);
+        }
+      }
+    });
+  }
+
+  function init_tb_delicacy_list_buyers() {
+    tb_delicacy_list_buyers_is_init = true;
+
+    $("#tb_delicacy_list_buyers").bootstrapTable({
+      // data: delicacy_list_data,
+      url: 'index.php?route=account/customerpartner/delicacymanagement/getAll',
+      queryParams: function (params) {
+        return {
+          sku_or_mpn: input_filter_delicacy_buyers,
+          buyer_id: this_buyer_id,
+          pageSize: params.limit,
+          page: parseInt((params.offset + 1) / params.limit + 1)
+        };
+      },
+      toolbar: "#delicacy_list_buyers_toolbar",
+      sidePagination: "server",
+      striped: true, // 是否显示行间隔色
+      search: false,
+      // searchAlign: 'left',
+      uniqueId: "id",
+      pageSize: 20,
+      pageNumber: 1,
+      showRefresh: false,
+      pagination: true, // 是否分页
+      pageList: [20, 30, 50],
+      sortable: true, // 是否启用排序
+      // height: 400,
+      maintainSelected: true,
+      selectItemName: 'delicacy_list_buyers',
+      columns: [
+        {
+          field: '',
+          title: '',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          checkbox: true,
+          formatter: function (value, row, index) {
+            return {
+              disabled: row.disable_flag,
+              checked: false,
+              value: false
+            }
+          }
+        },
+        // {
+        //   field: 'num',
+        //   title: 'No.',
+        //   halign: 'center',
+        //   valign: 'center',
+        //   align: 'center',
+        // },
+        {
+          field: 'item_code',
+          title: 'Item Code',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 130,
+          formatter: function (value, row, index) {
+            return '<a target="_blank" href="{{ url_product_detail }}' + row.product_id + '">' + row.item_code + '</a>';
+          }
+        },
+        {
+          field: 'mpn',
+          title: 'MPN',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 130,
+        },
+        {
+            field: '',
+            title: 'Product Group',
+            halign: 'center',
+            valign: 'center',
+            align: 'center',
+            formatter: function (value, row, index) {
+                let html = '';
+                if (row.product_groups) {
+                    $.each(row.product_groups, function (k,v) {
+                        html += '<a href="{{ url_product_group }}' + v.id + '" target="_blank">' + v.name + '</a><br>';
+                    })
+                }
+                return html;
+            }
+        },
+        {
+          field: 'current_price',
+          title: 'Curt. Exclusive Price<span data-toggle="tooltip" title="{{ tip_curt_exc_home_pickup_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          formatter: function (value, row, index) {
+            if (row.product_display === '0' || row.product_display === 0) {
+              return '-';
+            } else {
+              return row.current_price;
+            }
+          }
+          // width: 140,
+        },
+        {#{#}
+        {#    field: '',#}
+        {#    title: 'Curt. Exclusive Dropshipping Price<span data-toggle="tooltip" title="{{ tip_curt_exc_drop_shipping_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',#}
+        {#    halign: 'center',#}
+        {#    valign: 'center',#}
+        {#    align: 'center',#}
+        {#    formatter: function (value, row, index) {#}
+        {#        if (row.product_display === '0' || row.product_display === 0) {#}
+        {#            return '-';#}
+        {#        } else {#}
+        {#            return parseFloat(row.current_price ? row.current_price : 0) + parseFloat(row.freight ? row.freight : 0);#}
+        {#        }#}
+        {#    }#}
+        {#},#}
+        {
+          field: 'delicacy_price',
+          title: `Mod. Exclusive Price<span data-toggle="tooltip" title="${mode_exc_price}"><i class="giga icon-V10-wenhaotishi"></i></span>`,
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          {#titleTooltip: '{{ tip_mod_exc_home_pickup_price }}',#}
+          formatter: function (value, row, index) {
+            let val = '';
+            let str = '-';
+            if (row.delicacy_price && row.product_display) {
+              val = str = row.delicacy_price
+            }
+            let freight = row.freight ? row.freight : 0;
+            return '<span class="form-display">' + str + '</span>' +
+              '<input type="number" onkeyup="func_change_drop_shipping_price(this,{{ isJapan?1:0 }},'+freight+')" class="form-edit form-control" value="' + val + '" style="display: none" min="0" maxlength="20" name="delicacy_price" autocomplete="off">'
+          }
+        },
+        {#{#}
+        {#    field: '',#}
+        {#    title: 'Ref. Exclusive Dropshipping Price<span data-toggle="tooltip" title="{{ tip_ref_exc_drop_shipping_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',#}
+        {#    halign: 'center',#}
+        {#    valign: 'center',#}
+        {#    align: 'center',#}
+        {#    class:'ref_drop_shipping_price',#}
+        {#    formatter: function (value, row, index) {#}
+        {#        if (row.product_display === '0' || row.product_display === 0) {#}
+        {#            return '-';#}
+        {#        } else {#}
+        {#            return (parseFloat(row.delicacy_price ? row.delicacy_price : 0) + parseFloat(row.freight ? row.freight : 0)).toFixed(precision);#}
+        {#        }#}
+        {#    }#}
+        {#},#}
+        {
+          field: 'effective_time',
+          title: 'Time of Effect<span data-toggle="tooltip" title="{{ tip_table_effective_time }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          class: 'effect_time',
+          width: 140,
+          formatter: function (value, row, index) {
+            let val = '';
+            let str = '-';
+            if (row.effective_time && row.product_display) {
+              val = str = row.effective_time
+            }
+            return '<span class="form-display">' + str + '</span>' +
+              '<input class="form-edit form-control input_time_only_pick" value="' + val + '" style="display: none" maxlength="50" name="effective_time" autocomplete="off" readonly>'
+          }
+        },
+        {
+          field: 'expiration_time',
+          title: 'Time of Failure<span data-toggle="tooltip" title="{{ tip_table_expiration_time }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 140,
+          formatter: function (value, row, index) {
+            let val = '';
+            let str = '-';
+            if (row.expiration_time && row.product_display) {
+              val = str = row.expiration_time
+            }
+            return '<span class="form-display">' + str + '</span>' +
+              '<input class="form-edit form-control input_time_only_pick" value="' + val + '" style="display: none" maxlength="50" name="expiration_time" autocomplete="off" readonly>'
+          }
+        },
+        {
+          field: 'product_display',
+          title: 'Visibility<span data-toggle="tooltip" title="{{ tip_table_product_display }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 121,
+          formatter: function (value, row, index) {
+            let str = row.product_display == 1 ? 'Visible' : 'Invisible';
+            return '<span class="form-display_you">' + str + '</span>' +
+              '<select class="form-edit_you form-control" style="display: none" onchange="func_product_display_change(' + index + ',\'tb_delicacy_list_buyers\',this)" name="product_display">' +
+              '  <option value="1" ' + (row.product_display == 1 ? 'selected="selected"' : '') + '>Visible</option>' +
+              // '  <option value="0" ' + (row.product_display == 1 ? '' : 'selected="selected"') + '>Invisible</option>' +
+              '</select>';
+          }
+        },
+        {
+          field: 'Action',
+          title: 'Action',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 130,
+          formatter: function (value, row, index) {
+            let active_html = '';
+            if (row.disable_flag) {
+              active_html += '<a data-toggle="tooltip" title="{{ tip_bid_not_edit }}"' +
+                '                     class="btn btn-primary btn-form-display" disabled="disabled"><i class="fa fa-pencil"></i></a>' +
+                '                  <a style="display: none" onclick="func_save(' + index + ',' + row.id + ',\'tb_delicacy_list_buyers\',this);" data-toggle="tooltip"' +
+                '                     title="{{ tip_btn_save }}" class="btn btn-primary btn-form-edit"><i class="fa fa-save"></i></a>' +
+                '                  <a style="display: none" onclick="func_back(' + index + ',' + row.id + ',\'tb_delicacy_list_buyers\',this);" data-toggle="tooltip"' +
+                '                     title="{{ tip_btn_cancel }}" class="btn btn-default btn-form-edit"><i class="fa fa-reply"></i></a>' +
+                '                  <a data-toggle="tooltip"' +
+                '                     title="{{ tip_bid_not_delete }}" class="btn btn-danger btn-form-remove" disabled="disabled"><i class="fa fa-trash-o"></i></a>';
+            } else {
+              active_html += '<a onclick="func_edit(' + index + ',' + row.id + ',\'tb_delicacy_list_buyers\',this);" data-toggle="tooltip" title="{{ tip_btn_edit }}"' +
+                '                     class="btn btn-primary btn-form-display"><i class="fa fa-pencil"></i></a>' +
+                '                  <a style="display: none" onclick="func_save(' + index + ',' + row.id + ',\'tb_delicacy_list_buyers\',this);" data-toggle="tooltip"' +
+                '                     title="{{ tip_btn_save }}" class="btn btn-primary btn-form-edit"><i class="fa fa-save"></i></a>' +
+                '                  <a style="display: none" onclick="func_back(' + index + ',' + row.id + ',\'tb_delicacy_list_buyers\',this);" data-toggle="tooltip"' +
+                '                     title="{{ tip_btn_cancel }}" class="btn btn-default btn-form-edit"><i class="fa fa-reply"></i></a>' +
+                '                  <a  onclick="func_remove(' + index + ',' + row.id + ',\'tb_delicacy_list_buyers\',this);" data-toggle="tooltip"' +
+                '                     title="{{ tip_btn_remove }}" class="btn btn-danger btn-form-remove"><i class="fa fa-trash-o"></i></a>';
+            }
+            return active_html;
+          }
+        },
+      ],
+      onCheck: function (row, ele) {
+        // this_buyer_id = row.buyer_id;
+      },
+      onLoadSuccess: function (data) {
+        if (data.rows.length === 0 && data.total > 0) {
+          func_table_refresh('tb_delicacy_list_buyers');
+        }
+        if (btn_filter_delicacy_buyers) {
+          $(btn_filter_delicacy_buyers).button('reset');
+          btn_filter_delicacy_products = null;
+        }
+      },
+    });
+  }
+
+  function init_tb_window_buyers() {
+    $("#tb_window_buyers").bootstrapTable({
+      url: url_window_buyers,
+     /* queryParams: function (params) {
+        params.buyer_id = this_buyer_id;
+        return params;
+      },*/
+      queryParams: function (params) {
+        if (!this_buyer_id){
+          return false;
+        }
+        return {
+          keywords:params.search,
+          pageSize: params.limit,
+          page: parseInt((params.offset + 1) / params.limit + 1),
+          buyer_id:this_buyer_id
+        };
+      },
+      // toolbar: "#toolbar",
+      sidePagination: "server",
+      striped: true, // 是否显示行间隔色
+      search: true,
+      searchAlign: 'left',
+      uniqueId: "product_id",
+      pageNumber: 1,   //初始化加载第一页，默认第一页
+      pageSize: 15,    //每页的记录行数（*）
+      pageList: [10, 25, 100, 'All'],
+      showRefresh: false,
+      pagination: true, // 是否分页
+      sortable: false, // 是否启用排序
+      maintainSelected: true,
+      clickToSelect: true,
+      height: 500,
+      selectItemName: 'window_buyer',
+      columns: [
+        {
+          field: 'num',
+          title: 'No.',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 45,
+          sortable: true
+        },
+        {
+          field: 'item_code',
+          title: 'Item Code',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 130,
+          sortable: true
+        },
+        {
+          field: 'mpn',
+          title: 'MPN',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true
+        },
+        {
+          field: 'product_name',
+          title: 'Product Name',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          formatter: function (value, row, index) {
+                        return '<a target="_blank" href="{{ url_product_detail }}' + row.product_id + '">' + row.product_name + '</a>';
+          }
+        },
+        {#{#}
+        {#    field: 'freight',#}
+        {#    title: 'Curt. Freight<span data-toggle="tooltip" title="{{ tip_current_freight }}"><i class="giga icon-V10-wenhaotishi"></i></span>',#}
+        {#    halign: 'center',#}
+        {#    valign: 'center',#}
+        {#    align: 'center',#}
+        {#    sortable: true,#}
+        {#},#}
+        {
+          field: 'basic_price',
+          title: 'Current Price<span data-toggle="tooltip" title="{{ tip_current_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true,
+        },
+        // {
+        //     field: '',
+        //     title: 'Curt. Dropshipping Price',
+        //     halign: 'center',
+        //     valign: 'center',
+        //     align: 'center',
+        //     sortable: true,
+        //     formatter: function (value, row, index) {
+        //         return (parseFloat(row.basic_price ? row.basic_price : 0) + parseFloat(row.freight ? row.freight : 0)).toFixed(precision);
+        //     }
+        // },
+        {
+          field: 'Action',
+          title: 'Action',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 102,
+          class: 'action',
+          formatter: function (value, row, index) {
+            return '<a onclick="func_add_by_products(' + index + ',' + row.product_id + ',this);" data-toggle="tooltip" title=""' +
+              ' class="btn btn-primary btn-form-display"><i class="fa fa-plus"></i></a>';
+          }
+        },
+      ],
+      onLoadSuccess: function (data) {
+        func_set_disable_button('tb_delicacy_list_buyers');
+      },
+      onPageChange: function (number, size) {
+        func_set_disable_button('tb_delicacy_list_buyers');
+      }
+    });
+  }
+
+  //endregion
+
+  //region Tab-products
+  function init_tb_select_list_products() {
+    tb_select_list_products_is_init = true;
+    $("#tb_select_list_products").bootstrapTable({
+      url: 'index.php?route=account/customerpartner/delicacymanagement/getAllProductsAndGroup',
+      queryParams: function (params) {
+        return {
+          keywords:params.search,
+          pageSize: params.limit,
+          page: parseInt((params.offset + 1) / params.limit + 1)
+        };
+      },
+      // queryParams: "",
+      // toolbar: "",
+      sidePagination: "server",
+      striped: true, // 是否显示行间隔色
+      search: "true",
+      searchAlign: "left",
+      uniqueId: "product_id",
+      pageNumber: 1,    //初始化加载第一页，默认第一页
+      pageSize: 15,     //每页的记录行数（*）
+      showRefresh: true,
+      pagination: true, // 是否分页
+      sortable: false, // 是否启用排序
+      height: 340,
+      selectItemName: 'product',
+      singleSelect: true,
+      clickToSelect: true,
+      maintainSelected: true,
+      columns: [
+        {
+          field: '',
+          title: '',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          radio: true
+        },
+        {
+          field: 'num',
+          title: 'No.',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 45,
+          sortable: true
+        },
+        {
+          field: 'item_code',
+          title: 'Item Code',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 150,
+          sortable: true
+        },
+        {
+          field: 'mpn',
+          title: 'MPN',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 150,
+          sortable: true
+        },
+        {
+          field: 'short_product_name',
+          title: 'Product Name',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 450,
+          formatter: function (value, row, index) {
+            return '<a class="a-link" target="_blank" title="' + row.product_name + '" href="{{ url_product_detail }}' + row.product_id + '">' + row.short_product_name + '</a>';
+          }
+        },
+        {
+          field: 'groups',
+          title: 'Product Group',
+                    halign: 'center',
+                    valign: 'center',
+                    align: 'center',
+          formatter: function (value, row, index) {
+            let html = '';
+            if (row.groups.length > 0) {
+              $.each(row.groups, function (i, r) {
+                                html += (html.length < 1 ? '' : '<br>') + '<a target="_blank" href="{{ url_product_group }}' + r.group_id + '">' + r.group_name + '</a>';
+              });
+            } else {
+              html = '-';
+            }
+            return html;
+          }
+        },
+        {#{#}
+        {#    field: 'freight',#}
+        {#    title: 'Curt. Freight<span data-toggle="tooltip" title="{{ tip_current_freight }}"><i class="giga icon-V10-wenhaotishi"></i></span>',#}
+        {#    halign: 'center',#}
+        {#    valign: 'center',#}
+        {#    align: 'center',#}
+        {#    formatter: function (value, row, index) {#}
+        {#        let is_show_freight = '{{ is_show_freight }}';#}
+        {#        if (is_show_freight && row.freight) {#}
+        {#            let url_download_template = '{{ url_download_template }}';#}
+        {#            if (url_download_template) {#}
+        {#                return '<a href="' + url_download_template + '" target="_blank">' + row.freight + '</a>';#}
+        {#            } else {#}
+        {#                return row.freight;#}
+        {#            }#}
+        {#        } else {#}
+        {#            return '-';#}
+        {#        }#}
+        {#    }#}
+        {#},#}
+        {
+          field: 'basic_price',
+          title: 'Current Price<span data-toggle="tooltip" title="{{ tip_current_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          // sortable: true,
+        },
+        // {
+        //     field: '',
+        //     title: 'Curt.<br>Dropshipping<br>Price',
+        //     halign: 'center',
+        //     valign: 'center',
+        //     align: 'center',
+        //     width: 130,
+        //     formatter: function (value, row, index) {
+        //         return (parseFloat(row.freight ? row.freight : 0) + parseFloat(row.basic_price ? row.basic_price : 0)).toFixed(precision);
+        //     }
+        // }
+      ],
+      onCheck: function (row, ele) {
+        this_product_id = row.product_id;
+        this_product_price = row.basic_price;
+        this_product_freight = row.freight ? row.freight : 0;
+
+        data_select_product = [row];
+
+        if (tb_delicacy_list_products_is_init) {
+          func_table_refresh('tb_delicacy_list_products');
+        } else {
+          init_tb_delicacy_list_products();
+        }
+
+        init_tb_window_product_header();
+        init_tb_window_set_price();
+      },
+      onUncheck: function (row, ele) {
+        this_product_id = 0;
+      },
+      onLoadSuccess: function (data) {
+        let this_table = $("#tb_select_list_products");
+        let rows = this_table.bootstrapTable('getData');
+        // No data no checking.
+        if (data.length === 0 || rows.length === 0) {
+          if (tb_delicacy_list_products_is_init) {
+            $("#tb_delicacy_list_products").bootstrapTable('removeAll');
+          }
+          this_product_id = 0;
+          return;
+        }
+
+        let checkRow = this_table.bootstrapTable('getRowByUniqueId', this_product_id);
+        if (this_product_id === '' || this_product_id === undefined || this_product_id === 0 || checkRow == null) {
+          this_table.bootstrapTable('check', 0);
+        } else {
+          this_table.bootstrapTable('checkBy', {field: 'product_id', values: [this_product_id]});
+          let elems = $("#tb_select_list_products tr[data-uniqueid=" + this_product_id + "]").prevAll('tr');
+          let height = 0;
+          $.each(elems, function (_index, elem) {
+            height += $(elem).height();
+          });
+          this_table.bootstrapTable('scrollTo', height);
+        }
+
+        let this_div = $("#list_products");
+        if (this_div.find('.fixed-table-toolbar>button').length <= 0) {
+          let btn_html = '<button type="button" class="btn btn-default pull-right" onclick="func_download(this,0)" ' +
+            'style="margin:10px 0 0 15px"  data-toggle="tooltip" title="Download"><i class="fa fa-download"></i></button>';
+          this_div.find(".fixed-table-toolbar .search").after(btn_html);
+        }
+      }
+    });
+  }
+
+  function init_tb_delicacy_list_products() {
+    tb_delicacy_list_products_is_init = true;
+    $("#tb_delicacy_list_products").bootstrapTable({
+      // data: delicacy_list_data,
+      url: 'index.php?route=account/customerpartner/delicacymanagement/getAll',
+      queryParams: function (params) {
+        return {
+          buyer_nickname: input_filter_delicacy_products,
+          product_id: this_product_id,
+          pageSize: params.limit,
+          page: parseInt((params.offset + 1) / params.limit + 1)
+        };
+      },
+      toolbar: "#delicacy_list_products_toolbar",
+      sidePagination: "server",
+      striped: true, // 是否显示行间隔色
+      search: false,
+      // searchAlign: 'left',
+      uniqueId: "id",
+      pageSize: 20,
+      pageNumber: 1,
+      showRefresh: false,
+      pagination: true, // 是否分页
+      pageList: [20, 30, 50],
+      sortable: true, // 是否启用排序
+      // height: 400,
+      maintainSelected: true,
+      selectItemName: 'delicacy_list_products',
+      columns: [
+        {
+          field: '',
+          title: '',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          checkbox: true,
+          formatter: function (value, row, index) {
+            return {
+              disabled: row.disable_flag,
+              checked: false,
+              value: false
+            }
+          }
+        },
+        {
+          field: 'num',
+          title: 'No.',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 40,
+        },
+        {
+          field: 'buyer_nickname',
+          title: 'Name',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 130,
+          formatter(value, row, index) {
+            let html = row.buyer_nickname;
+            let img_url;
+            let tip_content;
+            if (row.is_home_pickup) {
+              img_url = '{{ asset('image/icons/HomePickup/home_pickup-15x15.png') }}';
+              tip_content = '{{ tip_home_pickup_logo }}';
+            } else {
+              img_url = '{{ asset('image/icons/HomePickup/drop_shipping-15x15.png') }}';
+              tip_content = '{{ tip_drop_shipping_logo }}';
+            }
+            html += '<span class="img_logo"><img class="oris-tooltip" data-toggle="tooltip" style="padding-left: 1px" src="' + img_url + '" data-original-title="' + tip_content + '"></span>';
+            return html + row.ex_vat;
+          }
+        },
+        {
+          field: '',
+          title: 'Buyer Type',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 115,
+          formatter(value, row, index) {
+            if (row.is_home_pickup == 1) {
+              return 'Home Pickup';
+            } else {
+              return 'Dropshipping';
+            }
+          }
+        },
+        {
+          field: 'buyer_group_name',
+          title: 'Buyer Group',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 130,
+          formatter(value, row, index) {
+            if (row.buyer_group_id) {
+                            return '<a target="_blank" href="{{ url_buyer_group }}' + row.buyer_group_id + '">' + row.buyer_group_name + (row.is_default ? '(default)' : '') + '</a>';
+            } else {
+              return '-';
+            }
+          }
+        },
+        {
+          field: 'current_price',
+          title: 'Curt. Exclusive Price<span data-toggle="tooltip" title="{{ tip_curt_exc_home_pickup_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 100,
+        },
+        {#{#}
+        {#    field: '',#}
+        {#    title: 'Curt. Exclusive Dropshipping Price<span data-toggle="tooltip" title="{{ tip_curt_exc_drop_shipping_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',#}
+        {#    halign: 'center',#}
+        {#    valign: 'center',#}
+        {#    align: 'center',#}
+        {#    width: 100,#}
+        {#    formatter: function (value, row, index) {#}
+        {#        return (parseFloat(row.freight ? row.freight : 0) + parseFloat(row.current_price ? row.current_price : 0)).toFixed(precision);#}
+        {#    }#}
+        {#},#}
+        {
+          field: 'delicacy_price',
+          title: `Mod. Exclusive Price<span data-toggle="tooltip" title="${mode_exc_price}"><i class="giga icon-V10-wenhaotishi"></i></span>`,
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 100,
+          {#titleTooltip: '{{ tip_mod_exc_home_pickup_price }}',#}
+          formatter: function (value, row, index) {
+            let val = '';
+            let str = '-';
+            let freight = row.freight ? row.freight : 0;
+            if (row.delicacy_price && row.product_display) {
+              val = str = row.delicacy_price
+            }
+            return '<span class="form-display">' + str + '</span>' +
+              '<input type="number" onkeyup="func_change_drop_shipping_price(this,{{ isJapan?1:0 }},' + freight + ')" class="form-edit form-control" value="'
+                                + val + '" style="display: none" min="0" maxlength="20" name="delicacy_price">';
+              + val + '" style="display: none" min="0" maxlength="20" name="delicacy_price">';
+          }
+        },
+        {#{#}
+        {#    field: '',#}
+        {#    title: 'Ref. Exclusive Dropshipping Price<span data-toggle="tooltip" title="{{ tip_ref_exc_drop_shipping_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',#}
+        {#    halign: 'center',#}
+        {#    valign: 'center',#}
+        {#    align: 'center',#}
+        {#    width: 100,#}
+        {#    formatter: function (value, row, index) {#}
+        {#        return (parseFloat(row.freight ? row.freight : 0) + parseFloat(row.delicacy_price ? row.delicacy_price : 0)).toFixed(precision);#}
+        {#    }#}
+        {#},#}
+        {
+          field: 'effective_time',
+          title: 'Time of Effect<span data-toggle="tooltip" title="{{ tip_table_effective_time }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          class: 'effect_time',
+          width: 140,
+          formatter: function (value, row, index) {
+            let val = '';
+            let str = '-';
+            if (row.effective_time && row.product_display) {
+              val = str = row.effective_time
+            }
+            return '<span class="form-display">' + str + '</span>' +
+              '<input class="form-edit form-control input_time_only_pick" value="' + val + '" style="display: none" maxlength="50" name="effective_time" autocomplete="off" readonly>'
+          }
+        },
+        {
+          field: 'expiration_time',
+          title: 'Time of Failure<span data-toggle="tooltip" title="{{ tip_table_expiration_time }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 140,
+          formatter: function (value, row, index) {
+            let val = '';
+            let str = '-';
+            if (row.expiration_time && row.product_display) {
+              val = str = row.expiration_time
+            }
+            return '<span class="form-display">' + str + '</span>' +
+              '<input class="form-edit form-control input_time_only_pick" value="' + val + '" style="display: none" maxlength="50" name="expiration_time" autocomplete="off" readonly>'
+          }
+        },
+        {
+          field: 'product_display',
+          title: 'Visibility<span data-toggle="tooltip" title="{{ tip_table_product_display }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 100,
+          formatter: function (value, row, index) {
+            let str = row.product_display == 1 ? 'Visible' : 'Invisible';
+            return '<span class="form-display_you">' + str + '</span>' +
+              '<select class="form-edit_you form-control" style="display: none" onchange="func_product_display_change(' + index + ',\'tb_delicacy_list_products\',this)" name="product_display">' +
+              {#'  <option value="0" ' + (row.product_display == 1 ? '' : 'selected="selected"') + '>{{ text_invisible }}</option>' +#}
+              '  <option value="1" ' + (row.product_display == 1 ? 'selected="selected"' : '') + '>{{ text_visible }}</option>' +
+              '</select>';
+          }
+        },
+        {
+          field: 'Action',
+          title: 'Action',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 130,
+          formatter: function (value, row, index) {
+            let active_html = '';
+            if (row.disable_flag) {
+              active_html += '<a data-toggle="tooltip" title="{{ tip_bid_not_edit }}"' +
+                '                     class="btn btn-primary btn-form-display" disabled="disabled"><i class="fa fa-pencil"></i></a>' +
+                '                  <a style="display: none" onclick="func_save(' + index + ',' + row.id + ',\'tb_delicacy_list_products\',this);" data-toggle="tooltip"' +
+                '                     title="{{ tip_btn_save }}" class="btn btn-primary btn-form-edit"><i class="fa fa-save"></i></a>' +
+                '                  <a style="display: none" onclick="func_back(' + index + ',' + row.id + ',\'tb_delicacy_list_products\',this);" data-toggle="tooltip"' +
+                '                     title="{{ tip_btn_cancel }}" class="btn btn-default btn-form-edit"><i class="fa fa-reply"></i></a>' +
+                '                  <a data-toggle="tooltip"' +
+                '                     title="{{ tip_bid_not_delete }}" class="btn btn-danger btn-form-remove" disabled="disabled"><i class="fa fa-trash-o"></i></a>';
+            } else {
+              active_html += '<a onclick="func_edit(' + index + ',' + row.id + ',\'tb_delicacy_list_products\',this);" data-toggle="tooltip" title="{{ tip_btn_edit }}"' +
+                '                     class="btn btn-primary btn-form-display"><i class="fa fa-pencil"></i></a>' +
+                '                  <a style="display: none" onclick="func_save(' + index + ',' + row.id + ',\'tb_delicacy_list_products\',this);" data-toggle="tooltip"' +
+                '                     title="{{ tip_btn_save }}" class="btn btn-primary btn-form-edit"><i class="fa fa-save"></i></a>' +
+                '                  <a style="display: none" onclick="func_back(' + index + ',' + row.id + ',\'tb_delicacy_list_products\',this);" data-toggle="tooltip"' +
+                '                     title="{{ tip_btn_cancel }}" class="btn btn-default btn-form-edit"><i class="fa fa-reply"></i></a>' +
+                '                  <a  onclick="func_remove(' + index + ',' + row.id + ',\'tb_delicacy_list_products\',this);" data-toggle="tooltip"' +
+                '                     title="{{ tip_btn_remove }}" class="btn btn-danger btn-form-remove"><i class="fa fa-trash-o"></i></a>';
+            }
+            return active_html;
+          }
+        },
+      ],
+      onCheck: function (row, ele) {
+        // this_product_id = row.product_id;
+      },
+      onUncheck: function (row, ele) {
+        // this_product_id = 0;
+      },
+      onLoadSuccess: function (data) {
+        if (data.rows.length === 0 && data.total > 0) {
+          func_table_refresh('tb_delicacy_list_products');
+        }
+        if (btn_filter_delicacy_products) {
+          $(btn_filter_delicacy_products).button('reset');
+          btn_filter_delicacy_products = null;
+        }
+      }
+    });
+  }
+
+  function init_tb_window_products() {
+    $("#tb_window_products").bootstrapTable({
+      url: url_window_products,
+      queryParams: function (params) {
+        if (!this_product_id){
+          return false ;
+        }
+        params.product_id = this_product_id;
+        return params;
+      },
+      // toolbar: "#toolbar",
+      sidePagination: 'client',
+      striped: true, // 是否显示行间隔色
+      search: true,
+      searchAlign: 'left',
+      uniqueId: "buyer_id",
+      pageSize: '25',
+      pageList: [10, 25, 50, 100],
+      showRefresh: false,
+      pagination: false, // 是否分页
+      sortable: true, // 是否启用排序
+      maintainSelected: true,
+      clickToSelect: false,
+      height: 500,
+      selectItemName: 'window_product',
+      columns: [
+        {
+          field: '',
+          title: '',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          checkbox: true,
+        },
+        {
+          field: 'num',
+          title: 'No.',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 45,
+          sortable: true
+        },
+        {
+          field: 'nickname',
+          title: 'Name',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          width: 150,
+          sortable: true,
+          formatter: function (value, row, index) {
+            let html = row.nickname;
+            let img_url;
+            let tip_content;
+            if (row.is_home_pickup) {
+              img_url = '{{ asset('image/icons/HomePickup/home_pickup-15x15.png') }}';
+              tip_content = '{{ tip_home_pickup_logo }}';
+            } else {
+              img_url = '{{ asset('image/icons/HomePickup/drop_shipping-15x15.png') }}';
+              tip_content = '{{ tip_drop_shipping_logo }}';
+            }
+            html += '<span class="img_logo"><img class="oris-tooltip" data-toggle="tooltip" style="padding-left: 1px" src="' + img_url + '" data-original-title="' + tip_content + '"></span>';
+            return html + row.ex_vat;
+          }
+        },
+        {
+          field: 'buyer_group_name',
+          title: 'Buyer Group',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          class: 'break_line',
+          width: 130,
+          formatter: function (value, row, index) {
+            if (row.buyer_group_id) {
+              return '<a target="_blank" href="{{ url_buyer_group }}' + row.buyer_group_id + '">' + row.buyer_group_name + (row.is_default ? '(default)' : '') + '</a>';
+            }
+          }
+        },
+        {
+          field: '',
+          title: `<span data-toggle="tooltip" title="Modify Exclusive Price (excluding fulfillment fee). Note: even if you set the exclusive price for VAT-free Buyers, please use the price including VAT. The system will automatically calculate the price excluding tax in accordance with the VAT rate and provide it VAT free for Buyers.">
+            Mod. Exclusive Price<i class="giga icon-V10-wenhaotishi"></i></span><input type="number" class="header_modify_price form-control header_home_pickup_price" min="0.00" maxlength="10" 
+            onchange="func_change_modify_price(this)" onkeyup="func_input_money(this,{{ isJapan?1:0 }})" placeholder="Apply to selected rows">`,
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          {#titleTooltip: '{{ tip_exc_home_pickup_price }}',#}
+          formatter: function (value, row, index) {
+            let freight = row.freight ? row.freight : 0;
+            return '<input class="form-control" value="' + (row._price ? row._price : '') + '" name="modify_price" onkeyup="func_change_drop_shipping_price(this,{{ isJapan?1:0 }},' + freight + ')">';
+          }
+        },
+        {#{#}
+        {#    field: '',#}
+        {#    title: 'Ref. Exclusive<br>Dropshipping Price<span data-toggle="tooltip" title="{{ tip_ref_exc_drop_shipping_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',#}
+        {#    halign: 'center',#}
+        {#    valign: 'center',#}
+        {#    align: 'center',#}
+        {#    sortable: true,#}
+        {#    width: 200,#}
+        {#    formatter: function (value, row, index) {#}
+        {#        return (parseFloat(row._price ? row._price : 0) + parseFloat(row.freight ? row.freight : 0)).toFixed(precision);#}
+        {#    }#}
+        {#},#}
+        {
+          field: '',
+          title: '<span data-toggle="tooltip" title="{{ tip_table_effective_time }}">Time of Effect<i class="giga icon-V10-wenhaotishi"></i></span><input onclick="func_show_laydate(this,1)" class="header_effective_time form-control input_time_only_pick" placeholder="Apply to selected rows" readonly/>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          class: "tr_header_effective_time",
+          {#titleTooltip: '{{ tip_table_effective_time }}',#}
+          formatter: function (value, row, index) {
+            return '<input class="effective_time form-control input_time_only_pick" onclick="func_show_laydate_in_body(this,1)" value="' + (row._effective_time ? row._effective_time : '') + '" name="effective_time" autocomplete="off" readonly>';
+          }
+        },
+        {
+          field: '',
+          title: '<span data-toggle="tooltip" title="{{ tip_table_expiration_time }}">Time of Failure<i class="giga icon-V10-wenhaotishi"></i></span><input onclick="func_show_laydate(this,0)" class="header_expiration_time form-control input_time_only_pick" placeholder="Apply to selected rows" readonly/>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          {#titleTooltip: '{{ tip_table_expiration_time }}',#}
+          formatter: function (value, row, index) {
+            return '<input class="expiration_time form-control input_time_only_pick" onclick="func_show_laydate_in_body(this,0)" value="' + (row._expiration_time ? row._expiration_time : '') + '" name="expiration_time" autocomplete="off" readonly>';
+          }
+        },
+      ],
+      onLoadSuccess: function (data) {
+        func_set_disable_button('tb_delicacy_list_products');
+      },
+      onPageChange: function (number, size) {
+        func_set_disable_button('tb_delicacy_list_products');
+      },
+      onResetView: function (a) {
+        $("#delicacy_products_select_div .header_home_pickup_price").val(_price);
+        $("#delicacy_products_select_div .header_effective_time").val(_effective_time);
+        $("#delicacy_products_select_div .header_expiration_time").val(_expiration_time);
+
+        // let elems_effective_time = $("#tb_window_products .effective_time");
+        // for (let i = 0; i < elems_effective_time.length; i++) {
+        //   laydate.render({
+        //     elem: elems_effective_time[i],
+        //     type: 'datetime',
+        //     format: 'yyyy-MM-dd HH:00:00',
+        //     min: timestamp_to_str(get_server_timestamp()),
+        //     lang: 'en',
+        //     trigger: 'click'
+        //   });
+        // }
+        //
+        // let elems_expiration_time = $("#tb_window_products .expiration_time");
+        // for (let i = 0; i < elems_expiration_time.length; i++) {
+        //   laydate.render({
+        //     elem: elems_expiration_time[i],
+        //     type: 'datetime',
+        //     format: 'yyyy-MM-dd HH:00:00',
+        //     min: timestamp_to_str(get_server_timestamp()),
+        //     lang: 'en',
+        //     trigger: 'click'
+        //   });
+        // }
+
+        // //#delicacy_products_select_div
+        // if ($(".header_modify_price.focus-temp")[0]) {
+        //   setTimeout(function () {
+        //     $(".header_modify_price.focus-temp")[0].focus();
+        //   },0);
+        //   // $(".header_modify_price.focus-temp")[0].blur();
+        // }
+      },
+    });
+  }
+
+  function init_tb_window_product_header() {
+    $("#tb_window_product_header").bootstrapTable({
+      data:data_select_product,
+      sidePagination: false,
+      striped: true, // 是否显示行间隔色
+      selectItemName: 'window_product',
+      columns: [
+        {
+          field: 'item_code',
+          title: 'Item Code',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true
+        },
+        {
+          field: 'mpn',
+          title: 'MPN',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true
+        },
+        {#{#}
+        {#    field: 'freight',#}
+        {#    title: 'Curt. Freight<span data-toggle="tooltip" title="{{ tip_current_freight }}"><i class="giga icon-V10-wenhaotishi"></i></span>',#}
+        {#    halign: 'center',#}
+        {#    valign: 'center',#}
+        {#    align: 'center',#}
+        {#    width: 110,#}
+        {#    sortable: true,#}
+        {#},#}
+        {
+          field: 'basic_price',
+          title: 'Curt. Home Pickup Price<span data-toggle="tooltip" title="{{ tip_current_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true,
+        },
+        // {
+        //     field: 'basic_price',
+        //     title: 'Curt. Dropshipping Price',
+        //     halign: 'center',
+        //     valign: 'center',
+        //     align: 'center',
+        //     sortable: true,
+        //     formatter:function (value, row, index) {
+        //         return (parseFloat(row.basic_price ? row.basic_price : 0) + parseFloat(row.freight ? row.freight : 0)).toFixed(precision);
+        //     }
+        // },
+      ],
+    });
+  }
+
+  function init_tb_window_set_price() {
+    $("#tb_window_set_price").bootstrapTable({
+      data:data_select_product,
+      // striped: true, // 是否显示行间隔色
+      selectItemName: 'window_product_set_price_header',
+      columns: [
+        {
+          field: 'item_code',
+          title: 'Item Code',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+        },
+        {
+          field: 'mpn',
+          title: 'MPN',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+        },
+        {#{#}
+        {#    field: 'freight',#}
+        {#    title: 'Curt. Freight<span data-toggle="tooltip" title="{{ tip_current_freight }}"><i class="giga icon-V10-wenhaotishi"></i></span>',#}
+        {#    halign: 'center',#}
+        {#    valign: 'center',#}
+        {#    align: 'center',#}
+        {#    width: 110,#}
+        {#},#}
+        {
+          field: 'basic_price',
+          title: 'Current Price<span data-toggle="tooltip" title="{{ tip_current_price }}"><i class="giga icon-V10-wenhaotishi"></i></span>',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+        },
+        // {
+        //     field: '',
+        //     title: 'Curt. Dropshipping<br>Price',
+        //     halign: 'center',
+        //     valign: 'center',
+        //     align: 'center',
+        //     formatter:function (value, row, index) {
+        //         return (parseFloat(row.basic_price ? row.basic_price : 0) + parseFloat(row.freight ? row.freight : 0)).toFixed(precision);
+        //     }
+        // },
+      ],
+    });
+  }
+
+  //endregion
+  var width = $(window).width()*0.8;
+  function showSelectProductsWindow(button) {
+    if (this_buyer_id <= 0) {
+      layerMsg('{{ error_choose_buyer }}');
+      return;
+    }
+    $("#tb_window_buyers").bootstrapTable('resetSearch').bootstrapTable('refresh').bootstrapTable('selectPage', 1);
+    layer.open({
+      type: 1,
+      title: 'Select Products',
+      closeBtn: 1,
+      skin: 'yzc_layer',
+      shadeClose: true,
+      // area: 'auto',
+      area:width  + 'px',
+      offset: 'auto',
+      maxWidth: 1300,
+      maxHeight: 800,
+      content: $("#delicacy_buyers_select_div"),
+      success: function (layero, index) {
+        {#if ($(layero).find('.fixed-table-toolbar>button').length <= 0) {#}
+        {#let btn_html = '<button type="button" class="btn btn-danger pull-right" onclick="func_batch_add_by_invisible(this,\'tb_delicacy_list_buyers\')" ' +#}
+        {#'data-type="0" title="" style="margin:10px 5px 0 15px"><i class="fa fa-eye-slash"></i></button>';#}
+        {#let message_html = '<div style="color: red">{{ text_select_window_message }}</div>';#}
+        {#$(layero).find(".fixed-table-toolbar .search").after(btn_html);#}
+        {#$(layero).find(".fixed-table-toolbar").after(message_html);#}
+        {#}#}
+      }
+    });
+  }
+
+  function showSelectBuyersWindow(button) {
+    if (this_product_id <= 0) {
+      layerMsg('{{ error_choose_product }}');
+      return;
+    }
+
+    _price = '';
+    _effective_time = '';
+    _expiration_time = '';
+    $("#delicacy_products_select_div .header_home_pickup_price").val(_price);
+    $("#delicacy_products_select_div .header_effective_time").val(_effective_time);
+    $("#delicacy_products_select_div .header_expiration_time").val(_expiration_time);
+    $("#tb_window_product_header").bootstrapTable('load',data_select_product);
+    $("#tb_window_products").bootstrapTable('resetSearch').bootstrapTable('refresh').bootstrapTable('selectPage', 1);
+    layer.open({
+      type: 1,
+      title: 'Select Buyers',
+      closeBtn: 1,
+      skin: 'yzc_layer',
+      shadeClose: true,
+      area: 'auto',
+      btnAlign: 'c',
+      offset: 'auto',
+      maxWidth: 1300,
+      maxHeight: 800,
+      content: $("#delicacy_products_select_div"),
+      success: function (layero, index) {
+        {#if ($(layero).find('.fixed-table-toolbar>button').length <= 0) {#}
+        {#let btn_html = '<button type="button" class="btn btn-danger pull-right" onclick="func_batch_add_by_invisible(this,\'tb_delicacy_list_products\')" ' +#}
+        {#'data-type="0" style="margin:10px 5px 0 5px"><i class="fa fa-eye-slash"></i></button>' +#}
+        {#'<button type="button" class="btn btn-set-price pull-right" onclick="func_batch_add_by_price(this,\'tb_delicacy_list_products\')" ' +#}
+        {#'data-type="0" style="margin:10px 5px 0 15px"><i class="fa fa-dollar"></i></button>';#}
+        {#//let message_html = '<div style="color: red">{{ text_select_window_message }}</div>';#}
+        {#//$(layero).find(".fixed-table-toolbar").after(message_html);#}
+        {#$(layero).find(".fixed-table-toolbar .search").after(btn_html);#}
+        {#}#}
+      },
+      btn: ['Submit', 'Cancel'],
+      yes: function (index, layero) {
+        let rows_selected = $("#tb_window_products").bootstrapTable('getSelections');
+        let formData = {
+          product_id: this_product_id,
+          buyers: []
+        };
+        if (rows_selected.length < 1) {
+          layerMsg('{{ error_choose_buyer }}');
+          return;
+        }
+        let is_show_alert = false;
+        for (let i = 0; i < rows_selected.length; i++) {
+          let this_row = $("#tb_window_products tr[data-uniqueid='" + rows_selected[i].buyer_id + "']");
+          let modify_price = this_row.find("input[name='modify_price']").val();
+          let effective_time = this_row.find("input[name='effective_time']").val();
+          let expiration_time = this_row.find("input[name='expiration_time']").val();
+
+          if (modify_price === undefined || modify_price === '' || parseFloat(modify_price) < 0) {
+            layerMsg('{{ error_enter_buyer_price }}');
+            return;
+          }
+          if (!(effective_time === undefined || effective_time === '') && !(expiration_time === undefined || expiration_time === '') && effective_time >= expiration_time) {
+            layerMsg('{{ error_choose_time }}');
+            return;
+          }
+          let more_than_24_hours = true;
+          if (effective_time === undefined || effective_time === '' || new Date(effective_time.replace(/-/g, '/')) < get_server_timestamp() + 86400 * 1000) {
+            more_than_24_hours = false;
+          }
+          if (parseFloat(this_product_price) < parseFloat(modify_price) && !more_than_24_hours) {
+            layerMsg('{{ text_24_price_protect }}'.replace('#', timestamp_to_str(get_server_timestamp())), 3500);
+            return;
+          }
+          formData.buyers[i] = {
+            buyer_id: rows_selected[i].buyer_id,
+            modify_price: modify_price,
+            effective_time: effective_time,
+            expiration_time: expiration_time,
+          }
+          if (is_non_inner_account && !is_show_alert && !rows_selected[i].is_home_pickup) {
+            let oversize_alarm_price = parseFloat(data_select_product[0].oversize_alarm_price);
+            console.log(oversize_alarm_price,modify_price)
+            if (comparison(oversize_alarm_price, parseFloat(modify_price), '>', 4)) {
+              console.log('1');
+              is_show_alert = true;
+            }
+          }
+        }
+
+        let message = '{{ alert_batch_add_setting }}';
+        message = message.replace(/_buyers_/, rows_selected.length);
+        let layer_area = '340px';
+        if (is_show_alert) {
+          message = '{{ is_show_cwf_notice ? error_product_price_proportion_cwf : error_product_price_proportion }}<br>' + message;
+          layer_area = '600px';
+        }
+        layer.confirm(message, {
+          skin: 'yzc_layer',
+          btn: ['Yes', 'No'],
+          btnAlign: 'c',
+          area: layer_area
+        }, function () {
+          ajax(formData, url_batch_add, callback_batch_add_buyers, {table: 'tb_delicacy_list_products'});
+        }, function () {
+          layer.close('confirm');
+        });
+      },
+      end: function () {
+        _price = '';
+        _effective_time = '';
+        _expiration_time = '';
+      }
+    });
+  }
+
+  //region delicacy management list 点击事件
+  // buyerTab的搜索按钮Filter对应的事件
+  function input_filter_delicacy(button, table) {
+    $(button).button('loading');
+    let search_value = $(button).parent().parent().find('input[name="input_filter_delicacy"]').val();
+    if (table === 'tb_delicacy_list_buyers') {
+      input_filter_delicacy_buyers = search_value;
+      btn_filter_delicacy_buyers = button;
+    } else {
+      input_filter_delicacy_products = search_value;
+      btn_filter_delicacy_products = button;
+    }
+    func_table_refresh(table);
+  }
+
+  // 批量设置不可见
+  function func_batch_set_invisible(button, table) {
+    $(button).button('loading');
+    let selections = $("#" + table).bootstrapTable('getSelections');
+    let select_error_content = 'Please select at least one product!';
+    if (table === 'tb_delicacy_list_products') {
+      select_error_content = 'Please select at least one buyer!';
+    }
+    if (selections.length <= 0) {
+      layerMsg(select_error_content, 1500);
+      $(button).button('reset');
+      return;
+    }
+    let msg_content_confirm = 'Do you confirm to make <b>#</b> product(s) invisible to the buyer?';
+    if (table === 'tb_delicacy_list_products') {
+      msg_content_confirm = 'Do you confirm to make the product invisible to <b>#</b> buyer(s)?';
+    }
+    let msgContent = msg_content_confirm.replace('#', selections.length);
+    layer.confirm(msgContent, {
+      skin: 'yzc_layer',
+      btn: ['Yes', 'No'],
+      btnAlign: 'c',
+      yes: function () {
+        layer.load();
+        let postData = {ids: []};
+        for (let i = 0; i < selections.length; i++) {
+          if (selections[i].id === 0 || selections[i].id === '0') {
+            // $("#" + table).bootstrapTable('remove', {field: 'num', values: [selections[i].num]});
+          } else {
+            postData.ids[i] = selections[i].id;
+          }
+        }
+        ajax(postData, url_batch_add_by_set_invisible, callback_refresh_delicacy_list, {table: table});
+      },
+      end: function () {
+        $(button).button('reset');
+      }
+    });
+  }
+
+  // 批量添加设置不见
+  function func_batch_add_by_invisible(button, table) {
+    let window_table = 'tb_window_buyers';
+    let this_url = url_batch_add_by_set_invisible_buyers;
+    let select_error_content = 'Please select at least one product!';
+    let confirm_content = 'Do you confirm to make <b>#</b> product(s) invisible to the buyer?';
+    if (table !== 'tb_delicacy_list_buyers') {
+      table = 'tb_delicacy_list_products';
+      window_table = 'tb_window_products';
+      this_url = url_batch_add_by_set_invisible_products;
+      select_error_content = 'Please select at least one buyer!';
+      confirm_content = 'Do you confirm to make the product invisible to the <b>#</b> buyers?';
+    }
+    $(button).button('loading');
+    let selections = $("#" + window_table).bootstrapTable('getSelections');
+    if (selections.length <= 0) {
+      layerMsg(select_error_content, 1500);
+      $(button).button('reset');
+      return;
+    }
+    layer.confirm(confirm_content.replace('#', selections.length), {
+      skin: 'yzc_layer',
+      btn: ['Yes', 'No'],
+      btnAlign: 'c',
+      yes: function () {
+        layer.load();
+        let postData;
+        if (table === 'tb_delicacy_list_buyers') {
+          postData = {products: [], buyer_id: this_buyer_id};
+          for (let i = 0; i < selections.length; i++) {
+            postData.products[i] = selections[i].product_id;
+          }
+        } else {
+          postData = {buyers: [], product_id: this_product_id};
+          for (let i = 0; i < selections.length; i++) {
+            postData.buyers[i] = selections[i].buyer_id;
+          }
+        }
+
+        ajax(postData, this_url, callback_refresh_delicacy_list, {table: table});
+      },
+      end: function () {
+        $(button).button('reset');
+      }
+    });
+  }
+
+  function func_download(_this, is_buyer) {
+    window.location.href = '{{ url_download }}' + (is_buyer ? 'buyer' : 'product');
+  }
+
+  function func_add_by_products(index, product_id, _this) {
+    let rowData = $("#tb_window_buyers").bootstrapTable('getRowByUniqueId', product_id);
+
+    rowData.id = 0;
+    rowData.num = 'New' + (num_add_new_delicacy_buyers + 1);
+    rowData.product_display = 1;
+    rowData.delicacy_price = null;
+    rowData.pickup_price = null;
+    rowData.effective_time = null;
+    rowData.expiration_time = null;
+    rowData.new_effect_time = rowData.effect_time;
+    // 精细化针对的是货值价格 当前议价价格就是基本价
+    rowData.current_price = parseFloat(rowData.basic_price).toFixed(precision);
+
+    $("#tb_delicacy_list_buyers").bootstrapTable('insertRow', {index: 0, row: rowData});
+    layer.closeAll();
+    set_editing('tb_delicacy_list_buyers');
+    num_add_new_delicacy_buyers++;
+  }
+
+  function func_add_by_buyers(index, buyer_id, _this) {
+    let rowData = $("#tb_window_products").bootstrapTable('getRowByUniqueId', buyer_id);
+    rowData.id = 0;
+    rowData.num = 'New' + (num_add_new_delicacy_products + 1);
+    rowData.buyer_nickname = rowData.nickname;
+    rowData.product_display = 1;
+    rowData.delicacy_price = null;
+    rowData.pickup_price = null;
+    rowData.effective_time = null;
+    rowData.expiration_time = null;
+    $("#tb_delicacy_list_products").bootstrapTable('insertRow', {index: 0, row: rowData});
+    layer.closeAll();
+    set_editing('tb_delicacy_list_products');
+    num_add_new_delicacy_products++;
+  }
+
+  function func_batch_set_price(button, table) {
+    let saveClickFlag = false;
+    $(button).button('loading');
+    let selections = $("#" + table).bootstrapTable('getSelections');
+    if (selections.length <= 0) {
+      layerMsg('Please select at least one buyer!', 1500);
+      $(button).button('reset');
+      return;
+    }
+
+    $("#tb_window_set_price").bootstrapTable('load',data_select_product);
+
+    let alert_content = '';
+
+    if (selections.length > 1) {
+      alert_content = '{{ text_batch_set_price_content }}';
+      alert_content = alert_content.replace('_buyer_num_', selections.length-1);
+    }else{
+      alert_content = '{{ text_batch_set_price_content_single }}';
+    }
+    alert_content = alert_content.replace('_buyer_', selections[0].buyer_nickname);
+
+    layer.open({
+      type: 1,
+      shadeClose: false,
+      closeBtn: 1,
+      id: 'LAY_layui_pro',
+      skin: 'yzc_layer',
+      area: ['700px', 'auto'],
+      title: 'Set Exclusive Price',
+      content: $('#window_set_price'),
+      btn: ['Save', 'Cancel'],
+      btnAlign: 'c',
+      yes: function (layerIndex, layerObj) {
+        if (saveClickFlag) {
+          return;
+        }
+        saveClickFlag = true;
+
+        let delicacy_price = $(layerObj).find('input[name=delicacy_price]').val();
+        if (delicacy_price === '' || delicacy_price === undefined) {
+          layerMsg('{{ error_enter_buyer_price }}');
+          saveClickFlag = false;
+          return;
+        }
+
+        let effective_time = $(layerObj).find('input[name=effective_time]').val();
+        let expiration_time = $(layerObj).find('input[name=expiration_time]').val();
+        if (!(effective_time === undefined || effective_time === '') && !(expiration_time === undefined || expiration_time === '') && effective_time > expiration_time) {
+          layerMsg('{{ error_choose_time }}');
+          saveClickFlag = false;
+          return;
+        }
+
+        let more_than_24_hours = true;
+        if (effective_time === undefined || effective_time === '' || new Date(effective_time.replace(/-/g, '/')) < (get_server_timestamp() + 86400 * 1000)) {
+          more_than_24_hours = false;
+        }
+
+        let num = 0;
+        let postData = {
+          effective_time: effective_time,
+          expiration_time: expiration_time,
+          delicacy_price: delicacy_price,
+          data: []
+        };
+        let is_show_alert = false;
+        $.each(selections, function (i, item) {
+          let current_price = item.product_display == 0 ? item.basic_price : item.current_price;
+          if (parseFloat(current_price) < parseFloat(delicacy_price) && !more_than_24_hours) {
+            num++;
+          }
+          postData.data.push(item.id);
+
+          if (is_non_inner_account && !is_show_alert && !item.is_home_pickup) {
+            let oversize_alarm_price = parseFloat(data_select_product[0].oversize_alarm_price);
+            if (comparison(oversize_alarm_price, parseFloat(delicacy_price), '>', 4)) {
+              console.log('2');
+              is_show_alert = true;
+            }
+          }
+        });
+
+        let confirmContent = '<div>Do you confirm to change the exclusive price to <span style="color: #2095c2">' + delicacy_price + '</span> ?</div>' +
+          '<div>Time of Effect: <span style="color: #2095c2"><b>' + (effective_time === undefined || effective_time === '' ? 'take effect immediately' : effective_time) + '</b></span></div>' +
+          '<div>Time of Failure: <span style="color: #2095c2"><b>' + (expiration_time === undefined || expiration_time === '' ? 'permanently effetive' : expiration_time) + '</b></span></div>';
+        if (num > 0) {
+          let this_effective_time = (effective_time === undefined || effective_time === '') ? timestamp_to_ymdh(get_server_timestamp() + 86400 * 1000) : effective_time;
+          this_effective_time = this_effective_time >= timestamp_to_ymdh(get_server_timestamp() + 86400 * 1000) ? this_effective_time : timestamp_to_ymdh(get_server_timestamp() + 86400 * 1000);
+          confirmContent = num + ' buyer(s) have triggered the 24-hour price protection mechanism.<br> The time of effect for them is <b>' + this_effective_time + '</b>.<br> Do you confirm to save it?';
+          // postData.effective_time = this_effective_time;
+          // 如果 涨价 并且 失效时间小于 后天的当前时间，则给出警告
+          if (!(expiration_time === undefined || expiration_time === '') && expiration_time < timestamp_to_ymdh(get_server_timestamp() + 86400 * 1000)) {
+            let error_msg = num + ' buyer(s) have triggered the 24-hour price protection mechanism.<br> The time of effect should be greater than <b>' + this_effective_time + '</b>';
+            layerMsg(error_msg, 4000);
+            saveClickFlag = false;
+            return;
+          }
+        }
+
+        let layer_area = '340px';
+        if (is_show_alert) {
+          confirmContent = '{{ is_show_cwf_notice ? error_product_price_proportion_cwf : error_product_price_proportion }}<br>' + confirmContent;
+          layer_area = '600px';
+        }
+        layer.confirm(confirmContent, {
+          skin: 'yzc_layer',
+          btn: ['Yes', 'No'],
+          btnAlign: 'c',
+          area: layer_area,
+          end: function () {
+            saveClickFlag = false;
+          }
+        }, function () {
+          ajax(postData, url_set_price, callback_refresh_delicacy_list, {
+            table: 'tb_delicacy_list_products',
+            button: button
+          });
+        }, function () {
+          saveClickFlag = false;
+        });
+      },
+      btn2: function (index, layerObj) {
+        layerMsg('Cancel');
+        $(button).button('reset');
+      },
+      success: function (layerObj, index) {
+        layerObj.find('.p-window_set_price').html(alert_content);
+        saveClickFlag = false;
+        $(layerObj).find('input[class=form-control]').val('');
+        $(layerObj).find('input.input_time_only_pick').val('');
+        laydate.render({
+          elem: $(layerObj).find('input[name=effective_time]')[0],
+          type: 'datetime',
+          format: 'yyyy-MM-dd HH:00:00',
+          min: timestamp_to_str(get_server_timestamp()),
+          lang: 'en'
+        });
+
+        laydate.render({
+          elem: $(layerObj).find('input[name=expiration_time]')[0],
+          type: 'datetime',
+          format: 'yyyy-MM-dd HH:00:00',
+          min: timestamp_to_str(get_server_timestamp()),
+          lang: 'en'
+        });
+      },
+      end: function () {
+        $(button).button('reset');
+      }
+    });
+  }
+
+  function func_batch_add_by_price(button, table) {
+    let saveClickFlag = false;
+    $(button).button('loading');
+    let productRows = $("#tb_select_list_products").bootstrapTable('getSelections');
+
+    // 需要先选择product
+    if (productRows.length <= 0) {
+      layer.closeAll();
+      layerMsg('Please select a product as first!');
+      $(button).button('reset');
+      return;
+    }
+    let productInfo = productRows[0];
+    let selections = $("#tb_window_products").bootstrapTable('getSelections');
+    if (selections.length <= 0) {
+      layerMsg('Please select at least one buyer!', 1500);
+      $(button).button('reset');
+      return;
+    }
+
+    layer.open({
+      type: 1,
+      shadeClose: false,
+      closeBtn: 1,
+      id: 'LAY_layui_pro',
+      skin: 'yzc_layer',
+      area: ['550px', '300px'],
+      title: 'Set Exclusive Price',
+      content: $('#window_set_price').html(),
+      btn: ['Save', 'Cancel'],
+      yes: function (layerIndex, layerObj) {
+        if (saveClickFlag) {
+          return;
+        }
+        saveClickFlag = true;
+
+        let delicacy_price = $(layerObj).find('input[name=delicacy_price]').val();
+        if (delicacy_price === '' || delicacy_price === undefined) {
+          layerMsg('{{ error_enter_buyer_price }}');
+          saveClickFlag = false;
+          return;
+        }
+
+        let effective_time = $(layerObj).find('input[name=effective_time]').val();
+        let expiration_time = $(layerObj).find('input[name=expiration_time]').val();
+        if (!(effective_time === undefined || effective_time === '') && !(expiration_time === undefined || expiration_time === '') && effective_time >= expiration_time) {
+          layerMsg('{{ error_choose_time }}');
+          saveClickFlag = false;
+          return;
+        }
+
+        let more_than_24_hours = true;
+        if (effective_time === undefined || effective_time === '' || new Date(effective_time.replace(/-/g, '/')) < (get_server_timestamp() + 86400 * 1000)) {
+          more_than_24_hours = false;
+        }
+
+        let num = 0;
+        let postData = {
+          product_id: productInfo.product_id,
+          effective_time: effective_time,
+          expiration_time: expiration_time,
+          delicacy_price: delicacy_price,
+          data: []
+        };
+
+        let is_bigger = false;
+        if (parseFloat(productInfo.basic_price) < parseFloat(delicacy_price) && !more_than_24_hours) {
+          is_bigger = true;
+        }
+        $.each(selections, function (i, item) {
+          if (is_bigger) {
+            num++;
+          }
+          postData.data.push(item.buyer_id);
+        });
+
+        let confirmContent = '<div>Do you confirm to change the exclusive price to <span style="color: #2095c2">' + delicacy_price + '</span> ?</div><br>' +
+          '<div>Time of Effect: <span style="color: #2095c2"><b>' + (effective_time === undefined || effective_time === '' ? 'take effect immediately' : effective_time) + '</b></span></div>' +
+          '<div>Time of Failure: <span style="color: #2095c2"><b>' + (expiration_time === undefined || expiration_time === '' ? 'permanently effetive' : expiration_time) + '</b></span></div>';
+        if (num > 0) {
+          let this_effective_time = (effective_time === undefined || effective_time === '') ? timestamp_to_ymdh(get_server_timestamp() + 86400 * 1000) : effective_time;
+          this_effective_time = this_effective_time >= timestamp_to_ymdh(get_server_timestamp() + 86400 * 1000) ? this_effective_time : timestamp_to_ymdh(get_server_timestamp() + 86400 * 1000);
+          confirmContent = num + ' buyers have triggered the 24-hour price protection mechanism.<br> The time of effect for them is <b>' + this_effective_time + '</b>.<br> Do you confirm to save it?'
+          postData.effective_time = this_effective_time;
+        }
+        layer.confirm(confirmContent, {
+          skin: 'yzc_layer',
+          btn: ['Yes', 'No'],
+          btnAlign: 'c',
+          end: function () {
+            saveClickFlag = false;
+          }
+        }, function () {
+          ajax(postData, url_add_by_set_price, callback_refresh_delicacy_list, {
+            table: 'tb_delicacy_list_products',
+            button: button
+          });
+        }, function () {
+          saveClickFlag = false;
+        });
+      },
+      btn2: function (index, layerObj) {
+        layerMsg('Cancel');
+        $(button).button('reset');
+      },
+      success: function (layerObj, index) {
+        saveClickFlag = false;
+        $(layerObj).find('input[class=form-control]').val('');
+        laydate.render({
+          elem: $(layerObj).find('input[name=effective_time]')[0],
+          type: 'datetime',
+          format: 'yyyy-MM-dd HH:00:00',
+          min: timestamp_to_str(get_server_timestamp()),
+          lang: 'en'
+        });
+
+        laydate.render({
+          elem: $(layerObj).find('input[name=expiration_time]')[0],
+          type: 'datetime',
+          format: 'yyyy-MM-dd HH:00:00',
+          min: timestamp_to_str(get_server_timestamp()),
+          lang: 'en'
+        });
+      },
+      end: function () {
+        $(button).button('reset');
+      }
+    });
+  }
+
+  function func_change_modify_price(_this) {
+    let this_value = $(_this).val();
+    if (this_value == undefined) {
+      this_value = '';
+    }
+
+    this_value = parseFloat(this_value);
+    let re = /(\d+)(\.?)(\d{0,2})/;
+    if ({{ isJapan?1:0 }}) {
+      re = /(\d+)/;
+    }
+    let temp = re.exec(this_value);
+    if (temp != null) {
+      this_value = temp[0];
+    }
+
+    _price = this_value;
+    let this_table = $("#tb_window_products");
+    let rows_selected = this_table.bootstrapTable('getSelections');
+    let rows_update = [];
+    $.each(rows_selected, function (k, v) {
+      rows_update.push({id: v.buyer_id, row: {_price: this_value, freight: this_product_freight}});
+    });
+    this_table.bootstrapTable('updateByUniqueId', rows_update);
+  }
+
+  function func_show_laydate(_this, is_effective) {
+    laydate.render({
+      elem: $(_this)[0],
+      type: 'datetime',
+      format: 'yyyy-MM-dd HH:00:00',
+      min: is_effective ? timestamp_to_str(get_server_timestamp()) : timestamp_to_str(get_server_timestamp()),
+      lang: 'en',
+      show: true,
+      done: function (value, date, endDate) {
+        is_effective ? _effective_time = value : _expiration_time = value;
+        let this_table = $("#tb_window_products");
+        let rows_selected = this_table.bootstrapTable('getSelections');
+        let rows_update = [];
+        $.each(rows_selected, function (k, v) {
+          let row = {id: v.buyer_id, row: {}};
+          row['row'][is_effective ? "_effective_time" : "_expiration_time"] = value;
+          rows_update.push(row);
+        });
+        this_table.bootstrapTable('updateByUniqueId', rows_update);
+      }
+    });
+  }
+
+  function func_show_laydate_in_body(_this, is_effective) {
+    laydate.render({
+      elem: $(_this)[0],
+      type: 'datetime',
+      format: 'yyyy-MM-dd HH:00:00',
+      min: is_effective ? timestamp_to_str(get_server_timestamp()) : timestamp_to_str(get_server_timestamp()),
+      lang: 'en',
+      show: true,
+    });
+  }
+
+  function func_batch_remove(button, table) {
+    $(button).button('loading');
+    let selections = $("#" + table).bootstrapTable('getSelections');
+    let select_error_content = 'Please select at least one product!';
+    if (table === 'tb_delicacy_list_products') {
+      select_error_content = 'Please select at least one buyer!';
+    }
+    if (selections.length <= 0) {
+      layerMsg(select_error_content, 1500);
+      $(button).button('reset');
+      return;
+    }
+    let msg_content_confirm = 'Do you confirm to remove <b>#</b> product(s) from the refined management list?';
+    if (table === 'tb_delicacy_list_products') {
+      msg_content_confirm = 'Do you confirm to remove the product from <b>#</b> buyer(s)\'s refined management list?';
+    }
+    let msgContent = msg_content_confirm.replace('#', selections.length) +
+      '<br><div style="color: red">(The prices will be synchronized to the basic price and no longer show exclusive price to the buyer.)</div>';
+    layer.confirm(msgContent, {
+      skin: 'yzc_layer',
+      btn: ['Yes', 'No'],
+      btnAlign: 'c',
+      yes: function () {
+        layer.load();
+        let postData = {ids: []};
+        for (let i = 0; i < selections.length; i++) {
+          if (selections[i].id === 0 || selections[i].id === '0') {
+            $("#" + table).bootstrapTable('remove', {field: 'num', values: [selections[i].num]});
+          } else {
+            postData.ids[i] = selections[i].id;
+          }
+        }
+        ajax(postData, url_remove, callback_refresh_delicacy_list, {table: table});
+      },
+      end: function () {
+        $(button).button('reset');
+      }
+    });
+  }
+
+  function func_remove(index, id, table, _this = null) {
+    if (id === 0 || id === '0') {
+      let rowsData = $('#' + table).bootstrapTable('getData');
+      $("#" + table).bootstrapTable('remove', {field: 'num', values: [rowsData[index].num]});
+      // set_editing(table);
+      return;
+    }
+    let msgContent = 'Do you confirm to remove the product from the refined management list?' +
+      '<br><div style="color: red">(The prices will be synchronized to the basic price and no longer show exclusive price to these buyers.)</div>';
+    layer.confirm(msgContent, {
+      skin: 'yzc_layer',
+      btn: ['Yes', 'No'],
+      btnAlign: 'c',
+      yes: function () {
+        layer.load();
+        let postData = {ids: [id]};
+        ajax(postData, url_remove, callback_refresh_delicacy_list, {index: index, table: table});
+      },
+      end: function () {
+        if (_this !== null) {
+          $(_this).button('reset');
+        }
+      }
+    });
+  }
+
+  function func_edit(index, id, table, _this) {
+    let _table = "#" + table + " ";
+    // 显示编辑
+    $(_table + "tr[data-index=" + index + "] .form-edit").css("display", "block");
+    $(_table + "tr[data-index=" + index + "] .btn-form-edit").css("display", "inline-block");
+
+    laydate.render({
+      elem: $(_table + "tr[data-index=" + index + "] input[name=effective_time]")[0],
+      type: 'datetime',
+      format: 'yyyy-MM-dd HH:00:00',
+      min: timestamp_to_str(get_server_timestamp()),
+      lang: 'en'
+    });
+
+    laydate.render({
+      elem: $(_table + "tr[data-index=" + index + "] input[name=expiration_time]")[0],
+      type: 'datetime',
+      format: 'yyyy-MM-dd HH:00:00',
+      min: timestamp_to_ymdh(get_server_timestamp()),
+      lang: 'en'
+    });
+
+    let product_display = $(_table + "tr[data-index=" + index + "] select[name=product_display]").val();
+    if (product_display === 0 || product_display === '0') {
+      set_input_disable(index, 0, table);
+    }
+
+    // 隐藏展示
+    $(_table + "tr[data-index=" + index + "] .form-display").css("display", "none");
+    $(_table + "tr[data-index=" + index + "] .btn-form-display").css("display", "none");
+    // if (is_home_pickup_buyer && table === 'tb_delicacy_list_buyers') {
+    //     $(_table + " .tb_delicacy_list_buyers_pickup_price").hide();
+    // } else {
+    //     $(_table + " .tb_delicacy_list_buyers_pickup_price").show();
+    // }
+  }
+
+  function func_save(index, id, table, _this) {
+    let _table = "#" + table + " ";
+    if (id === undefined || id === 0 || id === '0') {
+      func_add(index, id, table, _this);
+      return;
+    }
+    var data = {};
+    var formData = $(_table + "tr[data-index=" + index + "] .form-edit");
+
+    if (formData !== undefined) {
+      for (var i = 0; i < formData.length; i++) {
+        data[formData[i].name] = formData[i].value;
+      }
+    }
+
+    let rowsData = $("#" + table).bootstrapTable('getData');
+    if (table === 'tb_delicacy_list_buyers') {
+      data['buyer_id'] = this_buyer_id;
+      data['product_id'] = rowsData[index].product_id;
+    } else {
+      data['buyer_id'] = rowsData[index].buyer_id;
+      data['product_id'] = this_product_id;
+    }
+    data['id'] = id;
+
+    // 如果 product_display 为 0，则其他不做判断。
+    if (data['product_display'] == 0) {
+      layer.confirm('Do you confirm to make the product invisible to the buyer?', {
+        skin: 'yzc_layer',
+        btn: ['Yes', 'No'],
+        btnAlign: 'c',
+      }, function () {
+        ajax(data, url_edit, callback_edit, {index: index, table: table});
+      }, function () {
+        layer.closeAll();
+      });
+    } else {
+      if (data['delicacy_price'] === undefined || data['delicacy_price'] === '') {
+        layerMsg('Please enter modified exclusive price!');
+        return;
+      }
+      if (!(data['effective_time'] === undefined || data['effective_time'] === '') && !(data['expiration_time'] === undefined || data['expiration_time'] === '') && data['effective_time'] >= data['expiration_time']) {
+        layerMsg('{{ error_choose_time }}');
+        return;
+      }
+
+      let more_than_24_hours = true;
+      if (data['effective_time'] === undefined || data['effective_time'] === '' || new Date(data['effective_time'].replace(/-/g, '/')) < get_server_timestamp() + 86400 * 1000) {
+        more_than_24_hours = false;
+      }
+
+      if (rowsData[index].product_display == 1) {   // 取 之前的值
+        if (parseFloat(rowsData[index].current_price) < parseFloat(data['delicacy_price']) && !more_than_24_hours) {
+          layerMsg('{{ text_24_price_protect }}'.replace('#', timestamp_to_str(get_server_timestamp())), 3500);
+          return;
+        }
+      } else {
+        if (parseFloat(rowsData[index].basic_price) < parseFloat(data['delicacy_price']) && !more_than_24_hours) {
+          layerMsg('{{ text_24_price_protect }}'.replace('#', timestamp_to_str(get_server_timestamp())), 3500);
+          return;
+        }
+      }
+
+      // 提示
+      let confirmContent = '<span>Do you confirm to change the exclusive price to ' + data['delicacy_price'] + ' ?</span><br>' +
+        '<div>Time of Effect: <span style="color: #2095c2"><b>' + (data['effective_time'] === undefined || data['effective_time'] === '' ? 'take effect immediately' : data['effective_time']) + '</b></span></div>' +
+        '<div>Time of Failure: <span style="color: #2095c2"><b>' + (data['expiration_time'] === undefined || data['expiration_time'] === '' ? 'permanently effetive' : data['expiration_time']) + '</b></span></div>';
+      let layer_area = '530px';
+      if (
+        is_non_inner_account &&
+        (
+          (rowsData[index].is_home_pickup !== undefined && !rowsData[index].is_home_pickup)
+          || (rowsData[index].is_home_pickup === undefined && !is_home_pickup_buyer)
+        )
+      ) {
+        let oversize_alarm_price = parseFloat(rowsData[index].oversize_alarm_price);
+        if (comparison(oversize_alarm_price, parseFloat(data['delicacy_price']), '>', 4)) {
+          console.log('3');
+          confirmContent = '{{ is_show_cwf_notice ? error_product_price_proportion_cwf : error_product_price_proportion }}<br>' + confirmContent;
+          layer_area = '650px';
+        }
+      }
+      layer.confirm(confirmContent, {
+        skin: 'yzc_layer',
+        btn: ['Yes', 'No'],
+        btnAlign: 'c',
+        area: layer_area,
+      }, function () {
+        ajax(data, url_edit, callback_refresh_delicacy_list, {index: index, table: table});
+      }, function () {
+        layer.closeAll();
+      });
+    }
+  }
+
+  function func_back(index, id, table, _this) {
+    table = "#" + table + " ";
+    $(table + "tr[data-index=" + index + "] .form-display").css("display", "block");
+    $(table + "tr[data-index=" + index + "] .btn-form-display").css("display", "inline-block");
+    $(table + "tr[data-index=" + index + "] .form-edit").css("display", "none");
+    $(table + "tr[data-index=" + index + "] .btn-form-edit").css("display", "none");
+  }
+
+  function func_add(index, id, table, _this) {
+    let _table = "#" + table + " ";
+    let data = {};
+    let formData = $(_table + "tr[data-index=" + index + "] .form-edit");
+    if (formData !== undefined) {
+      for (let i = 0; i < formData.length; i++) {
+        data[formData[i].name] = formData[i].value;
+      }
+    }
+
+    let selectRows; // Select data
+    let rowsData = $("#" + table).bootstrapTable('getData');
+    let basic_price;
+    if (table === 'tb_delicacy_list_buyers') {
+      data['buyer_id'] = this_buyer_id;
+      data['product_id'] = rowsData[index].product_id;
+      // if (is_home_pickup_buyer) {
+      //     basic_price = rowsData[index].current_price;
+      // } else {
+      //     basic_price = rowsData[index].basic_price;
+      // }
+                basic_price = rowsData[index].basic_price;
+      basic_price = rowsData[index].basic_price;
+    } else {
+      selectRows = $("#tb_select_list_products").bootstrapTable('getSelections');
+      if (selectRows.length <= 0) {
+        layerMsg('Please select a product as first!');
+        return;
+      }
+      data['buyer_id'] = rowsData[index].buyer_id;
+      data['product_id'] = this_product_id;
+      basic_price = selectRows[0].basic_price;
+    }
+    data['id'] = 0;
+
+    // 如果 product_display 为 0，则其他不做判断。
+    if (data['product_display'] == 0) {
+      layer.confirm('Do you confirm to make the product invisible to the buyer?', {
+        skin: 'yzc_layer',
+        btn: ['Yes', 'No'],
+        btnAlign: 'c',
+      }, function () {
+        ajax(data, url_add, callback_edit, {index: index, table: table});
+      }, function () {
+        layer.closeAll();
+      });
+    } else {
+      if (data['delicacy_price'] === undefined || data['delicacy_price'] === '') {
+        layerMsg('Please enter modified  exclusive price!');
+        return;
+      }
+
+      if (!(data['effective_time'] === undefined || data['effective_time'] === '') && !(data['expiration_time'] === undefined || data['expiration_time'] === '') && data['effective_time'] >= data['expiration_time']) {
+        layerMsg('{{ error_choose_time }}');
+        return;
+      }
+
+      let more_than_24_hours = true;
+      if (data['effective_time'] === undefined || data['effective_time'] === '' || new Date(data['effective_time'].replace(/-/g, '/')) < (get_server_timestamp() + 86400 * 1000)) {
+        more_than_24_hours = false;
+      }
+
+      if (parseFloat(basic_price) < parseFloat(data['delicacy_price']) && !more_than_24_hours) {
+        layerMsg('{{ text_24_price_protect }}'.replace('#', timestamp_to_str(get_server_timestamp())), 3500);
+        return;
+      }
+      // 提示
+      let confirmContent = '<span>Do you confirm to change the exclusive price to ' + data['delicacy_price'] + ' ?</span><br>' +
+        '<div>Time of Effect: <span style="color: #2095c2">' + (data['effective_time'] === undefined || data['effective_time'] === '' ? 'take effect immediately' : data['effective_time']) + '</span></div>' +
+        '<div>Time of Failure: <span style="color: #2095c2">' + (data['expiration_time'] === undefined || data['expiration_time'] === '' ? 'permanently effetive' : data['expiration_time']) + '</span></div>';
+      let layer_area = '530px';
+      if (
+        is_non_inner_account &&
+        (
+          (rowsData[index].is_home_pickup !== undefined && !rowsData[index].is_home_pickup)
+          || (rowsData[index].is_home_pickup === undefined && !is_home_pickup_buyer)
+        )
+      ) {
+        let oversize_alarm_price = parseFloat(rowsData[index].oversize_alarm_price);
+        if (comparison(oversize_alarm_price, parseFloat(data['delicacy_price']), '>', 4)) {
+          console.log('4');
+          confirmContent = '{{ is_show_cwf_notice ? error_product_price_proportion_cwf : error_product_price_proportion }}<br>' + confirmContent;
+          layer_area = '650px';
+        }
+      }
+      layer.confirm(confirmContent, {
+        skin: 'yzc_layer',
+        btn: ['Yes', 'No'],
+        btnAlign: 'c',
+        area: layer_area,
+      }, function () {
+        ajax(data, url_add, callback_edit, {index: index, table: table});
+      }, function () {
+        layer.closeAll();
+      });
+    }
+  }
+
+  //endregion
+
+  function callback_refresh_delicacy_list(response, otherParams) {
+    layer.closeAll();
+    layerMsg(response.msg, 1500);
+    func_table_refresh(otherParams.table);
+    set_editing(otherParams.table);
+    if (otherParams.button != undefined) {
+      $(otherParams.button).button('reset');
+    }
+  }
+
+  function callback_batch_add_buyers(response, otherParams) {
+    if (response.error == 0) {
+      func_table_refresh(otherParams.table);
+      set_editing(otherParams.table);
+      if (otherParams.button != undefined) {
+        $(otherParams.button).button('reset');
+      }
+      layer.closeAll();
+    } else {
+      layer.closeAll('loading');
+    }
+    layerMsg(response.msg, 1500);
+  }
+
+  function callback_edit(json, otherParams) {
+    layer.closeAll('loading');
+    layerMsg(json.msg, 2000);
+    if (json.error == 0) {
+      let rowsData = $("#" + otherParams.table).bootstrapTable('getData');
+      json.data.num = func_get_max_num(rowsData) + 1;
+      $("#" + otherParams.table).bootstrapTable('updateRow', {index: otherParams.index, row: json.data});
+      set_editing(otherParams.table);
+    } else {
+      if (json.is_flush_table !== undefined && json.is_flush_table == 1) {
+        if (otherParams.table) {
+          func_table_refresh(otherParams.table);
+        }
+      }
+    }
+  }
+
+  // product_select 更改的事件
+  function func_product_display_change(index, table, _this) {
+    let product_display = $("#" + table + " tr[data-index=" + index + "] select[name=product_display]").val();
+    if (product_display == 0) {
+      set_input_disable(index, 0, table);
+    } else {
+      set_input_disable(index, 1, table);
+    }
+  }
+
+  // 设置 delicacy management list 中input是否 可以编辑
+  function set_input_disable(index, disable, table_id = '') {
+    let _table_id = "#" + table_id + " ";
+    if (!disable) {
+      $(_table_id + "tr[data-index=" + index + "] input[name=delicacy_price]").attr('disabled', 'disabled');
+      $(_table_id + "tr[data-index=" + index + "] input[name=effective_time]").attr('disabled', 'disabled');
+      $(_table_id + "tr[data-index=" + index + "] input[name=expiration_time]").attr('disabled', 'disabled');
+    } else {
+      $(_table_id + "tr[data-index=" + index + "] input[name=delicacy_price]").removeAttr('disabled');
+      $(_table_id + "tr[data-index=" + index + "] input[name=effective_time]").removeAttr('disabled');
+      $(_table_id + "tr[data-index=" + index + "] input[name=expiration_time]").removeAttr('disabled');
+    }
+  }
+
+  // bootstrapTable 刷新
+  function func_table_refresh(table_id) {
+    $("#" + table_id).bootstrapTable('refresh');
+  }
+
+  function func_get_max_num(data) {
+    let num = 1;
+    $.each(data, function (index, item) {
+      if (item.num !== undefined && (typeof item.num === 'number') && item.num > num) {
+        num = item.num;
+      }
+    });
+    return num;
+  }
+
+  function func_set_disable_button(table) {
+    let window_table = 'tb_window_buyers';
+    if (table !== 'tb_delicacy_list_buyers') {
+      table = 'tb_delicacy_list_products';
+      window_table = 'tb_window_products';
+    }
+    let rowsData = $("#" + table).bootstrapTable('getData');
+    let selectedIDArr = [];
+    $.each(rowsData, function (i, v) {
+      if (v.id === 0 || v.id === '0') {
+        if (table === 'tb_delicacy_list_buyers') {
+          selectedIDArr.push(v.product_id);
+        } else {
+          selectedIDArr.push(v.buyer_id);
+        }
+      }
+    });
+    if (selectedIDArr.length > 0) {
+      $.each(selectedIDArr, function (i, id) {
+        $('#' + window_table + ' tr[data-uniqueid=' + id + '] input[type=checkbox]').attr('disabled', 'disabled');
+        $('#' + window_table + ' tr[data-uniqueid=' + id + '] .btn').removeAttr('onclick').attr('disabled', 'disabled');
+      });
+    }
+  }
+
+  //region common functions
+  function get_server_timestamp() {
+    return timestamp_server_load + (Date.parse(new Date()) - timestamp_local_load);
+  }
+
+  function layerMsg(message, time = 2000) {
+    layer.msg(message, {time: time});
+  }
+
+  function ajax(data, url, successCallback, otherParams = null, errorCallback = undefined) {
+    $.ajax({
+      url: url,
+      type: 'POST',
+      dataType: 'json',
+      data: data,
+      beforeSend: function () {
+        layer.load();
+      },
+      success: function (json) {
+        successCallback(json, otherParams);
+      },
+      error: function (xhr, ajaxOptions, thrownError,) {
+        if (!errorCallback === undefined) {
+          alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      }
+    })
+  }
+
+  function timestamp_to_str(timestamp) {
+    let date = (new Date(timestamp));
+    return date.getFullYear() + '-' +
+      (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-' +
+      (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' ' +
+      (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':' +
+      (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':' +
+      date.getSeconds();
+  }
+
+  function timestamp_to_ymdh(timestamp) {
+    let date = new Date(timestamp);
+    if (date.getSeconds() > 0 || date.getMinutes() > 0) {
+      date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours() + 1, date.getMinutes(), date.getSeconds());
+      return date.getFullYear() + '-' +
+        (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-' +
+        (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' ' +
+        (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':00:00';
+    }
+    return timestamp_to_str(timestamp);
+  }
+
+  function str_to_timestamp(strtime) {
+    return Date.parse(new Date(strtime.replace(/-/g, '/')));
+  }
+
+  function set_editing(table) {
+    $("#" + table + " tr[data-uniqueid=" + 0 + "] a[title=Edit]").trigger('click');
+    $("#" + table + " tr[data-uniqueid=" + 0 + "] a[title=Cancel]").hide();
+    $("#" + table + " tr[data-uniqueid=" + 0 + "]").css('background-color', '#d8f5f5');
+  }
+
+  function num(obj) {
+    obj.value = obj.value.replace(/[^\d.]/g, ""); //清除"数字"和"."以外的字符
+    obj.value = obj.value.replace(/^\./g, ""); //验证第一个字符是数字
+    obj.value = obj.value.replace(/\.{2,}/g, "."); //只保留第一个, 清除多余的
+    obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+    obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3'); //只能输入两个小数
+  }
+
+  function func_input_money(_this, is_japan) {
+    let input = $(_this).val().replace(/[^\d.]/g, "").replace(/^\./g, "");
+    let re = /(\d+)(\.?)(\d{0,2})/;
+    if (is_japan) {
+      re = /(\d+)/;
+    }
+    let req = re.exec(input);
+    let txt = '';
+    if (req != null) {
+      txt = req[0];
+    }
+    $(_this).val(txt);
+    return txt;
+  }
+
+  function func_change_drop_shipping_price(_this, is_japan, freight) {
+    let input= func_input_money(_this, is_japan);
+    let ref_drop_shipping_price = (parseFloat(input) + parseFloat(freight ? freight : 0)).toFixed(precision);
+    // $(_this).parent().next().text(ref_drop_shipping_price);
+  }
+
+  function func_set_price_drop_shipping_price(_this, is_japan) {
+    let input= func_input_money(_this, is_japan);
+    let ref_drop_shipping_price = (parseFloat(input) + parseFloat(this_product_freight ? this_product_freight : 0)).toFixed(precision);
+    $(_this).parent().parent().parent().next().find('input').val(ref_drop_shipping_price);
+  }
+
+  //endregion
+</script>

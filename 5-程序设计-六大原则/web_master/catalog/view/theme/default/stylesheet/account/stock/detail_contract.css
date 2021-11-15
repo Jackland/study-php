@@ -1,0 +1,37 @@
+.contract-type{
+  width: 13%;
+}
+.contract-id{
+  width: 15%;
+}
+.contract-qty{
+  width: 18%;
+}
+.contract-status{
+  width: 15%;
+}
+.contract-days{
+  width: 10%;
+}
+.valid-action{
+  width: 9%;
+}
+.contract-wait-pay{
+  width: 20%;
+}
+.action-btn.action-cart i{
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/*toast 中的 黑色a标签*/
+a.default-black-color{
+  color: #333;
+  font-weight: bolder;
+  border-bottom: none;
+  font-size: 14px;
+}
+a.default-black-color:hover{
+  text-decoration: underline;
+  color: #333;
+}

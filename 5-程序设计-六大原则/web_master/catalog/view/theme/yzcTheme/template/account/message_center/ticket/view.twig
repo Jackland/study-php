@@ -1,0 +1,437 @@
+{% set titleStr = 'Leave a Message' %}
+{{ this.title(titleStr) }}
+{{ this.params('breadcrumbs', [
+    'home',
+    {
+        text: 'Message Center',
+        href: url('account/message_center/seller'),
+    },
+    {
+        text: titleStr,
+        href: url('account/message_center/ticket'),
+    }
+]) }}
+
+{% for style in styles %}
+    <link href="{{ style }}" type="text/css" rel="stylesheet"/>
+{% endfor %}
+{% for script in scripts %}
+    <script type="text/javascript" src="{{ script }}"></script>
+{% endfor %}
+
+{{ js(['js/common/orisComponents.js']) }}
+
+{{ css([
+    'css/common/common.css',
+    'css/common/common-ext.css',
+    'static/message/message-common.css',
+    'static/message/setting/setting.css',
+    'static/message/buyer-message-common.css',
+    'static/customerpartner/message_center/new-message.css',
+    'static/message/new-message.css'
+]) }}
+
+<link rel="stylesheet" type="text/css" href="catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css">
+<link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css">
+<script type="text/javascript" src="/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+
+<style>
+.ticket-timeline {
+    height: 100%;
+    border-left: 1px solid #E5E5E5;
+}
+
+.timeline-point {
+    color: #E5E5E5;
+    position: absolute;
+    left: -4px;
+    font-size: 15px;
+}
+
+.content-messages {
+    padding-left: 12px;
+}
+
+.role-customer-server-title {
+    font-weight: bold;
+    color: #E64545;
+    font-size: 14px;
+}
+
+.role-customer-title {
+    font-weight: bold;
+    color: #004BD8;
+    font-size: 14px;
+}
+
+.msg-card .panel {
+    box-shadow: initial;
+}
+
+.word-breakall {
+  word-break: break-all;
+}
+
+.content-messages-group .panel-body {
+  width: 890px;
+}
+
+#ticket-view-container table tr td:first-child {
+  padding: 0px !important;
+}
+
+#ticket-view-container .message-detail-title {
+  display: inline-block;
+  min-width: 140px;
+  text-align: right;
+  padding-right: 8px;
+}
+</style>
+
+{% if separate_view is defined and separate_view %}
+<div id="content">
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="container " id="ticket-view-container">
+        {% endif %}
+        {{send_page}}
+        <div class="row">{{ column_left }}
+            {% if column_left and column_right %}
+                {% set class = 'col-sm-6' %}
+            {% elseif column_left or column_right %}
+                {% set class = 'col-sm-9' %}
+            {% else %}
+                {% set class = 'col-sm-12' %}
+            {% endif %}
+            {% if separate_view == 0 %}
+                {% set table_div_class = 'overflow: hidden;' %}
+            {% endif %}
+            <div ng-app="app" ng-cloak >
+                <div id="content" class="{{ class }} msgb ">{{ content_top }}
+                    {{ message_column }}
+                    <div id="table_content" class="msgcent msg-card msg-h508" style="{{ table_div_class }}">
+                        <div class="nav-oris">
+                            <div>
+                                <div class="msgcent msg-detail__header msgb msg-card__title">
+                                    <div>
+                                        <a href="{{ url('account/message_center/ticket/index', {'type': type}) }}" data-toggle="tooltip" title="Return to the list page" class="btn-text" data-original-title="{{ title_cancel }}">
+                                            <i class="giga icon-arrow-left" style="font-size: 16px;"></i>
+                                        </a>
+                                    </div>
+                                    {# @TODO 此条件页面样式判断 #}
+                                    {% if rma_edit_error %}
+                                        <div class="alert alert-warning alert-dismissible"><i class="fa fa-check-circle"></i> {{ error }}
+                                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="oris-row">
+                                    <div class="main msgcent msg-form__container">
+                                        <div role="tabpanel" class="tab-pane active" id="upload">
+                                            <div>
+                                                <div class="msg-ticket__title-container mb-24">
+                                                    <div class="msg-ticket__title">
+                                                        {{ ticket_title_long }}
+                                                    </div>
+                                                    <button type="button" class="oris-button reply-ticket-button__message">Reply</button>
+                                                </div>
+
+                                                <div class="oris-ingroup">
+                                                    <div class="ticket-timeline">
+                                                    </div>
+                                                    <div class="content-messages">
+                                                        {% if lists %}
+                                                            {% for item in lists %}
+                                                                <div class="content-messages-group mb-24">
+                                                                    <div class="message-group-title mb-16 {% if item.from == 'server' %} role-customer-server-title {% else %} role-customer-title {% endif %}">
+                                                                        {% if item.is_read == '0' and  item.from == 'server' %}
+                                                                            <span class="glyphicon glyphicon-exclamation-sign"></span>&nbsp;
+                                                                        {% endif %}
+                                                                        <span class="timeline-point">●</span>{{ item.showName }}&emsp;-&emsp;{{ item.submit_time_format }}
+                                                                    </div>
+                                                                    <div class="panel panel-default">
+                                                                        <div class="panel-body">
+                                                                            {% if rma_key %}
+                                                                                <div>
+                                                                                    <span class="message-detail-title">RMA ID:</span>
+                                                                                    <span><a href="{{ rma_url }}">{{ rma_id }}</a></span>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                            {% if sales_order_key %}
+                                                                                <div>
+                                                                                    <span class="message-detail-title">Sales Order ID:</span>
+                                                                                    <span><a href="{{ sales_order_url }}">{{ sales_order_id }}</a></span>
+                                                                                </div>
+                                                                                {% if ticket_type !=  19%}
+                                                                                    <div>
+                                                                                        <span class="message-detail-title">Processing Method:</span>
+                                                                                        <span>{{ processing_method_name | default('--')  }}</span>
+                                                                                    </div>
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                            {% if ticket_type == 19 or ticket_type == 20 %}
+                                                                                <div>
+                                                                                    <span class="message-detail-title">Item Code:</span>
+                                                                                    <span>{{ sales_item_code | default('--')  }}</span>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                            {% if submit_ticket_for == 2 and ticket_type ==  19%}
+                                                                                <div>
+                                                                                    <span class="message-detail-title">Tracking Number:</span>
+                                                                                    <span>{{ tracking_number | default('--')  }}</span>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                            {% if submit_ticket_for == 21 and ticket_type ==  22%}
+                                                                                <div>
+                                                                                    <span class="message-detail-title">Claim Application ID:</span>
+                                                                                    <span>{{ safeguard_claim_no | default('--') }}</span>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                            <div>
+                                                                                <table>
+                                                                                    <tr>
+                                                                                        <td style="text-align:left;vertical-align: top !important;">
+                                                                                            <div class="message-detail-title" style="">Description:</div>
+                                                                                        </td>
+                                                                                        <td style="padding-left: 4px">
+                                                                                            <div class="message-detail-content word-breakall">
+                                                                                                {{ item.description | default('--') }}
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+                                                                            <div>
+                                                                                <table>
+                                                                                    <tr>
+                                                                                        <td valign="top">
+                                                                                            <div class=" message-detail-title">Attachments:</div>
+                                                                                        </td>
+                                                                                        <td class="message-detail-attachment" style="padding-left: 4px">
+                                                                                            {% if item.attachments|length > 0 %}
+                                                                                                <ul style="list-style-type: none;padding-inline-start: 0px;margin-bottom:0px;">
+                                                                                                {% for value in item.attachments %}
+                                                                                                    {% if value.is_img %}
+                                                                                                        <li><a href="{{ value.urlencode_url }}" target="_blank">{{ value.name }}</a></li>
+                                                                                                    {% else %}
+                                                                                                        <li><a href="{{ value.urlencode_url }}" download="{{ value.name }}">{{ value.name }}</a></li>
+                                                                                                    {% endif %}
+                                                                                                {% endfor %}
+                                                                                                </ul>
+                                                                                            {% else %}
+                                                                                            --
+                                                                                            {% endif %}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            {#没有记录#}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    {{ footer }}
+</div>
+
+<div style="display: none">
+    <div id="hidden_ticket_id">{{ ticket_id }}</div>
+    <div id="hidden_ticket_long_id">{{ ticket_long_id }}</div>
+    <div id="hidden_submit_ticket_for">{{ submit_ticket_for }}</div>
+    <div id="hidden_submit_ticket_for_name">{{ submit_ticket_for_name }}</div>
+    <div id="hidden_ticket_type">{{ ticket_type }}</div>
+    <div id="hidden_ticket_type_name">{{ ticket_type_name }}</div>
+    <div id="hidden_rma_id">{{ rma_id }}</div>
+    <div id="hidden_sales_order_id">{{ sales_order_id }}</div>
+    <div id="hidden_processing_method">{{ processing_method }}</div>
+    <div id="hidden_processing_method_name">{{ processing_method_name }}</div>
+    <div id="hidden_sales_item_code">{{ sales_item_code }}</div>
+    <div id="hidden_tracking_number">{{ tracking_number }}</div>
+    <div id="hidden_safeguard_claim_no">{{ safeguard_claim_no }}</div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        //设置timeline 高度
+        $('.ticket-timeline').height( $('.content-messages').height());
+
+        var hidden_ticket_id = $.trim($('#hidden_ticket_id').html());
+        var hidden_ticket_long_id = $.trim($('#hidden_ticket_long_id').html());
+        var hidden_submit_ticket_for = $.trim($('#hidden_submit_ticket_for').html());
+        var hidden_submit_ticket_for_name = $.trim($('#hidden_submit_ticket_for_name').html());
+        var hidden_ticket_type = $.trim($('#hidden_ticket_type').html());
+        var hidden_ticket_type_name = $.trim($('#hidden_ticket_type_name').html());
+        var hidden_rma_id = $.trim($('#hidden_rma_id').html());
+        var hidden_sales_order_id = $.trim($('#hidden_sales_order_id').html());
+        var hidden_processing_method = $.trim($('#hidden_processing_method').html());
+        var hidden_processing_method_name = $.trim($('#hidden_processing_method_name').html());
+        var hidden_sales_item_code = $.trim($('#hidden_sales_item_code').html());
+        var hidden_tracking_number = $.trim($('#hidden_tracking_number').html());
+        var hidden_safeguard_claim_no = $.trim($('#hidden_safeguard_claim_no').html());
+
+        $(".reply-ticket-button__message").click(function(){
+            $("#myMessageTicket").modal({backdrop: 'static', keyboard: false});
+
+            //hide
+            $('div[group="parent-rma"]').hide();
+            $('div[group="parent-sales-order"]').hide();
+            $("#myMessageTicket #group_seller_item_code").hide();
+            $("#myMessageTicket #sales_item_code_group").hide();
+            $("#myMessageTicket #tracking_number_group").hide();
+            $("#myMessageTicket #safeguard_claim_no_group").hide();
+
+            $("#myMessageTicket #ticket_group_description__message").show();
+            $(".ticket_group_attachments__message").show();
+            $("#myMessageTicketFooter").show();
+            $(`div[group="parent-safeguard-claim"]`).show();
+
+            $("#myMessageTicket #submit_ticket_for__message").attr('disabled', true);
+            $("#myMessageTicket #ticket_type__message").attr('disabled', true);
+            $("#myMessageTicket #rma_id__message").attr('disabled', true);
+            $("#myMessageTicket #sales_order_id__message").attr('disabled', true);
+            $("#myMessageTicket #group_processing_method__message").attr('disabled', true);
+            $("#myMessageTicket #tracking_number__message").attr('disabled', true);
+            $("#myMessageTicket #seller_item_code__message").attr('disabled', true);
+            $("#myMessageTicket #safeguard_claim_no__message").attr('disabled', true);
+
+            $("#myMessageTicket #submit_ticket_for__message").val(hidden_submit_ticket_for);
+            $("#myMessageTicket #ticket_type__message").html('<option>' + hidden_ticket_type_name + '</option>');
+            $("#myMessageTicket #rma_id__message").val(hidden_rma_id);
+            $("#myMessageTicket #sales_order_id__message").val(hidden_sales_order_id);
+            $("#myMessageTicket #processing_method__message").html('<option>' + hidden_processing_method_name + '</option>');
+            $("#myMessageTicket #sales_item_code__message").html('<option>' + hidden_sales_item_code + '</option>');
+            $("#myMessageTicket #seller_item_code__message").val(hidden_sales_item_code);
+            $("#myMessageTicket #tracking_number__message").val(hidden_tracking_number);
+            $("#myMessageTicket #safeguard_claim_no__message").val(hidden_safeguard_claim_no);
+
+            if(hidden_submit_ticket_for == 1){
+                $('div[group="parent-rma"]').show();
+            } else if (hidden_submit_ticket_for == 2){
+                $('div[group="parent-sales-order"]').show();
+                if (hidden_ticket_type == 19) {
+                    $("#myMessageTicket #sales_item_code_group").show();
+                    $("#myMessageTicket #tracking_number_group").show();
+                    $("#myMessageTicket #group_processing_method__message").hide();
+                }
+            } else if(hidden_ticket_type == 20) {
+                $('div[group="parent-rma"]').show();
+                $("#myMessageTicket #group_seller_item_code").show();
+            } else if (hidden_ticket_type == 22) {
+                $("#myMessageTicket #safeguard_claim_no_group").show();
+            }
+
+            //回复时 claim ID 只有类型是平台保障服务时才会展示出来
+            $('div[group="parent-safeguard-claim"]').hide();
+            if(hidden_ticket_type == 22) {
+                $('div[group="parent-safeguard-claim"]').show();
+            }
+
+
+            $("#myMessageTicket #myMessageTicketLabel").text('Reply Request('+ hidden_ticket_long_id +')');
+            //remove button
+            $('#myMessageTicket #myMessageSubmitBtn').html('<button id="replyTicketSubmit" type="button" class="oris-button btn btn-primary btn-submit">Submit</button>');
+            $('#myMessageTicket').modal('show');
+
+            globalSendPageFuns.refreshSelect();
+        });
+
+
+        $(document).on('click', "#replyTicketSubmit", function() {
+
+            let descriptionValue = $.trim($("#ticket_description__message").val());
+            if( descriptionValue.length < 1){
+                layer.msg('Description can not be left blank.');
+                return false;
+            }
+            if( descriptionValue.length > 1000 ){
+                layer.msg('Description more than 1000 characters');
+                return false;
+            }
+            $("#ticket_description__message").val(descriptionValue);
+
+
+            //upload files
+            let upfiles=[]
+            $(".ticket-upload-file__message li a").each(function(index, ele){
+                let item = {};
+                item.name=$(ele).text();
+                item.url =$(ele).data('val');
+                upfiles.push(item);
+            });
+
+            var sendData = {};
+            sendData.ticket_id = hidden_ticket_id;
+            sendData.ticket_description = $.trim($("#ticket_description__message").val());
+            sendData.ticket_attachments = JSON.stringify(upfiles);
+
+
+            var url = '{{ url('account/message_center/ticket/reply') }}' + '&ticket_id=' + hidden_ticket_id;
+
+            block.blockUI();
+            $("#replyTicketSubmit").attr("disabled", true);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: sendData,
+                dataType: 'json',
+                success: function (result, status, xhr) {
+                    if (result.ret == 1) {
+                        $('#myMessageTicket').modal('hide');
+                        clearTicketInputsReply();
+                        layer.msg(result.msg);
+                        setTimeout(function(){
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        layer.open({
+                            title: 'Failed'
+                            , content: result.msg
+                            , btn: ['OK']
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    layer.msg('error');
+                },
+                complete: function (xhr, status) {
+                    $("#replyTicketSubmit").attr("disabled", false);
+                    block.unBlockUI();
+                }
+            });
+        });
+
+
+        function clearTicketInputsReply(){
+            $("#ticket_description__message").val("");
+            //upload files
+            $(".ticket_group_attachments__message").find(".ticket-upload-file__message").html('');
+            $(".ticket_group_attachments__message").find("textarea").val('');
+        }
+
+    });
+</script>
+
+{{ footer }}

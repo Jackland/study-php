@@ -1,0 +1,885 @@
+{{ header }}
+{{ separate_column_left }}
+<link rel="stylesheet" href="admin/view/stylesheet/totalStyle.css">
+<link rel="stylesheet" href="catalog/view/theme/yzcTheme/stylesheet/account/accountManageDetail.css">
+<div class="container-fluid" id="content" style="margin-left: 15%">
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+    <div>
+        <h1>
+          {% if info.id %}
+          Edit Collection Account
+          {% else %}
+            Create a Collection Account
+          {% endif %}
+          <div class="pull-right" style="margin-top: -10px">
+                <a href="index.php?route=account/seller_bill/account_manage/downloadFile" data-toggle="tooltip" title="" class="btn btn-default download" style=""
+                   data-original-title="Click to download the collection confirmation template file.">
+                    <i class="giga icon-xiazai"></i>
+                </a>
+                <a data-toggle="tooltip" title="" class="btn btn-primary" target="_blank" id="save"
+                   data-original-title="">
+                    <i class="fa fa-floppy-o"></i>
+                </a>
+            </div>
+        </h1>
+        <div class="col-sm-12 account-information" id="box-shadow">
+            <form id="form1">
+              <input value="{{ info.id }}" type="hidden" name="id"/>
+                <div class="tab-content">
+                    <div class="form-group required col-sm-4 accountStatus no-padding">
+                        <label class="control-label col-sm-12" for="input-accountStatus">Collection Account Status</label>
+                        <div class="input col-sm-12">
+                            <select class="form-control" id="input-accountStatus"  name="status"  {% if(not info.id) %} disabled="disabled" {% endif %} >
+                                <option value="0" {% if(not info.status) %} selected {% endif %}>Disable</option>
+                                <option value="1" {% if(info.status) %} selected {% endif %}>Enable</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group required col-sm-4  verdictStatus no-padding">
+                        <label class="control-label col-sm-12" for="input-verdictStatus">Verdict Status</label>
+                        <div class="input col-sm-12">
+                            <input type="text" name="verdict" placeholder="" value="{% if apply %}{{ apply_status[apply.status] }}{% else %}Pending{% endif %}" id="input-verdictStatus" class="form-control" disabled/>
+                        </div>
+                    </div>
+                    <div class="form-group required col-sm-12 companyName no-padding">
+                        <label class="control-label col-sm-12" for="input-companyName">Company Name</label>
+                        <div class="input col-sm-8">
+                            <input type="text" name="company" placeholder="Enter company name" onkeyup="this.value=this.value.replace(/(^\s*)/,'')"
+                                   id="input-companyName" class="form-control " value="{{ info.company }}" autocomplete="off"/>
+                        </div>
+                        <span class="col-sm-3 prompt ">1-200 characters</span>
+                        <i class="col-sm-1 giga icon-icon-test icon-check"></i>
+                    </div>
+                    <div class="form-group required col-sm-12 companyAddress no-padding">
+                        <label class="control-label col-sm-12" for="input-companyAddress">Company Address</label>
+                        <div class="input col-sm-8">
+                            <input type="text" name="address" placeholder="Enter company address"  onkeyup="this.value=this.value.replace(/(^\s*)/,'')"
+                                   id="input-companyAddress" class="form-control " value="{{ info.address }}" autocomplete="off"/>
+                        </div>
+                        <span class="col-sm-3 prompt">1-500 characters</span>
+                        <i class="col-sm-1 giga icon-icon-test icon-check"></i>
+                    </div>
+                    <div class="form-group required col-sm-12 no-padding">
+                        <label class="control-label col-sm-12 types" for="input-types">Profit Collection Account Type</label>
+                        <div class="input col-sm-8">
+                          {% if info.id %}
+                            <input type="hidden"  name="account_type" value="{{ info.account_type }}">
+                          {% endif %}
+                            <label class="radio-inline col-sm-3">
+                                <input type="radio" name="account_type" id="inlineRadio1" {% if info.id %} disabled{% endif %}
+                                       value="1" {% if(info.account_type==1 or  not info.account_type) %} checked {% endif %}>
+                               <span class="{% if(info.account_type==1 or  not info.account_type) %} text-link {% endif %}">Corporate account</span>
+                                <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title=""
+                                   data-original-title="Company account that can collect foreign exchange"></i>
+                            </label>
+                            <label class="radio-inline col-sm-4">
+                                <input type="radio" name="account_type" id="inlineRadio3" {% if info.id %} disabled{% endif %}
+                                       value="3" {% if(info.account_type==3) %} checked {% endif %}>
+                                <span class="{% if(info.account_type==3) %} text-link {% endif %}"> Payoneer</span>
+                            </label>
+                        </div>
+                      <p class="col-sm-12 desc desc-a">Bank Information: Insert the information of the bank account that will be receiving your deposits.</p>
+                      <p class="col-sm-12 desc desc-b">Payoneer Information: Insert the information of the Payoneer that will linked to your Profit Collection Account.</p>
+                    </div>
+                    <div id="account">
+                        <div class="form-group required col-sm-12 bankName no-padding">
+                            <label class="control-label col-sm-12" for="input-bankName">Bank Name</label>
+                            <div class="input col-sm-8">
+                                <input type="text" name="bank_name" placeholder="Enter bank name"  onkeyup="this.value=this.value.replace(/(^\s*)/,'')"
+                                       id="input-bankName" class="form-control " value="{{ info.bank_name }}" autocomplete="off"/>
+                            </div>
+                            <span class="col-sm-3 prompt">1-200 characters</span>
+                            <i class="col-sm-1 giga icon-icon-test icon-check"></i>
+                        </div>
+                        <div class="form-group required col-sm-12 bankAddress no-padding">
+                            <label class="control-label col-sm-12" for="input-bankAddress">Bank Address</label>
+                            <div class="input col-sm-8">
+                                <input type="text" name="bank_address" placeholder="Enter bank address"  onkeyup="this.value=this.value.replace(/(^\s*)/,'')"
+                                       id="input-bankAddress" class="form-control " value="{{ info.bank_address }}" autocomplete="off"/>
+                            </div>
+                            <span class="col-sm-3 prompt">1-500 characters</span>
+                            <i class="col-sm-1 giga icon-icon-test icon-check"></i>
+                        </div>
+                        <div class="form-group required col-sm-12 bankAccount no-padding">
+                            <label class="control-label col-sm-12" for="input-bankAccount">Bank Account</label>
+                            <div class="input col-sm-8">
+                                <input type="text" name="bank_account" placeholder="Enter bank account" onblur="checkAccount()"  onkeyup="this.value=this.value.replace(/(^\s*)/,'')"
+                                       id="input-bankAccount" class="form-control " value="{{ info.bank_account }}" autocomplete="off"/>
+                            </div>
+                            <span class="col-sm-3 prompt">1-50 characters</span>
+                            <i class="col-sm-1 giga icon-icon-test icon-check"></i>
+                        </div>
+                        <div class="form-group required col-sm-12 swiftCode no-padding">
+                            <label class="control-label col-sm-12" for="input-swiftCode">Swift Code</label>
+                            <div class="input col-sm-8">
+                                <input type="text" name="swift_code" placeholder="Enter Swift Code"  onkeyup="this.value=this.value.replace(/(^\s*)/,'')"
+                                       id="input-swiftCode" class="form-control " value="{{ info.swift_code }}" autocomplete="off"/>
+                            </div>
+                            <span class="col-sm-3 prompt">1-30 characters</span>
+                            <i class="col-sm-1 giga icon-icon-test icon-check"></i>
+                        </div>
+                    </div>
+                    <div id="card" style="display: none">
+                        <div class="form-group col-sm-12 cardId no-padding">
+                            <label class="control-label col-sm-12" for="input-cardId">Payoneer ID</label>
+                            <div class="input col-sm-8">
+                                <input type="text" name="p_id" placeholder="Payoneer ID"  onkeyup="this.value=this.value.replace(/(^\s*)/,'')"
+                                       id="input-cardId" class="form-control " value="{{ info.p_id }}" autocomplete="off"/>
+                            </div>
+                            <span class="col-sm-3 prompt">0-50 characters</span>
+                            <i class="col-sm-1 giga icon-icon-test icon-check"></i>
+                        </div>
+                        <div class="form-group required col-sm-12 registeredEmail no-padding">
+                            <label class="control-label col-sm-12" for="input-registeredEmail">Payoneer Registration Email</label>
+                            <div class="input col-sm-8">
+                                <input type="text" name="p_email" placeholder="Payoneer Registration Email"  onblur="checkAccount()"  onkeyup="this.value=this.value.replace(/(^\s*)/,'')"
+                                       id="input-registeredEmail" class="form-control " value="{{ info.p_email }}" autocomplete="off"/>
+                            </div>
+                            <span class="col-sm-3 prompt">1-100 characters</span>
+                            <span class="col-sm-3 prompt1" style="display: none;line-height: 40px;color: red">Please enter a valid email address.</span>
+                            <i class="col-sm-1 giga icon-icon-test icon-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="form-group required col-sm-12 no-padding" style="margin-left: 15px">
+                <label class="control-label " for="input-credentials">Profit Collection Voucher  <i
+                            class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title=""
+                            data-original-title="Only PDFs or pictures can be uploaded"></i></label>
+                <div style="position: relative">
+                    <input type="button" id="btn" value="Upload Files"><span id="text">Please Upload Voucher </span>
+                    <input id='uploaderInput' type='file' name='file' accept='image/jpeg,image/jpg,image/png,image/svg,application/pdf' title=" " multiple/>
+                    <div id="fangInput">
+                        <div class="being">
+                            {% for item in  attach %}
+                                <p for="message-text" class="box"
+                                   style="width: 100%;height: auto;word-wrap:break-word;word-break:break-all;overflow: hidden">
+                                   <a href="/index.php?route=account/seller_bill/account_manage/downAttach&file_id={{ item.id }}"> {{ item.file_name }}</a>
+                                    <button type="button" class="btn del-btn" data-id="{{ item.id }}" ><i class="giga icon-sidebar-clear" aria-hidden="true"></i></button>
+                                    <button data-id="" type="button"   class="btn check-btn" ><i class="fa fa-check-circle-o" aria-hidden="true"></i></button>
+
+                                </p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group required col-sm-12 reasonRequest no-padding">
+                <label class="control-label col-sm-12 text-tnone" for="input-reasonRequest"> {% if info.id %}Apply Reason{% else %}Reason for Request{% endif %}</label>
+                <div class="input col-sm-8">
+                    <textarea id="input-reasonRequest" class="form-control" name="reason" rows="6"
+                              onkeyup="this.value=this.value.replace(/(^\s*)/,'')"></textarea>
+                </div>
+                <span class="col-sm-3 prompt ">1-2000 characters</span>
+                <i class="col-sm-1 giga icon-icon-test icon-check"></i>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addAccountModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ModalLabel">Confirm</h4>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation">
+                    Are you sure you want to submit you application?<br>
+                    Once approved, this will become the only enable account and your current enable account will be disabled.<br>
+                    Please confirm the collection account information is correct.<br>
+                </div>
+                <div class="text-center mt-2">
+                    <button type="button" class="btn  btn-deep mr-1 btn-small" id="submitApproval"  data-id="">Confirm</button>
+                    <button type="button" class="btn btn-abetall btn-small" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="showResult"></div>
+<script>
+    var files = document.getElementById("uploaderInput").files;
+    var fileList = [];
+    var delArr = [];
+    $("#uploaderInput").change(function () {
+        var fileArr = $(this)[0].files;
+        Array.prototype.push.apply(fileList, fileArr);
+        console.log(fileList);
+        var files = document.getElementById("uploaderInput").files;
+        for (var i = 0; i < fileArr.length; i++) {
+            $("#fangInput").append(
+                '<div class="add"><p for="message-text" class="box"  style="width: 100%;height: auto;word-wrap:break-word;word-break:break-all;overflow: hidden" ><a>' +
+                files[i].name +
+                ' </a><button data-id="" type="button"   class="btn del-btn"><i class="giga icon-sidebar-clear" aria-hidden="true"></i></button>' +
+                '<button type="button"   class="btn check-btn"><i class="fa fa-check-circle-o" aria-hidden="true"></i></button></p ><div>');
+        }
+        $(".del-btn").unbind('click').click(function (e) {
+            e.stopPropagation();
+            let myId = $(this).attr('data-id');
+            if (myId===""){
+                var index = $(this).parent().parent().index();
+                console.log(index);
+                $(this).parent().remove();
+                fileList.splice(index-1, 1);
+            }else{
+                delArr.push(myId);
+                $(this).parent().remove();
+            }
+            console.log(fileList)
+        });
+        var obj = $('#fangInput .being');
+        var add = $('#fangInput .add');
+        if ((!$.trim(obj.html()))&&(!$.trim(add.html()))){
+            $("#text").show();
+        }else{
+            $("#text").hide()
+        }
+    });
+
+    $(document).ready(function () {
+        $(".del-btn").click(function () {
+            let myId = $(this).attr('data-id');
+            delArr.push(myId);
+            $(this).parent().remove();
+        });
+
+    });
+
+    $(".radio-inline input[type=radio]").on('change',function () {
+        $(".radio-inline input[type=radio]").parent().find('span').removeClass('text-link')
+        $(this).parent().find('span').addClass('text-link')
+    })
+</script>
+<script>
+    // 键入校验
+    $(document).ready(function () {
+        let account_type = '{{ info.account_type }}';
+        if (account_type == 3) {
+            $("#account").hide();
+            $("#card").show();
+        } else {
+            $("#account").show();
+            $("#card").hide();
+        }
+        //公司名称
+        $("#input-companyName").blur(function () {
+            if ($("#input-companyName").val().length < 1 || $("#input-companyName").val().length > 200) {
+                $("#input-companyName").css('border', '1px solid #ff414d');
+                $(".companyName .prompt").css('display', 'block');
+                $(".companyName .prompt").css('color', '#ff414d');
+                $(".companyName .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-companyName").css('border', '1px solid #aaa');
+                $(".companyName .prompt").css('display', 'none');
+                $(".companyName .icon-icon-test").css('display', 'block');
+            }
+        });
+        //公司地址
+        $("#input-companyAddress").blur(function () {
+            if ($("#input-companyAddress").val().length < 1 || $("#input-companyAddress").val().length > 500) {
+                $("#input-companyAddress").css('border', '1px solid #ff414d');
+                $(".companyAddress .prompt").css('display', 'block');
+                $(".companyAddress .prompt").css('color', '#ff414d');
+                $(".companyAddress .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-companyAddress").css('border', '1px solid #aaa');
+                $(".companyAddress .prompt").css('display', 'none');
+                $(".companyAddress .icon-icon-test").css('display', 'block');
+            }
+        });
+        //申请理由
+        $("#input-reasonRequest").blur(function () {
+            if ($("#input-reasonRequest").val().length < 1 || $("#input-reasonRequest").val().length > 2000) {
+                $("#input-reasonRequest").css('border', '1px solid #ff414d');
+                $(".reasonRequest .prompt").css('display', 'block');
+                $(".reasonRequest .prompt").css('color', '#ff414d');
+                $(".reasonRequest .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-reasonRequest").css('border', '1px solid #aaa');
+                $(".reasonRequest .prompt").css('display', 'none');
+                $(".reasonRequest .icon-icon-test").css('display', 'block');
+            }
+        })
+    });
+    var val = $('input:radio[name=account_type]:checked').val();
+    if (val == 1 || val ==2) {
+
+        var val = $('input:radio[name=account_type]:checked').val();
+        $(".desc-b").hide();
+        $(".desc-a").show();
+        //开户行名称
+        $("#input-bankName").blur(function () {
+            if ($("#input-bankName").val().length < 1 || $("#input-bankName").val().length > 200) {
+                $("#input-bankName").css('border', '1px solid #ff414d');
+                $(".bankName .prompt").css('display', 'block');
+                $(".bankName .prompt").css('color', '#ff414d');
+                $(".bankName .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-bankName").css('border', '1px solid #aaa');
+                $(".bankName .prompt").css('display', 'none');
+                $(".bankName .icon-icon-test").css('display', 'block');
+            }
+        });
+        //银行地址
+        $("#input-bankAddress").blur(function () {
+            if ($("#input-bankAddress").val().length < 1 || $("#input-bankAddress").val().length > 500) {
+                $("#input-bankAddress").css('border', '1px solid #ff414d');
+                $(".bankAddress .prompt").css('display', 'block');
+                $(".bankAddress .prompt").css('color', '#ff414d');
+                $(".bankAddress .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-bankAddress").css('border', '1px solid #aaa');
+                $(".bankAddress .prompt").css('display', 'none');
+                $(".bankAddress .icon-icon-test").css('display', 'block');
+            }
+        });
+        //银行账号
+        $("#input-bankAccount").blur(function () {
+            if ($("#input-bankAccount").val().length < 1 || $("#input-bankAccount").val().length > 50) {
+                $("#input-bankAccount").css('border', '1px solid #ff414d');
+                $(".bankAccount .prompt").css('display', 'block');
+                $(".bankAccount .prompt").css('color', '#ff414d');
+                $(".bankAccount .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-bankAccount").css('border', '1px solid #aaa');
+                $(".bankAccount .prompt").css('display', 'none');
+                $(".bankAccount .icon-icon-test").css('display', 'block');
+            }
+        });
+        //SWIFT CODE
+        $("#input-swiftCode").blur(function () {
+            if ($("#input-swiftCode").val().length < 1 || $("#input-swiftCode").val().length > 30) {
+                $("#input-swiftCode").css('border', '1px solid #ff414d');
+                $(".swiftCode .prompt").css('display', 'block');
+                $(".swiftCode .prompt").css('color', '#ff414d');
+                $(".swiftCode .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-swiftCode").css('border', '1px solid #aaa');
+                $(".swiftCode .prompt").css('display', 'none');
+                $(".swiftCode .icon-icon-test").css('display', 'block');
+            }
+        });
+    }
+    if (val==3){
+        $(".desc-a").hide();
+        $(".desc-b").show();
+        //P卡ID
+        $("#input-cardId").blur(function () {
+            if ($("#input-cardId").val().length > 50) {
+                $("#input-cardId").css('border', '1px solid #ff414d');
+                $(".cardId .icon-icon-test").css('display', 'none');
+                $(".cardId .prompt").css('display', 'block');
+                $(".cardId .prompt").css('color', '#ff414d');
+            }
+            else if ($("#input-cardId").val().length === 0) {
+                $(".cardId .icon-icon-test").css('display', 'none');
+                $("#input-cardId").css('border', '1px solid #aaa');
+                $(".cardId .prompt").css('color', '#bbb');
+            }
+            else {
+                $("#input-cardId").css('border', '1px solid #aaa');
+                $(".cardId .icon-icon-test").css('display', 'block');
+                $(".cardId .prompt").css('display', 'none');
+            }
+        });
+        //邮箱
+        $("#input-registeredEmail").blur(function () {
+            var regExp = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+            if ($("#input-registeredEmail").val().length < 1 || $("#input-registeredEmail").val().length > 100) {
+                $("#input-registeredEmail").css('border', '1px solid #ff414d');
+                $(".registeredEmail .prompt").css('display', 'block');
+                $(".registeredEmail .prompt1").css('display', 'none');
+                $(".registeredEmail .prompt").css('color', '#ff414d');
+                $(".registeredEmail .icon-icon-test").css('display', 'none');
+            }else if(!regExp.test($("#input-registeredEmail").val())){
+                $("#input-registeredEmail").css('border', '1px solid #ff414d');
+                $(".registeredEmail .prompt1").css('display', 'block');
+                $(".registeredEmail .prompt").css('display', 'none');
+                $(".registeredEmail .icon-icon-test").css('display', 'none');
+            }
+            else {
+                $("#input-registeredEmail").css('border', '1px solid #aaa');
+                $(".registeredEmail .prompt").css('display', 'none');
+                $(".registeredEmail .prompt1").css('display', 'none');
+                $(".registeredEmail .icon-icon-test").css('display', 'block');
+            }
+        })
+    }
+    $("#inlineRadio1").click(function () {
+        $("#account").show();
+        $("#card").hide();
+        $(".desc-b").hide();
+        $(".desc-a").show();
+        var val = $('input:radio[name=account_type]:checked').val();
+        //开户行名称
+        $("#input-bankName").blur(function () {
+            if ($("#input-bankName").val().length < 1 || $("#input-bankName").val().length > 200) {
+                $("#input-bankName").css('border', '1px solid #ff414d');
+                $(".bankName .prompt").css('display', 'block');
+                $(".bankName .prompt").css('color', '#ff414d');
+                $(".bankName .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-bankName").css('border', '1px solid #aaa');
+                $(".bankName .prompt").css('display', 'none');
+                $(".bankName .icon-icon-test").css('display', 'block');
+            }
+        });
+        //银行地址
+        $("#input-bankAddress").blur(function () {
+            if ($("#input-bankAddress").val().length < 1 || $("#input-bankAddress").val().length > 500) {
+                $("#input-bankAddress").css('border', '1px solid #ff414d');
+                $(".bankAddress .prompt").css('display', 'block');
+                $(".bankAddress .prompt").css('color', '#ff414d');
+                $(".bankAddress .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-bankAddress").css('border', '1px solid #aaa');
+                $(".bankAddress .prompt").css('display', 'none');
+                $(".bankAddress .icon-icon-test").css('display', 'block');
+            }
+        });
+        //银行账号
+        $("#input-bankAccount").blur(function () {
+            if ($("#input-bankAccount").val().length < 1 || $("#input-bankAccount").val().length > 50) {
+                $("#input-bankAccount").css('border', '1px solid #ff414d');
+                $(".bankAccount .prompt").css('display', 'block');
+                $(".bankAccount .prompt").css('color', '#ff414d');
+                $(".bankAccount .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-bankAccount").css('border', '1px solid #aaa');
+                $(".bankAccount .prompt").css('display', 'none');
+                $(".bankAccount .icon-icon-test").css('display', 'block');
+            }
+        });
+        //SWIFT CODE
+        $("#input-swiftCode").blur(function () {
+            if ($("#input-swiftCode").val().length < 1 || $("#input-swiftCode").val().length > 30) {
+                $("#input-swiftCode").css('border', '1px solid #ff414d');
+                $(".swiftCode .prompt").css('display', 'block');
+                $(".swiftCode .prompt").css('color', '#ff414d');
+                $(".swiftCode .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-swiftCode").css('border', '1px solid #aaa');
+                $(".swiftCode .prompt").css('display', 'none');
+                $(".swiftCode .icon-icon-test").css('display', 'block');
+            }
+        });
+
+
+    });
+    $("#inlineRadio2").click(function () {
+        $("#account").show();
+        $("#card").hide();
+        $(".desc-b").hide();
+        $(".desc-a").show();
+
+        //开户行名称
+        $("#input-bankName").blur(function () {
+            if ($("#input-bankName").val().length < 1 || $("#input-bankName").val().length > 200) {
+                $("#input-bankName").css('border', '1px solid #ff414d');
+                $(".bankName .prompt").css('display', 'block');
+                $(".bankName .prompt").css('color', '#ff414d');
+                $(".bankName .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-bankName").css('border', '1px solid #aaa');
+                $(".bankName .prompt").css('display', 'none');
+                $(".bankName .icon-icon-test").css('display', 'block');
+            }
+        });
+        //银行地址
+        $("#input-bankAddress").blur(function () {
+            if ($("#input-bankAddress").val().length < 1 || $("#input-bankAddress").val().length > 500) {
+                $("#input-bankAddress").css('border', '1px solid #ff414d');
+                $(".bankAddress .prompt").css('display', 'block');
+                $(".bankAddress .prompt").css('color', '#ff414d');
+                $(".bankAddress .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-bankAddress").css('border', '1px solid #aaa');
+                $(".bankAddress .prompt").css('display', 'none');
+                $(".bankAddress .icon-icon-test").css('display', 'block');
+            }
+        });
+        //银行账号
+        $("#input-bankAccount").blur(function () {
+            if ($("#input-bankAccount").val().length < 1 || $("#input-bankAccount").val().length > 50) {
+                $("#input-bankAccount").css('border', '1px solid #ff414d');
+                $(".bankAccount .prompt").css('display', 'block');
+                $(".bankAccount .prompt").css('color', '#ff414d');
+                $(".bankAccount .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-bankAccount").css('border', '1px solid #aaa');
+                $(".bankAccount .prompt").css('display', 'none');
+                $(".bankAccount .icon-icon-test").css('display', 'block');
+            }
+        });
+        //SWIFT CODE
+        $("#input-swiftCode").blur(function () {
+            if ($("#input-swiftCode").val().length < 1 || $("#input-swiftCode").val().length > 30) {
+                $("#input-swiftCode").css('border', '1px solid #ff414d');
+                $(".swiftCode .prompt").css('display', 'block');
+                $(".swiftCode .prompt").css('color', '#ff414d');
+                $(".swiftCode .icon-icon-test").css('display', 'none');
+            } else {
+                $("#input-swiftCode").css('border', '1px solid #aaa');
+                $(".swiftCode .prompt").css('display', 'none');
+                $(".swiftCode .icon-icon-test").css('display', 'block');
+            }
+        });
+
+
+    });
+    $("#inlineRadio3").click(function () {
+        $("#account").hide();
+        $("#card").show();
+        $(".desc-a").hide();
+        $(".desc-b").show();
+        var val = $('input:radio[name=account_type]:checked').val();
+        //P卡ID
+        $("#input-cardId").blur(function () {
+            if ($("#input-cardId").val().length > 50) {
+                $("#input-cardId").css('border', '1px solid #ff414d');
+                $(".cardId .icon-icon-test").css('display', 'none');
+                $(".cardId .prompt").css('display', 'block');
+                $(".cardId .prompt").css('color', '#ff414d');
+            }
+           else if ($("#input-cardId").val().length === 0) {
+                $("#input-cardId").css('border', '1px solid #aaa');
+                $(".cardId .icon-icon-test").css('display', 'none');
+                $(".cardId .prompt").css('color', '#bbb');
+            }
+            else {
+                $("#input-cardId").css('border', '1px solid #aaa');
+                $(".cardId .icon-icon-test").css('display', 'block');
+                $(".cardId .prompt").css('display', 'none');
+            }
+        });
+        //邮箱
+        $("#input-registeredEmail").blur(function () {
+            var regExp = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+            if ($("#input-registeredEmail").val().length < 1 || $("#input-registeredEmail").val().length > 100) {
+                $("#input-registeredEmail").css('border', '1px solid #ff414d');
+                $(".registeredEmail .prompt").css('display', 'block');
+                $(".registeredEmail .prompt1").css('display', 'none');
+                $(".registeredEmail .prompt").css('color', '#ff414d');
+                $(".registeredEmail .icon-icon-test").css('display', 'none');
+            }else if(!regExp.test($("#input-registeredEmail").val())){
+                $("#input-registeredEmail").css('border', '1px solid #ff414d');
+                $(".registeredEmail .prompt1").css('display', 'block');
+                $(".registeredEmail .prompt").css('display', 'none');
+                $(".registeredEmail .icon-icon-test").css('display', 'none');
+            }
+            else {
+                $("#input-registeredEmail").css('border', '1px solid #aaa');
+                $(".registeredEmail .prompt").css('display', 'none');
+                $(".registeredEmail .icon-icon-test").css('display', 'block');
+                $(".registeredEmail .prompt1").css('display', 'none');
+            }
+        })
+
+    });
+</script>
+
+<script>
+    // 提交校验
+    function check() {
+        var regExp = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+
+        //公司名称
+        if ($("#input-companyName").val().length < 1 || $("#input-companyName").val().length > 200) {
+            $("#input-companyName").css('border', '1px solid #ff414d');
+            $(".companyName").css('color', '#ff414d');
+            $("#input-companyName").focus();
+            return false;
+        } else {
+            $("#input-companyName").css('border', '1px solid #aaa');
+            $(".companyName").css('color', '#bbb');
+        }
+        // 公司地址
+        if ($("#input-companyAddress").val().length < 1 || $("#input-companyAddress").val().length > 500) {
+            $("#input-companyAddress").css('border', '1px solid #ff414d');
+            $(".companyAddress").css('color', '#ff414d');
+            $("#input-companyAddress").focus();
+            return false;
+        } else {
+            $("#input-companyAddress").css('border', '1px solid #aaa');
+            $(".companyAddress").css('color', '#bbb');
+        }
+        //收款账户类型
+        var val = $('input:radio[name=account_type]:checked').val();
+        if (val == null) {
+            return false;
+        }
+        if (val == 3) {
+            //邮箱
+            if ($("#input-registeredEmail").val().length < 1 || $("#input-registeredEmail").val().length > 100) {
+                $("#input-registeredEmail").css('border', '1px solid #ff414d');
+                $(".registeredEmail").css('color', '#ff414d');
+                $("#input-registeredEmail").focus();
+                return false;
+            } else if(!regExp.test($("#input-registeredEmail").val())){
+                $("#input-registeredEmail").css('border', '1px solid #ff414d');
+                $(".registeredEmail .prompt1").css('display', 'block');
+                $(".registeredEmail .prompt").css('display', 'none');
+                $(".registeredEmail .icon-icon-test").css('display', 'none');
+                $("#input-registeredEmail").focus();
+                return false;
+            }
+            else {
+                $("#input-registeredEmail").css('border', '1px solid #aaa');
+                $(".registeredEmail").css('color', '#bbb');
+            }
+        }
+        if (val == 1 || val == 2) {
+            //开户行名称
+            if ($("#input-bankName").val().length < 1 || $("#input-bankName").val().length > 200) {
+                $("#input-bankName").css('border', '1px solid #ff414d');
+                $(".bankName").css('color', '#ff414d');
+                $("#input-bankName").focus();
+                return false;
+            } else {
+                $("#input-bankName").css('border', '1px solid #aaa');
+                $(".bankName").css('color', '#bbb');
+            }
+            // 银行地址
+            if ($("#input-bankAddress").val().length < 1 || $("#input-bankAddress").val().length > 500) {
+                $("#input-bankAddress").css('border', '1px solid #ff414d');
+                $(".bankAddress").css('color', '#ff414d');
+                $("#input-bankAddress").focus();
+                return false;
+            } else {
+                $("#input-bankAddress").css('border', '1px solid #aaa');
+                $(".bankAddress").css('color', '#bbb');
+
+            }
+            // 银行账户
+            if ($("#input-bankAccount").val().length < 1 || $("#input-bankAccount").val().length > 50) {
+                $("#input-bankAccount").css('border', '1px solid #ff414d');
+                $(".bankAccount").css('color', '#ff414d');
+                $("#input-bankAccount").focus();
+                return false;
+            } else {
+                $("#input-bankAccount").css('border', '1px solid #aaa');
+                $(".bankAccount").css('color', '#bbb');
+
+            }
+            // SWIFT CODE
+            if ($("#input-swiftCode").val().length < 1 || $("#input-swiftCode").val().length > 30) {
+                $("#input-swiftCode").css('border', '1px solid #ff414d');
+                $(".input-swiftCode").css('color', '#ff414d');
+                $("#input-swiftCode").focus();
+                return false;
+            } else {
+                $("#input-swiftCode").css('border', '1px solid #aaa');
+                $(".input-swiftCode").css('color', '#bbb');
+            }
+            //PROFIT COLLECTION VOUCHER
+        }
+        //凭证
+        var obj = $('#fangInput .being');
+        if((!fileList.length)&&(!$.trim(obj.html()))){
+            $("#text").show();
+            return false;
+        }else{
+            $("#text").hide()
+        }
+
+        // var add = $('#fangInput .add');
+        // if ((!$.trim(obj.html()))&&(!$.trim(add.html()))){
+        //
+        // }else{
+        //
+        // }
+        // 申请理由
+        if ($("#input-reasonRequest").val().length < 1 || $("#input-reasonRequest").val().length > 2000) {
+            $("#input-reasonRequest").css('border', '1px solid #ff414d');
+            $(".reasonRequest").css('color', '#ff414d');
+            $("#input-reasonRequest").focus();
+            return false;
+        } else {
+            $("#input-reasonRequest").css('border', '1px solid #aaa');
+            $(".reasonRequest").css('color', '#bbb');
+        }
+        return true;
+    }
+
+    //提交审核
+    var sumbit = function(){
+        var form = document.getElementById("form1");
+        var formData = new FormData(form);
+        var oldStatus="{{ info.status }}";
+        var newStatus =Number(formData.get("status"));
+        if (oldStatus==0 && newStatus==1){
+            var title ='Request has been sent for approval.';
+        }else{
+            var title = 'Saved successfully.'
+        }
+        if (fileList) {
+            for (var i = 0, j = fileList.length; i < j; ++i) {
+                formData.append('file[]', fileList[i]);
+            }
+            for (var m = 0, n = delArr.length; m < n; ++m) {
+                formData.append('file_ids[]', delArr[m]);
+            }
+        }
+        formData.append('reason',$('#input-reasonRequest').val().trim());
+      $('#submitApproval').button('loading');
+      $("#addAccountModal").modal('hide');
+      $.ajax({
+            url: "index.php?route=account/seller_bill/account_manage/save",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+              if (res.code == 200) {
+                  $.toast({
+                      heading: false,
+                      text: title,
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'success',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                  });
+                  $("#save").attr("disabled",true);
+                  setTimeout(function () {
+                      location.href='index.php?route=account/seller_bill/account_manage';
+                  },5000)
+              }
+              else if(res.code ==150){
+                  $('#submitApproval').button('reset');
+                  $("#input-registeredEmail").val("");
+                  $("#input-bankAccount").val("");
+                  $(".registeredEmail .prompt").css({'display': 'block','color':'#ff414d'});
+                  $('#submitApproval').button('reset');
+                  $('#addAccountModal').modal('hide');
+                  $("#input-registeredEmail").css('border', '1px solid #ff414d');
+                  $(".registeredEmail .icon-icon-test").css('display', 'none');
+                $.toast({
+                  heading: false,
+                  text: res.msg,
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'error',
+                  hideAfter: 5000,
+                  allowToastClose: false,
+                  loader: false
+                });
+              }
+              else{
+                  $('#submitApproval').button('reset');
+                  $.toast({
+                      heading: false,
+                      text: res.msg,
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                  });
+              }
+              console.log(res.code)
+            },
+            error: function () {
+                $.toast({
+                    heading: false,
+                    text: 'Failed. Please contact with our customer service to argue.',
+                    position: 'top-center',
+                    showHideTransition: 'fade',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    allowToastClose: false,
+                    loader: false
+                });
+                location.reload();
+            }
+        });
+    };
+    $("#save").on('click', function () {
+        var isTrue = check();
+        if (isTrue && checkAccount(false)) {
+          $("#addAccountModal").modal("show");
+        }
+    });
+    $("#submitApproval").on('click',function () {
+        sumbit()
+    });
+    $("#save").on('mouseover', function () {
+        var isTrue = check();
+        if (isTrue) {
+            $(this).attr("data-original-title", "Save");
+            $(this).addClass('pointer').removeClass('not-allowed')
+        } else {
+            $(this).attr("data-original-title", "Information not saved. Unable to verify one or more input items, please check.");
+            $(this).addClass('not-allowed').removeClass('pointer')
+        }
+    });
+
+    // 改变上传按钮的hover颜色
+    $("body #uploaderInput").mouseover(function () {
+      $("#btn").addClass('btn-hover')
+    });
+    $("body #uploaderInput").mouseout(function () {
+      $("#btn").removeClass('btn-hover')
+    });
+
+    function checkAccount(isAlert=true) {
+      let accountType = $('input:radio[name=account_type]:checked').val();
+      let pEmail = $("#input-registeredEmail").val().trim();
+      let account = $("#input-bankAccount").val().trim();
+      let account_id = $("input[name=id]").val();
+      let regExp = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+      let flag=false;
+      if (!account && !pEmail) {
+        return flag;
+      }
+      if (accountType == 3 && !regExp.test(pEmail)) {
+        return flag;
+      }
+      $.ajax({
+        url: "index.php?route=account/seller_bill/account_manage/checkAccount",
+        type: "POST",
+        async: false,
+        data: {account_type: accountType, p_email: pEmail, account: account, account_id: account_id},
+        success: function (res) {
+          if (res.code != 200) {
+            if (isAlert) {
+              layer.confirm(res.msg, {
+                title: 'Confirm',
+                btn: ['Yes', 'No'],
+                btnAlign: "c",
+                skin: 'yzc_layer',
+              }, function () {
+                location.href = 'index.php?route=account/seller_bill/account_manage/edit&id=' + res.data.id;
+
+              });
+            }
+              $("#input-registeredEmail").val("");
+              $("#input-bankAccount").val("")
+
+          } else {
+            flag = true;
+          }
+        },
+      });
+      return flag
+
+    }
+</script>
+
+<script>
+    window.setTimeout(function(){
+        $('[data-dismiss="alert"]').alert('close');
+    },5000);
+
+</script>
+
+
+{{ footer }}

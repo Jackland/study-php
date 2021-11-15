@@ -1,0 +1,490 @@
+{{ js(['js/common/orisComponents.js']) }}
+<div role="tabpanel" class="claim-info pop-dom" id="claim-info">
+  <div class="bg-white">
+    <div class="oris-tabs">
+      <div
+        class="oris-tab-pane {% if search.filter_claim_hot_map == '' or search.filter_claim_hot_map == 'all' %} oris-pane-active{% endif %}"
+        onclick="claimQueryPage.doSearchClaim(this, 'all')" data-hot_map_type="all">All
+      </div>
+      <div class="oris-tab-pane {% if search.filter_claim_hot_map =='in_process' %} oris-pane-active{% endif %}"
+           onclick="claimQueryPage.doSearchClaim(this, 'in_process')">
+        <span>
+           Claim in Progress
+          {# {% if statistics_info.in_progress_number > 0 %}
+            <span class="oris-tab-num">{{ statistics_info.in_progress_number }}</span>
+          {% endif %} #}
+        </span>
+      </div>
+      <div class="oris-tab-pane {% if search.filter_claim_hot_map =='to_be_added' %} oris-pane-active{% endif %}"
+           onclick="claimQueryPage.doSearchClaim(this, 'to_be_added')">
+        <span>
+          Info to be Added
+          {% if statistics_info.backed_number > 0 %}
+            <span class="oris-tab-num">{{ statistics_info.backed_number }}</span>
+          {% endif %}
+        </span>
+      </div>
+      <div class="oris-tab-pane {% if search.filter_claim_hot_map =='succeed' %} oris-pane-active{% endif %}"
+           onclick="claimQueryPage.doSearchClaim(this, 'succeed')">
+        <span>
+           Succeeded
+          {% if statistics_info.success_number > 0 %}
+            <span class="oris-tab-num">{{ statistics_info.success_number }}</span>
+          {% endif %}
+        </span>
+      </div>
+      <div class="oris-tab-pane {% if search.filter_claim_hot_map =='failed' %} oris-pane-active{% endif %}"
+           onclick="claimQueryPage.doSearchClaim(this, 'failed')" data-hot_map_type="due_soon">
+        <span>
+           Failed
+          {% if statistics_info.fail_number > 0 %}
+          <span class="oris-tab-num">{{ statistics_info.fail_number }}</span>
+          {% endif %}
+        </span>
+      </div>
+      <div id="policyDescribeClaim" class="policy-des pointer" data-toggle="popover" data-placement="bottom" data-trigger="manual" data-container="#claim-info" data-html="true" data-content=''><span>View the Statement of Claim Status</span>&nbsp;
+        <i class="giga icon-V10_shouyeyouxiadown text-size-normal text-bold"></i>
+        <i class="giga icon-V10_shouyeyouxiaTOP text-size-normal text-bold" style="display: none;"></i>
+      </div>
+    </div>
+    {% if search.filter_claim_hot_map == '' or search.filter_claim_hot_map == 'all'%}
+      <form id="searchClaimForm" class="m10-b">
+        <div class="oris-row">
+          <div class="oris-col-3 search-large-col pos-rela">
+            <input type="text" name="filter_keywords" value="{{ search.filter_keywords }}"
+                   placeholder="Enter Claim ID / Service ID / Sales Order ID / Tracking Number" id="filter_keywords" class="oris-input" autocomplete="off"/>
+            <i class="giga icon-V10_sousuotubiao claim-search-icon" onclick="claimQueryPage.filterClaim(this);"></i>
+          </div>
+          <button type="button" onclick="claimQueryPage.downloadClaim()" class="oris-button oris-button-default" data-toggle="tooltip" title="Download"><i class="giga icon-xiazai1"></i></button>
+          <span class="link-color pointer p24-l underline" id='showMoreBtn'>Show more search filters</span>
+          <span class="link-color pointer p24-l underline" id='hideMoreBtn' style="display: none;">Hide search filters</span>
+        </div>
+        <div class="oris-row p14-t flex-fend" id="searchMoreRange" style="display: none;">
+          <div class="oris-col-3 oris-select w224-i">
+            <label class="text-weight-normal" for="filter_safeguard_config">Protection Service</label>
+            <select name="filter_safeguard_config" id="filter_safeguard_config" class="selectpicker">
+              <option value="0" selected>All</option>
+              {% if config_list %}
+                {% for key,item in config_list %}
+                  <option value="{{ key }}"  {% if key == search.filter_safeguard_config  %}selected{% endif %} >{{ item.title }}</option>
+                {% endfor %}
+              {% endif %}
+            </select>
+          </div>
+          <div class="oris-col-3 oris-select w224-i">
+            <label class="text-weight-normal" for="filter_claim_status">Claim Status</label>
+            <select name="filter_claim_status" id="filter_claim_status" class="selectpicker" multiple data-actions-box="true" title="{{ __('请选择', {}, 'common') }}">
+              {% if claim_status %}
+                {% for key,item in claim_status %}
+                  <option value="{{ key }}" >{{ item }}</option>
+                {% endfor %}
+              {% endif %}
+            </select>
+          </div>
+          <div class="oris-col-3 oris-select w224-i action-clear-date-range">
+            <label class="text-weight-normal" for="filter_create_time_range_claim">Creation Date Range</label>
+            <select name="filter_create_time_range_claim" id="filter_create_time_range_claim" class="selectpicker" title="{{ __('请选择', {}, 'common') }}">
+              <option value="anytime" {% if search.filter_create_time_range_claim == 'anytime' %}selected{% endif %}>Any Time</option>
+              <option value="d" {% if search.filter_create_time_range_claim == 'd' %}selected{% endif %}>Today</option>
+              <option value="w" {% if search.filter_create_time_range_claim == 'w' %}selected{% endif %}>Past week</option>
+              <option value="month" {% if search.filter_create_time_range_claim == 'month' %}selected{% endif %}>Past month</option>
+              <option value="y" {% if search.filter_create_time_range_claim == 'y' %}selected{% endif %}>Past year</option>
+              <option value="custom" {% if search.filter_create_time_range == 'custom' %}selected{% endif %}>Custom range</option>
+            </select>
+          </div>
+           <div class="oris-col-3">
+            <label class="control-label" for="filter_create_time">Creation Date</label>
+            <div class="oris-ingroup action-clear">
+              <input type="text" name="filter_create_time" readonly class="oris-input" id="filter_create_time" value="" placeholder="{{ __('请选择', {}, 'common') }}" />
+              <i class="giga icon-v10quxiao-01 oris-clear" data-action-range="1"></i>
+            </div>
+          </div>
+          <input id="filter_claim_hot_map1" name="filter_claim_hot_map" type="hidden"
+                 value="{{ search.filter_claim_hot_map }}">
+          <div class="oris-col-1 search-btn">
+            <button type="button" onclick="claimQueryPage.filterClaim(this);" class="oris-button oris-button-bigger width80" data-toggle="tooltip" title="Filter" id="claim_filter_btn">{{ button_filter }}</button>
+            <input id="filter_claim_hot_map" name="filter_claim_hot_map" type="hidden"
+                   value="{{ search.filter_claim_hot_map }}">
+          </div>
+        </div>
+      </form>
+      {% else %}
+        <form id="searchClaimForm">
+          <input id="filter_claim_hot_map2" name="filter_claim_hot_map" type="hidden" value="{{ search.filter_claim_hot_map }}">
+        </form>
+    {% endif %}
+    <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-claim">
+      <div class="p10-t">
+        <table class="oris-table">
+          <thead>
+            <tr>
+              <th class="text-left oris-w180">Claim ID <br/>Linked Service ID</th>
+              <th class="text-left oris-w180">Protection Service</th>
+              <th class="oris-w160">Sales Order ID</th>
+              <th class="text-left oris-w220">Item Code <br/>Tracking Number</th>
+              <th class="text-left oris-w200">Claim Status</th>
+              {% if search.filter_claim_hot_map == '' or search.filter_claim_hot_map == 'all' or search.filter_claim_hot_map == 'in_process' %}
+              <th class="text-left pointer oris-w120" onclick="claimQueryPage.loadUrl('{{ sort.createUrl('create_time') }}')">
+                Creation Time
+                <span class="sort-order {{ sort.getAttributeSortDirection('create_time') == 'desc' ? ' desc-active' : '' }} {{ sort.getAttributeSortDirection('create_time') == 'asc' ? ' asc-active' : '' }}">
+                </span>
+              </th>
+              {% endif %}
+              <th class="text-left pointer oris-w120" onclick="claimQueryPage.loadUrl('{{ sort.createUrl('last_modified') }}')">
+                Last Modified
+                <span class="sort-order {{ sort.getAttributeSortDirection('last_modified') == 'desc' ? ' desc-active' : '' }} {{ sort.getAttributeSortDirection('last_modified') == 'asc' ? ' asc-active' : '' }}">
+                </span>
+              </th>
+              <th class="text-left oris-w80">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% if list|length > 0 %}
+          {% for index,one in list %}
+            <tr>
+              <td class="text-left">
+                <span title="Claim ID">{{ one.claim_no }}</span><br/>
+                <a href="{{ url('account/safeguard/bill',{'filter_no':one.safeguard_no,'filter_create_time_range':'anytime'}) }}#tab_bill_order"  class="link" title="Linked Service ID" target="_blank">{{ one.safeguard_no }}</a>
+              </td>
+              <td class="text-left">
+                <span class="max-line2 break-word-i" title="{{ one.config_title }}">{{ one.config_title }}</span>
+              </td>
+              <td><a href="{{ sales_order_url }}&id={{ one.sale_order_id }}" target="_blank" class="link">{{ one.order_id }}</a></td>
+              <td class="text-left">
+                {% for k,claimdetail in one.claimDetails %}
+                  <div class="image-td {% if k > 0 %} none{% endif %}">
+                    <img class="pro-image" src="{{ claimdetail.productInfo.image }}" />
+                    <img class="hover-image" src="{{ claimdetail.productInfo.image }}">
+                    <span class="flex1">
+                      <div class="flex-layout">
+                        <span title="{{ claimdetail.item_code }}" class="max-line1">{{ claimdetail.item_code }}&nbsp;×&nbsp;{{claimdetail.qty}}</span>
+                          {% if claimdetail.productInfo.tags %}
+                           {% for tag in claimdetail.productInfo.tags %}
+                             {{ tag }}
+                           {% endfor %}
+                         {% endif %}
+                      </div>
+                      {% if  claimdetail.trackings  is not empty %}
+                        {% for tracking in claimdetail.trackings %}
+                          <div class="max-line1 text-light" title="{{ tracking.tracking_number }}">{{ tracking.tracking_number }}</div>
+                        {% endfor %}
+                      {% else %}
+                        <span class="text-light">N/A</span>
+                      {% endif %}
+                      {% if k==0 and one.claimDetails|length > 1 %}
+                      <div class="more-sku action-more-sku">
+                        {{one.claimDetails|length-1}} More Item Code <i class="giga icon-iup"></i>
+                      </div>
+                      {% endif %}
+                    </span>
+                  </div>
+                {% endfor %}
+              </td>
+              <td class="text-left text-bold">
+                <div class="flex-layout"><span class="oris-circle {{ one.status_color }}"></span><span>{{ one.status_show }}</span></div>
+                {% if one.status == '20'  %}
+                <div class="p12-l">{{ one.claim_amount|formatPrice(currency) }}</div>
+                {% endif %}
+              </td>
+              {% if search.filter_claim_hot_map == '' or search.filter_claim_hot_map == 'all' or search.filter_claim_hot_map == 'in_process' %}
+                <td class="text-left"><span>{{ one.create_time }}</span></td>
+              {% endif %}
+              <td class="text-left"><span>{{ one.update_time }}</span></td>
+              <td class="text-left">
+              {% if one.status != 11   %}
+                <a href="{{ url('account/safeguard/claim/claimDetail',{'claim_id': one.id}) }}" target="_blank" class="btn-text">
+                  <i class="giga icon-V10_chakan" data-toggle="tooltip" title="View"></i>
+                  {% if (one.status == 20 or one.status == 30 ) and one.is_viewed == 0 %}
+                    <span class="action-tips new">New</span>
+                  {% endif %}
+                </a>
+                {% else %}
+                <a href="{{ url('account/safeguard/claim/claimDetail',{'claim_id': one.id}) }}" target="_blank"  class="btn-text">
+                  <span>
+                    <i class="giga icon-seller_bianji-01" data-toggle="tooltip" data-original-title="Add Info"></i>
+                    {% if one.days_left.show_page %}
+                      {% if one.days_left.show_days and one.days_left.show_days >= 1 %}
+                        <span class="action-tips time" data-toggle="tooltip" data-original-title="{{ one.days_left.days }}{{ one.days_left.days > 1 ? ' days' : ' day' }} left. If the further information is not supplemented in time, the claim will be automatically determined as Failed by the system.">
+                          {{ one.days_left.days }}{{ one.days_left.days > 1 ? ' days' : ' day' }}
+                        </span>
+                      {% elseif one.days_left.second > 0 %}
+                        <span class="action-tips time action-seconds" data-seconds="{{ one.days_left.second }}" data-toggle="tooltip" data-original-title="">{{ one.days_left.second }}</span>
+                      {% endif %}
+                    {% endif %}
+                  </span>
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+          {% else %}
+          <tr class="no-records">
+            <td colspan="11">No data matching the search criteria. </td>
+          </tr>
+          </tbody>
+          {% endif %}
+        </table>
+      </div>
+    </form>
+    <div class="oris-row oris-pagination">
+      <ul id="pagination_apply_claim"></ul>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  var claimQueryPage = {
+    dateRangeto: '   To   ',
+    // 初始化组件
+    initComponents: function() {
+      // 初始加载时，更改页面的路由
+      window.history.pushState({}, 0, 'index.php?route=account/safeguard/bill');
+      var filter_claim_status = "{{ search.filter_claim_status }}";
+      if (filter_claim_status) {
+        $('#filter_claim_status').val(filter_claim_status.split(','));
+      }
+      // 初始化下拉控件
+      $('.selectpicker').selectpicker();
+      claimQueryPage.initClaim();
+      // 手动show状态说明弹框
+      $('#claim-info').on('click', '#policyDescribeClaim', function(e) {
+        e.stopPropagation();
+        if ($('#claim-info').find('.popover-content').length > 0) {
+          return;
+        }
+        var that = this;
+        var popContent = $("#popDescribe").html();
+        $(that).attr('data-content',popContent);
+        setTimeout(function () {
+          $('#policyDescribeClaim').popover('show');
+          $('#policyDescribeClaim').find('.icon-V10_shouyeyouxiadown').hide();
+          $('#policyDescribeClaim').find('.icon-V10_shouyeyouxiaTOP').show();
+        },200)
+      })
+      // 状态弹框关闭按钮
+      $('#claim-info').on('click', '.close-icon', function(event) {
+        event.stopPropagation();
+        claimQueryPage.hidePopover();
+      });
+      $('body').on('click', function (e) {
+        //did not click a popover toggle or popover
+        if ($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0) { 
+          claimQueryPage.hidePopover();
+        }
+      });
+      // 日期范围选择器初始化,默认一年前
+      var startDate = moment().subtract(1, 'y').format('YYYY-MM-DD');
+      var endDate = moment().format('YYYY-MM-DD');
+      var searchStartDateFrom = "{{ search.filter_create_time_from }}";
+      var searchStartDateTo = "{{ search.filter_create_time_to }}";
+      var searchRange = "{{search.filter_create_time_range_claim}}";
+      if (searchRange) {
+        $('#filter_create_time_range_claim').selectpicker('val',searchRange);
+        if (searchStartDateFrom && searchStartDateTo ) {
+          startDate = searchStartDateFrom.substr(0,10);
+          endDate = searchStartDateTo.substr(0,10);
+          // 初始化数据
+          $('#filter_create_time').val(startDate + claimQueryPage.dateRangeto + endDate)
+        }
+      } else {
+        // 初始化选择范围日期,默认一年
+        $('#filter_create_time_range_claim').selectpicker('val','y');
+        // 初始化数据
+        $('#filter_create_time').val(startDate + claimQueryPage.dateRangeto + endDate)
+      }
+      $('#filter_create_time').daterangepicker({
+          separator: claimQueryPage.dateRangeto,
+          startDate: startDate,
+          endDate: endDate,
+          format: 'YYYY-MM-DD'
+        },function(start,end,label) {
+          // 点击时间范围ok回调
+          $('#filter_create_time_range_claim').selectpicker('val','custom');
+          orisComponents.triggerInputClear($('#filter_create_time'));
+        });
+      // 存下展开收起状态
+      if (sessionStorage.getItem('ishideQueryMore') === '0') {
+        // 展开
+        $('#searchMoreRange').show();
+        $('#showMoreBtn').hide();
+        $('#hideMoreBtn').show();
+      } else {
+        $('#searchMoreRange').hide();
+        $('#showMoreBtn').show();
+        $('#hideMoreBtn').hide();
+      }
+    },
+    hidePopover: function() {
+      $('#policyDescribeClaim').popover('hide');
+      $('#policyDescribeClaim').find('.icon-V10_shouyeyouxiadown').show();
+      $('#policyDescribeClaim').find('.icon-V10_shouyeyouxiaTOP').hide();
+    },
+    // 绑定click事件
+    bindClick: function() {
+      // 展开查询条件
+      $('#claim-info').on('click', '#showMoreBtn', function(){
+        $('#searchMoreRange').show();
+        $('#showMoreBtn').hide();
+        $('#hideMoreBtn').show();
+        // 记录展开收起状态
+        sessionStorage.setItem('ishideQueryMore', '0');
+      }).on('click', '#hideMoreBtn', function(){
+        $('#searchMoreRange').hide();
+        $('#showMoreBtn').show();
+        $('#hideMoreBtn').hide();
+        sessionStorage.setItem('ishideQueryMore', '1');
+      }).on('click','.action-more-sku', function(){
+        // table 点击 More Item Code
+        $(this).hide().parent().parent().siblings('.image-td').removeClass('none');
+      })
+      // 绑定输入框enter一键查询
+      $('#filter_keywords').on('keydown', function (e) {
+        if (e.keyCode == 13) {
+          $(this).siblings('i.claim-search-icon').trigger('click');
+        }
+      });
+    },
+    // 绑定change事件
+    bindChange: function() {
+      // 时间选择范围change
+      $('#claim-info').on('change', '#filter_create_time_range_claim', function() {
+        claimQueryPage.changeTimeRange();
+      });
+      // 状态的change事件
+      $('#claim-info').on('change', '#filter_claim_status', function() {
+        console.log($(this).val())
+      })
+    },
+    changeTimeRange: function(range) {
+      var $input = $('#filter_create_time');
+      range = $('#filter_create_time_range_claim').val() || range;
+      if (range === 'anytime' || range === 'custom') {
+        // 清空时间
+        $input.val('');
+        orisComponents.hideClearIcon($input);
+      } else {
+        var startDate = moment().subtract(1, range).format('YYYY-MM-DD');
+        var endDate = moment().format('YYYY-MM-DD');
+        $input.val(startDate + claimQueryPage.dateRangeto + endDate);
+        orisComponents.triggerInputClear($input);
+      }
+    },
+    // 获取开始时间，结束时间函数
+    getDateRangePicker: function() {
+      var dateArr = $('#filter_create_time').val().split(claimQueryPage.dateRangeto);
+      var startDate = dateArr[0] ? dateArr[0] + ' 00:00:00' : '';
+      var endDate = dateArr[1] ? dateArr[1] + ' 23:59:59' : '';
+      return {'startDate': startDate, 'endDate': endDate};
+    },
+    formatCountdown: function($seconds) {
+      $seconds.each((index, item) => {
+        var times = +$(item).data('seconds');
+        var hour = Math.floor((times % 86400) / 3600),
+            minutes = Math.floor((times % 3600) / 60)
+            msg = (hour<10?`0${hour}`:hour) + "h:" + (minutes<10?`0${minutes}`:minutes) + 'm';
+        $(item).text(msg);
+        // tooltips内容
+        $(item).attr('data-original-title', `${msg} left. If the further information is not supplemented in time, the claim will be automatically determined as Failed by the system.`);
+        $(item).data('seconds', times - 1);
+        if (!times || (times < 0)) {
+          // 终止倒计时
+          $(item).remove();
+        }
+      })
+    },
+    // 倒计时提醒一分钟倒计时
+    countDown: function() {
+      var $seconds = $('.action-seconds');
+      if($seconds.length === 0) {
+        return;
+      }
+      // 展示时分
+      setTimeout(function () {
+        claimQueryPage.formatCountdown($seconds);
+        claimQueryPage.countDown();
+      }, 1000)
+    },
+    initClaim: function() {
+      claimQueryPage.paginationClaim();
+    },
+    paginationClaim: function() {
+      $('#pagination_apply_claim').bootstrapPaginator({
+        /*当前使用的是3版本的bootstrap*/
+        bootstrapMajorVersion: 3,
+        /*配置的字体大小是小号*/
+        size: 'normal',
+        /*当前页*/
+        currentPage: {{ paginator.getPage() }},
+        /*一共多少页*/
+        totalPages: {{ max(paginator.getPageCount(), 1) }},
+        /*页面上最多显示几个含数字的分页按钮*/
+        numberOfPages: 5,
+        pageRange: [10, 20, 30, 50, 100],
+        rowsOfPage: {{ paginator.getPageSize()}},
+        total: {{ paginator.getTotalCount() }},
+        onPageClicked: function (event, originalEvent, type, page) {
+          block.blockUI();
+          $('#tab_claim_order').load('{{ paginator.getUrlWithNoPage() }}&page=' + page, function () {
+            block.unBlockUI();
+          });
+        }
+      });
+    },
+    // 加载url
+    loadUrl: function(url) {
+      block.blockUI();
+      $('#tab_claim_order').load(url,"page_limit={{ paginator.getPageSize() }}", function () {
+        block.unBlockUI();
+      });
+    },
+    getUrlForClaim: function() {
+      let url = "{{  url('account/safeguard/claim/list/?version=v1')}}";
+      return url + '&' + $.param(claimQueryPage.getQueryParams());
+    },
+    // 搜索条件获取
+    getQueryParams: function() {
+      let queryParams = $('#claim-info').find('#searchClaimForm').serializeArray();
+      let params = {};
+      for (let item of queryParams) {
+        let value = item['value'].trim();
+        if (item['name'] === 'filter_claim_status') {
+          params[item['name']] = $('#filter_claim_status').val().join(',');
+        } else if (item['name'] === 'filter_create_time') {
+          let dateObj = claimQueryPage.getDateRangePicker();
+          if (dateObj['startDate']) {
+            params['filter_create_time_from'] = dateObj['startDate'];
+          }
+          if (dateObj['endDate']) {
+            params['filter_create_time_to'] = dateObj['endDate'];
+          }
+
+        } else if (value !== '' && value !== '*') {
+          params[item['name']] = value;
+        }
+      }
+      return params;
+    },
+    filterClaim: function() {
+      var url = claimQueryPage.getUrlForClaim();
+      claimQueryPage.loadUrl(url);
+    },
+    doSearchClaim: function(dom, _condition) {
+      $(".oris-tabs .oris-tab-pane").removeClass('oris-pane-active');
+      $(dom).addClass('oris-pane-active');
+      $("input[name='filter_claim_hot_map']").val(_condition);
+      //$("#filter_claim_hot_map").val(_condition);
+      claimQueryPage.filterClaim();
+    },
+    downloadClaim: function() {
+      let url = "{{ url('account/safeguard/claim/download/?version=v1') }}";
+      url = url + '&' + $.param(claimQueryPage.getQueryParams());
+      window.location = url;
+    }
+}
+$().ready(function() {
+  claimQueryPage.initComponents();
+  claimQueryPage.bindClick();
+  claimQueryPage.bindChange();
+  claimQueryPage.countDown();
+  claimQueryPage.formatCountdown($('.action-seconds'));
+});
+</script>

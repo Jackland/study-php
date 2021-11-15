@@ -1,0 +1,119 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory storage fees</title>
+  <link href="catalog/view/javascript/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+  <script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+  <link href="catalog/view/theme/yzcTheme/stylesheet/stylesheet.css?v={{ app_version }}" rel="stylesheet">
+</head>
+<body>
+<div style="width: 80%;margin: 0 auto">
+  <h1>Inventory storage fees</h1>
+  <div>
+    For products you have purchased but not yet shipped, platform will charge the daily storage fee based on the porduct volume (unit: m³). <br/>
+    The product volume of all products will be measured by the specifications displayed on product page of the platform.
+  </div>
+
+</div>
+<div style="width: 80%;margin: 0 auto">
+  <h2 style="color: #333">Daily inventory storage fee</h2>
+  <div >
+    Inventory storage fees are charged between the 3th and 23th day of the month following the month the fee applies. <br/>
+    For example, to see the inventory storage fee for January, refer to the February Payments report for transactions from February 3-23.
+  </div>
+  {% if country_id == 223 %}
+    <table class="table  table-hover" style="margin-top: 10px; ">
+      <tbody>
+      <tr style="color: #333333;background: #F2F2F2">
+        <th class="text-left" colspan="3" >Daily inventory storage fee</th>
+      </tr>
+      <tr style="color: #333333">
+        <td class="text-left" >0-90 natural days</td>
+        <td class="text-left" >91-365 natural days</td>
+        <td class="text-left" >>365 natural days</td>
+      </tr>
+      <tr style="color: #333333">
+        <td class="text-left" >$0.3/m³</td>
+        <td class="text-left" >$0.45/m³</td>
+        <td class="text-left" >$1.5/m³</td>
+      </tr>
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if country_id == 222 %}
+    <table class="table  table-hover" style="margin-top: 10px; ">
+      <tbody>
+      <tr style="color: #333333;background: #F2F2F2">
+        <th class="text-left" colspan="3" >Daily inventory storage fee</th>
+      </tr>
+      <tr style="color: #333333">
+        <td class="text-left" >0-60 natural days</td>
+        <td class="text-left" >61-365 natural days</td>
+        <td class="text-left" >>365 natural days</td>
+      </tr>
+      <tr style="color: #333333">
+        <td class="text-left" >£0.4/m³</td>
+        <td class="text-left" >£0.6/m³</td>
+        <td class="text-left" >£2/m³</td>
+      </tr>
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if country_id == 81 %}
+    <table class="table  table-hover" style="margin-top: 10px; ">
+      <tbody>
+      <tr style="color: #333333;background: #F2F2F2">
+        <th class="text-left" colspan="3" >Daily inventory storage fee</th>
+      </tr>
+      <tr style="color: #333333">
+        <td class="text-left" >0-60 natural days</td>
+        <td class="text-left" >61-365 natural days</td>
+        <td class="text-left" >>365 natural days</td>
+      </tr>
+      <tr style="color: #333333">
+        <td class="text-left" >0.3€/m³</td>
+        <td class="text-left" >0.45€/m³</td>
+        <td class="text-left" >1.5€/m³</td>
+      </tr>
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if country_id == 107 %}
+    <table class="table  table-hover" style="margin-top: 10px; ">
+      <tbody>
+      <tr style="color: #333333;background: #F2F2F2">
+        <th class="text-left" colspan="4" >Daily inventory storage fee</th>
+      </tr>
+      <tr style="color: #333333">
+        <td class="text-left" >0-31 natural days</td>
+        <td class="text-left" >32-90 natural days</td>
+        <td class="text-left" >91-365 natural days</td>
+        <td class="text-left" >>365 natural days</td>
+      </tr>
+      <tr style="color: #333333">
+        <td class="text-left" >￥48/m³</td>
+        <td class="text-left" >￥96/m³</td>
+        <td class="text-left" >￥128/m³</td>
+        <td class="text-left" >￥240/m³</td>
+      </tr>
+      </tbody>
+    </table>
+  {% endif %}
+
+
+</div>
+
+<div style="width: 80%;margin: 0 auto">
+  <h2 style="color: #333" >Calculating cubic meter from inches</h2>
+  <div>
+    1.	Multiply length x width x height in inches to get the volume.<br/>
+    2.	Multiply the volume by 0.0254³<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;Example: A unit measuring 47 inch x 32 inch x 50 inch multiplied by 0.0254³ = 1.2323 m³.
+
+  </div>
+</div>
+</body>
+</html>

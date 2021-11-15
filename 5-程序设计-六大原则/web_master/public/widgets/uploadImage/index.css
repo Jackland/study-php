@@ -1,0 +1,126 @@
+/**
+ * @file 上传图片组件样式
+ * oris-upload-image
+ */
+.oris-upload-image,
+.oris-upload-image .action-items-content {
+  display: flex;
+  align-items: center;
+}
+
+.oris-upload-image input {
+  display: none;
+}
+
+.oris-upload-image .image-items {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: initial;
+  margin-bottom: initial;
+  border: 1px dashed #ccc;
+  margin-right: 8px;
+  background-color: #fbfdff;
+}
+
+.oris-upload-image .image-items .img-hover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  background: rgba(0, 0, 0, .5);
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  cursor: default;
+  text-align: center;
+  color: #fff;
+  opacity: 0;
+  transition: opacity .3s;
+  z-index: 1;
+}
+
+.oris-upload-image .image-items .img-content:hover .img-hover {
+  opacity: 1;
+}
+
+.oris-upload-image .image-items .img-content .img-hover a {
+  display: flex;
+  width: 100%;
+  height: 40px;
+}
+
+.oris-upload-image .image-items:hover {
+  border-color: #0047D8;
+  cursor: pointer;
+}
+
+.oris-upload-image .image-items-uploaded,
+.oris-upload-image .image-items-uploaded:hover {
+  border: 1px solid #ccc;
+}
+
+.oris-upload-image .image-items .img-hover>span {
+  display: inline-block;
+  height: 40px;
+  cursor: pointer;
+}
+
+.oris-upload-image .image-items .img-hover>span:not(:last-child) {
+  margin-right: 16px;
+}
+
+.oris-upload-image .image-items .img-hover i {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.oris-upload-image .image-items img {
+  width: 100%;
+}
+
+.oris-upload-image .image-items i {
+  width: 100%;
+  height: 100%;
+  line-height: 70px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+@-webkit-keyframes rotating {
+  0% {
+    -webkit-transform: rotateZ(0);
+    transform: rotateZ(0)
+  }
+
+  100% {
+    -webkit-transform: rotateZ(360deg);
+    transform: rotateZ(360deg)
+  }
+}
+
+@keyframes rotating {
+  0% {
+    -webkit-transform: rotateZ(0);
+    transform: rotateZ(0)
+  }
+
+  100% {
+    -webkit-transform: rotateZ(360deg);
+    transform: rotateZ(360deg)
+  }
+}
+
+.oris-upload-image i.icon-oris-loading {
+  -webkit-animation: rotating 2s linear infinite;
+  animation: rotating 2s linear infinite;
+  color: #c1c1c1;
+  font-size: 20px;
+}

@@ -1,0 +1,266 @@
+{{ header }}
+{{ cssOrigin(['/catalog/view/javascript/layui/css/layui.css']) }}
+{{ css(['css/common/common.css']) }}
+{{ css(['css/buyer/channel/activity_products.css']) }}
+{% if background_color %}
+<main class="p10-b main-activity" style="background-color: {{background_color}}">
+{% else %}
+<main class="p10-b main-activity">
+{% endif %}
+    {% if top_image_url %}
+    <div class="section" style="width: 100%;position: relative">
+        <div class="promotion-top-img cover-size" style="background: url('{{ top_image_url }}');background-position: center;background-repeat: no-repeat">
+            <img src="{{ top_image_url }}" style="visibility: hidden;" class="initImg">
+        </div>
+        <div class="items-dom">
+            <a class="celling-width pos-rela" id='Wechat'>
+              <div class="qrcode" id='qrcode'>
+                  <img src="{{ asset('image/qdcode.jpg') }}">
+              </div>
+           </a>
+            <a class="celling-width" href="https://www.facebook.com/Giga-Cloud-Logistics-103600301271242" target="_blank"></a>
+            <a class="celling-width" href="https://www.instagram.com/gigacloudlogistics/ " target="_blank"></a>
+            <a class="celling-width" href="https://www.linkedin.com/company/giga-cloud-logistics/ " target="_blank"></a>
+            <a class="celling-width" href="https://www.pinterest.ca/pin/1071153092592198693/" target="_blank"></a>
+            <a class="celling-width margin0" href="https://www.youtube.com/watch?v=JUBEG124EBY" target="_blank"></a>
+        </div>
+    </div>
+    {% else %}
+        <div class="section">
+            <h3 class="activity-title" style="text-align: center;">{{ top_title }}</h3>
+        </div>
+    {% endif %}
+    <div class="center-module">
+        {% if promotions %}
+            <h3 class="m30-t top-title">{{ text_top_area_title }}<span class="top-title-remark">You May Also Like</span></h3>
+            <div class="products product-content">
+                <section id="module-promotion-products" class="pb-1 home-product-row">
+                    <div class="container">
+                            <div class="col-xs-12 no-padding">
+                                <div style="position:relative">
+                                    {# #16460去掉轮播 #}
+                                    <div id="swiper-promotion-products" class="swiper-container">
+                                        <div class="swiper-wrapper" >
+                                            {% for product in promotions %}
+                                                <div class="swiper-slide">
+                                                    {% include 'giga/template/_parts/product_simple_grid_home.twig' %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </section>
+            </div>
+        {% endif %}
+        {% include 'yzcTheme/template/extension/module/featured_components/category_nav.twig' %}
+      <!--END-->
+        {# #16460 需求 导航更换#}
+        <!--search content-->
+        <div class="search-content center-module-content m10-t product-activity-content m10-b">
+            <div id="data-load" class="channel-module-details" page="1" data-loadsuccess="true">
+
+            </div>
+        </div>
+        <!-- <div class="load"></div> -->
+</main>
+<script>
+    var navHeightTop;
+    var current_Category_id;
+    $(window).load(function() {
+        $(window).scrollTop(0)
+        $(window).scroll(function() {
+            if ($(this).scrollTop() >= $(".nav-bar").offset().top) {
+                //吸顶
+                $('.nav-bar-content').addClass('ceiling-nav-bar');
+                // $('.search-content').css('margin-top', '85px');
+                //$('.search-content').css('margin-top', '95px');
+                $('.search-content').css('padding-top', '66px');
+                if($('.load').length>=1){
+                    $('.load').parent().css('position','static');
+                    $('.load').css('position','fixed');
+                    $('.load').css('margin','auto');
+                    $('.load').css('left','50%');
+                    $('.load').css('right','50%');
+                    $('.load').css('top','8%');
+                }
+            } else {
+                $('.nav-bar-content').removeClass('ceiling-nav-bar');
+                //$('.search-content').css('margin-top', '10px');
+                $('.search-content').css('margin-top', '0px'); //UI考虑到间距问题
+                $('.search-content').css('padding-top', '0px');
+                if($('.load').length>=1){
+                    $('.load').parent().css('position','relative');
+                    $('.load').css('position','absolute');
+                    $('.load').css('margin','auto');
+                    $('.load').css('left','50%');
+                    $('.load').css('right','50%');
+                    $('.load').css('top','0');
+                }
+            }
+            //滚过高度
+            var scrollTop = $(this).scrollTop();
+            //页面高度
+            var scrollHeight = $(document).height();
+            //浏览器高度
+            var windowHeight = $(this).height();
+             //尾栏高度 +  一行商品
+            let footerHeight = $("footer").height() + ($(".product-content").height()+300);
+            //滚动条到底时
+            if (scrollHeight-scrollTop - windowHeight <footerHeight) {
+                let category_id = $('.triangle-black').attr('data');
+                loadInfo('#data-load', category_id);
+            }
+        });
+});
+var page_limit = 20;
+$(document).ready(function () {
+    let category_id = $('.triangle-black').attr('data');
+    $(".item-nav").each(function () {
+        if(category_id == $(this).attr('data')){
+            $('.nav-content-ul').attr('is-product-activity','yes');
+            $('.nav-content-ul').attr('is-first-load','yes');
+            $(this).click();
+            return false;
+        }
+    })
+});
+/*加载分页数据*/
+function loadInfo(loadHtml,categoryId) {
+    //$(".end_html").hide();
+    //$("#allCheck_"+categoryId).prop("checked",false);
+    if($(loadHtml).attr("data-loadsuccess")=='true'){
+        var t = $(loadHtml);
+        /*当前页码*/
+        var page = t.attr("page");
+        /**最后一页不再添加数据；只有第一个Tab页有end*/ /*16460 去掉end*/
+        // if($(loadHtml).attr('data-end')=='1' && (categoryId==0)){
+        //    // $(".end_html").show();
+        //     return;
+        // }
+        //触发ajax事件，加载dom
+        if($(loadHtml).attr('data-end') =='1'){
+            return;
+        }
+        //当前选中分类
+        let category_id = $('.triangle-black').attr('data');
+        getrows(page,categoryId,loadHtml,false);
+    }
+}
+function getrows(page,categoryId,htmlcon,isTrigger) {
+    var searchHeight = $('.search-content ').height();
+    if (current_Category_id == categoryId && isTrigger) { //与当前选中分类比较，如选中当前则回到分类导航顶部
+        if ($(window).scrollTop() >= $(".nav-bar").offset().top) { //吸顶之后  回到吸顶位置
+            $(window).scrollTop(Math.ceil($(".nav-bar").offset().top));
+        } else { //不吸顶的情况
+            if ($(".nav-bar").offset().top - $(this).scrollTop() < 150) {
+                $(window).scrollTop($(window).scrollTop() - 150);
+            }
+        }
+        return
+    }
+    current_Category_id=categoryId; //判断是否重复点击当前nav
+    $(htmlcon).attr('data-loadsuccess', false);
+    var name = window.location.href.split("&name=")[1];
+    var url_column = '{{ url_column }}';
+    if (page === 1) {
+        //$(htmlcon).empty();
+        if($(window).scrollTop() >= $(".nav-bar").offset().top){ //吸顶之后的位置
+            $(htmlcon).html("<div style='width:100%;height:"+searchHeight+"px'> <div class='load' style ='position: fixed;margin:auto;left: 50%;right: 50%;top:8%'></div></div>");
+        }else{
+            $(htmlcon).html("<div style='width:100%;position:relative;height:"+searchHeight+"px'> <div class='load' style ='position: absolute;margin:auto;left: 50%;right: 50%;top:0'></div></div>");
+            //$(htmlcon).html("<div style='width:100%;transform: scale(1, 1);height:"+searchHeight+"px'> <div class='load' style ='position: fixed;margin:auto;left: 50%;right: 50%;'></div></div>");
+        }
+        waitBlock.blockUI();
+    }
+    $.ajax({
+        url: url_column,
+        data: {'name': name, 'category_id': categoryId, 'page': page, 'page_limit': page_limit},
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var appendItem = '';
+            appendItem = data.htmls;
+            waitBlock.unBlockUI();
+            if(current_Category_id == data.category_id){
+                if (page === 1) {
+                    $(htmlcon).html(appendItem);
+                }else{
+                $(htmlcon).append(appendItem);
+                }
+            }else{
+                return
+            }
+            //$(htmlcon).append(appendItem);
+            $(htmlcon).attr('data-end', data.is_end);
+            if ($(window).scrollTop() >= $(".nav-bar").offset().top && page === 1) { //判断是否吸顶(只有切换tab 的时候回到最初吸顶位置，其他保留历史查询位置)
+                $(window).scrollTop(Math.ceil($(".nav-bar").offset().top));
+            }
+            $(htmlcon).attr("page", ++page);
+            $(htmlcon).attr('data-loadsuccess', true);
+            $('.nav-content-ul').attr('is-first-load','no');
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            //alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            $(htmlcon).attr('data-loadsuccess', true);
+        },
+        complete: function (xhr, textStatus) {
+           //waitBlock.unBlockUI();
+        }
+    })
+}
+//兼容产品卡片，空方法
+function checkSingleProduct(obj,length){
+
+}
+function getSellerContact(seller_id, sku) {
+    //window.location.href = 'index.php?route=customerpartner/profile&id=' + seller_id + '&itemCode=' + sku + '&contact=1';
+    var url = 'index.php?route=message/seller/addMessage&receiver_id=' + seller_id + '&item_code=' + sku;
+    window.open(url, '_blank');
+}
+
+</script>
+<script>
+  var localHref=window.location.href;
+  $(window).load(function () {
+    getImgWH();
+    //路径控制热区显示隐藏
+    var urlParam = getUrlParam(localHref);
+    if("code" in urlParam && urlParam["code"]==179909521115524){
+        $('.items-dom').css('display','flex');
+    }else{
+        $('.items-dom').css('display','none');
+    }
+  });
+  $(window).resize(function() {
+    getImgWH();
+  });
+  function getImgWH() {
+    if($('.promotion-top-img').length <1){
+       return;
+    }
+    let wid=$(".promotion-top-img")[0].offsetWidth;
+    let hei=$(".promotion-top-img")[0].offsetHeight;
+    let naturalH=$('.initImg')[0].naturalHeight;
+    let naturalW=$('.initImg')[0].naturalWidth;
+    var ph=(naturalH-hei)/2;
+    var pw=(naturalW-wid)/2;
+    let calW=naturalW*0.6;
+    let calHei=naturalH*0.571;
+    $('.items-dom').css('left',calW-pw+'px');
+    $('.items-dom').css('top',calHei-ph+'px');
+    $('.items-dom').css('width',288+'px');
+    $('.items-dom').css('height',46+'px');
+  }
+  function getUrlParam(str){
+    let arr = str.split("?")[1].split("&");
+    let obj = {};
+    for (let i of arr) {
+        obj[i.split("=")[0]] = i.split("=")[1];
+    }
+    return obj;
+  }
+</script>
+
+{{ footer }}

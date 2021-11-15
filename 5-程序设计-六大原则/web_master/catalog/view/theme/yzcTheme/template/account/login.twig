@@ -1,0 +1,48 @@
+{{ header }}
+<div class="login-content">
+  <div id="account-login" class="container">
+    {% if success %}
+      <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}</div>
+    {% endif %}
+    {% if error_warning %}
+      <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}</div>
+    {% endif %}
+    <div class="row">
+      <div id="content" class="col-sm-12">
+        <div class="row" style="overflow: hidden">
+          <div style="margin: 0 auto;width: 1121px">
+            <div class="login-img">
+              <a href="{{ login_banner.link }}"> <img src="{{ login_banner.image }}" width="100%"></a>
+            </div>
+            <div class="login-wrapper">
+              <h1>Login</h1>
+              <form action="{{ action }}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                  <label class="control-label" for="input-email">{{ entry_email }}</label>
+                  <input type="text" name="email" value="{{ email }}" placeholder="{{ entry_email }}" id="input-email"
+                         class="form-control"/>
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="input-password">{{ entry_password }}</label>
+                  <input type="password" name="password" value="{{ password }}" placeholder="{{ entry_password }}"
+                         id="input-password" class="form-control"/>
+                  <a href="{{ url('account/password/reset') }}">{{ text_forgotten }}</a></div>
+                <div class="btn-wrapper">
+                  <input type="submit" value="LOGIN NOW" class="btn btn-primary"/>
+                  {% if redirect %}
+                    <input type="hidden" name="redirect" value="{{ redirect }}"/>
+                  {% endif %}
+                  <input type="hidden" name="logged_redirect_url" value="{{ logged_redirect_url }}"/>
+                </div>
+              </form>
+              <div class="to-register">
+                <p>If you are new customer, please register at the <a href="{{ register }}">registration page.</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}

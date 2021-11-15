@@ -1,0 +1,155 @@
+{{ header }}
+{{ column_left }}
+<div id="content">
+	<div class="page-header">
+		 <div class="container-fluid">
+		 	<div class="pull-right">
+		 		<a href="{{ insert}}" class="btn btn-primary" title="{{ button_insert}}" ><i class="fa fa-plus"></i></a>
+				<a class="btn btn-success" name="filter" id="filterButton" onclick="location='index.php?route=wkcustomfield/wkcustomfield&user_token={{ user_token}}'" title="Reset Filter"><i class="fa fa-eraser fa-1"></i></a>
+		 	</div>
+		 	<h1>{{ heading_title}}</h1>
+			 <ul class="breadcrumb">
+		        {% for breadcrumb in breadcrumbs %}
+		        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+		        {% endfor %}
+	     	 </ul>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="fa fa-pencil"></i>
+					{{ heading_title_list}}</h3>
+			    </div>
+			<div class="panel-body">
+				<div class="well">
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label class="control-label">
+									Option Name
+								</label>
+								<input class="form-control" type="text" name="fieldName" value="{% if fieldName is defined %}{{ fieldName }}{%endif %} ">
+							</div>
+							<div class="form-group">
+								<label class="control-label">
+									Field Type
+								</label>
+								<input class="form-control" type="text" name="fieldType" value="{% if fieldType is defined %}{{ fieldType }}{%endif %}">
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label class="control-label">
+									For Seller
+								</label>
+								<select name="forSeller" class="form-control">
+									<option value=""></option>
+									<option value="yes" {% if forSeller is defined and forSeller == 'yes' %}{{ 'selected' }}{%endif %} >Yes</option>
+									<option value="no" {% if forSeller is defined and forSeller == 'no' %}{{ 'selected' }}{%endif %}>No</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<button type="button" class="btn btn-primary pull-right" id="filterButton" onclick="filter(this)">
+									<i class="fa fa-filter"></i>
+									Filter
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="table-responsive">
+					<form id="fieldListForm" action="{{ action}}" method="post" enctype="multipart/form-data">
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<td class="left" width="2"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);"></td>
+									<td class="left"><a class="{% if order is defined and order == 'cfd.fieldName'%}{{ sort }}{%endif %}" id="cfd.fieldName" onclick="filter(this)">Option Name</a></td>
+									<td class="left"><a class="{% if order is defined and order == 'cfd.fieldType'%}{{ sort }}{%endif %}" id="cf.fieldType" onclick="filter(this)">Field Type</a></td>
+									<td class="left"><a class="{% if order is defined and order == 'cfd.forSeller'%}{{ sort }}{%endif %}" id="cf.forSeller" onclick="filter(this)">For seller</a></td>
+									<td class="center">Action</td>
+								</tr>
+							</thead>
+							<tbody>
+
+								{% if optionList is defined and optionList %}
+									{% for option in optionList %}
+										<tr>
+											<td class="left" width="2"><input type="checkbox" value="{{ option['id']}}" name="selected[]" ></td>
+											<td class="left">{{ option['fieldName']}}</td>
+											<td class="left">{{ option['fieldType']}}</td>
+											<td class="left">{{ option['forSeller']}}</td>
+											<td class="center"><a class="btn btn-primary" href="{{ option['edit']}}" ><i class="fa fa-pencil"></i></a></td>
+										</tr>
+									{% endfor %}
+								{% else %}
+										<tr>
+											<td></td>
+											<td colspan="4"  class="center">{{ noOption}}</td>
+										</tr>
+								{% endif %}
+							</tbody>
+						</table>
+					</form>
+				</div>
+
+        {#分页#}
+        {% if optionList %}
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="pull-left">
+                {#左侧删除#}
+                <div class="table-bottom-action">
+                  <div class="bottom-action-left">
+                    <i class="fa fa-right-angle"></i>
+                    <a onclick="$('#fieldListForm').submit();" class="btn btn-danger" title="{{ button_delete}}"><i class="fa fa-trash-o"></i></a>
+                    <span class="bottom-action-detail"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="pull-right">{{ pagination }}</div>
+            </div>
+          </div>
+        {% endif %}
+
+			</div>
+			</div>
+		</div>
+</div>
+
+<script type="text/javascript">
+
+function filter(data){
+
+	url = "index.php?route=wkcustomfield/wkcustomfield&user_token={{ user_token}}";
+	if(data.id != 'filterButton'){
+		order = data.id;
+		if($(data).attr('class') == ''){
+			sort = 'asc';
+		}else if($(data).attr('class') == 'asc'){
+			sort = 'desc';
+		}else{
+			sort = 'asc';
+		}
+		url += '&order='+order+'&sort='+sort;
+	}
+
+	fieldName = $("input[name = 'fieldName']").val();
+	if(fieldName){
+		url += '&fieldName='+fieldName;
+	}
+	fieldType = $("input[name = 'fieldType']").val();
+	if(fieldType){
+		url += '&fieldType='+fieldType;
+	}
+	forSeller = $("select[name = 'forSeller']").val();
+	if(forSeller){
+		url += '&forSeller='+forSeller;
+	}
+
+	location = url;
+}
+</script>
+
+{{ footer}}

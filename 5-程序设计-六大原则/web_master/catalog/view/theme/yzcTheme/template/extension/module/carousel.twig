@@ -1,0 +1,82 @@
+<!-- Featured Stores 模块 -->
+{% if banners|length > 0 %}
+  {# 8.New Stores 模块 #}
+
+  <div class="center-module main-bg pb-20">
+    <section id="module-stores" class="featured-stores pt-2 pb-1 home-product-row mp-card m0-b">
+      <div class="row box-bg no-margin">
+        <div class="col-xs-12 no-padding">
+          <div class="m20-r pos-rela">
+            <h3 class="module-title m24-b"><strong>New</strong> Stores</h3>
+            <div id="swiper-stores" class="swiper-container swiper-no-swiping">
+              <div class="swiper-wrapper">
+                {% for banner in banners %}
+                  <div class="swiper-slide">
+                    <div class="product-simple-grid">
+                      <div class="store-img">
+                        <a href="{{ banner.link }}" data-cnzz-event="首页|Hm_Channel_Featured Stores">
+                          <img class="img-responsive scale" src="{{ banner.image }}" alt="">
+                        </a>
+                      </div>
+                      <span class="banner-title">
+                        <a href="{{ banner.link }}" title="{{ banner.title }}" data-cnzz-event="首页|Hm_Channel_Featured Stores"><text class="link-hover">{{ banner.title }}</text></a>
+                      </span>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="swiper-pagination swiper-pagination-outside-bottom mb-2"
+                   id="swiper-pagination-store{{ module }}"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {# END 8.Featured Stores 模块 #}
+
+
+  <script type="text/javascript">
+    var plength = '{{ banners|length }}';
+    var loop = true;
+    var clientWidth = $(document).width();
+    if (plength < 5) {
+      loop = false;
+    }
+    var swiperStores = new Swiper('#swiper-stores', {
+        mode: 'horizontal',
+        slidesPerView: clientWidth < 1440 ? 6 : 7,
+        roundLengths: true,
+        pagination: {
+          el: '#module-stores #swiper-pagination-store{{ module }}',
+          paginationHide: true
+        },
+              {#pagination: '#module-stores #swiper-pagination-store{{ module }}',#}
+        paginationClickable: true,
+        nextButton: '#module-stores .swiper-pager .swiper-button-next',
+        prevButton: '#module-stores .swiper-pager .swiper-button-prev',
+        spaceBetween: 20,
+        autoplay: false,
+        autoplayDisableOnInteraction: true,
+        loop: loop
+      },
+      $(window).resize(function () {
+        var clientWidth = $(document).width();
+        if (clientWidth < 1440) {
+          swiperStores.params.slidesPerView = 6;
+        } else {
+          swiperStores.params.slidesPerView = 7;
+        }
+      }));
+    var comtainerStores = document.getElementById('swiper-stores');
+    comtainerStores.onmouseenter = function () {
+      swiperStores.stopAutoplay();
+    };
+    comtainerStores.onmouseleave = function () {
+      swiperStores.startAutoplay();
+    }
+  </script>
+
+
+{% endif %}

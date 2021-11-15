@@ -1,0 +1,325 @@
+{{ header }}
+<script src="catalog/view/javascript/jquery/datetimepicker/moment/moment.min.js" type="text/javascript"></script>
+<script src="catalog/view/javascript/jquery/datetimepicker/moment/moment-with-locales.min.js" type="text/javascript"></script>
+<script src="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" media="screen" />
+<style>
+  .flag-margin-order{
+    color: #FF784E;
+    margin-left: 5px;
+  }
+  .tag_icon img{
+    margin-top: -5px;
+  }
+</style>
+
+<div id="page-purchase-order-management" class="page-seller-portal">
+  {#菜单#}
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  {#END 菜单#}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>{{ text_purchase_order_management }}</h1>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="tab-content main">
+          <div role="tabpanel" class="tab-pane active" id="upload">
+            <div class="bg-white p-2">
+              <div class="filter-wrapper form-wrapper mt-3 mb-3">
+                <div class="row">
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <label class="" for="input-orderId"><span style="font-weight: bold">{{ column_order_id}}</span></label>
+                      <input type="text" name="filter_orderId" value="{{ filter_orderId}}" placeholder="{{ column_order_id}}" id="input-orderId" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label class="" for="input-item_code"><span style="font-weight: bold">{{ column_item_code_search}}</span></label>
+                      <input type="text" name="filter_item_code" value="{{ filter_item_code}}" placeholder="{{ column_item_code_search}}" id="input-item_code" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <label for="input-order_status"><span style="font-weight: bold">{{ column_purchase_order_status}}</label>
+                      <select class="form-control" name="filter_order_status" id="input-order_status">
+                        <option value="*">---{{ __('请选择', {}, 'common') }}---</option>
+                        <option
+                          {% if filter_order_status is defined and filter_order_status == 5 %}
+                          selected
+                          {% endif %}
+                          value="5">
+                          Completed
+                        </option>
+                      </select>
+                    </div>
+                    {# 全部退货 start #}
+                    <div class="checkbox">
+                      <label
+                        style="margin-top: 25px">
+                        <input
+                          {% if filter_include_all_refund is defined and filter_include_all_refund %}
+                            checked
+                          {% endif %}
+                          type="checkbox"
+                          name="filter_include_all_refund"
+                          id="input-filter_include_all_refund"/>
+                      </label>
+                      <span style="margin-left: 8px">Include returns</span>
+                    </div>
+                    {# 全部退货 end #}
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <label for="">Application Date</label>
+                      <div class="datetimepicker-range">
+                        <div class="datetimepicker">
+                          <input type="text" name="filter_orderDate_from" value="{{ filter_orderDate_from}}" placeholder="Pick a date..." data-date-format="YYYY-MM-DD 00:00:00" id="input-orderDate_from" class="form-control"/>
+                          <span class="title">From</span>
+                          <span class="icon"><i class="giga icon-date-icon"></i></span>
+                        </div>
+                        <div class="datetimepicker">
+                          <input type="text" name="filter_orderDate_to" value="{{ filter_orderDate_to}}" placeholder="Pick a date..." data-date-format="YYYY-MM-DD 23:59:59" id="input-orderDate_to" class="form-control"/>
+                          <span class="title">To</span>
+                          <span class="icon"><i class="giga icon-date-icon"></i></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group pull-right">
+                      <button type="button" onclick="filter(this);" class="btn btn-primary" data-toggle="tooltip" title="{{ tip_filter }}">{{ button_filter}}</button>
+                      <button onclick="downloadPurchaseOrder();" class="btn btn-default" data-toggle="tooltip" title="{{ tip_download }}">
+                        <i class="fa fa-download"></i></button>
+                      <button type="button" onclick="refund(this)" class="btn btn-default" data-toggle="tooltip" title="Reset">Reset</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <table class="table main table-hover">
+                <thead>
+                <tr>
+                  <th class="text-center">{{ column_order_id }}</th>
+                  <th class="text-center" style="width: 200px;">{{ column_item_code }}</th>
+                  <th class="text-center">{{ column_grand_total }}</th>
+                  {#<th class="text-center">{{ column_transaction_fee }}</th>#}
+                  <th class="text-center">{{ column_payment_method }}</th>
+                  <th class="text-center">{% if sort %}<a href="{{ url_sort }}" class="{{ sort }}">{{ column_order_date }}</a>{% else %}<a href="{{ url_sort }}&sort_order_date=asc" >{{ column_order_date }}</a>{% endif %}</th>
+                  <th class="text-center">{{ column_status }}</th>
+                  <th class="text-center">{{ column_action }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for order in orders %}
+                  <tr>
+                    <td class="text-center">
+                      {{ order.order_id }}
+                      {% if (order.delivery_type==2) %}
+                        <i class="giga icon-cwf" style="color: #1f5268;font-size: 15px;" data-toggle="tooltip" data-original-title="{{ cwf }}"></i>
+                      {% endif %}
+                    </td>
+                    <td class="text-center" >
+                      {% for key,value in order.item_code_list %}
+                        {% if value.is_rebate %}
+                          <img data-toggle="tooltip" style="padding-left: 1px;position: relative;top: -2px;" src="{{ rebate_logo }}" data-original-title="Rebate">
+                        {% endif %}
+                        {% if value.type_id == 3%}
+                          {% if value.contract_id %}
+                            {{ global_frontend_futures_second_sign | dprintf({'id':value.agreement_id,'s_id':value.agreement_no }) }}
+                          {% else %}
+                            {{ global_frontend_futures_sign | dprintf({'id':value.agreement_id,'s_id':value.agreement_no }) }}
+                          {% endif %}
+                        {% endif %}
+                        {% if value.is_margin %}
+                          <a href="{{ value.url_margin }}">
+                            <span class="flag-margin-order"><span class="giga icon-margin" data-toggle="tooltip" title="{{value.tip_margin}}"></span></span>
+                          </a>
+                        {% endif %}
+
+                        {{ value.sku }}
+                        {% if value.tag %}
+                          <span class="tag_icon">
+                          {% for tagDetail in value.tag %}
+                            {{ tagDetail }}
+                          {% endfor %}
+                          </span>
+                        {% endif %}
+                        X {{ value.qty }}
+                        <br/>
+                      {% endfor %}
+
+                    </td>
+                    <td class="text-center"><span class="text-price">{{ order.total }}</span></td>
+                    {#<td class="text-center">{{ order.fee }}</td>#}
+                    <td class="text-center">{{ order.payment_method }}</td>
+                    <td class="text-center">{{ order.date_added }}</td>
+                    <td class="text-center">
+                      {{ order.order_status_name }}
+                      {% if order.is_full_refund %}
+                        (Return all)
+                      {% endif %}
+                    </td>
+                    <td class="text-center">
+                      <div class="action-group">
+                        <a href="{{ order.view }}" data-toggle="tooltip" title="{{ button_view }}" class=""><i class="giga icon-action-preview"></i></a>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+              {#{% include 'giga/template/_parts/pagination_simple.twig' %}#}
+              <div class="row" >
+                <div class="col-sm-12 text-right">
+                  {{ pagination }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div id="myForm"  class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">You have a payment not finished</h4>
+      </div>
+      <div class="modal-body" id="myModalBody">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <tr>
+              <th class="text-right">Total({{ umf_payment['currency_yzc'] }}):</th>
+              <td class="text-left">{{ umf_payment['total_yzc'] }}</td>
+              <th class="text-right">Date:</th>
+              <td class="text-left">{{ umf_payment['add_date'] }}</td>
+            </tr>
+            <tr>
+              <th class="text-right">Payment Result:</th>
+              <td class="text-left" colspan="3"><div id="result"></div></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-submit" id="completeBtn" data-loading-text="{{ text_loading }}" >
+          Query payment status
+        </button>
+        <button type="button" class="btn btn-primary btn-submit" id="unsetBtn" data-loading-text="{{ text_loading }}" >
+          Ignore
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  {# N-81 全部退货 start #}
+  let orderStatusSelect = $('select[name=\'filter_order_status\']');
+  let refundCheckbox = $('input[name=\'filter_include_all_refund\']');
+  orderStatusSelect.on('change', function () {
+    let selectVal = orderStatusSelect.val();
+    if (selectVal === '*') {
+      return;
+    }
+    selectVal = parseInt(selectVal);
+    if (selectVal === 7) {
+      refundCheckbox.prop('disabled', true).prop('checked', false);
+    } else {
+      refundCheckbox.prop('disabled', false)
+    }
+  });
+  {# N-81 全部退货 end #}
+  var pageLimitOrderList = '{{ page_limit | default('20') }}';
+  $('#input-orderDate_from').datetimepicker({
+    pickDate: true,
+    pickTime: false,
+    format: 'YYYY-MM-DD'
+  });
+  $('#input-orderDate_to').datetimepicker({
+    pickDate: true,
+    pickTime: false,
+    format: 'YYYY-MM-DD'
+  });
+
+  function refund(button) {
+    $('input[name=\'filter_orderId\']').val("");
+    $('input[name=\'filter_orderDate_from\']').val("");
+    $('input[name=\'filter_orderDate_to\']').val("");
+    $('input[name=\'filter_item_code\']').val("");
+    filter(button);
+  }
+
+  function filter(button) {
+    block.blockUI();
+    var url = getUrlForFilter();
+    $(button).button('loading');
+    window.location.href = url + '&page_limit=' + pageLimitOrderList;
+  }
+
+  function getUrlForFilter() {
+    let url = 'index.php?route=account/order';
+    let filter_orderId = $('input[name=\'filter_orderId\']').val();
+    if (filter_orderId) {
+      url += '&filter_orderId=' + encodeURIComponent(filter_orderId);
+    }
+    let filter_orderDate_from = $('input[name=\'filter_orderDate_from\']').val();
+    if (filter_orderDate_from) {
+      url += '&filter_orderDate_from=' + encodeURIComponent(filter_orderDate_from);
+    }
+    let filter_orderDate_to = $('input[name=\'filter_orderDate_to\']').val();
+    if (filter_orderDate_to) {
+      url += '&filter_orderDate_to=' + encodeURIComponent(filter_orderDate_to);
+    }
+    let filter_item_code = $('input[name=\'filter_item_code\']').val();
+    if (filter_item_code) {
+      url += '&filter_item_code=' + encodeURIComponent(filter_item_code);
+    }
+    let filter_include_all_refund = $('input[name=\'filter_include_all_refund\']').prop('checked');
+    if (filter_include_all_refund) {
+      url += '&filter_include_all_refund=1';
+    }
+    let filter_order_status = $('select[name=\'filter_order_status\']').val();
+    if (filter_order_status && filter_order_status !== '*') {
+      url += '&filter_order_status=' + filter_order_status;
+    }
+    //新增查询
+    return url;
+  }
+
+  function downloadPurchaseOrder() {
+    url = 'index.php?route=account/order/purchaseOrderFilterByCsv';
+    let filter_orderId = $('input[name=\'filter_orderId\']').val();
+    if (filter_orderId) {
+      url += '&filter_orderId=' + encodeURIComponent(filter_orderId);
+    }
+    let filter_orderDate_from = $('input[name=\'filter_orderDate_from\']').val();
+    if (filter_orderDate_from) {
+      url += '&filter_orderDate_from=' + encodeURIComponent(filter_orderDate_from);
+    }
+    let filter_orderDate_to = $('input[name=\'filter_orderDate_to\']').val();
+    if (filter_orderDate_to) {
+      url += '&filter_orderDate_to=' + encodeURIComponent(filter_orderDate_to);
+    }
+    let filter_item_code = $('input[name=\'filter_item_code\']').val();
+    if (filter_item_code) {
+      url += '&filter_item_code=' + encodeURIComponent(filter_item_code);
+    }
+    let filter_include_all_refund = $('input[name=\'filter_include_all_refund\']').prop('checked');
+    if (filter_include_all_refund) {
+      url += '&filter_include_all_refund=1';
+    }
+    let filter_order_status = $('select[name=\'filter_order_status\']').val();
+    if (filter_order_status && filter_order_status !== '*') {
+      url += '&filter_order_status=' + filter_order_status;
+    }
+    window.location.href = url;
+  }
+</script>
+{{ footer }}

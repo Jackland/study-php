@@ -1,0 +1,8 @@
+<?php
+
+use App\Catalog\Controllers\AuthSellerController;
+
+class {{className}} extends AuthSellerController
+{
+{{actions}}
+}

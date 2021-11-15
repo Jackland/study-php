@@ -1,0 +1,81 @@
+{{ header }}{{ separate_column_left }}
+{% if separate_view is defined and separate_view %}
+  <div class="container-fluid" id="content" style="margin-left: 18%">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+    {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+
+  {% if chkIsPartner %}
+  <div id="content" class="{{ class}}">
+    {{ content_top}}
+    <h1>
+      {{ heading_title}}
+      <div class="pull-right">
+        <a href="{{ back}}" data-toggle="tooltip" title="{{ button_back}}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+    </h1>
+
+    <fieldset>
+      <legend><i class="fa fa-list"></i> {{ heading_title ~ ' ' ~ product_id }}</legend>
+      {% if access_error is not defined and isMember is defined and isMember %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead>
+        	<tr>
+        		<td class="text-left"><a>{{ entry_wkorder }}</a></td>
+        		<td class="text-left"><a>{{ entry_wkcustomer }}</a></td>
+        		<td class="text-left"><a>{{ entry_wkqty }}</a></td>
+        		<td class="text-eft"><a>{{ entry_wkprice }}</a></td>
+        		<td class="text-left"><a>{{ entry_wksold }}</a></td>
+            <td class="text-center"><a>{{ entry_transaction_status }}</a></td>
+        		<td class="text-left"></td>
+        	</tr>
+          </thead>
+          <tbody>
+            {% if orders %}
+              {% for order in orders %}
+                <tr>
+              		<td class="text-left">{{ '#' ~ order['order_id'] }}</td>
+              		<td class="text-left">{{ order['name'] }}</td>
+              		<td class="text-left">{{ order['quantity']}}</td>
+              		<td class="text-left">{{ order['price']}}</td>
+              		<td class="text-left">{{ order['date_added']}}</td>
+                  <td class="text-center">{{ order['paid_status']}}</td>
+              		<td class="text-center"> <a href="{{ order['link']}}" class="btn btn-primary btn-xs" data-toggle="tooltip" title="{{ text_invoice}}"> <i class="fa fa-eye"></i></a></td>
+                <tr>
+          		{% endfor %}
+            {% else %}
+            <tr>
+              <td colspan="6" class="text-left"></td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+        <div class="text-right">{{ pagination }}</div>
+        <div class="text-right">{{ results }}</div>
+      </div>
+    </fieldset>
+    {% else %}
+      {{ text_access}}
+    {% endif %}
+    {{ content_bottom}}
+  </div>
+  {% endif %}
+  {{ column_right}}
+  </div>
+</div>
+{{ footer}}

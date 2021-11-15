@@ -1,0 +1,92 @@
+{# 申请理赔详情提交资料 #}
+{{ js(['js/common/toolString.js']) }}
+{{ js(['js/common/uploadFiles.js']) }}
+{{ css(['css/buyer/safeguard/claimSubmitFiles.css']) }}
+<div class="box-bg claim-files-content" id="claimFilesContent">
+  <div class="flex-layout p10-tb">
+    <span class="oris-title-border"></span>
+    <span class="text-larger text-bold">Claim</span>
+  </div>
+  <div class="oris-row">
+    <div class="oris-col-3 oris-select reasons-select">
+      <label class="text-bold required-before">Reason for Claim</label>
+      <select id="reasonSelect" title="{{ __('请选择', {}, 'common') }}">
+        {% if reasons %}
+        {% for item in reasons %}
+        <option value="{{ item.id }}">{{ item.reason_en }}</option>
+        {% endfor %}
+        {% endif %}
+      </select>
+      <span class="text-danger" hidden>Required</span>
+    </div>
+    <div class="oris-col-3 oris-select oris-w264">
+      <label class="text-bold">Selling Platform</label>
+      <select id="platformSelect" title="{{ __('请选择', {}, 'common') }}">
+        {% if sales_platform %}
+        {% for item in sales_platform %}
+        <option value="{{ item.DicValue }}">{{ item.DicValue }}</option>
+        {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+    <div class="oris-col pull-right">
+      <label>&nbsp;</label>
+      <div class="calc-account" id="calcClaimBtn">
+        <i class="giga icon-jisuanqi1"></i>
+        <i class="giga icon-V10_youjiantougengduo">&nbsp;</i>
+        <span class="underline">Calculate the Estimated Claim Amount</span>
+      </div>
+    </div>
+  </div>
+  <div class="oris-row p14-tb">
+    <div class="oris-comments">
+      <label class="text-bold required-before">Problem Description</label>
+      <textarea id="claimDescribe" rows="4" class="oris-input oris-scrollbar" placeholder="Leave a message to the Marketplace, and describe the problem and your demands as detailed as possible. A maximum of 2000 characters are allowed"></textarea>
+      <span class="letter-count"><span id="addLen" class="link-color">0</span>/2000</span>
+    </div>
+    <span class="text-danger pos-t-4" hidden>Required</span>
+  </div>
+  <div class="just-flex">
+  	<div class="oris-w400 pointer action-files-range">
+      <label class="text-bold required-before">Supplement supporting files</label>
+      <div class="upload-btn">
+      	<i class="giga icon-shangchuanyunduan"></i>
+      	<div class="link-color text-center">Click to upload</div>
+      </div>
+    </div>
+    <input type='file' name='file' class="action-files-input none-i" accept='image/jpg,image/jpeg,application/pdf,image/png,application/msword,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document' multiple>
+    <div class="flex1 upload-suggestion">
+    	<label>&nbsp;</label>
+    	<div class="suggest">Suggestions:</div>
+    	<div class="text-bold"><span class="oris-circle"></span><span class="required-before">Upload valid evidence such as the screeshot of your communication with customer, screenshot of refund to customer.</span></div>
+    	<div class="text-light"><span class="oris-circle"></span>The uploaded files will be important basis for the Marketplace to review.</div>
+    	<div class="text-light"><span class="oris-circle"></span>If the uploaded files do not meet the requirements, the claim application may be declined.</div>
+    	<div class="text-light"><span class="oris-circle"></span>Upload files in .jpeg/.png/.doc(x)/.xls(x)/.pdf format only. Less than 10M for single file.</div>
+    </div>
+  </div>
+  <div class="text-danger pos-t-6 action-files-error" hidden>Required</div>
+  <div class="action-files-show oris-w400"></div>
+</div>
+{% apply script %}
+<script type="text/javascript">
+$().ready(function() {
+  claimSubFilesComponent.initTextarea();
+  uploadFiles.initUploadInput($('#claimFilesContent'), 10, 10, 'index.php?route=account/safeguard/claim/upload', true, 'claimSubmit');
+});
+var claimSubFilesComponent = {
+  initTextarea: function(_this) {
+  	$('#claimFilesContent').on('keyup','#claimDescribe',function(){
+  		var _this = this;
+  		var calcReturn = toolString.calcStringLength($(_this).val(), 2000);
+	    $(_this).val(calcReturn.fullStr);
+	    $("#addLen").text(calcReturn.len)
+	    if (calcReturn.len < 1) {
+	      $(_this).siblings('.text-danger').show();
+	    } else {
+	      $(_this).siblings('.text-danger').hide();
+	    }
+  	})
+  }
+}
+</script>
+{% endapply %}

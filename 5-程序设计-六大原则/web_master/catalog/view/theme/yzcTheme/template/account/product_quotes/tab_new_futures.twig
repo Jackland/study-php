@@ -1,0 +1,1398 @@
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script src="catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/magnific/magnific-popup.css" type="text/css" rel="stylesheet"/>
+<style>
+    .margin-hot-map {
+      height: 70px;
+      width: 18%;
+      border-right: 1px solid #e1e1e1;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .margin-hot-map:last-child {
+      border: 0;
+    }
+
+    .margin-hot-map.active, .margin-hot-map:hover {
+      background-color: #1834640c;
+    }
+
+    .margin-hot-map:hover {
+      cursor: pointer;
+    }
+
+    .margin-hot-map:hover .hot-map-status {
+      color: #183464;
+    }
+
+    .margin-hot-map:hover .hot-map-num {
+      color: #FA6400;
+    }
+
+    .hot-map-status {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      height: 40px;
+      font-weight: bold;
+      font-size: 14px;
+      padding: 6px 0;
+      color: #677999;
+    }
+
+    .margin-hot-map.active .hot-map-status {
+      color: #183464;
+    }
+
+    .giga.icon-help-inactive {
+      color: #b620e0;
+    }
+
+    .hot-map-num {
+      font-size: 16px;
+    }
+
+    .margin-hot-map.active .hot-map-num {
+      font-weight: bold;
+      color: #FA6400;
+    }
+
+    .text-update-hour {
+      color: #999999d8;
+    }
+
+    /*.page-seller-portal table.table.main .action-group{*/
+    /*  text-align: right;*/
+    /*}*/
+    .page-seller-portal table.table.main .action-group a {
+      margin-left: 0px;
+      border: 1px solid #eee;
+    }
+
+    .margin-action-ele i {
+      font-size: 14px !important;
+    }
+
+    .page-seller-portal table.table.main .action-group button {
+      border: 1px solid #eee;
+    }
+
+    .page-seller-portal table.table.main .action-group .dropdown-menu a {
+      border: none;
+    }
+
+    .a-cursor-pointer {
+      cursor: pointer;
+    }
+
+    textarea.modalMarginReason:focus {
+      outline: none;
+    }
+
+    .a-link {
+      color: #3A75DC;
+    }
+
+    .a-link:hover {
+      text-decoration: underline;
+    }
+
+    /*排序*/
+    .my-sort {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .my-sort:hover {
+      cursor: pointer;
+      color: #000;
+    }
+
+    .my-sort.active {
+      color: #000;
+    }
+
+    .my-sort-up {
+      position: relative;
+      top: -4px;
+
+    }
+
+    .my-sort-down {
+      /* position: absolute;
+       top: 4px;*/
+      left: 0;
+    }
+    .quick-filter {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .quick-title {
+        display: inline-block;
+        height: 45px;
+        line-height: 45px;
+        padding: 0 30px;
+    }
+
+    .my-border-right {
+        border-right: 1px solid #aaa;
+    }
+
+    .wait-number {
+        font-style: normal;
+        font-weight: bolder;
+    }
+
+    .quick-title.active {
+        background: #F3F5F7;
+        color: #183464;
+    }
+
+    .quick-title.active .wait-number {
+        color: #FA6400;
+    }
+
+    .quick-title:hover {
+        cursor: pointer;
+        background: #F3F5F7;
+        color: #183464;
+    }
+
+    .quick-title:hover .wait-number {
+        color: #FA6400;
+    }
+
+    .mr4 {
+        margin-right: 4px;
+    }
+
+    .layui-layer-dialog .layui-layer-content {
+        word-break: break-word;
+    }
+
+    .success {
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        padding: 8px 30px;
+        text-align: left;
+    }
+
+    .success i {
+        color: #2e9b01;
+        font-size: 36px;
+        margin-right: 10px;
+    }
+
+    .page-seller-portal table.table.main .action-group a {
+        margin-right: 0;
+    }
+
+    .future-hot-map {
+        width: 22%;
+    }
+
+    table:not(.oris-table) tr td a:hover, tr td a.link:hover {
+        color: #3A75DC;
+    }
+
+    .text-update-hour {
+        color: #999999d8;
+    }
+
+    .table .dropdown-menu {
+        left: auto;
+        right: 0;
+        min-width: 200px;
+    }
+
+    .table tbody > tr > td:last-child .btn {
+        width: 30px;
+        height: 30px;
+        padding: 5px;
+        background-color: #f3f5f7;
+        border: 1px solid #eee;
+        color: #333;
+        margin: 3px;
+    }
+
+    .table tbody tr td a.btn {
+        background-color: #f3f5f7;
+        border: 1px solid #eee;
+        box-shadow: none;
+        line-height: 18px;
+    }
+
+    .table tbody tr td a.btn:hover {
+        color: #FFFFFF;
+        background-color: #FA6400;
+    }
+
+    .page-seller-portal .btn i {
+        font-size: 16px;
+    }
+
+    .table tbody tr td .agreement-popover {
+        border: none;
+        font-weight: initial;
+        padding: 0;
+        background-color: transparent;
+        box-shadow: none;
+        width: 0;
+        height: 0;
+    }
+
+
+    .yzc_layer .layui-layer-ico{
+        background: none;
+    }
+    .yzc_layer .layui-layer-close.layui-layer-close1:after{
+        content: "\e6b4";
+        font-family: 'giga';
+        color: #fff;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn0{
+        border-color: #3A75DC;
+        background-color: #3A75DC;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn0:hover{
+        background-color: #2d57a9;
+        opacity: 1;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn1{
+        color: #3A75DC;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn1:hover{
+        background-color: #3A75DC;
+        color: #fff;
+        opacity: 1;
+    }
+    .yzc_layer .layui-layer-content{
+        text-align: left;
+    }
+    #futures-bid .form-wrapper .form-group > label{
+        text-transform: none;
+        font-weight: initial;
+    }
+    .giga.icon-help-inactive{
+        font-size: 14px;
+        font-weight: initial;
+        margin-left: 3px;
+    }
+
+    table:not(.oris-table) td .dropdown-menu > li > a{
+        cursor: pointer;
+    }
+</style>
+<div role="tabpanel" class="tab-pane active text-small" id="futures-bid">
+    <div class="bg-white">
+        {#搜索#}
+        <div class="filter-wrapper form-wrapper mb-3">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label" for="input_futures_agreement_no">{{ column_agreement_no }}</label>
+                        <input type="text" name="filter_futures_agreement_no" value="{{ agreement_no }}"
+                               placeholder="Agreement ID " id="input_futures_agreement_no" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label" for="input_futures_store">{{ column_store }}</label>
+                        <input type="text" name="filter_futures_store" value="{{ store_name }}" placeholder="Store"
+                               id="input_futures_store" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label"
+                               for="input_futures_agreement_status">{{ column_agreement_status }}</label>
+                        <select name="filter_futures_agreement_status" id="input_futures_agreement_status"
+                                class="form-control"
+                                onchange="selectStatus()" {% if delivery_status > 0 %} disabled {% endif %}>
+                            <option value="0">--- {{ __('请选择', {}, 'common') }} ---</option>
+                            {% for k,v in agreement_status_list %}
+                                <option value="{{ k }}" {% if k == agreement_status %} selected {% endif %}> {{ v.name }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label"
+                               for="input_futures_delivery_status">{{ column_delivery_status }}</label>
+                        <select name="filter_futures_delivery_status" id="input_futures_delivery_status"
+                                class="form-control"
+                                onchange="selectStatus()" {% if agreement_status in [1,2,3,4,5,6,8] %} disabled {% endif %}>
+                            <option value="0">--- {{ __('请选择', {}, 'common') }} ---</option>
+                            {% for k,v in delivery_status_list %}
+                                <option value="{{ k }}" {% if k == delivery_status %} selected {% endif %}> {{ v.name }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label" for="input_futures_item_code">{{ column_item_code }}</label>
+                        <input type="text" name="filter_futures_item_code" value="{{ sku }}" placeholder="Item Code"
+                               id="input_futures_item_code" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label">{{ column_delivery_date }}</label>
+                        <div class="datetimepicker-range">
+                            <div class="datetimepicker">
+                                <input type="text" name="filter_futures_delivery_date_from"
+                                       value="{{ delivery_date_from }}" placeholder="Pick a date..."
+                                       id="input_futures_delivery_date_from" class="form-control"/>
+                                <span class="title">From</span>
+                                <span class="icon"><i class="giga icon-date-icon"></i></span>
+                            </div>
+                            <div class="datetimepicker">
+                                <input type="text" name="filter_futures_delivery_date_to" value="{{ delivery_date_to }}"
+                                       placeholder="Pick a date..." id="input_futures_delivery_date_to"
+                                       class="form-control"/>
+                                <span class="title">To</span>
+                                <span class="icon"><i class="giga icon-date-icon"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="">{{ column_date_from_to }}</label>
+                        <div class="datetimepicker-range">
+                            <div class="datetimepicker">
+                                <input type="text" name="filter_futures_date_from" value="{{ date_from }}"
+                                       placeholder="Pick a date..." id="input_futures_date_from" class="form-control"/>
+                                <span class="title">From</span>
+                                <span class="icon"><i class="giga icon-date-icon"></i></span>
+                            </div>
+                            <div class="datetimepicker">
+                                <input type="text" name="filter_futures_date_to" value="{{ date_to }}"
+                                       placeholder="Pick a date..." id="input_futures_date_to" class="form-control"/>
+                                <span class="title">To</span>
+                                <span class="icon"><i class="giga icon-date-icon"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group pull-right" style="margin-top: 28px;">
+                        <div>
+                            <a onclick="filterFutures(this);" class="btn btn-primary" data-toggle="tooltip"
+                               title="Filter" id="quote_futures_filter_btn">{{ button_filter }} </a>
+                            <button type="button" onclick="downloadFuturesBid()" class="btn btn-default" data-toggle="tooltip"
+                                    title="Download" style="padding: 0 11px"><i class="giga icon-download"></i></button>
+                            <a onclick="cleanFilterFutures(this);" class="btn btn-default" data-toggle="tooltip"
+                               title="Reset" style=""><i class="giga icon-reset3"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {#热区#}
+            <div class="quick-filter">
+                <div class="row" style="text-align: center;">
+                    {#待处理#}
+                    <div class="margin-hot-map future-hot-map  {% if 1 == status %} active {% endif %}" onclick="filterFutures('', 1)">
+                        <div class="hot-map-status">
+                            {{ text_to_be_processed }}
+                            <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{ tip_text_waiting_for_review }}</div>"></i>
+                        </div>
+                        <div class="hot-map-num">{{ to_be_processed_count }}</div>
+                    </div>
+                    {#等待入仓#}
+                    <div class="margin-hot-map future-hot-map {% if 2 == status %} active {% endif %}" onclick="filterFutures('', 2)">
+                        <div class="hot-map-status">
+                            {{ text_to_be_delivered }}
+                            <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{tip_text_waiting_for_delivery}}</div>"></i>
+                        </div>
+                        <div class="hot-map-num">{{ to_be_delivered_count }}</div>
+                    </div>
+                    {#等待交割#}
+                    <div class="margin-hot-map future-hot-map {% if 7 == status %} active {% endif %}" onclick="filterFutures('', 7)">
+                        <div class="hot-map-status">
+                            {{ text_to_be_paid }}
+                            <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{tip_text_waiting_for_payment}}</div>"></i>
+                        </div>
+                        <div class="hot-map-num">{{ to_be_paid_count }}</div>
+                    </div>
+                    {#即将到期#}
+                    <div class="margin-hot-map future-hot-map {% if 8 == status %} active {% endif %}" onclick="filterFutures('', 8)">
+                        <div class="hot-map-status">
+                            {{ text_to_be_expired }}
+                            <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html='true' title="<div style='word-wrap:normal'>{{tip_text_due_soon}}</div>"></i>
+                        </div>
+                        <div class="hot-map-num">{{ due_soon_count }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {#列表#}
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-futures">
+            <div class="table-responsive">
+                <table class="table main table-hover">
+                    <thead>
+                    <tr>
+                        <th class="text-left">{{ column_agreement_no }}</th>
+                        <th class="text-left">{{ column_store }}</th>
+                        <th class="text-left">{{ column_item_code }}</th>
+                        <th class="text-left">
+                            <a onclick="filterFutures('','{{ status }}','delivery_date', '{{ order }}')" style="cursor:pointer;"
+                                    {% if 'delivery_date' == sort %} class="{{ order|lower }}" {% endif %}>
+                                {{ column_delivery_date }}</a>
+                        </th>
+                        <th class="text-left">{{ column_delivery_type }}</th>
+                        <th class="text-left">{{ column_purchased_qty }}<br>/{{ column_agreement_qty }}</th>
+                        <th class="text-left">{{ column_agreement_status }}</th>
+                        <th class="text-left">{{ column_delivery_status }}</th>
+                        <th class="text-left">
+                            <a onclick="filterFutures('','{{ status }}','update_time', '{{ order }}')" style="cursor:pointer;">
+                                {{ column_last_modified }}
+                                {% if 'update_time' == sort %}
+                                    <span style="position: relative;margin-left: 3px;color: #aaa;">
+                                    <i class="gcl gcldown-solid"
+                                       style="font-size: 12px;position: absolute;bottom: 3px; {% if order|lower =='asc' %}color:#333;{% endif %}"></i>
+                                    <i class="gcl gcliup"
+                                       style="font-size: 12px;position: absolute;bottom: -4px;{% if order|lower =='desc' %}color:#333;{% endif %}"></i>
+                                  </span>
+
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th class="text-center" style="width: 110px">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if agreement_list %}
+                        {% for item in agreement_list %}
+                            {% if item.contract_id == 0 %}{#期货保证金一期#}
+                                <tr>
+                                    <td class="text-left" v="1" version="{{ item.version }}">
+                                      <span style="display: inline-flex;">
+                                        {{ item.agreement_no }}
+                                      </span>
+                                    </td>
+                                    <td class="text-left">{{ item.screenname }}</td>
+                                    <td class="text-left">
+                                      <span style="display: inline-flex;">
+                                        <a href="{{ url('product/product', {'product_id':item.product_id}) }}" target="_blank"
+                                           class="no-wrap">{{ item.sku }}</a>
+                                        {% if item.tag %}
+                                            {% for tagDetail in item.tag %}
+                                                &nbsp;{{ tagDetail }}
+                                            {% endfor %}
+                                        {% endif %}
+                                      </span>
+                                    </td>
+                                    <td class="text-left">
+                                        {{ item.show_delivery_date }}
+                                        {% if  item.days and item.delivery_status == 1 and item.days <= 7 %}
+                                            <br>
+                                          {% if item.days > 1%}
+                                            <span style="color: #FF414D">{{ item.days }} Days Left</span>
+                                          {% else %}
+                                            <span style="color: #FF414D">{{ item.days }} Day Left</span>
+                                          {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left">{{ item.delivery_type_name }}</td>
+                                    <td class="text-left">
+                                      {# 期货中转现货的，只要没有completed的都置为0数量  #}
+                                      {{ item.purchase_num_show }}/{{ item.num }}
+                                    </td>
+                                    <td class="text-left">
+                                        <span style="color: {{ item.agreement_status_color }}">{{ item.agreement_status_name }}</span>
+                                        {% if item.time_tips and 1 != item.delivery_status %}
+                                            <br>
+                                            <span data-toggle="tooltip" title="Disabled Countdown" style="cursor: pointer">
+                                                <i class="giga icon-daojishi" style="color: #FF414D;margin-left: 3px"></i>
+                                                <span style="color: #ff414d"> {{ item.time_left }}</span>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left" style="color: {{ item.delivery_status_color }}">
+                                        {{ item.delivery_status_name }}
+{#                                        {% if 7 == item.delivery_status %}#}
+{#                                            <i class="fa fa-exclamation-circle" data-toggle="tooltip"#}
+{#                                               style="color: sandybrown"></i>#}
+{#                                        {% endif %}#}
+{#                                        {% if item.time_tips and 1 == item.delivery_status %}#}
+{#                                            <br>#}
+{#                                            <span data-toggle="tooltip" title="Disabled Countdown" style="cursor: pointer">#}
+{#                                                <i class="giga icon-daojishi" style="color: #FF414D;margin-left: 3px"></i>#}
+{#                                                <span style="color: #ff414d"> {{ item.time_left }}</span>#}
+{#                                            </span>#}
+{#                                        {% endif %}#}
+                                        {% if item.left_time_secs > 0 and 6 == item.delivery_status %}
+                                            <div class=" text-danger">
+                                                <i class="giga icon-naozhong text-size-normal" style="color: #FF414D;margin-left: 3px"></i>
+                                                <span class="countdown-time"> {{ item.left_time_secs}}</span>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left text-price">{{ item.update_day }}<br><span
+                                                class="text-update-hour">{{ item.update_hour }}</span></td>
+                                    <td class="text-left">
+                                        {#Action#}
+                                        {% if item.add_to_cart %}
+                                            <a class="btn" data-toggle="tooltip" title="Add to Cart"
+                                               data-version="{{ item.version }}"
+                                               data-agreement_id="{{ item.id }}"
+                                               data-advance_product_id="{{ item.advance_product_id }}"
+                                               data-product_id="{{ item.product_id }}" data-cnzz-event="Bid List|BL_AddtoCart"
+                                               data-last_purchase_num="{{ item.last_purchase_num }}"
+                                               onclick="futuresCartAdd(this, '{{ item.add_to_cart }}', '{{ item.delivery_type }}')" >
+                                                <i class="giga icon-cart-add"></i>
+                                            </a>
+                                        {% endif %}
+                                        <a class="btn" href="{{ agreement_detail_url }}&id={{ item.id }}"
+                                           target="_blank" data-toggle="tooltip" title="View">
+                                            <i class="giga icon-chakan1"></i>
+                                        </a>
+
+                                        {% if (item.agreement_status in [4,6] and not item.delivery_status)
+                                            or (2 == item.delivery_status and not item.ignore) %}
+
+                                            {% if item.agreement_status in [4,6] and not item.delivery_status %}
+                                                <div class="dropdown" style="display: inline-block;">
+                                                    <a id="btn-group" class="btn" data-target="#" data-toggle="dropdown"
+                                                       role="button" aria-haspopup="true" aria-expanded="false">
+                                                      <i class="giga icon-action-more"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu" aria-labelledby="btn-group">
+                                                        <li>
+                                                            <a class="" data-toggle="tooltip" title=""
+                                                               onclick="ignoreAction('{{ item.id }}', '{{ item.agreement_no }}')">
+                                                              <i class="giga icon-hulve"></i> Ignore
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="{{ agreement_detail_url }}&id={{ item.id }}"
+                                                               target="_blank" class="" data-toggle="tooltip"
+                                                               title="">
+                                                                <i class="giga icon-action-refresh-reload"></i> Reapplied
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            {% else %}
+                                                <a class="btn" data-toggle="tooltip" title="Ignore"
+                                                   onclick="ignoreAction('{{ item.id }}', '{{ item.agreement_no }}')">
+                                                    <i class="giga icon-hulve"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if item.delivery_status in [3,7] %}
+                                            <div class="dropdown" style="display: inline-block;">
+                                                <a id="btn-group" class="btn" data-target="#" data-toggle="dropdown"
+                                                   role="button" aria-haspopup="true" aria-expanded="false">
+                                                    <i class="giga icon-action-more"></i>
+                                                </a>
+                                                <ul class="dropdown-menu" aria-labelledby="btn-group">
+                                                    <li>
+                                                        <a class="" href="{{ agreement_detail_url }}&id={{ item.id }}"
+                                                           target="_blank" data-toggle="tooltip"
+                                                           title="Select settlement methods">
+                                                            <i style="font-size: 16px;font-weight: bolder"
+                                                               class="fa fa-hand-pointer-o"></i> Select settlement
+                                                            methods
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="" data-toggle="tooltip" title="Terminate"
+                                                           onclick="terminatedAction('{{ item.id }}')">
+                                                            <i style="font-size: 16px;font-weight: bolder"
+                                                               class="fa fa-ban"></i> Terminate
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+
+
+                                        {% if (1 == item.agreement_status or 3 == item.agreement_status) and not item.delivery_status %}
+                                            <a class="btn" data-toggle="tooltip" style="cursor: pointer;"
+                                               data-original-title="Cancel"
+                                               onclick="cancelAction('{{ item.id }}', '{{ item.agreement_no }}')">
+                                                <i class="giga icon-sidebar-clear" style="font-weight: bold"></i>
+                                            </a>
+                                        {% endif %}
+                                        {#END Action#}
+                                    </td>
+                                </tr>
+                            {% else %}{#期货保证金二期#}
+                                <tr>
+                                    <td class="text-left" v="2" version="{{ item.version }}">
+                                      <span style="display: inline-flex;">
+                                        {{ item.agreement_no }}
+                                      </span>
+                                    </td>
+                                    <td class="text-left">{{ item.screenname }}</td>
+                                    <td class="text-left">
+                                      <span style="display: inline-flex;">
+                                        <a href="{{ url('product/product', {'product_id':item.product_id}) }}" target="_blank"
+                                           class="no-wrap">{{ item.sku }}
+                                        </a>
+                                        {% if item.tag %}
+                                            {% for tagDetail in item.tag %}
+                                                &nbsp;{{ tagDetail }}
+                                            {% endfor %}
+                                        {% endif %}
+                                      </span>
+                                    </td>
+                                    <td class="text-left">
+                                        {{ item.show_delivery_date }}
+                                        {% if  item.days and item.delivery_status == 1 and item.days <= 7 %}
+                                            <br>
+                                          {% if item.days > 1%}
+                                            <span style="color: #FF414D">{{ item.days }} Days Left</span>
+                                          {% else %}
+                                            <span style="color: #FF414D">{{ item.days }} Day Left</span>
+                                          {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left">{{ item.delivery_type_name }}</td>
+                                    <td class="text-left">
+                                      {{ item.purchase_num_show }}/{{ item.num }}</td>
+                                    <td class="text-left">
+                                        <span style="color: {{ item.agreement_status_color }}">{{ item.agreement_status_name }}</span>
+                                        {% if item.time_tips and 7 != item.agreement_status %}
+                                            <br>
+                                            <span data-toggle="tooltip" title="Disabled Countdown" style="cursor: pointer">
+                                                <i class="giga icon-daojishi" style="color: #FF414D;margin-left: 3px"></i>
+                                                <span style="color: #ff414d"> {{ item.time_left }}</span>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left" style="color: {{ item.delivery_status_color }}">
+{#                                        {% if 7 == item.delivery_status %}#}
+{#                                            <i class="fa fa-exclamation-circle" data-toggle="tooltip"#}
+{#                                               style="color: sandybrown"></i>#}
+{#                                        {% endif %}#}
+                                        {{ item.delivery_status_name }}
+{#                                      {% if item.time_tips and 7 == item.agreement_status %}#}
+{#                                        <br>#}
+{#                                        <span data-toggle="tooltip" title="Disabled Countdown" style="cursor: pointer">#}
+{#                                                <i class="giga icon-daojishi" style="color: #FF414D;margin-left: 3px"></i>#}
+{#                                                <span style="color: #ff414d"> {{ item.time_left }}</span>#}
+{#                                            </span>#}
+{#                                      {% endif %}#}
+                                        {% if item.left_time_secs > 0  and 6 == item.delivery_status%}
+                                            <div class=" text-danger">
+                                                <i class="giga icon-naozhong text-size-normal"></i>
+                                                <span class="countdown-time" data-countdown="{{item.left_time_secs}}"> </span>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left text-price">{{ item.update_day }}<br><span
+                                                class="text-update-hour">{{ item.update_hour }}</span></td>
+                                    <td class="text-left">
+                                        {#Action#}
+                                        {% if item.agreement_status == 1 or item.agreement_status == 2 %}
+                                            {#1 Applied, 2 Pending #}
+                                            {% if item.contract_status == 1 %}
+                                            <a class="btn"
+                                               href="{{ url('account/product_quotes/futures/buyerFuturesBidDetail', {'id':item.id, 'ado':'edit'}) }}"
+                                               target="_blank" data-toggle="tooltip" style="cursor: pointer;"
+                                               data-original-title="Modify">
+                                                <i class="giga icon-action-edit"></i>
+                                            </a>
+                                            {% endif %}
+                                            <a class="btn btn-refuse" data-toggle="tooltip" style="cursor: pointer;"
+                                               data-original-title="Cancel"
+                                               onclick="cancelAction('{{ item.id }}', '{{ item.agreement_no }}')">
+                                                <i class="giga icon-refuse"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if item.agreement_status == 3 %}
+                                            {#3 Approved#}
+                                            {% if item.add_to_cart %}
+                                                <a data-toggle="tooltip" title="Add to Cart" class="btn"
+                                                   data-version="{{ item.version }}"
+                                                   data-agreement_id="{{ item.id }}"
+                                                   data-advance_product_id="{{ item.advance_product_id }}"
+                                                   data-product_id="{{ item.product_id }}"
+                                                   data-last_purchase_num="{{ item.last_purchase_num }}" data-cnzz-event="Bid List|BL_AddtoCart"
+                                                   onclick="futuresCartAdd(this, '{{ item.add_to_cart }}', '{{ item.delivery_type }}')">
+                                                    <i class="giga icon-cart-add"></i>
+                                                </a>
+
+                                                {% if item.contract_status == 1 %}
+                                                    <div class="dropdown" style="display: inline-block;">
+                                                        <a id="btn-group" class="btn" data-target="#" data-toggle="dropdown"
+                                                           role="button" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="giga icon-action-more"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu" aria-labelledby="btn-group">
+                                                            <li>
+                                                                <a class=""
+                                                                   href="{{ url('account/product_quotes/futures/buyerFuturesBidDetail', {'id':item.id, 'ado':'edit'}) }}"
+                                                                   target="_blank" data-toggle="tooltip"
+                                                                   style="cursor: pointer;" data-original-title="Modify">
+                                                                  <i class="giga icon-action-edit"></i> Modify
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="" data-toggle="tooltip" style="cursor: pointer;"
+                                                                   data-original-title="Cancel"
+                                                                   onclick="cancelAction('{{ item.id }}', '{{ item.agreement_no }}')">
+                                                                  <i class="giga icon-refuse"></i> Cancel
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                {% else %}
+                                                    <a class="btn" data-toggle="tooltip" style="cursor: pointer;"
+                                                       data-original-title="Cancel"
+                                                       onclick="cancelAction('{{ item.id }}', '{{ item.agreement_no }}')">
+                                                        <i class="giga icon-refuse"></i>
+                                                    </a>
+                                                {% endif %}
+                                            {% else %}
+                                                {% if item.contract_status == 1 %}
+                                                <a class="btn"
+                                                   href="{{ url('account/product_quotes/futures/buyerFuturesBidDetail', {'id':item.id, 'ado':'edit'}) }}"
+                                                   target="_blank" data-toggle="tooltip" style="cursor: pointer;"
+                                                   data-original-title="Modify">
+                                                    <i class="giga icon-action-edit"></i>
+                                                </a>
+                                                {% endif %}
+                                                <a class="btn" data-toggle="tooltip" style="cursor: pointer;"
+                                                   data-original-title="Cancel"
+                                                   onclick="cancelAction('{{ item.id }}', '{{ item.agreement_no }}')">
+                                                    <i class="giga icon-refuse"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if item.agreement_status == 4 %}
+                                            {#4 Rejected#}
+                                            <a class="btn"
+                                               href="{{ url('account/product_quotes/futures/buyerFuturesBidDetail', {'id':item.id}) }}"
+                                               target="_blank" class="" data-toggle="tooltip" title="View">
+                                                <i class="giga icon-chakan1"></i>
+                                            </a>
+                                            {% if not item.delivery_status
+                                                or (2 == item.delivery_status and not item.ignore) %}
+                                                {#Ignore#}
+                                                <a class="btn" data-toggle="tooltip" title="Ignore"
+                                                   onclick="ignoreAction('{{ item.id }}', '{{ item.agreement_no }}')">
+                                                    <i class="giga icon-hulve"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if item.agreement_status == 5 %}
+                                            {#5 Canceled#}
+                                            <a class="btn"
+                                               href="{{ url('account/product_quotes/futures/buyerFuturesBidDetail', {'id':item.id}) }}"
+                                               target="_blank" class="" data-toggle="tooltip" title="View">
+                                                <i class="giga icon-chakan1"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if item.agreement_status == 6 %}
+                                            {#6 Time out#}
+                                            <a class="btn"
+                                               href="{{ url('account/product_quotes/futures/buyerFuturesBidDetail', {'id':item.id}) }}"
+                                               target="_blank" class="" data-toggle="tooltip" title="View">
+                                                <i class="giga icon-chakan1"></i>
+                                            </a>
+                                            {% if not item.delivery_status
+                                                or (2 == item.delivery_status and not item.ignore) %}
+                                                {#Ignore#}
+                                                <a class="btn" data-toggle="tooltip" title="Ignore"
+                                                   onclick="ignoreAction('{{ item.id }}', '{{ item.agreement_no }}')">
+                                                    <i class="giga icon-hulve"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if item.agreement_status == 7 %}
+                                            {#7 Deposit Received#}
+
+                                            {% if item.delivery_status == 6 %}
+                                                {# delivery_status=6，To be Paid，Seller同意Buyer的交割形式，[已入仓] #}
+
+                                                {% if item.add_to_cart %} {# 显示购物车 #}
+                                                    <a data-toggle="tooltip" title="Add to Cart" class="btn"
+                                                       data-version="{{ item.version }}"
+                                                       data-agreement_id="{{ item.id }}"
+                                                       data-advance_product_id="{{ item.advance_product_id }}"
+                                                       data-product_id="{{ item.product_id }}"
+                                                       data-last_purchase_num="{{ item.last_purchase_num }}" data-cnzz-event="Bid List|BL_AddtoCart"
+                                                       onclick="futuresCartAdd(this, '{{ item.add_to_cart }}', '{{ item.delivery_type }}')">
+                                                        <i class="giga icon-cart-add"></i>
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
+
+                                            <a class="btn" href="{{ url('account/product_quotes/futures/buyerFuturesBidDetail', {'id':item.id}) }}" target="_blank" class="" data-toggle="tooltip" title="View">
+                                                <i class="giga icon-chakan1"></i>
+                                            </a>
+
+                                            {% if (2 == item.delivery_status and not item.ignore) %}
+                                              <a class="btn" data-toggle="tooltip" title="Ignore"
+                                                 onclick="ignoreAction('{{ item.id }}', '{{ item.agreement_no }}')">
+                                                <i class="giga icon-hulve"></i>
+                                              </a>
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if item.agreement_status == 8 %}
+                                            <a class="btn" href="{{ url('account/product_quotes/futures/buyerFuturesBidDetail', {'id':item.id}) }}" target="_blank" class="" data-toggle="tooltip" title="View">
+                                                <i class="giga icon-chakan1"></i>
+                                            </a>
+                                        {% endif %}
+                                        {#END Action#}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="10" class="text-center">{{ text_empty }}</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+        <div class="oris-row oris-pagination">
+            <ul id="bos_pagination_futures"></ul>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    var time;
+    $(function () {
+        $("[data-toggle='popover']").popover();
+        countDown();
+        time = setInterval(countDown, 1000);
+    });
+
+    //倒计时
+    function countDown(){
+        $(".countdown-time").each((k,obj)=>{
+            let cTime = $(obj).attr('data-countdown');
+            $(obj).attr('data-countdown',--cTime);
+            let day = cTime / (60 * 60 * 24);
+            if (day > parseInt(day) && day > 1) {
+                day = parseInt(day) + 1 > 7 ? 7 :  parseInt(day) + 1;
+            }
+            if (day > 1){
+               $(obj).html(day + ' days Left')
+            }else{
+                let timeObj = secToTime(cTime);
+                $(obj).html(timeObj.time1)
+            }
+        })
+    }
+
+    /**
+     * 获取时分秒
+     * @param secs 需要转换的时间秒
+     * @returns {time1: string, time2: string}
+     */
+    function secToTime(secs) {
+        if (secs <= 0) {
+            return "00:00:00";
+        }
+        let second = parseInt(secs);
+        let minute = 0;// 分
+        let hour = 0;// 小时
+        let day = 0;// 天
+        if (second >= 60) {
+            minute = parseInt(second / 60);
+            second = parseInt(second % 60);
+            if (minute >= 60) {
+                hour = parseInt(minute / 60);
+                minute = parseInt(minute % 60);
+                if (hour >= 24) {
+                    //大于24小时
+                    day = parseInt(hour / 24);
+                    hour = parseInt(hour % 24);
+                }
+            }
+        }
+
+        var currentTime = addZero(hour) + ":" + addZero(minute) + ":" + addZero(second);
+        var obj = {
+            time1: currentTime,
+            time2: day + " day " + currentTime,
+        };
+        return obj;
+    }
+
+    // 小于10补0
+    function addZero(i) {
+        return i < 10 ? "0" + i: i + "";
+    }
+
+    $("body").on("click", ".noRemind", function () {
+        $(".agreement-popover").popover('hide');
+        $(".agreement-popover").hide();
+    });
+
+
+    $('#input_futures_delivery_date_from').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD 00:00:00'
+    });
+    $('#input_futures_delivery_date_to').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD 23:59:59'
+    });
+
+    $('#input_futures_date_from').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD 00:00:00'
+    });
+    $('#input_futures_date_to').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD 23:59:59'
+    });
+
+    var futures_tab_mark_count = Number({{ futures_tab_mark_count }});
+
+    $(function () {
+        block.unBlockUI();
+        initFutures();
+        if (0 == futures_tab_mark_count) {
+            $("#futures_tab_mark_count").hide();
+        } else {
+            $("#futures_tab_mark_count").text(futures_tab_mark_count > 99 ? '99+' : futures_tab_mark_count).show();
+        }
+    });
+
+    function initFutures() {
+        //分页链接
+        paginationFutures();
+    }
+
+    function paginationFutures() {
+        if ({{ total_pages }}) {
+            //total_pages
+            $('#bos_pagination_futures').bootstrapPaginator({
+                /*当前使用的是3版本的bootstrap*/
+                bootstrapMajorVersion: 3,
+                /*配置的字体大小是小号*/
+                size: 'normal',
+                /*当前页*/
+                currentPage: {{ page_num }},
+                /*一共多少页*/
+                totalPages: {{ total_pages }},
+                /*页面上最多显示几个含数字的分页按钮*/
+                numberOfPages: 5,
+                total: {{ total }},
+                rowsOfPage: {{ page_limit | default(15) }},
+
+                onPageClicked: function (event, originalEvent, type, page) {
+                    for (let i = 1; i <= time; i++) {
+                        clearInterval(i);
+                    }
+                    block.blockUI();
+                    let url = getUrlForFutures(page, '{{ status }}');
+                    $('#bid-futures').load(url,"page_limit="+originalEvent['page_info']['page_limit']);
+                }
+            });
+        }
+    }
+
+    //切换热区状态
+    $(".quick-title").click(function () {
+        $(".quick-title").removeClass('active');
+        $(this).addClass("active");
+    });
+
+    function selectStatus() {
+        var agreement_status = $.trim($("#input_futures_agreement_status").val());
+        var delivery_status = $.trim($("#input_futures_delivery_status").val());
+        if (agreement_status != 0 && agreement_status != 7) {
+            $("#input_futures_delivery_status").attr("disabled", true)
+        } else {
+            $("#input_futures_delivery_status").removeAttr("disabled");
+        }
+
+        if (delivery_status != 0) {
+            $("#input_futures_agreement_status").attr("disabled", true)
+        } else {
+            $("#input_futures_agreement_status").removeAttr("disabled");
+        }
+
+    }
+
+    {# 页码，快捷搜索状态，是否用于下载，排序项，排序方式#}
+    function getUrlForFutures(page, status, download, sort, order) {
+        let url = "{{ url('account/product_quotes/futures/tab_futures') }}";
+        if (download) {
+            url = "{{ url('account/product_quotes/futures/downloadAgreementList') }}";
+        }
+
+        let filter_futures_agreement_no = $.trim($("#input_futures_agreement_no").val());
+        let filter_futures_item_code = $.trim($("#input_futures_item_code").val());
+        let filter_futures_agreement_status = $.trim($("#input_futures_agreement_status").val());
+        let filter_futures_delivery_status = $.trim($("#input_futures_delivery_status").val());
+        let filter_futures_store = $.trim($("#input_futures_store").val());
+        let filter_futures_delivery_date_from = $.trim($("#input_futures_delivery_date_from").val());
+        let filter_futures_delivery_date_to = $.trim($("#input_futures_delivery_date_to").val());
+        let filter_futures_date_from = $.trim($("#input_futures_date_from").val());
+        let filter_futures_date_to = $.trim($("#input_futures_date_to").val());
+
+        if (status && status != 0) {
+            url += "&status=" + status;
+        } else {
+
+            if (filter_futures_agreement_no) {
+                url += "&agreement_no=" + encodeURIComponent(filter_futures_agreement_no);
+            }
+            if (filter_futures_item_code) {
+                url += "&item_code=" + encodeURIComponent(filter_futures_item_code);
+            }
+            if (filter_futures_agreement_status) {
+                url += "&agreement_status=" + encodeURIComponent(filter_futures_agreement_status);
+            }
+            if (filter_futures_delivery_status) {
+                url += "&delivery_status=" + encodeURIComponent(filter_futures_delivery_status);
+            }
+            if (filter_futures_store) {
+                url += "&store_name=" + encodeURIComponent(filter_futures_store);
+            }
+            if (filter_futures_delivery_date_from) {
+                url += "&delivery_date_from=" + encodeURIComponent(filter_futures_delivery_date_from);
+            }
+            if (filter_futures_delivery_date_to) {
+                url += "&delivery_date_to=" + encodeURIComponent(filter_futures_delivery_date_to);
+            }
+            if (filter_futures_date_from) {
+                url += "&date_from=" + encodeURIComponent(filter_futures_date_from);
+            }
+            if (filter_futures_date_to) {
+                url += "&date_to=" + encodeURIComponent(filter_futures_date_to);
+            }
+        }
+
+        if (page) {
+            url += "&page_num=" + page;
+        }
+        if (sort) {
+            url += "&sort=" + encodeURIComponent(sort);
+            if (order == 'DESC') {
+                order = 'ASC';
+            } else {
+                order = 'DESC';
+            }
+            url += "&order=" + order;
+        }
+        return url;
+    }
+
+    //Filter
+    function filterFutures(button, status, sort, order) {
+      let end = setInterval(function () { }, 10000);
+      for (let i = 1; i <= end; i++) {
+        clearInterval(i);
+      }
+        block.blockUI();
+        var url = getUrlForFutures(1, status, 0, sort, order);
+        $('#bid-futures').load(url,"page_limit={{ page_limit }}");
+        $(button).button('loading');
+    }
+
+    //Reset
+    function cleanFilterFutures(button) {
+        $("#input_futures_agreement_no").val("");
+        $("#input_futures_item_code").val("");
+        $("#input_futures_agreement_status").val(0);
+        $("#input_futures_delivery_status").val(0);
+        $("#input_futures_store").val("");
+        $("#input_futures_delivery_date_from").val("");
+        $("#input_futures_delivery_date_to").val("");
+        $("#input_futures_date_from").val("");
+        $("#input_futures_date_to").val("");
+
+        block.blockUI();
+        var url = getUrlForFutures();
+        $('#bid-futures').load(url);
+        $(button).button('loading');
+    }
+
+    //Download
+    function downloadFuturesBid() {
+        let url = getUrlForFutures(1, '{{ status }}', true);
+
+        location.href = url;
+    }
+
+
+    //取消
+    function cancelAction(id, agreement_no) {
+        var content = '{{ text_cancel_content }}'.replace(/%s/, agreement_no);
+        layer.confirm(content, {
+            title: 'Reminder',
+            btnAlign: 'c',
+            btn: ['Yes', 'No'],
+            skin: 'yzc_layer' //样式类名
+            , closeBtn: 1
+        }, function (index) {
+
+            $.ajax({
+                url: "{{ url('account/product_quotes/futures/cancelAgreement') }}",
+                type: 'post',
+                data: {agreement_id: id},
+                dataType: 'json',
+                success: function (json) {
+                    layer.close(index);
+                    var msgDiv = '<div class="success"><i class="giga icon-complete"></i>' + json['msg'] + '<div>';
+
+                    if (json['code']) {
+                        $.toast({
+                          heading: false,
+                          text: json['msg'],
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'success',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    } else {
+                        $.toast({
+                          heading: false,
+                          text: json['msg'],
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'error',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    }
+
+                    var url = getUrlForFutures();
+                    $('#bid-futures').load(url,"page_limit={{ page_limit }}");
+                }
+            });
+        }, function (index) {
+            layer.close(index);
+        });
+    }
+
+    //忽略
+    function ignoreAction(id, agreement_no) {
+        layer.confirm('{{ tip_ignore }}', {
+            title: 'Reminder',
+            btnAlign: 'c',
+            btn: ['Yes', 'No'],
+            skin: 'yzc_layer' //样式类名
+            , closeBtn: 1
+        }, function (index) {
+
+            $.ajax({
+                url: "{{ url('account/product_quotes/futures/ignoreAgreement') }}",
+                type: 'post',
+                data: {agreement_id: id, agreement_no: agreement_no},
+                dataType: 'json',
+                success: function (json) {
+                    layer.close(index);
+                    var msgDiv = '<div class="success"><i class="giga icon-complete"></i>' + json['msg'] + '<div>';
+                    if (json['code']) {
+                        $.toast({
+                          heading: false,
+                          text: json['msg'],
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'success',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    } else {
+                        $.toast({
+                          heading: false,
+                          text: json['msg'],
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'error',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    }
+
+                    var url = getUrlForFutures();
+                    $('#bid-futures').load(url,"page_limit={{ page_limit }}");
+                }
+            });
+        }, function (index) {
+            layer.close(index);
+        });
+    }
+
+    //拒绝履约
+    function terminatedAction(id) {
+        layer.confirm('{{ tip_terminated }}', {
+            title: 'Message',
+            btnAlign: 'c',
+            btn: ['Yes', 'No'],
+            skin: 'yzc_layer' //样式类名
+            , closeBtn: 1
+        }, function (index) {
+
+            $.ajax({
+                url: "{{ url('account/product_quotes/futures/terminated') }}",
+                type: 'post',
+                data: {agreement_id: id},
+                dataType: 'json',
+                success: function (json) {
+                    layer.close(index);
+                    var msgDiv = '<div class="success"><i class="giga icon-complete"></i>' + json['msg'] + '<div>';
+                    if (json['code']) {
+                        $.toast({
+                          heading: false,
+                          text: json['msg'],
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'success',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    } else {
+                        $.toast({
+                          heading: false,
+                          text: json['msg'],
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'error',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    }
+
+                    var url = getUrlForFutures();
+                    $('#bid-futures').load(url,"page_limit={{ page_limit }}");
+                }
+            });
+        }, function (index) {
+            layer.close(index);
+        });
+    }
+
+    /**
+     *
+     * @param _this
+     * @param type {# :1期货头款，2期货尾款(可能包含现货头款补足款+期货尾款) #};
+     * @param deliveryType {# :1支付期货协议尾款，2转现货保证金 #};
+     */
+    function futuresCartAdd(_this, type, deliveryType) {
+      var agreement_id = $(_this).data('agreement_id');
+      var advance_product_id = $(_this).data('advance_product_id');
+      let product_id = $(_this).data('product_id');
+      var advance_quantity = 1;
+      let last_purchase_num = $(_this).data('last_purchase_num');
+
+      if (1 == type) {
+        cartAdd(advance_product_id, advance_quantity, agreement_id, 3);//{#futures头款#};
+      } else if (2 == type) {
+        if (2 != deliveryType) {
+          if (2 != deliveryType && last_purchase_num) {
+            cartAdd(product_id, last_purchase_num, agreement_id, 3);//{#futures尾款#};
+          }
+          if (1 != deliveryType && advance_product_id) {
+            cartAdd(advance_product_id, advance_quantity);//{#margin头款#};
+          }
+        } else {//全部转现货
+          cartAdd(advance_product_id, advance_quantity);//{#margin头款#};
+        }
+      }
+    }
+
+    /**
+     * 加入购物车
+     * @param product_id
+     * @param quantity
+     * @param agreement_id
+     * @param transaction_type
+     */
+    function cartAdd(product_id, quantity, agreement_id, transaction_type) {
+
+      quantity = typeof (quantity) != 'undefined' ? quantity : 1;
+      let transaction = '';
+      if (agreement_id && transaction_type) {
+        transaction = agreement_id + '_' + transaction_type;
+      }
+      $.ajax({
+        url: "{{ url('checkout/cart/add') }}",
+        type: 'post',
+        data: 'product_id=' + product_id + '&quantity=' + quantity + '&transaction_type=' + transaction,
+        dataType: 'json',
+        success: function (json) {
+          $('.alert-dismissible, .text-danger').remove();
+          $('.form-group').removeClass('has-error');
+          if (json['error']) {
+            if (json['error']['transaction_type']) {
+              if (json['error'].hasOwnProperty('cartExistFuturesAgreement') && json['error']['cartExistFuturesAgreement'] == '1') {
+                layer.confirm(json['error']['transaction_type'], {
+                  title: 'Message',
+                  skin: 'oris-layer',
+                  btn: ['Access', 'Cancel']
+                }, function () {
+                  window.location.href = "{{ url('checkout/cart') }}";
+                });
+              } else {
+                layer.alert(json['error']['transaction_type'], {
+                  title: 'Message',
+                  btnAlign: 'c',
+                  btn: 'OK',
+                  skin: 'yzc_layer', //样式类名
+                  closeBtn: 0
+                });
+              }
+            }
+            return false;
+          }
+          if (json['success']) {
+            $.toast({
+              heading: false,
+              text: json['success'],
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'success',
+              hideAfter: 5000,
+              allowToastClose: false,
+              loader: false,
+            });
+            // $('#menu-wrapper').after('<div class="alert alert-success alert-dismissible container"><i class="fa fa-check-circle"></i> ' + json['success'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+            $('html, body').animate({scrollTop: 0}, 'slow');
+            $('#cart').load("{{ url('common/cart/info') }}");
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+            title: 'Message',
+            btnAlign: 'c',
+            btn: 'OK',
+            skin: 'yzc_layer' //样式类名
+            , closeBtn: 0
+          });
+        },
+        complete: function () {
+        }
+      });
+    }
+</script>

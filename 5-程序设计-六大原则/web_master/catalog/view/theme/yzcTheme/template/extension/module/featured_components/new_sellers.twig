@@ -1,0 +1,66 @@
+{{ css(['css/buyer/channel/index.css']) }}
+<div class="new-store-item col-md-4 col-sm-8">
+  <div class="new-store-item-content">
+    {% if data.store_info.hasStoreAudit %}
+      <div class="mf-icon ops-abs" data-toggle="tooltip" title="Well-Designed Store">
+        <i class="giga icon-V10_mfb-01" type="button"></i>
+      </div>
+      <div class="transform-trangle ops-abs"></div>
+    {% endif %}
+    <div class="item-msg">
+      <div class="item-img-box">
+        <a href="{{ url('customerpartner/profile',{'id':data.store_info.id}) }}" target="_blank">
+          <div class="item-img-box-padding">
+            <img src="{{ data.store_info.avatar }}" class="img-responsive"/>
+          </div>
+        </a>
+      </div>
+      <div class="item-group">
+        <div class="flex">
+          <a href="{{ url('customerpartner/profile',{'id':data.store_info.id}) }}" target="_blank"
+             class="item-name pointer">{{ data.store_info.name }}</a>
+          {% if data.store_info.isNativeAmerican %}
+            <a class="item-tag item-bk-none" title="US Seller">
+              <img src="/public/image/HDFlags/US.png"/>
+            </a>
+          {% endif %}
+        </div>
+        {% if data.store_info.agreements %}
+          <div class="item-type margin-top-6">
+            {% for item in data.store_info.agreements %}
+              <span class="record-type">{{ item }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="item-img">
+      {% for product in  data.productIds %}
+        <div class="img-module col-md-4 col-sm-8">
+          <a href="{{ url('product/product', {'product_id': product.product_id}) }}" target="_blank" data-cnzz-event=""
+             class="new-store-item-img">
+            <img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}"
+                 class="img-responsive scale">
+          </a>
+          <span class="price-or-name-group">
+            {% if isLogin %}
+              <span class="price-tag">
+                    {% if product['verify']['price_available'] %}
+                      {% if product['min_price'] == product['max_price'] %}
+                        {{ product['min_price_show'] }}
+                      {% else %}
+                        {{ product['min_price_show'] }}-{{ product['max_price_show'] }}
+                      {% endif %}
+                    {% else %}
+                      {{ product.sku }}
+                    {% endif %}
+            </span>
+            {% else %}
+              <span class="name-sku">{{ product.sku }}</span>
+            {% endif %}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

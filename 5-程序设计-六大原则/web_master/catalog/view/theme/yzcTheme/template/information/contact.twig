@@ -1,0 +1,125 @@
+{{ header }}
+
+<div class="breadcrumb-wrapper text-center clearfix">
+  <h1>{{ heading_title }}</h1>
+  {% include 'giga/template/_parts/breadcrumb.twig' %}
+</div>
+<div id="page-contact">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-5 location">
+        <h3>{{ text_location }}</h3>
+        <p>{{ store }}</p>
+        <div class="location mb-1"><i class="giga icon-location-grey"></i> {{ address }}
+          {% if geocode %}
+            <a href="https://maps.google.com/maps?q={{ geocode|url_encode }}&hl={{ geocode_hl }}&t=m&z=15" target="_blank" class="btn btn-info"> {{ button_map }}</a>
+          {% endif %}
+        </div>
+        <div class="phone mb-1">
+          <i class="giga icon-phone-grey"></i> {{ telephone }}
+        </div>
+        {% if fax %}
+        <div class="phone mb-1">
+          <i class="giga icon-action-print"></i> {{ fax }}
+        </div>
+        {% endif %}
+        {% if open %}
+          <div class="phone mb-1">
+            <i class="giga icon-Action-Time"></i> {{ open }}
+          </div>
+        {% endif %}
+        {% if comment %}
+          <div class="phone mb-1">
+            <i class="giga icon-Action-Review"></i> {{ comment }}
+          </div>
+        {% endif %}
+
+
+        {% if locations %}
+          <h3>{{ text_store }}</h3>
+          {% for location in locations %}
+            <h4>{{ location.name }}</h4>
+            <div class="location mb-1"><i class="giga icon-location-grey"></i> {{ location.address }}
+              {% if location.geocode %}
+                <a href="https://maps.google.com/maps?q={{ location.geocode|url_encode }}&hl={{ geocode_hl }}&t=m&z=15" target="_blank" class="btn btn-info"> {{ button_map }}</a>
+              {% endif %}
+            </div>
+            <div class="phone mb-1">
+              <i class="giga icon-phone-grey"></i> {{ location.telephone }}
+            </div>
+            {% if location.fax %}
+              <div class="phone mb-1">
+                <i class="giga icon-action-print"></i> {{ location.fax }}
+              </div>
+            {% endif %}
+            {% if location.open %}
+              <div class="phone mb-1">
+                <i class="giga icon-Action-Time"></i> {{ location.open }}
+              </div>
+            {% endif %}
+            {% if location.comment %}
+              <div class="phone mb-1">
+                <i class="giga icon-Action-Review"></i> {{ location.comment }}
+              </div>
+            {% endif %}
+            <div style="height: 10px;"></div>
+          {% endfor %}
+        {% endif %}
+
+      </div>
+      <div class="col-md-6 col-md-push-1">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" class="form-horizontal">
+          <h3>{{ text_contact_us }}</h3>
+          <div class="form-group required">
+            <label for="input-name"><span>* </span> {{ entry_name }}</label>
+            <input type="text" name="name" value="{{ name }}" id="input-name" class="form-control" />
+            {% if error_name %}
+              <div class="text-danger">{{ error_name }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group required">
+            <label for="input-email"><span>* </span> {{ entry_email }}</label>
+            <input type="text" name="email" value="{{ email }}" id="input-email" class="form-control" />
+            {% if error_email %}
+              <div class="text-danger">{{ error_email }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="input-enquiry"><span>* </span> {{ entry_enquiry }}</label>
+            <textarea name="enquiry" rows="5" id="input-enquiry" class="form-control">{{ enquiry }}</textarea>
+            {% if error_enquiry %}
+              <div class="text-danger">{{ error_enquiry }}</div>
+            {% endif %}
+          </div>
+          {{ captcha }}
+          <button onclick="$(this).button('loading')" class="btn btn-primary btn-lg" type="submit" value="{{ button_submit }}" >Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div id="myForm"  class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Success</h4>
+      </div>
+      <div class="modal-body" id="myModalBody">
+        <div style="height: 100px"> {{ send_success_msg }}</div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  {% if send_success %}
+   $(function () {
+      if({{ send_success }}){
+        $('#myModal').modal()
+      }
+   })
+  {% endif %}
+</script>
+{{ footer }}

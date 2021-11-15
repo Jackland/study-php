@@ -1,0 +1,220 @@
+{{header}}{{column_left}}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right" style="position:relative;">
+
+        <button type="submit" form="form-account" data-toggle="tooltip" title="{{button_save}}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+
+        <button class="btn btn-default dropdown-toggle" type="button" id="quote-option" data-toggle="dropdown" aria-expanded="true">
+          <span><i class="fa fa-cogs"></i></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="quote-option">
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="{{manage_quote}}">{{text_quote_manage}}</a></li>
+        </ul>
+
+        <a href="{{cancel}}" data-toggle="tooltip" title="{{button_cancel}}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        <a href="http://webkul.uvdesk.com" data-toggle="tooltip" title="{{support}}" class="btn btn-default" target="_blank"><i class="fa fa-ticket"></i></a>
+        <a href="https://webkul.com/blog/opencart-marketplace-product-quote-system/" data-toggle="tooltip" target="_blank" title="{{user_guide}}" class="btn btn-default"><i class="fa fa-user"></i></a>
+        </div>
+      <h1>{{heading_title}}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{breadcrumb.href}}">{{breadcrumb.text}}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{error_warning}}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success"><i class="fa fa-exclamation-circle"></i>{{success}}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i>{{text_edit}}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{action}}" method="post" enctype="multipart/form-data" id="form-account" class="form-horizontal">
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status">{{text_status}}</label>
+            <div class="col-sm-10">
+              <select name="total_wk_pro_quote_status" id="input-status" class="form-control">
+                {% if total_wk_pro_quote_status %}
+                <option value="1" selected="selected">{{text_enabled}}</option>
+                <option value="0">{{text_disabled}}</option>
+                {% else %}
+                <option value="1">{{text_enabled}}</option>
+                <option value="0" selected="selected">{{text_disabled}}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-sort"><span data-toggle="tooltip" title="{{text_sort_order}}">{{text_sort_order}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <input type="text" name="total_wk_pro_quote_sort_order" id="input-sort" value="{{total_wk_pro_quote_sort_order}}" class="form-control"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-name"><span data-toggle="tooltip" title="{{text_name_info}}">{{text_name}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <input type="text" name="total_wk_pro_quote_name" id="input-name" value="{{total_wk_pro_quote_name}}" class="form-control"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-email"><span data-toggle="tooltip" title="{{text_email_info}}">{{text_email}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <input type="text" name="total_wk_pro_quote_email" id="input-email" value="{{total_wk_pro_quote_email}}" class="form-control"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status"><span data-toggle="tooltip" title="{{text_product_status_info}}">{{text_product_status}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <select name="total_wk_pro_quote_product_status" id="input-status" class="form-control">
+                {% if total_wk_pro_quote_product_status %}
+                <option value="1" selected="selected">{{text_enabled}}</option>
+                <option value="0">{{text_disabled}}</option>
+                 {% else %}
+                <option value="1">{{text_enabled}}</option>
+                <option value="0" selected="selected">{{text_disabled}}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-products"><span data-toggle="tooltip" title="{{text_select_product_info}}">{{text_select_product}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <input type="text" name="quote" value="" placeholder="{{text_select_product}}" id="input-products" class="form-control" />
+              <div id="product-quote" class="well well-sm" style="height: 150px; overflow: auto;">
+                {% if total_wk_pro_quote_products %}
+                  {% for product in total_wk_pro_quote_products %}
+                  <div id="product-quote{{product.product_id}}"><i class="fa fa-minus-circle"></i>{{product.name}}
+                    <input type="hidden" name="total_wk_pro_quote_products[]" value="{{product.product_id}}" />
+                  </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-quantity"><span data-toggle="tooltip" title="{{text_quantity_info}}">{{text_quantity}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <input type="text" name="total_wk_pro_quote_quantity" id="input-quantity" value="{{total_wk_pro_quote_quantity}}" class="form-control"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-time"><span data-toggle="tooltip" title="{{text_use_time_info}}">{{text_use_time}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <input type="text" name="total_wk_pro_quote_time" id="input-time" value="{{total_wk_pro_quote_time}}" class="form-control"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-same-quantity"><span data-toggle="tooltip" title="{{text_worked_info}}">{{text_worked_quantity}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <input type="checkbox" name="total_wk_pro_quote_worked_quantity" id="input-same-quantity" value="1" class="form-control" style="margin:10px 0 0;" {% if total_wk_pro_quote_worked_quantity %}{{'checked'}}{% endif %}/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-same-quantity"><span data-toggle="tooltip" title="{{text_customer_group_info}}">{{text_customer_group}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <div class="well well-sm" style="height: 150px; overflow: auto;">
+                {% if customer_groups %}
+                  {% for group in customer_groups %}
+                    <div class="checkbox">
+                      <label>
+                        {% if total_wk_pro_quote_customer is iterable and group.customer_group_id in total_wk_pro_quote_customer %}
+                        <input type="checkbox" name="total_wk_pro_quote_customer[]" value="{{group.customer_group_id}}" checked="checked" />
+                       {{group.name}}
+                       {% else %}
+                        <input type="checkbox" name="total_wk_pro_quote_customer[]" value="{{group.customer_group_id}}" />
+                       {{group.name}}
+                        {% endif %}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  {% endif %}
+              </div>
+              <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{{text_select_all}}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{{text_unselect_all}}</a>
+            </div>
+          </div>
+           <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-seller-add">{{text_seller_add}}</label>
+            <div class="col-sm-10">
+              <select name="total_wk_pro_quote_seller_add" id="input-seller-add" class="form-control">
+                {% if total_wk_pro_quote_seller_add %}
+                <option value="1" selected="selected">{{text_enabled}}</option>
+                <option value="0">{{text_disabled}}</option>
+                 {% else %}
+                <option value="1">{{text_enabled}}</option>
+                <option value="0" selected="selected">{{text_disabled}}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+           <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-seller-quantity">{{text_seller_quantity}}</label>
+            <div class="col-sm-10">
+              <select name="total_wk_pro_quote_seller_quantity" id="input-seller-quantity" class="form-control">
+                {% if total_wk_pro_quote_seller_quantity %}
+                <option value="1" selected="selected">{{text_enabled}}</option>
+                <option value="0">{{text_disabled}}</option>
+                 {% else %}
+                <option value="1">{{text_enabled}}</option>
+                <option value="0" selected="selected">{{text_disabled}}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{footer}}
+<script type="text/javascript">
+// Quote
+$('input[name=\'quote\']').autocomplete({
+  'source': function(request, response) {
+    $.ajax({
+      url: 'index.php?route=catalog/product/autocomplete&user_token={{user_token}}&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['product_id']
+          }
+        }));
+      }
+    });
+  },
+  'select': function(item) {
+    $('input[name=\'quote\']').val('');
+
+    $('#product-quote' + item['value']).remove();
+
+    $('#product-quote').append('<div id="product-quote' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="total_wk_pro_quote_products[]" value="' + item['value'] + '" /></div>');
+  }
+});
+
+$('#product-quote').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+});
+</script>

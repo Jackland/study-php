@@ -1,0 +1,167 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-option" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+      <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+    {% endif %}
+    {% if success %}
+      <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+    {% endif %}
+    <div class="panel-body">
+      <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-tag" class="form-horizontal">
+        <fieldset>
+          <legend>{{ tag_setting_title }}</legend>
+          <table id="tag-value" class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+              <td class="text-left required">{{ column_tag_name }}</td>
+              <td class="text-center required">{{ column_tag_image }}</td>
+              <td class="text-right">{{ column_tag_link }}</td>
+              <td class="text-left required" style="width: 120px">{{ column_tag_sort }}</td>
+              <td class="text-center required">{{ column_tag_customer }}</td>
+              <td class="text-right required">{{ column_tag_status }}</td>
+              <td></td>
+            </tr>
+            </thead>
+            <tbody>
+            {% set tag_value_row = 0 %}
+            {% for tag_value in promotions %}
+              <tr id="tag-value-row{{ tag_value_row }}">
+                <td class="text-center">
+                  <input type="hidden" name="tag_value[{{ tag_value_row }}][promotions_id]" value="{{ tag_value.promotions_id }}" />
+                  <input type="text" name="tag_value[{{ tag_value_row }}][name]"
+                         value="{{ tag_value.name}}"
+                         placeholder="{{ column_tag_name }}"
+                         onblur="checkTagRepeat('{{ tag_value_row }}')"
+                         class="form-control tag_name" />
+                  <div class="text-danger" id="tag_value_{{ tag_value_row }}_alert">{{ error_tag_value[tag_value_row] }}</div>
+                </td>
+                <td class="text-left" style="text-align: center">
+                  <a href="" id="thumb-image{{ tag_value_row }}" data-toggle="image" class="img-thumbnail"><img src="{{ tag_value.thumb }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>
+                  <input type="hidden" name="tag_value[{{ tag_value_row }}][image]" value="{{ tag_value.image }}" id="input-image{{ tag_value_row }}" />
+                </td>
+                <td class="text-center">
+                  <input type="text" name="tag_value[{{ tag_value_row }}][link]" value="{{ tag_value.link}}" placeholder="{{ column_tag_link }}" class="form-control" />
+                </td>
+                <td class="text-right"><input type="number" min="0" step="1" name="tag_value[{{ tag_value_row }}][sort_order]" value="{{ tag_value.sort_order }}" class="form-control" /></td>
+                <td class="text-right">
+                  <select name="tag_value[{{ tag_value_row }}][self_support]" class="form-control">
+                    {% for option in select_option %}
+                      {% if option.value == tag_value.self_support %}
+                        <option value="{{ option.value }}" selected="selected">{{ option.text }}</option>
+                      {% else %}
+                        <option value="{{ option.value }}">{{ option.text }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </td>
+                <td class="text-right">
+                  <select name="tag_value[{{ tag_value_row }}][promotions_status]" class="form-control">
+                    {% for option in select_option %}
+                      {% if option.value == tag_value.promotions_status %}
+                        <option value="{{ option.value }}" selected="selected">{{ option.text }}</option>
+                      {% else %}
+                        <option value="{{ option.value }}">{{ option.text }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </td>
+                <td class="text-right"><button type="button" onclick="$('#tag-value-row{{ tag_value_row }}').remove();" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
+              </tr>
+              {% set tag_value_row = tag_value_row + 1 %}
+            {% endfor %}
+            </tbody>
+            <tfoot>
+            <tr>
+              <td colspan="6"></td>
+              <td class="text-right"><button type="button" onclick="addTagValue();" data-toggle="tooltip" title="{{ button_tag_value_add }}" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button></td>
+            </tr>
+            </tfoot>
+          </table>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  var tag_value_row = {{ tag_value_row }};
+
+  function addTagValue() {
+    html  = '<tr id="tag-value-row' + tag_value_row + '">';
+    html += '  <td class="text-center">';
+    html += '  <input type="hidden" name="tag_value[' + tag_value_row + '][promotions_id]" value="" />';
+    html += ' <input type="text" name="tag_value[' + tag_value_row + '][name]" value="" placeholder="{{ column_tag_name }}" onblur="checkTagRepeat(\'' + tag_value_row + '\')" class="form-control tag_name"/>';
+    html += ' <div class="text-danger" id="tag_value_' + tag_value_row + '_alert" style="display: none;"></div>';
+    html += '  </td>';
+    html += '  <td class="text-left" style="text-align: center">';
+    html += '  <a href="" id="thumb-image' + tag_value_row + '" data-toggle="image" class="img-thumbnail"><img src="{{ no_image_thumb }}" alt="" title=""  data-placeholder="{{ placeholder }}" /></a>';
+    html += '  <input type="hidden" name="tag_value[' + tag_value_row + '][image]" value="" id="input-image' + tag_value_row + '" />';
+    html += '  </td>';
+    html += '  <td class="text-center">';
+    html += '  <input type="text" name="tag_value[' + tag_value_row + '][link]" value="" placeholder="{{ column_tag_link }}" class="form-control" />';
+    html += '  </td>';
+    html += '  <td class="text-right">';
+    html += '  <input type="number" min="0" step="1" name="tag_value[' + tag_value_row + '][sort_order]" value="0" class="form-control" />';
+    html += '  </td>';
+    html += '  <td class="text-right">';
+    html += '  <select name="tag_value[' + tag_value_row + '][self_support]" class="form-control">';
+    html += '  <option value="0" selected="selected">Disable</option>';
+    html += '  <option value="1">Enable</option>';
+    html += '  </select>';
+    html += '  </td>';
+    html += '  <td class="text-right">';
+    html += '  <select name="tag_value[' + tag_value_row + '][promotions_status]" class="form-control">';
+    html += '  <option value="0" selected="selected">Disable</option>';
+    html += '  <option value="1">Enable</option>';
+    html += '  </select>';
+    html += '  </td>';
+    html += '  <td class="text-right"><button type="button" onclick="$(\'#tag-value-row' + tag_value_row + '\').remove();" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
+    html += '</tr>';
+
+    $('#tag-value tbody').append(html);
+
+    tag_value_row++;
+  }
+
+  function checkTagRepeat(rowId) {
+    var tag_name_plug = $("input[name='tag_value[" + rowId + "][name]']");
+    var tag_name = tag_name_plug.val().trim();
+    if (!tag_name || tag_name.length === 0) {
+      return;
+    }
+    var alert_plug = $("#tag_value_" + rowId + "_alert");
+
+    //验证重复
+    var be_repeat = false;
+    $("input.tag_name").each(function (i, ele) {
+      if (!$(ele).is(tag_name_plug) && $(ele).val().trim() == tag_name) {
+        alert_plug.css("display", "block");
+        alert_plug.text("{{ error_tag_repeat }}");
+        be_repeat = true;
+      }
+    });
+    if(!be_repeat){
+      alert_plug.css("display", "none");
+      alert_plug.text("");
+    }
+  }
+</script>
+{{ footer }}

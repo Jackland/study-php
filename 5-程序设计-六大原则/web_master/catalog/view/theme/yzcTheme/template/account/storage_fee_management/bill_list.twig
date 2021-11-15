@@ -1,0 +1,270 @@
+<div role="tabpanel" class="tab-pane active">
+  <div class="bg-white p-2">
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="form-group" style="text-align: center;border-right: 1px solid #E1E1E1;padding: 5px 5px 5px 2px;">
+          <span style="color:#000000;font-size: 14px;opacity:0.25;margin-bottom: 10px;display: inline-block">Month of Charge</span>
+          <span style="font-size: 16px;color:#333333;display: inline-block">Storage Fees to be Paid</span>
+        </div>
+      </div>
+      {% if data != null %}
+        {% for key,value in data %}
+          <div class="col-sm-2">
+            <div class="form-group" style="text-align: center;border-right: 1px solid #E1E1E1;padding: 5px 5px 5px 2px;">
+              <div style="margin-bottom: 10px;">
+                  <label style="margin: 0 0 0 0;color: #D6D6D6;font-size: 14px;"><input id="radio_{{ key }}" type="radio" name="bill_choose" value="{{ key }}"
+                                                                                    style="vertical-align:middle;margin-top:-2px;"/><span
+                  class="month" style="color:#000000;opacity:0.25;"> &nbsp;{{ value.time_show }} </span></label>
+              </div>
+              <div>
+                  <span style="color:#333333 ;font-size: 16px;"> {{ value.total_amount_to_be_paid }}&nbsp;&nbsp;</span>
+                  <i class="fa fa-download" aria-hidden="true"
+                     data-toggle="tooltip"
+                     title="download {{ value.time_show }} data"
+                     onclick="downloadData('{{ value.download_data }}')"
+                     style="color:#0C99D6;font-size: 13px;cursor: pointer">
+                    &nbsp;Bill
+                  </i>
+              </div>
+
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-sm-6">
+          <div class="form-group" style="text-align: center;vertical-align:middle;padding: 5px 5px 5px 2px; display: inline-block;line-height: 36px;">
+            <span style="font-size: 14px;color: #FA6400">Your current bill has been settled. You can view the next bill on {{ next_bill_date }}. </span>
+          </div>
+        </div>
+
+      {% endif %}
+
+    </div>
+
+    <div id="table_all">
+      {% if data != null %}
+        {% for key,value in data %}
+          <div class="table-responsive" id="table_{{ key }}" style="display: none;color: #333333">
+            <table class="table  table-hover" >
+              <thead>
+                <tr style="color: #333333">
+                  <th class="text-left"> #</th>
+                  <th class="text-left">{{ column_month_of_change }}</th>
+                  <th class="text-left">{{ column_item_code }}</th>
+                  <th class="text-left">{{ column_product_name }}</th>
+                  <th class="text-left" style="width: 15%">{{ column_length }}</th>
+                  <th class="text-right" style="text-align: center;width: 15%">
+                    {% if value.sort == 'desc' %}
+                      <i class="fa fa-arrow-down" style="cursor: pointer" onclick="paidListSort('{{ key }}','asc')" aria-hidden="true"></i>
+                    {% else %}
+                      <i class="fa fa-arrow-up" style="cursor: pointer" onclick="paidListSort('{{ key }}','desc')" aria-hidden="true"></i>
+                    {% endif %}
+                    {{ column_storage_fee_due }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for k,v in value['bill_details'] %}
+                  <tr>
+                    <td class="text-left">{{ k + 1 }}</td>
+                    <td class="text-left">{{ value.time_show }}</td>
+                    <td class="text-left">
+                        {{ v.item_code }}
+                        {% if v['tag_array'] is not empty %}
+                          {% for tag in v['tag_array'] %}
+                            &nbsp;{{ tag }}
+                          {% endfor %}
+                        {% endif %}
+                    </td>
+                    <td class="text-left">
+                      <img src="{{ v.image_show }}" style="width: 30px;height:30px;">
+                      {% if v.m_name is not null %}
+                         [{{ v.m_name }}]
+                      {% endif %}
+                      {{ v.name }}
+                      <i class="fa fa-play-circle" onclick="urlToProductDetails('{{ v.product_link }}')" data-toggle="tooltip"
+                         title="{{ v.name_all }}" aria-hidden="true" style="color: #8493AC;cursor: pointer"
+                      ></i>
+                    </td>
+                    <td class="text-left">
+                      {% if v.length %}
+                        {{ v.length }}
+                      {% else %}
+                        0.00
+                      {% endif %}*
+                      {% if v.width %}
+                        {{ v.width }}
+                      {% else %}
+                        0.00
+                      {% endif %}*
+                      {% if v.height %}
+                        {{ v.height }}
+                      {% else %}
+                        0.00
+                      {% endif %} </td>
+                    <td class="text-right" style="color: #4E648A">{{ v.all_storage_fee_show }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div id="table_bill_{{ key }}" class="yapiskan_new" style="display: none;margin-top: -20px;"  >
+            <table class="table  table-hover"  style="color: #333333">
+              <tr>
+                <td colspan="4" class="text-left"></td>
+                <td style="border-bottom:#DDDDDD solid 1px;width: 15%" class="text-left">{{ column_total_amount_due }}</td>
+                <td class="text-right" style="border-bottom:#DDDDDD solid 1px;color: #4E648A;width: 15%">{{ value.bill_amount }}</td>
+              </tr>
+              <tr>
+                <td colspan="4" class="text-left" style="border-style: none"></td>
+                <td style="border-bottom:#DDDDDD solid 1px;width: 15%" class="text-left">{{ column_deduction }}</td>
+                <td class="text-right" style="border-bottom:#DDDDDD solid 1px;color: #4E648A;width: 15%">
+                  {{ value.deduction }}
+                  <i class="giga icon-V10-wenhaotishi" aria-hidden="true" data-toggle="tooltip"
+                     title="{{ value.bill_amount }} off on storage fees has been offered by GigaCloud.">
+                  </i>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="4" style="border-style: none" class="text-left"></td>
+                <td style="border-bottom:#DDDDDD solid 1px;width: 16%;" class="text-left">{{ column_total_amount_to_be_paid }}</td>
+                <td class="text-right" style="border-bottom:#DDDDDD solid 1px;width: 15%"><span style="color: red">{{ value.total_amount_to_be_paid }}</span></td>
+              </tr>
+            </table>
+          </div>
+        {% endfor %}
+      {% else %}
+          <table class="table  table-hover" >
+            <thead>
+            <tr style="color: #333333">
+              <th class="text-left"> #</th>
+              <th class="text-left">{{ column_month_of_change }}</th>
+              <th class="text-left">{{ column_item_code }}</th>
+              <th class="text-left">{{ column_product_name }}</th>
+              <th class="text-left" style="width: 16%">{{ column_length }}</th>
+              <th class="text-right" style="text-align: center;width: 15%">{{ column_storage_fee_due }}</th>
+            </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-center" colspan="6"><span style="color: #000000;opacity:0.4;">No records.</span></td>
+              </tr>
+
+            </tbody>
+          </table>
+      {% endif %}
+      
+    </div>
+  </div>
+</div>
+
+
+<style>
+  .month:hover {
+    color: #999999;
+  }
+</style>
+<script>
+  var arr = new Array();
+  $("input[name=bill_choose]").click(function () {
+    $('input[type="radio"]').each(function () {
+      var flag = $(this).prop("checked");
+      if (flag == true) {
+        $(this).parent().parent().next().children().eq(0).css({'font-weight': 'bolder', 'color': '#FA6400'});
+
+        var id = 'table_' + $(this).val();
+        var bill_id = 'table_bill_' + $(this).val();
+        $('#table_all').fadeOut();
+        $('#' + id).show();
+        $('#' + bill_id).show();
+        $('#table_all').fadeIn();
+        arr[0] =  $('#' + id).height() + 764;
+        $('#' + bill_id).removeClass('yya_new');
+
+
+
+      } else {
+        $(this).parent().parent().next().children().eq(0).css({'font-weight': 'normal', 'color': '#333333'});
+        var id = 'table_' + $(this).val();
+        var bill_id = 'table_bill_' + $(this).val();
+        $('#' + id).hide();
+        $('#' + bill_id).hide();
+      }
+    });
+
+
+  });
+  $(document).ready(function () {
+      var ks = '{{ ks }}';
+      // 此代码需要配合生成
+      $('#radio_' + ks ).trigger('click');
+      var id = 'table_' + ks;
+      var bill_id = 'table_bill_' + ks;
+      $('#' + id).show();
+      $('#' + bill_id).show();
+      $('#radio_' + ks).parent().parent().next().children().eq(0).css({'font-weight': 'bolder', 'color': '#FA6400'});
+
+  });
+  $(function(){
+
+    var ss_new = $(document).scrollTop();
+    $(window).scroll(function(){
+      height_all = $(document).height();
+      if(typeof(arr[0]) == "undefined"){
+        arr[0] = $(document).height();
+
+      }else{
+          if(height_all != arr[0]){
+            height_all = arr[0];
+          }
+      }
+      var s_new = $(document).scrollTop();
+      if(height_all - s_new > 1100){
+        $('.yapiskan_new').addClass('yya_new');
+      }else{
+        $('.yapiskan_new').removeClass('yya_new');
+      }
+    });
+
+  });
+
+
+  function paidListSort(ks,sort) {
+    layer.load();
+    var url_load = 'index.php?route=account/storage_fee_management/billList&ks=' + ks + '&sort=' + sort;
+    $('#mapping-bill').load(url_load,function(responseTxt,statusTxt,xhr){
+      if(statusTxt=="success"){
+        layer.closeAll('loading');
+      }
+    });
+
+  }
+
+  function downloadData(url) {
+    window.location.href = url + '&type=0';
+  }
+
+  function urlToProductDetails(url) {
+    window.open(url,'_blank');
+  }
+
+</script>
+<style>
+  .yapiskan_new{
+    color:white;
+    width: 100%;
+    text-align:left;
+    transition:top 1.5s;
+  }
+  .yya_new{
+    position:fixed;
+    bottom:0;
+    width: 1118px;
+    height:124px;
+    background-color:#F5F5F5;
+    margin-left: -20px;
+  }
+</style>
+
+
+

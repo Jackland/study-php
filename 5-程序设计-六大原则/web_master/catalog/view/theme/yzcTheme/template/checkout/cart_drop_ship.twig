@@ -1,0 +1,1241 @@
+<link href="catalog/view/javascript/select2/css/select2.min.css" rel="stylesheet"/>
+<script src="catalog/view/javascript/select2/js/select2.full.js"></script>
+<style>
+    .batch-del {
+        margin-left: 10px;
+        border: none;
+        background-color: #fff;
+        display: inline-block;
+    }
+
+    .batch-del:hover {
+        color: #FA6400;
+    }
+
+    .select2.select2-container.select2-container--default {
+        width: 180px !important;
+    }
+
+    .img-thumbnail-hover {
+        width: 150px;
+        position: absolute;
+        display: none;
+        z-index: 100;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        left: 100%;
+    }
+
+    .img-big:hover .img-thumbnail-hover {
+        display: block;
+    }
+
+    .table-responsive {
+        overflow: visible;
+    }
+    .btn-table:hover{
+      cursor: pointer;
+    }
+</style>
+<div class="beyond" {% if num < 100 %}style="display: none" {% endif %}>
+    <i class="giga icon-gantanhaojinggao"></i>
+    You have reached the shopping cart product quantity limit
+</div>
+<div class="cart-product-wrapper">
+    <div class="table-responsive">
+        <table class="table try-table" style="width: 80%;margin: 0 auto">
+            <thead>
+            <tr>
+                <td colspan="2" style="width:8%"><input autocomplete="off" type="checkbox" class="allcheck allcheck0" checked onchange="calculateTotal()">All
+                </td>
+                <td style="width: 20%" class="text-center">Product Information</td>
+                <td style="width: 12%" class="text-center">{{ column_quantity }}</td>
+                <td style="width: 16%" class="text-center">Transaction Type</td>
+                <td style="max-width: 120px" class="text-left">{{ column_unit_price }}</td>
+                {% if isEuropean %}
+                    <td style="max-width: 100px" class="text-left">{{ column_service_fee }}</td>
+                {% endif %}
+                <td style="" class="text-left">{{ column_freight }}
+                    <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" style="cursor: pointer;font-size: 12px"
+                       title="Fulfillment fee includes shipping fee and packing fee."
+                    ></i>
+                </td>
+                <td style="" class="text-center">{{ column_total }}</td>
+                                <td style="width: 12%" class="text-center">Action</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for store_id,store in stores %}
+                <tr class="shop">
+                    <td colspan="10" style="padding: 0;">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th><input type="checkbox" autocomplete="off" class="shopcheck" checked onchange="calculateTotal()"></th>
+                                <th colspan="9">
+                                    <a href="{{ store.url }}">{{ store.name }}</a>
+                                    <a href="{{ store.contract_url }}">
+                                        <i class="gcl gclxinfeng"
+                                            style="color: #FA6400;font-size: 14px;margin-left: 5px"></i>
+                                    </a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for product in store.products %}
+                                <tr class="{% if product.campaigns %}no-bottom-tr{% endif %}">
+                                    <td width="3%">
+                                        {% if product.can_buy %}
+                                            <input type="checkbox" autocomplete="off" checked name="select_cart_{{ delivery_type }}"
+                                                   value="{{ product.cart_id }}"
+                                                   onchange="calculateTotal()">
+                                        {% endif %}
+                                    </td>
+                                    {% if product.can_buy %}
+                                        <td style="width: 5% ;padding: 0;position: relative;"
+                                            class="text-left img-big">
+                                            {% if product.thumb %}
+                                                <img src="{{ product.thumb }}" alt="{{ product.name }}"
+                                                     class="img-thumbnail" style="width: 60px;"/>
+                                                <div class="img-thumbnail-hover">
+                                                    <img src="{{ product.popupImage }}" alt="{{ product.name }}"
+                                                         style="width: 100%"/>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        {#Product Information#}
+                                        <td class="pro-td"
+                                            style="width:20%;position: relative;padding-left: 10px;{% if not product.can_buy %} color: #ccc{% endif %}">
+                                            <div class="name">
+                                                {% if product.product_type in [1,2] %}
+                                                  <span href="{{ product.href }}"
+                                                      {% if product.product_type ==1 %}
+                                                        title="Margin goods deposit"
+                                                      {% elseif product.product_type ==2 %}
+                                                        title="Future goods deposit"
+                                                      {% endif %}
+                                                          style="">{{ product.name }}</span>
+                                                {% else %}
+                                                  <a href="{{ product.href }}"
+                                                     title="{{ product.name }}"
+                                                     style="">{{ product.name }}</a>
+                                                {% endif %}
+                                                {#{% if not product.stock %} <span class="text-danger">***</span> {% endif %}#}
+                                                {% if product.option %}
+                                                    {% for option in product.option %} <br/>
+                                                        <small>{{ option.name }}
+                                                            : {{ option.value }}</small> {% endfor %}
+                                                {% endif %}
+                                                {% if product.reward %} <br/>
+                                                    <small>{{ product.reward }}</small> {% endif %}
+                                                {% if product.recurring %} <br/>
+                                                    <span class="label label-info">{{ text_recurring_item }}</span>
+                                                    <small>{{ product.recurring }}</small>
+                                                {% endif %}
+                                            </div>
+                                            <div class="options">
+                                                {{ product.sku }}
+                                                {% if product.tag %}
+                                                    {% for tagDetail in product.tag %}
+                                                        {{ tagDetail }}
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {#<div>MPN: {{ product.mpn }}</div>#}
+                                            </div>
+                                            {% if product.color_str %}
+                                                <div class="property">
+                                                    <span style="word-break: break-all">{{ product.color_str }}</span>
+                                                    <i class="gcl gcledit" style=""></i>
+                                                </div>
+                                                <div class="property-check" id="select_color_{{ product.cart_id }}">
+                                                    <div style="margin-bottom: 10px;display: flex;align-items: center">
+                                                        <div style="display: inline-block">
+                                                            <div style="margin-left: 2%;font-weight: bold">Select:</div>
+                                                            {% for id,v in product.color %}
+                                                                <span class="pro {% if id == product.product_id %} active {% endif %}"
+                                                                      data-id="{{ id }}" title="{{ v }}">{{ v }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-center">
+                                                        <button type="button" class="btn btn-primary" id="select_color_btn_{{ product.cart_id }}"
+                                                                onclick="selectColor(this,{{ product.cart_id }},{{ product.product_id }})">
+                                                            OK
+                                                        </button>
+                                                        <button type="button" class="btn btn-default">Close</button>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
+                                        </td>
+                                        {% if not product.can_buy %}
+                                            <p style="color: red">The product is unavailable, you can contact seller
+                                                for
+                                                details.</p>
+                                        {% endif %}
+                                        {#                                    </td>#}
+                                        {#Quantity#}
+                                        <td class="text-center qty-td" style=" width:12%;position: relative;">
+                                            <div class="input-group quantity-tool {% if product.isFuturesAdvanceProduct!=1 and product.futuresFlag %}disabled-qty{% endif %}"
+                                                 tabindex="0" data-toggle="popover" data-placement="bottom"
+                                                {% if product.isFuturesAdvanceProduct!=1 and product.futuresFlag %} data-content="The Quantity cannot be modified since the due amount of Future Goods Agreement must be paid in one time." {% else %} data-content=""{% endif %}
+                                                 data-html="true" data-trigger="hover" >
+                                                <span class="input-group-btn left btn-cart-qty">
+                                                    <button class="btn btn-default btn-cart-btn number-sub-{{ product.cart_id }}" type="button"
+                                                            {% if product.quoteFlag %}disabled{% endif %} {% if product.futuresFlag %}disabled style="pointer-events: none" {% endif %}
+                                                            onclick="numberSub({{ product.cart_id }}, '{{ product.sku }}')">-</button>
+                                                </span>
+                                                {% if product.isMarginAdvanceProduct %}
+                                                    {% if product.quantity >1 %}
+                                                        <input type="text" name="quantity[{{ product.cart_id }}]"
+                                                               value="{{ product.quantity }}" size="1"
+                                                               class="form-control qtyinput" max="{{ value }}"
+                                                               onchange="changeNumber(this,{{ product.cart_id }}, '{{ product.sku }}')"
+                                                               style="color: red"
+                                                               onkeyup="this.value=this.value.replace(/^(0+)|[^\d]+/g,'')"
+                                                               onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                                                    {% else %}
+                                                        <input type="text" name="quantity[{{ product.cart_id }}]"
+                                                               value="{{ product.quantity }}" size="1"
+                                                               class="form-control qtyinput" max="{{ value }}"
+                                                               onchange="changeNumber(this,{{ product.cart_id }}, '{{ product.sku }}')"
+                                                               onkeyup="this.value=this.value.replace(/^(0+)|[^\d]+/g,'')"
+                                                               onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                                                    {% endif %}
+                                                {% elseif product.isFuturesAdvanceProduct %}
+                                                    {% if product.quantity >1 %}
+                                                        <input type="text" name="quantity[{{ product.cart_id }}]"
+                                                               value="{{ product.quantity }}" size="1"
+                                                               class="form-control qtyinput" max="{{ value }}"
+                                                               onchange="changeNumber(this,{{ product.cart_id }}, '{{ product.sku }}')"
+                                                               style="color: red"
+                                                               onkeyup="this.value=this.value.replace(/^(0+)|[^\d]+/g,'')"
+                                                               onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                                                    {% else %}
+                                                        <input type="text" name="quantity[{{ product.cart_id }}]"
+                                                               value="{{ product.quantity }}" size="1"
+                                                               class="form-control qtyinput" max="{{ value }}"
+                                                               onchange="changeNumber(this,{{ product.cart_id }}, '{{ product.sku }}')"
+                                                               onkeyup="this.value=this.value.replace(/^(0+)|[^\d]+/g,'')"
+                                                               onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% for key,value in product.transaction_type_qty %}
+                                                        {% if product.type_id~"_"~product.agreement_code == key and product.quantity> value %}
+                                                            <input type="text" name="quantity[{{ product.cart_id }}]"
+                                                                   value="{{ product.quantity }}" size="1" {% if product.quoteFlag %}disabled{% endif %}
+                                                              {% if product.futuresFlag %}disabled style="pointer-events: none"{% endif %}
+                                                                   class="form-control qtyinput" max="{{ value }}"
+                                                                   onchange="changeNumber(this,{{ product.cart_id }}, '{{ product.sku }}')"
+                                                                   style="color:red"
+                                                                   onkeyup="this.value=this.value.replace(/^(0+)|[^\d]+/g,'')"
+                                                                   onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                                                        {% elseif  product.type_id~"_"~product.agreement_code == key %}
+                                                            <input type="text" name="quantity[{{ product.cart_id }}]"
+                                                                   value="{{ product.quantity }}" size="1" {% if product.quoteFlag %}disabled{% endif %}
+                                                              {% if product.futuresFlag %}disabled style="pointer-events: none"{% endif %}
+                                                                   class="form-control qtyinput" max="{{ value }}"
+                                                                   onchange="changeNumber(this,{{ product.cart_id }}, '{{ product.sku }}')"
+                                                                   onkeyup="this.value=this.value.replace(/^(0+)|[^\d]+/g,'')"
+                                                                   onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                                <span class="input-group-btn right btn-cart-qty">
+                                                      <button class="btn btn-default btn-cart-btn number-add-{{ product.cart_id }}" type="button"
+                                                              {% if product.quoteFlag %}disabled{% endif %}
+                                                        {% if product.futuresFlag %}disabled style="pointer-events: none"{% endif %}
+                                                              onclick="numberAdd({{ product.cart_id }}, '{{ product.sku }}')">+</button>
+                                                </span>
+                                                {# #29414 限时限量活动 #}
+                                                <div class="time-limit-pop-down" id="timeLimitPopdownid-{{product.cart_id}}">
+                                                  The current transaction type or purchase quantity does not meet the promtion event rules
+                                                </div>
+                                            </div>
+                                            {% if product.isMarginAdvanceProduct %}
+                                                <div style="position: absolute;width: 100%">
+                                                  <span style="font-size: 12px">Available Qty:</span>
+                                                  <span style="color: #fa6400;font-size: 12px"
+                                                          id="available_{{ product.cart_id }}"
+                                                          class="maximum"> {{ product.transaction_type_qty[0] }}</span>
+                                                </div>
+                                            {% elseif product.isFuturesAdvanceProduct %}
+                                                <div style="position: absolute;width: 100%">
+                                                  <span style="font-size: 12px">Available Qty:</span>
+                                                    <span style="color: #fa6400;font-size: 12px"
+                                                          id="available_{{ product.cart_id }}"
+                                                          class="maximum"> {{ product.transaction_type_qty[0] }}</span>
+                                                </div>
+                                            {% else %}
+                                                {% for key,value in product.transaction_type_qty %}
+                                                    {% if product.type_id~"_"~product.agreement_code == key %}
+                                                        <div style="position: absolute;width: 100%">
+                                                            <span style="font-size: 12px" class="qty_type" data-cart-id="{{ product.cart_id }}" id="qty_type_{{ product.cart_id }}">{{ product.qty_type_str }}  Qty:</span>
+                                                            <span style="color: #fa6400;font-size: 12px"
+                                                                  id="available_{{ product.cart_id }}"
+                                                                  class="maximum">{{ value }}</span>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </td>
+                                        {#type#}
+                                        <td class="text-left" style="width: 16%">
+                                            <div class="transaction-type-all" style="position: relative">
+                                                {% if product.isMarginAdvanceProduct %}
+                                                    <div class="show-type" style="position: relative">
+                                                        <input class="input-type"
+                                                               value="Margin:{{ product.agreement_code }}" style=""
+                                                               disabled title="Margin:{{ product.agreement_code }}">
+                                                        <span class="caret"></span>
+                                                    </div>
+                                                {% elseif product.isFuturesAdvanceProduct %}
+                                                    <div class="show-type" style="position: relative">
+                                                        <input class="input-type"
+                                                               value="Future Goods:{{ product.agreement_code }}"
+                                                               style="" disabled
+                                                               title="Future Goods:{{ product.agreement_code }}">
+                                                        <span class="caret"></span>
+                                                    </div>
+                                                {% elseif product.transaction_info.transaction_type %}
+                                                    <div class="show-type" style="position: relative">
+                                                        <input class="input-type"
+                                                               id="transaction_type_{{ product.cart_id }}_{{ delivery_type }}" value=""
+                                                               style=""
+                                                               readonly title="">
+                                                        <span class="caret"></span>
+                                                    </div>
+                                                    <div class="transaction-type-list">
+                                                        <div style="display: flex;line-height: 35px" id="transaction_type_0_{{ product.cart_id }}_" onclick="setProductPrice({{ product.cart_id }}, '0', this, {{ delivery_type }}, '{{ product.sku }}')">
+                                                            <div class="transaction-type" style="width: 50%!important;display:unset">Normal Transaction</div>
+                                                            <div class="transaction-price text-right" style="width: 50%!important;text-align:right!important;display:unset">Start from {{ product.format_default_price }}</div>
+                                                        </div>
+                                                        {% for k,v in  product.transaction_info.transaction_type %}
+                                                            {% if v.type == 1 %}
+                                                                <div id="transaction_type_{{ v.type }}_{{ product.cart_id }}_{{ v.id }}" onclick="setProductPrice({{ product.cart_id }}, 'type_{{ v.type }}_{{ v.id }}', this, {{ delivery_type }}, '{{ product.sku }}')">
+                                                                    <div class="transaction-type">Rebate:#{{ v.agreement_code }}</div>
+                                                                    <div>
+                                                                        <div class="transaction-quantity">Available Quantity:{{ v.agreement_show_quantity }}</div>
+                                                                        <div class="transaction-price text-right">{{ v.price_show }}</div>
+                                                                    </div>
+                                                                </div>
+                                                            {% elseif v.type == 2 %}
+                                                                <div id="transaction_type_{{ v.type }}_{{ product.cart_id }}_{{ v.id }}" onclick="setProductPrice({{ product.cart_id }}, 'type_{{ v.type }}_{{ v.id }}', this, {{ delivery_type }}, '{{ product.sku }}')">
+                                                                    <div class="transaction-type">Margin:#{{ v.agreement_code }}</div>
+                                                                    <div>
+                                                                    <div class="transaction-quantity">Product QTY Remaining:{{ v.left_qty }}</div>
+                                                                    <div class="transaction-price text-right">{{ v.price_show }}</div>
+                                                                    </div>
+                                                                </div>
+                                                            {% elseif v.type == 3 %}
+                                                                <div id="transaction_type_{{ v.type }}_{{ product.cart_id }}_{{ v.id }}" onclick="setProductPrice({{ product.cart_id }}, 'type_{{ v.type }}_{{ v.id }}', this, {{ delivery_type }}, '{{ product.sku }}')" left_qty="{{ v.left_qty }}">
+                                                                    <div class="transaction-type">Future Goods:#{{ v.agreement_code }}</div>
+                                                                    <div>
+                                                                    <div class="transaction-quantity">Product QTY Remaining:{{ v.left_qty }}</div>
+                                                                    <div class="transaction-price text-right">{{ v.price_show }}</div>
+                                                                    </div>
+                                                                </div>
+                                                            {% elseif v.type == 4 %}
+                                                                <div id="transaction_type_{{ v.type }}_{{ product.cart_id }}_{{ v.id }}" onclick="setProductPrice({{ product.cart_id }}, 'type_{{ v.type }}_{{ v.id }}', this, {{ delivery_type }}, '{{ product.sku }}')">
+                                                                    <div class="transaction-type">Spot Price:#{{ v.agreement_code }}</div>
+                                                                    <div>
+                                                                    <div class="transaction-quantity">Product QTY Remaining:{{ v.qty }}</div>
+                                                                    <div class="transaction-price text-right">{{ v.price_show }}</div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    <div class="show-type" style="position: relative">
+                                                        <input class="input-type" value="Normal Transaction" style=""
+                                                               disabled title="Normal Transaction">
+                                                        <span class="caret"></span>
+                                                    </div>
+                                                {% endif %}
+                                                {# #29414 限时限量活动 #}
+                                                <div class="time-limit-pop-down" id="timeLimitPopdownidType-{{product.cart_id}}">
+                                                  The current transaction type or purchase quantity does not meet the promtion event rules
+                                                </div>
+                                            </div>
+                                        </td>
+                                        {#Unit Price#}
+                                        <td class="text-left">
+                                            <div class="price Non-agreement" style="position: relative">
+                                                <span class="drop">
+                                                    {% if product.service_fee_per %}
+                                                        <span>
+                                                         {# <img data-toggle='tooltip' title='Service Fee'
+                                                                   style='width: 21.81px'
+                                                                   src="{{ img_vat_url }}"/>#}
+                                                        </span>
+                                                        <span id="price_{{ product.cart_id }}">{{ product.product_price_per }}</span>
+                                                    {% else %}
+                                                        <span id="price_{{ product.cart_id }}">{{ product.price }}</span>
+                                                    {% endif %}
+                                                    <span id="tiered-price-show-{{ product.cart_id }}" style="display: {% if product.show_tiered_pricing %}inline-block{% else %} none {% endif %}">
+                                                        <span class="caret"></span>
+                                                        <div class="Non-price-agreement" style="">
+                                                            <div class="contract-offer">
+                                                                <i class="giga icon-zhangdan" style="margin-right: -10px;font-size:20px "></i>
+                                                                <span>Price by quantity</span>
+                                                            </div>
+                                                            <div class="quoted-price" id="tiered-prices-{{ product.cart_id }}">
+                                                                {% for tiered_price in  product.tiered_prices %}
+                                                                    <div>
+                                                                        <div class="ladder-section {% if tiered_price.selected %} active-price{% endif %}">{{ tiered_price.msg }}</div>
+                                                                        <div class="price-ladder text-right {% if tiered_price.selected %} active-price{% endif %}">{{ tiered_price.format_price }}</div>
+                                                                    </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    </span>
+                                                </span>
+                                                <i class="giga icon-up-price popover11"
+                                                   id="priceUp_{{ product.cart_id }}" data-toggle="popover"
+                                                   style="color: #FA6400;font-size: 12px;{% if not product.priceUp.status %}display:none{% endif %}"></i>
+                                            </div>
+                                            {# quote discount#}
+                                            <span style="font-size: 12px;{% if product.type_id != 4 %}display:none{% endif %}"
+                                                  id="discount_{{ product.cart_id }}">(Discount:
+                                            <span style="color:#FA6400" id="discount_value_{{ product.cart_id }}">
+                                              {{ product.str_quote_amount_per }}</span>)</span>
+                                            {# 29414 限时限量折扣值 #}
+                                            <div class="limit-time-limit-qty-dicount {% if product.discount == null %} limit-display-none {% endif %} "
+                                            data-isDiscount="{% if product.discount == null %}false{% else %}true{% endif %}"
+                                            id="limitTimeLimitQtyDicount-{{ product.cart_id }}">Discount<span class="color-fa64" limit-current-discount="{{100-product.discount}}">&nbsp;{{100-product.discount}}% OFF</span></div>
+                                        </td>
+                                        {#Sever Fee#}
+                                        {% if isEuropean %}
+                                            <td class="text-left">
+                                                <div class="price Non-agreement"  style="position: relative">
+                                                    <span class="drop">
+                                                        <span id="service_fee_{{ product.cart_id }}">{{ product.service_fee_per }}</span>
+                                                        <span id="service-tiered-price-show-{{ product.cart_id }}" style="display: {% if product.show_tiered_pricing %}inline-block{% else %} none {% endif %}">
+                                                            <span class="caret"></span>
+                                                            <div class="Non-price-agreement" style="">
+                                                                <div class="contract-offer">
+                                                                    <i class="giga icon-zhangdan" style="margin-right: -10px;font-size:20px "></i>
+                                                                    <span>Price by quantity</span>
+                                                                </div>
+                                                                <div class="quoted-price" id="service-tiered-prices-{{ product.cart_id }}">
+                                                                    {% for tiered_price in  product.service_tiered_prices %}
+                                                                        <div>
+                                                                            <div class="ladder-section {% if tiered_price.selected %} active-price{% endif %}">{{ tiered_price.msg }}</div>
+                                                                            <div class="price-ladder text-right {% if tiered_price.selected %} active-price{% endif %}">{{ tiered_price.format_price }}</div>
+                                                                        </div>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </span>
+                                                    </span>
+                                                    <i class="giga icon-up-price popover11"
+                                                       id="service_fee_priceUp_{{ product.cart_id }}"
+                                                       data-toggle="popover"
+                                                       style="color: #FA6400;font-size: 12px;
+                                                               {% if not product.priceUp.status %}display:none{% endif %}"></i>
+                                                </div>
+                                                <span style="font-size: 12px;{% if product.type_id != 4 %}display:none{% endif %}"
+                                                      id="service_fee_discount_{{ product.cart_id }}">(Discount:
+                                            <span style="color: #FA6400"
+                                                  id="service_fee_discount_value_{{ product.cart_id }}">
+                                              {{ product.quote_service_fee_per }}</span>)</span>
+                                            </td>
+                                        {% endif %}
+                                        {#freight#}
+                                        <td class="text-center">
+                                            <div id="freight">
+                                                <div>{{ product.freight_per }}<span class="caret"></span></div>
+                                                <div class="dropdown-freight" style="width: 300px;padding: 8px">
+                                                    {% if isCollectionFromDomicile %}
+                                                        <div class="service-charges" >Fulfillment for home pickup service</div>
+                                                    {% else %}
+                                                        <div class="service-charges" >Fulfillment for Drop Shipping service</div>
+                                                    {% endif %}
+                                                   <div style="border-bottom: 1px solid #eee;padding: 6px 25px">
+                                                       <div class="cost-name">Shipping Fee</div>
+                                                       <div class="cost-price text-right">{{ product.freight }}</div>
+                                                   </div>
+                                                    <div style="padding: 6px 25px">
+                                                        <div class="cost-name">Packing Fee</div>
+                                                        <div class="cost-price text-right"> {{ product.package_fee }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        {#Total#}
+                                        <td class="text-right">
+                                            <div class="total"
+                                                 id="total_{{ product.cart_id }}">{{ product.total }}</div>
+                                            <textarea style="display: none" class="is_margin_advance_product"
+                                                      data-product_id="{{ product.product_id }}"
+                                                      data-is_margin_advance_product="{{ product.isMarginAdvanceProduct }}"
+                                                      data-sku="{{ product.sku }}">
+                                            </textarea>
+                                        </td>
+                                    {% else %}
+                                        <td colspan="7" width="85%" style="padding-left: 0">
+                                            <div>
+                                                <div style="width: 6% ;padding: 0;position: relative;float: left"
+                                                     class="text-left img-big">
+                                                    {% if product.thumb %}
+                                                        <img src="{{ product.thumb }}" alt="{{ product.name }}"
+                                                             class="img-thumbnail" style="width: 60px;"/>
+                                                        <div class="img-thumbnail-hover">
+                                                            <img src="{{ product.popupImage }}" alt="{{ product.name }}"
+                                                                 style="width: 100%"/>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                {#Product Information#}
+                                                <div class="pro-td"
+                                                     style="position: relative;display: inline-block;padding-left: 10px;width: 80%;{% if not product.can_buy %} color: #ccc{% endif %}">
+                                                    <div class="name">
+                                                        {% if product.product_type in [1,2] %}
+                                                          <span href="{{ product.href }}"
+                                                          {% if product.product_type ==1 %}
+                                                            title="Margin goods deposit"
+                                                          {% elseif product.product_type ==2 %}
+                                                            title="Future goods deposit"
+                                                          {% endif %}
+                                                              style="">{{ product.name }}</span>
+                                                        {% else %}
+                                                        <a href="{{ product.href }}"
+                                                           title="{{ product.name }}"
+                                                           style="{% if not product.can_buy %} color: #ccc{% endif %}">{{ product.name }}</a>
+                                                        {% endif %}
+                                                        {#{% if not product.stock %} <span class="text-danger">***</span> {% endif %}#}
+                                                        {% if product.option %}
+                                                            {% for option in product.option %} <br/>
+                                                                <small>{{ option.name }}
+                                                                    : {{ option.value }}</small> {% endfor %}
+                                                        {% endif %}
+                                                        {% if product.reward %} <br/>
+                                                            <small>{{ product.reward }}</small> {% endif %}
+                                                        {% if product.recurring %} <br/>
+                                                            <span class="label label-info">{{ text_recurring_item }}</span>
+                                                            <small>{{ product.recurring }}</small>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="options">
+                                                        {{ product.sku }}
+                                                        {% if product.tag %}
+                                                            {% for tagDetail in product.tag %}
+                                                                {{ tagDetail }}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                        {#<div>MPN: {{ product.mpn }}</div>#}
+                                                    </div>
+                                                    {% if product.color_str %}
+                                                        <div class="property">
+                                                            <span style="word-break: break-all">{{ product.color_str }}</span>
+                                                            <i class="gcl gcledit" style=""></i>
+                                                        </div>
+                                                        <div class="property-check"
+                                                             id="select_color_{{ product.cart_id }}">
+                                                            <div style="margin-bottom: 10px;display: flex;align-items: center">
+                                                                <div style="display: inline-block">
+                                                                    <div style="margin-left: 2%;font-weight: bold">Select:</div>
+                                                                    {% for id,v in product.color %}
+                                                                        <span class="pro {% if id == product.product_id %} active {% endif %}"
+                                                                              data-id="{{ id }}" title="{{ v }}">{{ v }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <button type="button" class="btn btn-primary"
+                                                                        id="select_color_btn_{{ product.cart_id }}"
+                                                                        onclick="selectColor(this,{{ product.cart_id }},{{ product.product_id }})">
+                                                                    OK
+                                                                </button>
+                                                                <button type="button" class="btn btn-default">Close
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            {% if not product.can_buy %}
+                                                <p style="color: red;clear: both">The product is unavailable, you can contact seller
+                                                    for
+                                                    details.</p>
+                                            {% endif %}
+                                        </td>
+                                        {% if isEuropean %}
+                                            <td></td>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {#action#}
+                                    <td class="text-left left-boder" width="12%" style="padding-left: 3%">
+                                        <div class="action-group" style="display: flex;justify-content:flex-start">
+                                            {#{% if not product.stock %} <span class="notavailable">Not available</span> {% endif %}#}
+                                            <a type="button" data-trigger="hover" data-toggle="tooltip"
+                                                    title="{{ button_remove }}"
+                                                    class="btn-table"
+                                                    onclick="removeCart('{{ product.cart_id }}','{{ delivery_type }}')">
+                                                <i class="giga icon-lajitong"></i>
+                                            </a>
+                                            {% if product.can_buy and product.isMarginAdvanceProduct != true
+                                                and product.isFuturesAdvanceProduct !=true
+                                                and has_cwf_freight and product.can_change_cart
+                                            %}
+                                              {% if store.accounting_type==6 or store.isNotMove==1 %}
+                                                <a style="margin-left: 5px;" class="btn-table"
+                                                   data-trigger="hover"
+                                                   data-toggle="tooltip" title="This seller does not support Cloud Wholesale Fulfillment.">
+                                                  <i class="giga icon-zhuanhuan"></i></a>
+                                              {% else %}
+                                                <a style="margin-left: 5px;" class="btn-table"
+                                                   data-trigger="hover"
+                                                   data-toggle="tooltip" title="{{ cart_change_drop_ship }} "
+                                                   onclick="changeDropShipDeliveryType('{{ product.cart_id }}','0','2');return false;">
+                                                  <i class="giga icon-zhuanhuan"></i></a>
+                                              {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    {# 1452购物车 #}
+                                    {% if product.campaigns %}
+                                     <tr class="promotion-prod">
+                                        <td colspan="10">
+                                            {% for campaign in product.campaigns %}
+                                                <div class="my-flex text-small">
+                                                    <img src="image/coupon/discount.png">
+                                                    <div class="pro-content">&nbsp;{{ campaign.promotion_content }}</div>
+                                                    <a href="{{ url('marketing_campaign/activity/index', {'code':campaign.code}) }}" target="_blank"><span class="link-price shop-more">&nbsp;Shopping More ></span></a>
+                                                </div>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="row settle-accounts" style="width: 80%;margin: 0 auto">
+            <div class="col-sm-4">
+                <input type="checkbox" autocomplete="off" class="allcheck allcheck0" checked onchange="calculateTotal()"> All
+                <button class="batch-del">
+                    <i class="gcl gcllajitong"></i> Remove
+                </button>
+            </div>
+            <div class="col-sm-8 priceList">
+                <table class="table" style="width: auto;float: right">
+                    {# 1452购物车 #}
+                    <tr style="{% if gifts|length == 0 %}display:none{% endif %}">
+                        <td colspan="2" class="text-right">
+                            <span class="font-bold">Gift:&nbsp;</span>
+                            <span id="gift-content-{{ delivery_type }}">
+                            {% for gift in gifts %}
+                                {% if gift.is_coupon %}
+                                    <span class="link-price">{{ gift.format_coupon_price }}</span> coupon&nbsp;<img src="image/coupon/coupon.png">
+                                    <span data-toggle="tooltip"  data-html="true" data-original-title="This order qualifies for a&nbsp;{{ gift.format_coupon_price }} off coupon that you can use on your next purchase" class="toggle-mark">
+                                        <i class="giga icon-V10-wenhaotishi"></i>
+                                    </span>
+                                {% else %}
+                                    {{ gift.condition_remark }}
+                                {% endif %}
+                                <br/>
+                            {% endfor %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% for total in totals %}
+                        {% if total.code != 'promotion_discount' %}
+                            <tr style="{% if total.code == 'giga_coupon' and total.value == 0 %}display:none{% endif %}">
+                                <td class="text-right font-bold">
+                                   {# {% if isEuropean and (total.code =='sub_total' or total.title == 'Total Item Discount') %}
+                                        <img data-toggle='tooltip' title='Service Fee' style='width: 21.81px'
+                                             src="{{ img_vat_url }}"/>
+                                    {% endif %}#}
+                                    <span>{{ total.title }}:</span>
+                                </td>
+                                <td class="text-right {% if total.code == 'giga_coupon' %}green-color{% endif %}"  style="border-top: 0px;{% if total.code == 'total' %};color: #fA6400{% endif %}">
+                                    <span id="{{ total.code }}_value_{{ delivery_type }}">{{ total.text }}</span>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr class="promotion-hover" style="{% if total.value == 0 %}display:none{% endif %}">
+                                <td class="text-right font-bold promotion-dis">{{ total.title }}:
+                                    <div class="promotion-content">
+                                        <div class="line-table">
+                                            <div class="text-center text-size-normal">Promotion Name</div>
+                                            <div class="text-left text-size-normal">Discount Amount</div>
+                                        </div>
+                                        <div id="promotion-discount-content-{{ delivery_type }}">
+                                            {% for discount in total.discounts %}
+                                            <div class="line-table">
+                                                <div class="text-left">{{ discount.promotion_content }}</div>
+                                                <div class="text-left">{{ discount.format_price }}</div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-right relative">
+                                    <span class="green-color" id="{{ total.code }}_value_{{ delivery_type }}">{{ total.text }}</span>
+                                    <i class="giga icon-sidebar-unfold absolute"></i>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    {# 1452购物车 End #}
+                </table>
+            </div>
+            <div class="text-right">
+                <button onclick="checkout_pre_drop_ship()" class="btn check-out" name="btn_checkout"
+                        style=" font-size: 18px !important;">Proceed to checkout
+                </button>
+            </div>
+        </div>
+        <div class="footer footer0" >
+            <div class="col-sm-4">
+                <input type="checkbox" autocomplete="off" class="allcheck allcheck0" checked onchange="calculateTotal()"> All
+                <button class="batch-del">
+                    <i class="gcl gcllajitong"></i> Remove
+                </button>
+            </div>
+            <div class="col-sm-8">
+                <div class="col-sm-9" style="text-align: right;position: relative;">
+                    {% for k,total in totals %}
+                        {% if total.code != 'giga_coupon' and total.code != 'promotion_discount' %}
+                        <p {% if total.code =='total' %} style="display: block;position: absolute;top: 0;right: 10px;font-size: 18px;font-weight: bold"
+                                {% else %} style="margin-top: 30px"{% endif %}>
+                           {# {% if isEuropean and (total.code =='sub_total' or total.title == 'Total Item Discount') %}
+                                <img data-toggle='tooltip' title='Service Fee' style='width: 21.81px'
+                                     src="{{ img_vat_url }}"/>
+                            {% endif %}#}
+                            <span class="list">
+                            {{ total.title }}:</span>
+                            <span class="price" id="footer_{{ total.code }}_value_{{ delivery_type }}"
+                                  style="{% if total.code == 'total' %}color: #fA6400{% endif %}">{{ total.text }}</span>
+                            {% if (totals|length - 4) > k %},{% endif %}
+                        </p>
+                        {% endif %}
+                    {% endfor %}
+                    <p style="margin-top: 30px; {% if discounts_amount.amount == 0 %}display:none{% endif %}">
+                        <span class="list">, Savings:</span>
+                        <span class="price" id="footer_save_value_{{ delivery_type }}">{{ discounts_amount.amount_text }}</span>
+                    </p>
+                </div>
+                <div class="col-sm-3" style="text-align: right;padding-left: 0">
+                    <button onclick="checkout_pre_drop_ship()" class="btn check-out" name="btn_checkout"
+                            style="border-radius: 0 ;font-size: 18px !important;">
+                        Proceed to checkout
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <br/>
+</div>
+<script>
+  var txtPleaseSelect = "{{ __('请选择', {}, 'common') }}";
+  $('[data-toggle="popover"]').popover()
+    $(document).bind('click', function(event) {
+        var evt = event.srcElement ? event.srcElement : event.target;
+        evt = $(evt);
+        if (evt.hasClass(".transaction-type-all") || evt.parents(".transaction-type-all").length != 0)  return
+        else {
+            $("body").find(".transaction-type-list").hide();
+        };
+    });
+    // Transaction Type
+    $("#drop-ship-list .show-type .input-type").on('click',function () {
+        var typelist = $(this).parentsUntil("td").find(".transaction-type-list");
+        var display = typelist.css('display');
+        if (display == 'none'){
+            typelist.show();
+        }else{
+            typelist.hide();
+        }
+    });
+    $("#drop-ship-list .transaction-type-list > div").on('click',function () {
+        var typeval = $(this).children(".transaction-type").text();
+        $(this).parentsUntil("td").find(".input-type").val(typeval);
+        $(this).parentsUntil("td").find(".input-type").attr('title',typeval);
+        $(".transaction-type-list").hide()
+    })
+</script>
+<script>
+    $(document).ready(function () {
+        let checkTop = $(".settle-accounts").offset()['top'];
+        let winHeight = $(window).height();
+        if (checkTop > winHeight) {
+            $(".footer").show();
+            $(".settle-accounts").hide();
+        } else {
+            $(".footer").hide();
+            $(".settle-accounts").show();
+        }
+
+        $(window).scroll(function () {
+          var suc =parseInt($("#suc").val());
+            //为了保证兼容性，这里取两个值，哪个有值取哪一个
+            //scrollTop就是触发滚轮事件时滚轮的高度
+            let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            if (checkTop - scrollTop < 726 || suc===0) {
+                $(".footer").hide();
+                $(".settle-accounts").show();
+            } else {
+                $(".footer").show();
+                $(".settle-accounts").hide();
+            }
+        })
+    });
+
+    //qty监听
+    $(".qtyinput").bind("focus", function () {
+        var text = parseInt($(this).val());
+        $(".qtyinput").bind("change", function () {
+            var text1 =parseInt( $(this).val());
+            var rule = /^[1-9]\d*$/;
+            if (!rule.test(text1)) {
+                $(this).val(text)
+            } else {
+                $(this).val(text1);
+                var maximum = parseInt($(this).parentsUntil("tr").find(".maximum").html());
+                if (text1 > maximum) {
+                    $(this).css("color", "red")
+                } else {
+                    $(this).css("color", "#333")
+                }
+            }
+        })
+    })
+</script>
+<script>
+    // 倒计时
+    $(function () {
+        {% for store_id,store in stores %}
+        {% for product in store.products %}
+        {% if product.priceUp.effect_time %}
+
+        var SysSecond_{{ product.cart_id }};
+        var InterValObj_{{ product.cart_id }};
+        $(document).ready(function () {
+            SysSecond_{{ product.cart_id }} = {{ product.priceUp.effect_time }}; //这里获取倒计时的起始时间(总秒数)
+            InterValObj_{{ product.cart_id }} = window.setInterval(SetRemainTime_{{ product.cart_id }}, 1000); //间隔函数，1秒执行
+        });
+
+        function SetRemainTime_{{ product.cart_id }}() {
+            if (SysSecond_{{ product.cart_id }} > 0) {
+                SysSecond_{{ product.cart_id }} = SysSecond_{{ product.cart_id }} - 1;
+                var second_{{ product.cart_id }} = Math.floor(SysSecond_{{ product.cart_id }} % 60); // 计算秒
+                var min_{{ product.cart_id }} = Math.floor((SysSecond_{{ product.cart_id }} / 60) % 60); //计算分
+                var hour_{{ product.cart_id }} = Math.floor((SysSecond_{{ product.cart_id }} / 3600) % 24); //计算小时
+                var day_{{ product.cart_id }} = Math.floor((SysSecond_{{ product.cart_id }} / 3600) / 24); //计算天
+
+                var hourDiv_{{ product.cart_id }} = "<span id='hourSpan'>" + hour_{{ product.cart_id }} + ":" + "</span>";
+                var minDiv_{{ product.cart_id }} = "<span id='minSpan'>" + min_{{ product.cart_id }} + ":" + "</span>";
+                var secDiv_{{ product.cart_id }} = "<span id='secSpan'>" + second_{{ product.cart_id }}  + "</span>";
+                if ( day_{{ product.cart_id }}>1){
+                    var dayDiv_{{ product.cart_id }} = "<span id='daySpan'>" + day_{{ product.cart_id }} + " days" + "</span>";
+                }else{
+                    var dayDiv_{{ product.cart_id }} = "<span id='daySpan'>" + day_{{ product.cart_id }} + " day" + "</span>";
+                }
+
+                if (day_{{ product.cart_id }}===0) {
+                    $(".remainTime_{{ product.cart_id }}").html( hourDiv_{{ product.cart_id }}+ minDiv_{{ product.cart_id }}+ secDiv_{{ product.cart_id }});
+                } else{
+                    $(".remainTime_{{ product.cart_id }}").html(dayDiv_{{ product.cart_id }});
+                }
+
+            } else { //剩余时间小于或等于0的时候，就停止间隔函数
+                window.clearInterval(InterValObj_{{ product.cart_id }});
+                //这里可以添加倒计时时间为0后需要执行的事件
+                // alert("时间为0");
+            }
+        }
+
+        var template_{{ product.cart_id }} = [
+            '<div class="popover">',
+            '<div class="popover-content"></div>',
+            '</div>'
+        ].join("");
+
+        var content_{{ product.cart_id }} = [
+            '<div >The price will go up by <span>{% if not product.priceUp.add_product_price %}{{ product.priceUp.add_price }}{% else %}{{ product.priceUp.add_product_price }}{% endif %}</span> in <span class="remainTime_{{ product.cart_id }}"></span></div>'
+        ].join("");
+        //服务费上涨提醒
+        var service_fee_content_{{ product.cart_id }} = [
+            '<div >The price will go up by <span>{{ product.priceUp.add_service_fee }}</span> in <span class="remainTime_{{ product.cart_id }}"></span></div>'
+        ].join("");
+
+        $("#priceUp_{{ product.cart_id }}").popover({
+            html: true,
+            trigger: "click hover",
+            placement: 'bottom',
+            content: content_{{ product.cart_id }},
+            template: template_{{ product.cart_id }}
+        });
+        $("#service_fee_priceUp_{{ product.cart_id }}").popover({
+            html: true,
+            trigger: "click hover",
+            placement: 'bottom',
+            content: service_fee_content_{{ product.cart_id }},
+            template: template_{{ product.cart_id }}
+        });
+
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        var arr = new Array();
+        var shop = $('#drop-ship-list .shop');
+        $.each(shop,function(){
+            var len = $(this).find('td input:checkbox').length
+           if(len<2){
+               $(this).find('thead .shopcheck').hide()
+           }
+        })
+    })
+    {# 店铺全选 #};
+    $("#drop-ship-list .shopcheck").on("click", function () {
+        if ($(this).is(':checked')) {
+            $(this).parentsUntil(".shop").find("input:checkbox").prop("checked", true);
+            $('#drop-ship-list .check-out').removeAttr("disabled");
+            $("#drop-ship-list .batch-del").css("display", "inline-block")
+        } else {
+            $(this).parentsUntil(".shop").find("input:checkbox").prop("checked", false);
+            $('#drop-ship-list .check-out').attr("disabled", "disabled");
+            $("#drop-ship-list .batch-del").css("display", "none")
+        }
+    });
+
+    {# 全选 #}
+    var i = 1;
+    $("#drop-ship-list .allcheck").on("click", function () {
+        if (i == 0) {
+            $(this).parentsUntil(".cart-product-wrapper").find("input:checkbox").prop("checked", true);
+            i = 1;
+            $('#drop-ship-list .check-out').removeAttr("disabled");
+            $("#drop-ship-list .batch-del").css("display", "inline-block")
+        } else {
+            $(this).parentsUntil(".cart-product-wrapper").find("input:checkbox").prop("checked", false);
+            i = 0;
+            $('#drop-ship-list .check-out').attr("disabled", "disabled");
+            $("#drop-ship-list .batch-del").css("display", "none")
+        }
+
+        let len1 = $(this).parentsUntil("#drop-ship-list").find(".shop tbody td :checkbox").length;{# 所有产品的复选框 #};
+        if (len1 === 0) {
+            $('#drop-ship-list .check-out').attr("disabled", "disabled");
+            $("#drop-ship-list .batch-del").css("display", "none")
+        }
+    });
+
+    {# 反选(店铺、产品 复选框) #}
+    $('#drop-ship-list .shop td input:checkbox').on('change', function () {
+        let len3 = $(this).parentsUntil(".shop").find("tbody td :checkbox").length;{# 当前店铺的产品 #};
+        let len4 = $(this).parentsUntil(".shop").find("tbody td :checkbox:checked").length;{# 当前被选中店铺的产品 #};
+        let check = $(this).parentsUntil(".shop").find(".shopcheck");{# 当前店铺的复选框 #};
+        if (len3 > 0) {
+            if (len4 < len3) {
+                $(check).prop("checked", false);
+            } else {
+                $(check).prop("checked", true);
+            }
+        }
+        let len1 = $(this).parentsUntil("#drop-ship-list").find(".shop tbody td :checkbox").length;{# 所有产品的复选框 #};
+        let len2 = $(this).parentsUntil("#drop-ship-list").find(".shop tbody td :checkbox:checked").length;{# 所有被选中产品的复选框 #};
+        let numShop = $("#drop-ship-list").find(".shopcheck").length; //店铺复选框个数 ;
+        let numShopChecked = $("#drop-ship-list").find(".shopcheck:checked").length;
+        if (len2 < len1 || numShop !== numShopChecked) {
+            $("#drop-ship-list .allcheck").prop("checked", false);
+            i = 0;
+        } else {
+            $("#drop-ship-list .allcheck").prop("checked", true);
+            i = 1;
+        }
+
+        if (len2 > 0) {
+            $('#drop-ship-list .check-out').removeAttr("disabled");
+            $("#drop-ship-list .batch-del").css("display", "inline-block")
+        } else {
+            $('#drop-ship-list .check-out').attr("disabled", "disabled");
+            $("#drop-ship-list .batch-del").css("display", "none")
+        }
+    });
+
+    //选择颜色
+    $(".property").on("click", function () {
+        $(".property-check").hide();
+        $(this).parent().find(".property-check").show()
+    });
+    $(".property-check .btn-default").on("click", function () {
+        $(this).parent().parent().hide();
+    });
+    $(".property-check .pro").on("click", function () {
+        $(".property-check .active").removeClass("active");
+        $(this).addClass("active");
+    });
+
+    $(document).bind('click', function (event) {
+        var evt = event.srcElement ? event.srcElement : event.target;
+        evt = $(evt);
+        if (evt.hasClass("pro-td") || evt.parents(".pro-td").length != 0) ;
+        else {
+            $("body").find(".property-check").hide();
+        }
+        ;
+    });
+
+</script>
+<script>
+    block.unBlockUI();
+    $("#suc").val(1);
+    var init = 0;
+    let delivery_type = {{ delivery_type }};
+    $(document).ready(function () {
+        if ($("#drop-ship-list").find(".shop tbody td :checkbox").length > 0) {
+            $('#drop-ship-list .check-out').removeAttr("disabled");
+        } else {
+            $('#drop-ship-list .check-out').attr("disabled", "disabled");
+            $("#drop-ship-list .batch-del").css("display", "none")
+        }
+
+        init = 1;
+        $(".select2_new").select2({
+            //      language: "zh-CN", //设置 提示语言
+            width: "210px", //设置下拉框的宽度
+            placeholder: `---${txtPleaseSelect}---`,
+            //      minimumInputLength: 10  //最小需要输入多少个字符才进行查询
+        });
+
+        {% for store_id,store in stores %}
+        {% for key,value in store.products %}
+        var isMarginAdvanceProduct = '{{ value.isMarginAdvanceProduct }}';
+        var isFuturesAdvanceProduct = '{{ value.isFuturesAdvanceProduct }}';
+        var type = '{{ value.type_id }}';
+
+        var transaction_type_text = $('#transaction_type_' + type + '_' + '{{ value.cart_id }}' + '_' + '{{ value.agreement_id }}').children(".transaction-type").text();
+
+        $("#transaction_type_{{ value.cart_id }}" + '_' + delivery_type).val(transaction_type_text)
+        $("#transaction_type_{{ value.cart_id }}" + '_' + delivery_type).attr('title',transaction_type_text);
+        if (isMarginAdvanceProduct == 1 || isFuturesAdvanceProduct) {
+            $("#transaction_type_{{ value.cart_id }}" + '_' + delivery_type).attr('disabled', 'disabled')
+        }
+        {% if value.transaction_info.transaction_type is empty %}
+        $("#transaction_type_{{ value.cart_id }}" + '_' + delivery_type).attr('disabled', 'disabled');
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+        init = 0;
+    });
+
+    function checkout_pre_drop_ship() {
+        $("div.footer").hide();
+        $('button[name="btn_checkout"]').attr("disabled", true);
+        $('#drop-ship-list input.allcheck0').attr("disabled", true);
+        $('#drop-ship-list button.batch-del').css('display','none');
+        let flag = true;
+        let cartId = new Array();
+        $('*[name="select_cart_' + delivery_type + '"]:checked').each(function (i) {
+            cartId[i] = $(this).val();
+        });
+        cart_id_str = cartId.join(',');
+        if (!cart_id_str) {
+            layer.open({
+                title: 'Notice',
+                skin: 'yzc_layer', //样式类名
+                content: 'Please select at least one item.',
+                btn: ['Yes'],
+                btnAlign:"c",
+                yes: function (index, layero) {
+                    layer.close(index);
+                    $('button[name="btn_checkout"]').attr("disabled", false);
+                    $('#drop-ship-list input.allcheck0').attr("disabled", false);
+                    $('#drop-ship-list button.batch-del').css('display','inline-block');
+                },
+                cancel: function () {
+                    $('button[name="btn_checkout"]').attr("disabled", false);
+                    $('input.allcheck').attr("disabled", false);
+                    $('button.batch-del').css('display','inline-block');
+                }
+            });
+            return;
+        }
+        let buy_now_data = {};
+        let qty_types={}
+        $('.qty_type').each(function () {
+          cart_id = $(this).attr('data-cart-id');
+          qty_types[cart_id] = $(this).text().trim();
+        });
+        $.ajax({
+            url: "{{ checkDropShipCartUrl }}",
+            async: false,
+            type: 'POST',
+            dataType: "json",
+            data: {delivery_type: delivery_type, cart_id_str: cart_id_str,qty_types:qty_types},
+            success: function (json, textStatus, jqXHR) {
+                if (!json['success']) {
+                    layer.open({
+                        title: 'Notice',
+                        skin: 'yzc_layer', //样式类名
+                        content: json['msg'],
+                        closeBtn: false,//不显示右上角的"X"关闭
+                        btn: ['Yes'],
+                        btnAlign:"c",
+                        yes: function (index, layero) {
+                            block.blockUI();
+                            $('#drop-ship-list').load("{{ url('checkout/cart/cart_drop_ship') }}");
+                            //清空checkbox 隐藏remove
+                            $("#cloud-logistics-list input[type='checkbox']:checked").prop("checked",false);
+                            $("#cloud-logistics-list #sub_total_value_2").html("$0.00");
+                            $("#cloud-logistics-list #freight_value_2").html("$0.00");
+                            $("#cloud-logistics-list #total_value_2").html("$0.00");
+                            $("#cloud-logistics-list #footer_total_value_2").html("$0.00");
+                            $("#cloud-logistics-list #footer_sub_total_value_2").html("$0.00");
+                            $("#cloud-logistics-list #footer_freight_value_2").html("$0.00");
+                            j2 = 0;
+                            i2 = 0;
+                            $('#cloud-logistics-list .batch-del').hide()
+                            layer.close(index);
+                        }
+                    });
+                    flag = false;
+                    console.log(1)
+                } else {
+                    buy_now_data = json['buy_now_data'];
+                    {# 38976 取消效验销售单，直接采购，不能虚拟支付 #}
+                    {#let checkInnerAutoBuyUrl = '{{ checkInnerAutoBuyUrl }}';#}
+                    {#let innerAutoBuyAttr1 = '{{ innerAutoBuyAttr1 }}';#}
+                    {#if (innerAutoBuyAttr1) {#}
+                    {#    $.ajax({#}
+                    {#        url: checkInnerAutoBuyUrl,#}
+                    {#        async: false,#}
+                    {#        type: 'Post',#}
+                    {#        dataType: "json",#}
+                    {#        data: {delivery_type: delivery_type, cart_id_str: cart_id_str},#}
+                    {#        success: function (json, textStatus, jqXHR) {#}
+                    {#            if (json['data']['flag']) {#}
+                    {#                loadInnerAutoBuyModal(delivery_type, cart_id_str);#}
+                    {#                flag = false;#}
+                    {#                return false;#}
+                    {#            }#}
+                    {#        }#}
+                    {#    });#}
+                    {#}#}
+                    {#console.log(2)#}
+                }
+            }
+        });
+
+        if (flag) {
+            let preOrderUrl = '{{ preOrderUrl }}' + '&delivery_type=' + delivery_type + '&cart_id_str=' + cart_id_str;
+            formSubmitUtil.post(preOrderUrl, {'buy_now_data': buy_now_data})
+        }
+
+    }
+
+    function checkout_drop_ship(cart_id_str) {
+
+        if (cart_id_str) {
+            $.ajax({
+                url: "{{ createOrderUrl }}",
+                async: false,
+                type: 'POST',
+                dataType: "json",
+                data: {cart_id_str: cart_id_str, delivery_type: delivery_type},
+                success: function (json, textStatus, jqXHR) {
+                    if (json.code) {
+                        location.href = '{{ toPayUrl }}' + '&order_id=' + json.data.order_id;
+                    } else {
+                        location.href = json.data.url;
+                    }
+                }
+            });
+        } else {
+            location.href = "{{ url('checkout/cart') }}";
+        }
+    }
+
+    function changeDropShipDeliveryType(cart_id, from_delivery_type, to_delivery_type) {
+        $("#suc").val(0);
+        $(".footer").hide();
+        block.blockUI();
+        $.ajax({
+            url: "{{ url('checkout/cart/checkCartChange') }}",
+            async: false,
+            type: 'POST',
+            data: {cart_id: cart_id, to_delivery_type: to_delivery_type},
+            dataType: "json",
+            success: function (json, textStatus, jqXHR) {
+                if (!json['success']) {
+                    layer.open({
+                        title: 'Notice',
+                        skin: 'yzc_layer', //样式类名
+                        content: json['msg'],
+                        closeBtn: false,//不显示右上角的"X"关闭
+                        btn: ['Yes'],
+                        btnAlign:"c",
+                        yes: function (index, layero) {
+                            block.unBlockUI();
+                            layer.close(index);
+                        }
+                    });
+                } else {
+                    cart.change(cart_id, from_delivery_type, to_delivery_type);
+                }
+            }
+        });
+    }
+
+    //批量删除确认提示
+    $("#drop-ship-list .batch-del").on('click', function () {
+        let cartId = new Array();
+        $('*[name="select_cart_' + delivery_type + '"]:checked').each(function (i) {
+            cartId[i] = $(this).val();
+        });
+        $(".delNum").text(cartId.length);
+        if (cartId.length > 0) {
+            $("#deleteConfirmation").data('delivery_type', delivery_type);
+            $("#deleteConfirmation").modal("show");
+            $("#modelConfirm").attr('data-deliveryType',delivery_type);
+        } else {
+            layer.open({
+                title: 'Notice',
+                skin: 'yzc_layer', //样式类名
+                content: 'Please select at least one item to delete.',
+                btn: ['Yes'],
+                btnAlign:"c",
+                yes: function (index, layero) {
+                    layer.close(index);
+                }
+            });
+        }
+    });
+
+    function selectColor(_this, cart_id, from_product_id) {
+        let to_product_id = $("#select_color_" + cart_id + " .pro.active").data('id');
+        if (to_product_id != from_product_id) {
+          $("#select_color_btn_"+cart_id).attr('disabled', 'disabled');
+          changeCartProduct(delivery_type, cart_id, to_product_id);
+        } else {
+          $(_this).parent().parent().hide();
+        }
+    }
+
+    function calculateTotal() {
+        let cartId = new Array();
+        $('*[name="select_cart_' + delivery_type + '"]:checked').each(function (i) {
+            cartId[i] = $(this).val();
+        });
+        cart_id_str = cartId.join(',');
+
+        totalByCartId(delivery_type, cart_id_str);
+    }
+</script>
+

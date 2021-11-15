@@ -1,0 +1,514 @@
+<style>
+    .image-additional a {
+        padding: 5px;
+        display: block;
+        border: 1px solid #ddd;
+    }
+
+    .btn-more {
+        padding: 0;
+        width: 28px;
+        height: 28px;
+        margin-left: 6px;
+        margin-bottom: 6px;
+        /*font-size: 18px;*/
+    }
+</style>
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script src="catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/magnific/magnific-popup.css" type="text/css" rel="stylesheet"/>
+
+
+<div class="bg-white p-2 giga-content">
+    <div class="filter-wrapper">
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label class="control-label" for="filter_purchase_order_id">
+                        Purchase Order ID
+                    </label>
+                    <input type="text" class="form-control" name="filter_purchase_order_id"
+                           id="filter_purchase_order_id"
+                           value="{{ filter_purchase_order_id }}" placeholder="Purchase Order ID"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="filter_refund_store">
+                        Store
+                    </label>
+                    <select class="form-control" name="filter_refund_store" id="filter_refund_store">
+                        <option value=""> --- {{ __('请选择', {}, 'common') }} ---</option>
+                        {% for store in stores %}
+                            <option value="{{ store.seller_id }}"
+                                    {% if filter_refund_store == store.seller_id %}
+                                        selected
+                                    {% endif %}
+                            >{{ store.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label class="control-label" for="filter_refund_sales_order_id">
+                        Sales Order ID
+                    </label>
+                    <input type="text" class="form-control" name="filter_refund_sales_order_id"
+                           id="filter_refund_sales_order_id"
+                           value="{{ filter_refund_sales_order_id }}" placeholder="Sales Order ID"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">
+                        Application Date
+                    </label>
+                    <div class="datetimepicker-range">
+                        <div class="datetimepicker">
+                            <input type="text" class="form-control dateFrom" placeholder="Pick a date..."
+                                   name="filter_refund_applyDateFrom" value="{{ filter_refund_applyDateFrom }}"/>
+                            <span class="title">From</span>
+                            <span class="icon"><i class="giga icon-date-icon"></i></span>
+                        </div>
+                        <div class="datetimepicker">
+                            <input type="text" class="form-control dateTo" placeholder="Pick a date..."
+                                   name="filter_refund_applyDateTo" value="{{ filter_refund_applyDateTo }}"/>
+                            <span class="title">To</span>
+                            <span class="icon"><i class="giga icon-date-icon"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label class="control-label" for="filter_refund_rma_id">
+                        RMA ID
+                    </label>
+                    <input type="text" class="form-control" name="filter_refund_rma_id"
+                           id="filter_refund_rma_id" value="{{ filter_refund_rma_id }}" placeholder="RMA ID"/>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label class="control-label" for="filter_refund_seller_status">
+                        Seller's Process Result
+                    </label>
+                    <select class="form-control" name="filter_refund_seller_status" id="filter_refund_seller_status">
+                        <option value="" {% if filter_refund_seller_status == -1 %} selected{% endif %}> --- Please
+                            Select ---
+                        </option>
+                        <option value="0"{% if filter_refund_seller_status == 0 %} selected{% endif %}>Hasn't Replied
+                        </option>
+                        <option value="1"{% if filter_refund_seller_status == 1 %} selected{% endif %}>Agree</option>
+                        <option value="2"{% if filter_refund_seller_status == 2 %} selected{% endif %}>Refuse</option>
+                    </select>
+                </div>
+                <div class="form-group pull-right" style="margin-top: 20px">
+                    <button type="button" onclick="filterRefund(this);" class="btn btn-primary">Filter</button>
+                    <button onclick="downloadOrderFulfillment();" class="btn btn-default" data-toggle="tooltip"
+                            title="Download">
+                        <i class="fa fa-download"></i></button>
+                    <button type="button" onclick="clrFilterRefund(this);" class="btn btn-default">Reset</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="position:relative">
+            <div class="table-responsive" style="">
+                <table id="tableRefundApplication" class="table main table-hover">
+                    <thead>
+                    <tr>
+                        <th class="text-left no-wrap">RMA ID</th>
+                        <th class="text-left no-wrap">Purchase <br/>Order ID</th>
+                        <th class="text-left no-wrap">Sales Order ID</th>
+                        <th class="text-left no-wrap">Item Code</th>
+                        <th class="text-left no-wrap" style="width: 60px">Store</th>
+                        <th class="text-left no-wrap">Application<br> Refund</th>
+                        <th class="text-left no-wrap">Seller's Process <br/> Refund</th>
+                        <th class="text-left no-wrap">Application <br/> Date</th>
+                        <th class="text-left no-wrap">RMA Status <br/>(Seller Result)</th>
+                        <th class="text-center no-wrap" style="width: 90px">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if rmaOrders %}
+                        {% for rmaOrder in rmaOrders %}
+                            <tr>
+                                <td class="text-left no-wrap">
+                                    <a class="hover-line hover-a-blue" href="{{ rmaOrder.rma_id_link }}">
+                                        {{ rmaOrder.rma_id }}
+                                    </a>
+                                </td>
+                                <td class="text-left no-wrap">
+                                    <a
+                                            class="hover-line hover-a-blue"
+                                            href="{{ rmaOrder.purchase_order_id_link }}">
+                                        {{ rmaOrder.purchase_order_id }}
+                                    </a>
+                                    {% if (rmaOrder.delivery_type==2) %}
+                                        <i class="giga icon-cwf" style="color: #1f5268;font-size: 15px;"
+                                           data-toggle="tooltip"
+                                           data-original-title="{{ cwf }}"></i>
+                                    {% endif %}
+                                </td>
+                                <td class="text-left no-wrap">
+                                    <a class="hover-line hover-a-blue" href="{{ rmaOrder.sales_order_link }}">
+                                        {{ rmaOrder.sales_order_id }}
+                                    </a>
+                                </td>
+                                <td class="text-left no-wrap">
+                                  <div class="flex-layout">
+                                    <span class="m04-r">{{ rmaOrder.item_code }}</span>
+                                    {% for tag in rmaOrder.tag %}
+                                      <img data-toggle="tooltip"
+                                           title="{{ tag.description }}"
+                                           class="{{ tag.icon_class }}"
+                                           style="margin-left: 2px"
+                                           src="{{ tag.icon_url }}">
+                                    {% endfor %}
+                                    {% if rmaOrder.type_id in [2,3] %}
+                                      <a class="complex-icon" href="{{ rmaOrder.agreement_url }}" target="_blank">
+                                        {{ rmaOrder.type_icon }}
+                                      </a>
+                                    {% endif %}
+                                  </div>
+                                </td>
+                                <td class="text-left no-wrap" style="width: 60px">
+                                    <a href="{{ rmaOrder.store_link }}"
+                                       class="hover-line hover-a-blue">{{ rmaOrder.store }}</a>
+                                </td>
+                                <td class="text-left no-wrap">
+                                    {{ rmaOrder.apply_refund_amount }}
+                                </td>
+                                <td class="text-left no-wrap text-price">{{ rmaOrder.seller_refund_amount }}</td>
+                                <td class="text-left no-wrap">
+                                    {{ rmaOrder.application_date | formatZone(country) | formatSpTime('p-clear-css p-color-black','p-clear-css p-color-grey') }}
+                                </td>
+                                <td class="text-left no-wrap">
+                                    <p class="p-clear-css">
+                                        {% if rmaOrder.seller_status in [ 1 , 4 ] or rmaOrder.cancel_status %}
+                                            {% if rmaOrder.seller_status == 1 and rmaOrder.cancel_status  == 0 %}
+                                                Applied
+                                            {% else %}
+                                                Canceled
+                                            {% endif %}
+                                        {% else %}
+                                            {% if rmaOrder.seller_status == 2 %}
+                                                Processed
+                                            {% else %}
+                                                Pending
+                                            {% endif %}
+                                        {% endif %}
+                                    </p>
+                                    {% if rmaOrder.status_refund == 'Agree' %}
+                                        <p class="p-clear-css" style="color: #008000">({{ rmaOrder.status_refund }})</p>
+                                    {% elseif rmaOrder.status_refund == 'Refuse' %}
+                                        <p class="p-clear-css" style="color: #FA6400">({{ rmaOrder.status_refund }})</p>
+                                    {% else %}
+                                    {% endif %}
+                                </td>
+                                <td class="text-left no-wrap">
+                                    <div class="action-group" style="text-align: left;">
+                                        <a
+                                                href="{{ rmaOrder.rma_id_link }}"
+                                                target="_blank"
+                                                class="btn btn-primary"
+                                                data-toggle="tooltip"
+                                                title="View Details">
+                                            <i class="gcl gclchakan"></i>
+                                        </a>
+                                        {% if rmaOrder.canCancelOrEdit == 1 %}
+                                            <a
+                                                    class="btn btn-primary"
+                                                    onclick="editRMA(this,{{ rmaOrder.order_type }},{{ rmaOrder.rma_order_id_s }})">
+                         <span data-toggle="tooltip" title="Edit" data-original-title="">
+                           <i class="gcl gcledit"></i>
+                         </span>
+                                            </a>
+                                        {% endif %}
+                                        {% if rmaOrder.cancel_status == 0 and rmaOrder.canCancelOrEdit == 1 %}
+                                            <a
+                                                    onclick="cancelRefundRma(this ,{{ rmaOrder.canCancelOrEdit }}, {{ rmaOrder.rma_id_s }})"
+                                                    class="btn btn-info"
+                                                    data-toggle="tooltip" title="Cancel">
+                                                <i class="gcl gcllajitong"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if (rmaOrder.create_timestamp +30*24*3600)>now and rmaOrder.seller_status==2 %}
+                                            <a class="btn btn-primary btn1"
+                                               data-toggle="tooltip"
+                                               title="Arbitration"
+                                               onclick="showModal('{{ rmaOrder.rma_id }}')">
+                                                <i class="gcl gclshiwu-chuizi"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="text-center" colspan="13">{{ text_no_results }}</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row" style="margin-right: 0;margin-top: 20px;">
+            <div class="col-sm-12 text-right">
+                <ul id="bos_pagination_refund"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+<a id="redirectHref" href="" target="_blank" style="display: none"></a>
+<script>
+    layer.config({
+        btnAlign: 'c',
+    });
+</script>
+<script>
+    $('.dateTo').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD 23:59:59'
+    });
+    $('.dateFrom').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD 00:00:00'
+    });
+
+    function init() {
+        //分页链接
+        refundPagination();
+    }
+
+    function refreshFefundCount() {
+        let refund = $('#refund_count');
+        let reship = $('#reshipment_count')
+        let resolveZeroCount = function () {
+            if (Number.parseInt(refund.html()) === 0) {
+                refund.hide();
+            } else {
+                refund.show();
+            }
+            if (Number.parseInt(reship.html()) === 0) {
+                reship.hide();
+            } else {
+                reship.show();
+            }
+        }
+        refund.load('index.php?route=account/rma_management/getRefundUnResolveCount', resolveZeroCount)
+        reship.load('index.php?route=account/rma_management/getReshipUnResolveCount', resolveZeroCount);
+        $('#order-reshipment').load('index.php?route=account/rma_management/reshipment');
+    }
+
+    function clrFilterRefund(button) {
+        block.blockUI();
+        let url = 'index.php?route=account/rma_management/refund';
+        $(button).button('loading');
+        $('#order-refund').load(url, function () {
+            block.unBlockUI();
+        });
+        refreshFefundCount();
+    }
+
+    function filterRefund(button) {
+        block.blockUI();
+        let url = getUrlForRefundFilter();
+        $(button).button('loading');
+        $('#order-refund').load(url, function () {
+            block.unBlockUI();
+        });
+        refreshFefundCount();
+    }
+
+    function getUrlForRefundFilter(page) {
+        let url = 'index.php?route=account/rma_management/refund';
+        let filter_purchase_order_id = $('input[name=\'filter_purchase_order_id\']').val();
+        if (filter_purchase_order_id) {
+            url += '&filter_purchase_order_id=' + encodeURIComponent(filter_purchase_order_id);
+        }
+        let filter_refund_seller_status = $('select[name=\'filter_refund_seller_status\']').val();
+        if (filter_refund_seller_status) {
+            url += '&filter_refund_seller_status=' + encodeURIComponent(filter_refund_seller_status);
+        }
+        let filter_refund_sales_order_id = $('input[name=\'filter_refund_sales_order_id\']').val();
+        if (filter_refund_sales_order_id) {
+            url += '&filter_refund_sales_order_id=' + encodeURIComponent(filter_refund_sales_order_id);
+        }
+        let filter_refund_rma_id = $('input[name=\'filter_refund_rma_id\']').val();
+        if (filter_refund_rma_id) {
+            url += '&filter_refund_rma_id=' + encodeURIComponent(filter_refund_rma_id);
+        }
+        let filter_refund_store = $('select[name=\'filter_refund_store\']').val();
+        if (filter_refund_store) {
+            url += '&filter_refund_store=' + encodeURIComponent(filter_refund_store);
+        }
+        let filter_refund_applyDateFrom = $('input[name=\'filter_refund_applyDateFrom\']').val();
+        if (filter_refund_applyDateFrom) {
+            url += '&filter_refund_applyDateFrom=' + encodeURIComponent(filter_refund_applyDateFrom);
+        }
+        let filter_refund_applyDateTo = $('input[name=\'filter_refund_applyDateTo\']').val();
+        if (filter_refund_applyDateTo) {
+            url += '&filter_refund_applyDateTo=' + encodeURIComponent(filter_refund_applyDateTo);
+        }
+        if (page) {
+            url += "&page_num=" + page;
+        }
+        return url;
+    }
+
+    function refundPagination() {
+        if ({{ total_pages }}) {
+            $('#bos_pagination_refund').bootstrapPaginator({
+                /*当前使用的是3版本的bootstrap*/
+                bootstrapMajorVersion: 3,
+                /*配置的字体大小是小号*/
+                size: 'normal',
+                /*当前页*/
+                currentPage: {{ page_num }},
+                /*一共多少页*/
+                totalPages: {{ total_pages }},
+                /*页面上最多显示几个含数字的分页按钮*/
+                numberOfPages: 5,
+                total: {{ total_num }},
+                rowsOfPage: {{ page_limit }},
+                /*设置显示的样式，默认是箭头	*/
+                onPageClicked: function (event, originalEvent, type, page) {
+                    block.blockUI();
+                    let url = getUrlForRefundFilter(page);
+                    $('#order-refund').load(url, function () {
+                        block.unBlockUI();
+                    });
+                    refreshFefundCount();
+                }
+            });
+        }
+    }
+
+    function downloadOrderFulfillment() {
+        let url = 'index.php?route=account/rma_management/downloadRefundInfo';
+        let filter_purchase_order_id = $('input[name=\'filter_purchase_order_id\']').val();
+        if (filter_purchase_order_id) {
+            url += '&filter_purchase_order_id=' + encodeURIComponent(filter_purchase_order_id);
+        }
+        let filter_refund_seller_status = $('select[name=\'filter_refund_seller_status\']').val();
+        if (filter_refund_seller_status) {
+            url += '&filter_refund_seller_status=' + encodeURIComponent(filter_refund_seller_status);
+        }
+        let filter_refund_sales_order_id = $('input[name=\'filter_refund_sales_order_id\']').val();
+        if (filter_refund_sales_order_id) {
+            url += '&filter_refund_sales_order_id=' + encodeURIComponent(filter_refund_sales_order_id);
+        }
+        let filter_refund_rma_id = $('input[name=\'filter_refund_rma_id\']').val();
+        if (filter_refund_rma_id) {
+            url += '&filter_refund_rma_id=' + encodeURIComponent(filter_refund_rma_id);
+        }
+        let filter_refund_store = $('select[name=\'filter_refund_store\']').val();
+        if (filter_refund_store) {
+            url += '&filter_refund_store=' + encodeURIComponent(filter_refund_store);
+        }
+        let filter_refund_applyDateFrom = $('input[name=\'filter_refund_applyDateFrom\']').val();
+        if (filter_refund_applyDateFrom) {
+            url += '&filter_refund_applyDateFrom=' + encodeURIComponent(filter_refund_applyDateFrom);
+        }
+        let filter_refund_applyDateTo = $('input[name=\'filter_refund_applyDateTo\']').val();
+        if (filter_refund_applyDateTo) {
+            url += '&filter_refund_applyDateTo=' + encodeURIComponent(filter_refund_applyDateTo);
+        }
+        location = url;
+    }
+
+    // cancel rma
+    function cancelRefundRma(button, status, rmaId) {
+        if (status == 1) {
+            layer.confirm('Do you want to cancel the request?', {
+                title: 'Message',
+                skin: 'yzc_layer', //样式类名
+                btn: ['Yes', 'No'] //按钮
+            }, function (index) {
+                var data = {"rmaId": rmaId};
+                $.ajax({
+                    url: 'index.php?route=account/rma_management/cancelRma',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function (json) {
+                        layer.closeAll();
+                        if (json.status == 'success') {
+                            block.blockUI();
+                            let url = getUrlForRefundFilter();
+                            $('#order-refund').load(url, function () {
+                                block.unBlockUI();
+                            });
+                            refreshFefundCount();
+                        } else if (json.error) {
+                            layer.alert(json.error, {
+                                title: 'Error',
+                                btn: 'OK',
+                                skin: 'yzc_layer',
+                                closeBtn: 0
+                            });
+                        }
+                    }
+                });
+            });
+        }
+    }
+
+    // edit rma
+    function editRMA(button, orderType, rmaId) {
+        if (orderType == 1) {
+            var data = {"rmaOrderId": rmaId};
+            $.ajax({
+                url: 'index.php?route=account/rma_management/checkCanEditRma',
+                method: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function (json) {
+                    if (json.status) {
+                        redirect('index.php?route=account/rma_management/editRma&rma_order_id=' + rmaId);
+                    } else {
+                        layer.alert(json.error, {
+                            title: 'Error',
+                            btn: 'OK',
+                            skin: 'yzc_layer',
+                            closeBtn: 0
+                        });
+                    }
+                }
+            });
+        } else {
+            var data = {"rmaOrderId": rmaId};
+            $.ajax({
+                url: 'index.php?route=account/rma_management/checkCanEditRma',
+                method: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function (json) {
+                    if (json.status) {
+                        redirect('index.php?route=account/rma/purchaseorderrma/editRma&rma_order_id=' + rmaId);
+                    } else {
+                        layer.alert(json.error, {
+                            title: 'Error',
+                            btn: 'OK',
+                            skin: 'yzc_layer',
+                            closeBtn: 0
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    function redirect(url) {
+        let a_redirect = $('#redirectHref');
+        a_redirect.attr('href', url);
+        a_redirect[0].click();
+    }
+
+    init();
+
+</script>

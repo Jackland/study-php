@@ -1,0 +1,45 @@
+{% trans_default_category 'catalog/view/customerpartner/marketing_campaign/discount/index' %}
+{{ this.title(__('店铺活动', {}, 'catalog/seller_menu')) }}
+{{ this.params('breadcrumbs', [
+{
+text: __('促销活动', {}, 'catalog/seller_menu'),
+href: 'javascript:void(0);',
+},
+'current'
+]) }}
+
+{{ this.params('pageTitle', {
+backUrl: false
+}) }}
+
+{{ css(['static/customerpartner/marketing_campaign/discount/index.css']) }}
+{{ cssOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css','catalog/view/javascript/datetimepicker/css/bootstrap-datetimepicker.min.css']) }}
+{{ jsOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js','catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js','catalog/view/javascript/datetimepicker/bootstrap-datetimepicker.min.js']) }}
+
+{% set navDatas = [
+{'id':'storeWideDiscounts','name': __('全店折扣活动'), 'url': 'customerpartner/marketing_campaign/discount/index' },
+{'id':'limitedSalesPromtions','name': __('限时限量活动'), 'url': 'customerpartner/marketing_campaign/time_limit_discount/index', 'show_number': low_stock_product_number }]
+%}
+{{ this.params('title', this.getTitle()) }}
+<div class="nav-oris">
+  <div class="oris-row">
+    <ul class="nav nav-tabs main" role="tablist">
+      {% for one in navDatas %}
+      <li>
+        <a href="#{{one.id}}" role="tab" data-toggle="tab-ajax" data-url="{{ url(one.url) }}">
+          {{one.name}}
+          {% if one.show_number is defined and one.show_number > 0 %}
+            <span class="tab-number">{{ one.show_number }}</span>
+          {% endif %}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {#tab页对应内容#}
+  <div class="tab-content">
+    {% for one in navDatas %}
+    <div class="tab-pane" id="{{one.id}}"></div>
+    {% endfor %}
+  </div>
+</div>

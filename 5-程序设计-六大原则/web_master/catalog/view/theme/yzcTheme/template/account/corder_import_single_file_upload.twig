@@ -1,0 +1,831 @@
+<script src="catalog/view/javascript/jquery/jquery-2.1.1.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+<script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+<link href="catalog/view/theme/yzcTheme/stylesheet/font_demo/iconfont.css?v={{ app_version }}" rel="stylesheet" type="text/css"/>
+{#<link href="catalog/view/theme/yzcTheme/stylesheet/fonts.googleapis.com_open+sans.css" rel="stylesheet" type="text/css"/>#}
+<link href="catalog/view/theme/yzcTheme/stylesheet/stylesheet.css?v={{ app_version }}" rel="stylesheet">
+{#<link rel="icon" href="data:;base64,=">#}
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+<link rel="stylesheet" href="catalog/view/javascript/layui/css/layui.css">
+
+
+<link href="catalog/view/javascript/diyUpload/file_upload/css/iconfont.css" rel="stylesheet" type="text/css"/>
+<link href="catalog/view/javascript/diyUpload/file_upload/css/fileUpload.css" rel="stylesheet" type="text/css">
+
+<form  enctype="multipart/form-data" id="form-upload" >
+<div class="modal-body" >
+    <div class="container-fluid" >
+
+      <div style="width:96%;margin: 0 auto;float: left;">
+        <span style="color: red;font-size:13px;">{{ text_file_size }}</span><br/>
+        <span style="color: red;font-size:13px;">{{ text_combo_notice }}</span><br/>
+        <span style="color: red;font-size:13px;">{{ text_combo_submit_notice }}</span>
+        {% if country_id == 223 %}
+          <br/>
+          <span style="color: red;font-size:13px;">
+          . Giga Cloud does not accept FedEx Express Overnight labels. Related service types include, but are not limited to: FedEx First Overnight, FedEx Priority Overnight, FedEx Standard Overnight etc.
+          </span>
+        {% endif %}
+        <input type="hidden" id="file_str" name="file_str" value="">
+        <input type="hidden" id="file_num" name="file_num" value=0>
+        <input type="hidden" id="edit_first" name="edit_first" value={{ edit_first }}>
+
+
+
+      </div>
+      <div class="form-group" style="float:left;width: 100%">
+        {% if upload_file_info %}
+          {% for order in upload_file_info %}
+            <div style="width:98%;margin-left:1%;font-size:14px;background:#183465;height:35px;line-height: 35px;text-align: center;float: left;margin-top: 3px;">
+              <div style="width:100%;">
+                <label style="cursor:pointer;">
+                  <input type="hidden" id="order_id" name='order_id' value={{ order.id }}>
+                  {% if edit_first == 1 %}
+                    <span style="color:#E9FFF8;" id="{{ order.id }}_span" mean="{{ order.order_id }}">Sales Order ID:&nbsp;<span style="font-weight: bold;font-size: 16px;">{{ order.order_id }}</span> (0/{{ order.total_file_amount }})</span>
+                  {% else  %}
+                    <span style="color:#E9FFF8;" id="{{ order.id }}_span">Sales Order ID:&nbsp;<span style="font-weight: bold;font-size: 16px;">{{ order.order_id }} </span>({{ order.total_file_amount }}/{{ order.total_file_amount }})</span>
+                    {% if order.bol_path is not null %}
+                      &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#E9FFF8;">  BOL : <a style="cursor:pointer;color: #E9FFF8;text-decoration:underline;" onclick="getBolPdf(this)"  mean="{{ order.bol_path }}">{{ order.order_id }}_bol.pdf</a></span>
+                    {% endif %}
+                  {% endif %}
+                </label>
+              </div>
+            </div>
+
+            {% for childrenList in order.childrenList %}
+              {% if childrenList.is_combo == 1 %}
+                <div style="width:98%;margin-left:1%;font-size:14px;line-height: 35px;text-align: left;margin-top: 3px;color:#E9FFF8;float: left">
+                  <div style="float: left;width:100%;">
+                    <div style="width:40%;float: left;line-height: 35px;background:#A1A1A1;">
+                        <span   style="float: left;border-radius: 8px;height:25px;font-size: 14px;
+                background-color:#FF0000;text-align:center; line-height:25px;margin-top: 5px;border:none;margin-left: 1%">
+                          {{ text_combo }}
+                        </span>
+                      <span style="float: left;"> &nbsp;&nbsp; {{ text_item_code }}: {{ childrenList.item_code }} </span>
+                    </div>
+                    {% if country_id ==  223 %}
+                      <div style="width:40%;float: left;line-height: 35px;background:#A1A1A1;">
+                        <span  style="float: left;">{{ text_ship_method }}: {{ childrenList.ship_method_code }} </span>
+                      </div>
+                      <div style="width:20%;float: left;line-height: 35px;background:#A1A1A1;">
+                        <span  style="float: left;">{{ text_qty }}: {{ childrenList.qty }}</span>
+                      </div>
+                    {% else %}
+                      <div style="width:60%;float: left;line-height: 35px;background:#A1A1A1;">
+                        <span  style="float: left;">{{ text_qty }}: {{ childrenList.qty }}</span>
+                      </div>
+                    {% endif %}
+
+                    {#<div style="width:20%;float: left;line-height: 35px;background:#A1A1A1;">#}
+                    {#<span  style="float: left;">Weight: {{ childrenList.weight }} {{ childrenList.unit_name }}</span>#}
+                    {#</div>#}
+                  </div>
+                  <div style="float: left;width:100%">
+
+                    <div style="float:right;width:100%;">
+                      {% for   key,details  in childrenList.combo_info %}
+                        <div style="width:100%;font-size:14px;background:#A1A1A1;height:35px;line-height: 35px;text-align: left;margin-top: 3px;float: left">
+                          <div style="width:40%;float: left;line-height: 35px;">
+                            <div style=" width:20px; height:20px; background-color:#F00; border-radius:13px;float:left;margin-top:8px;margin-left: 1%;">
+                              <span style="height:20px; line-height:20px; display:block; color:#FFF; text-align:center;font-weight: bold">{{ key + 1 }}</span>
+                            </div>
+                            <span style="float: left;"> &nbsp;{{ text_subitem_code }}: {{ details.sku }} </span>
+                          </div>
+                          <div style="width:40%;float: left">
+                            <span  style="float: left;">{{ text_qty }}: {{ details.qty }}</span>
+                          </div>
+                          <div style="width:20%;float: left">
+                            {#<span  style="float: left;">Weight: {{ details.weight }} {{ details.unit_name }}</span>#}
+                            {% if country_id == 222  %}
+                              <span  style="float: left;">Weight: {{ (details['weight']*0.4535924)|number_format(2, '.', '') }} kg</span>
+                            {% else %}
+                              <span  style="float: left;">Weight: {{ details.weight }} lb
+                                {#{{ details.unit_name }}#}
+                              </span>
+                            {% endif %}
+                          </div>
+                        </div>
+                        {% for v in details.line %}
+                          <div style="width:100%;font-size:14px;background:#F2F2F2;height:35px;line-height: 35px;text-align: left;margin-top: 3px;float: left;">
+                            <div style="width:38%;float: left;margin-left: 2%">
+                                <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; {{ text_tracking_number }}:
+                                  {% if v.tracking_id %}
+                                  {% if key == 0 %}
+                                  {{ v.tracking_id }} </span>
+                              <input type="hidden" id="{{ v.container_id }}_input" name="{{ v.container_id }}_input" value="{{ v.tracking_id }}"  style="float: left;width: 200px;margin-left: 5px;" class="form-control">
+                              {% else %}
+                                </span><input type="text" id="{{ v.container_id }}_input" name="{{ v.container_id }}_input" value="{{ v.tracking_id }}"  onblur="checkTrackNumber(this,{{ v.file_id }})" style="float: left;width: 200px;margin-left: 5px;height: 35px" class="form-control">
+                              {% endif %}
+
+                              {% else %}
+                                </span>
+                                <input type="text" id="{{ v.container_id }}_input" name="{{ v.container_id }}_input" onblur="checkTrackNumber(this)" style="float: left;width: 180px;margin-left: 5px;height: 35px" class="form-control"> <label class="control-label" for="button-upload"><span data-toggle="tooltip" style="font-size: 20px;" title="{{ text_subitem_fill }}"><i class="giga icon-V10-wenhaotishi"></i></span></label>
+                              {% endif %}
+                            </div>
+                            <div style="width:60%;float: left">
+                              {% if edit_first == 1 %}
+                                <div id="{{ v.container_id }}" class="fileUploadContent" style="height:35px;width:100%;float: left;"></div>
+                              {% else %}
+                                <div id="{{ v.container_id }}" class="fileUploadContent" style="height:35px;width:100%;float: left;display: none"></div>
+                                <div style="height:35px;width:100%;float: left;display: block">
+                                  <a style="cursor:pointer;color: #179CCF;text-decoration:underline;" onclick="getPdf(this)"  mean="{{ v.deal_file_path }}">{{ v.file_name }}</a> &nbsp;<i class="fa fa-times-circle-o" style="color:red;font-size: 14px;cursor:pointer" mean={{ v.file_name }} onclick="changeIconStatus(this)"></i>
+                                </div>
+                              {% endif %}
+                            </div>
+                          </div>
+                          {% if edit_first == 1 %}
+                            <div  id="{{ v.container_id }}_show" style="display:none;width:100%;font-size:14px;background:#FFE6C3;height:35px;line-height: 35px;text-align: left;margin-top: 3px;float: left">
+                              <div style="width:45%;float: left;margin-left: 2%">
+                                <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; {{ text_preview_tracking_number }}</span>
+                                <img src="{{ v.tracking_number_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;width: 40%">
+
+                              </div>
+                              <div style="width:29%;float: left">
+
+                                <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; {{ text_preview_order_id }}</span>
+                                <img src="{{ v.order_id_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;width: 40%">
+                              </div>
+                              <div style="width:24%;float: left">
+
+                                <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp;Preview Weight:</span>
+                                <img src="{{ v.weight_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;width: 40%;">
+                              </div>
+                            </div>
+                          {% else %}
+                            <div  id="{{ v.container_id }}_show" style="width:100%;font-size:14px;background:#FFE6C3;height:35px;line-height: 35px;text-align: left;margin-top: 3px;float: left">
+                              <div style="width:45%;float: left;;margin-left: 2%">
+                                <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; {{ text_preview_tracking_number }}</span>
+                                <img src="{{ v.tracking_number_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;width: 40%">
+
+                              </div>
+                              <div style="width:29%;float: left">
+
+                                <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; {{ text_preview_order_id }}</span>
+                                <img src="{{ v.order_id_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;width: 40%">
+                              </div>
+                              <div style="width:24%;float: left">
+                                <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; Preview Weight:</span>
+                                <img src="{{ v.weight_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;width:40%;">
+                              </div>
+                            </div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+
+              {% elseif childrenList.is_combo == 0 %}
+                <div style="width:98%;margin-left:1%;font-size:14px;background:#A1A1A1;height:35px;line-height: 35px;text-align: left;margin-top: 2px;color:#E9FFF8;float: left">
+                  <div style="width:35%;float: left;">
+                    <span style="float: left;"> &nbsp;&nbsp; {{ text_item_code }}: {{ childrenList.item_code }}</span>
+                  </div>
+                  {% if country_id ==  223 %}
+                    <div style="width:30%;float: left">
+                      <span  style="float: left;">{{ text_ship_method }}: {{  childrenList.ship_method_code }} </span>
+                    </div>
+                    <div style="width:15%;float: left;">
+                      <span  style="float: left;">{{ text_qty }}: {{ childrenList.qty }}</span>
+                    </div>
+                    <div style="width:20%;float: left;">
+                      <span  style="float: left;">Weight: {{ childrenList.weight }} lb
+                        {#{{ childrenList.unit_name }}#}
+                      </span>
+                    </div>
+                  {% else %}
+                    <div style="width:45%;float: left;">
+                      <span  style="float: left;margin-left: 12%">{{ text_qty }}: {{ childrenList.qty }}</span>
+                    </div>
+                    <div style="width:20%;float: left;">
+                      {#<span  style="float: left;">Weight: {{ childrenList.weight }} {{ childrenList.unit_name }}</span>#}
+                      {% if country_id == 222  %}
+                        <span  style="float: left;">Weight: {{ (childrenList['weight']*0.4535924)|number_format(2, '.', '') }} kg</span>
+                      {% else %}
+                        <span  style="float: left;">Weight: {{ childrenList.weight }} lb
+                          {#{{ childrenList.unit_name }}#}
+                        </span>
+                      {% endif %}
+                    </div>
+
+                  {% endif %}
+
+                </div>
+                {% for   details in childrenList.combo_info %}
+                  <div style="width:98%;margin-left:1%;font-size:14px;background:#F2F2F2;height:35px;line-height: 35px;text-align: left;margin-top: 3px;float: left">
+                    <div style="width:40%;float: left;">
+                      <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; {{ text_tracking_number }}:</span>
+                      {% if details.tracking_id %}
+                        {{ details.tracking_id }}
+                        <input type="hidden" id="{{ details.container_id }}_input" name="{{ details.container_id }}_input"  value="{{ details.tracking_id }}">
+                      {% else %}
+                        <input type="text" id="{{ details.container_id }}_input" name="{{ details.container_id }}_input" onblur="checkTrackNumber(this)"  style="float: left;width: 180px;margin-left: 5px;height: 35px" class="form-control">
+                      {% endif %}
+                    </div>
+                    <div style="width:60%;float: left">
+                      {% if edit_first == 1 %}
+                        <div id="{{ details.container_id }}" class="fileUploadContent" style="height:35px;width:100%;float: left;"></div>
+                      {% else %}
+                        <div id="{{ details.container_id }}" class="fileUploadContent" style="height:35px;width:100%;float: left;display: none"></div>
+                        <div style="height:35px;width:100%;float: left;display: block">
+                          <a   style="cursor:pointer;color: #179CCF;text-decoration:underline;" onclick="getPdf(this)" mean="{{ details.deal_file_path }}">{{ details.file_name }}</a> &nbsp;<i class="fa fa-times-circle-o" style="color: red;font-size: 14px;cursor:pointer" mean={{ details.file_name }}  onclick="changeIconStatus(this)"></i>
+                        </div>
+                      {% endif %}
+
+                    </div>
+                  </div>
+                  {% if edit_first == 1 %}
+                    <div  id="{{ details.container_id }}_show" style="display:none;width:98%;margin-left:1%;font-size:14px;background:#FFE6C3;height:35px;line-height: 35px;text-align: left;margin-top: 3px;float: left">
+                      <div style="width:45%;float: left;">
+                        <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; {{ text_preview_tracking_number }}</span>
+                        <img src="{{ details.tracking_number_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;;width: 40%">
+
+                      </div>
+                      <div style="width:30%;float: left">
+
+                        <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; {{ text_preview_order_id }}</span>
+                        <img src="{{ details.order_id_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;;width: 40%">
+                      </div>
+                      <div style="width:25%;float: left">
+
+                        <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; Preview Weight:</span>
+                        <img src="{{ details.weight_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;;width: 40%">
+                      </div>
+                    </div>
+                  {% else %}
+                    <div  id="{{ details.container_id }}_show" style="width:98%;margin-left:1%;font-size:14px;background:#FFE6C3;height:35px;line-height: 35px;text-align: left;margin-top: 3px;float: left">
+                      <div style="width:45%;float: left;">
+                        <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; {{ text_preview_tracking_number }}</span>
+                        <img src="{{ details.tracking_number_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;;width: 40%">
+
+                      </div>
+                      <div style="width:30%;float: left">
+
+                        <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; {{ text_preview_order_id }}</span>
+                        <img src="{{ details.order_id_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;;width: 40%">
+                      </div>
+                      <div style="width:25%;float: left">
+                        <span style="color:#938593;float: left;overflow: hidden"> &nbsp;&nbsp; Preview Weight:</span>
+                        <img src="{{ details.weight_img }}" style="height:25px;margin-top: 5px;margin-left: 2%;;width: 40%">
+                      </div>
+                    </div>
+                  {% endif %}
+
+
+                {% endfor %}
+              {% else %}
+
+              {% endif %}
+
+
+            {% endfor %}
+          {% endfor %}
+        {% endif %}
+
+
+      </div>
+
+    </div>
+</div>
+<div class="modal-footer" style="width:100%;float: left;">
+  <div >
+    <input id="ajaxFlag" value="1"  type="hidden">
+    <button type="button"  class="btn btn-default btn-primary"  onclick="checkInputInfo()"   data-dismiss="modal" id="btnClose">{{ text_submit }}</button>
+  </div>
+</div>
+</form>
+<script type="text/javascript" src="catalog/view/javascript/diyUpload/file_upload/js/fileUpload.js"></script>
+
+<script type="text/javascript">
+
+  var golab_vertify_file_name = '{{ vertify_file_name }}';
+  $(document).ready(function(){
+    var js_auxiliary_information = '{{ js_auxiliary_information }}';
+    var json = eval('(' + js_auxiliary_information + ')');
+    $.each(json.container_id_list.id_list, function (idx, obj) {
+      var name = obj;
+      let  wfu = new WpFileUpload(name);
+      var check_url = '{{ dropship_file_check_url }}' + '&container_id=' + name;
+      var receive_url = '{{ dropship_file_deal_url }}'+ '&container_id=' + name;
+      wfu.initUpload({
+        "uploadUrl":receive_url,//上传文件信息地址
+        "progressUrl":check_url,//获取进度信息地址，可选，注意需要返回的data格式如下（{bytesRead: 102516060, contentLength: 102516060, items: 1, percent: 100, startTime: 1489223136317, useTime: 2767}）
+        "scheduleStandard":true,
+        "fileType":['pdf'],
+        "showProgressNum":true,
+        "autoCommit":true,
+        "showSummerProgress":true,
+        "maxFileNumber":1,
+        "ismultiple":false,
+        "size":1024,
+        //        "uploadFileParam":'files',
+        "showFileItemProgress":false, //"是否显示单文件进度条，默认显示"
+        "beforeUpload":function(wfu){// 在上传前面执行的回调函数
+
+          return getUploadFileByOrder(wfu);
+        },
+        "onUpload":function(){// 在上传之后
+          if(wfu.resultData.error == 0){
+
+            let intervalId = setInterval(function(){
+              //id 带特殊字符需要更改
+              var percent = $('#'+wfu.uploadId + ' .progress').children().eq(0).html();
+              if(percent == '99%'){
+                clearInterval(intervalId);
+                var file_str = $('#file_str').val();
+                var id = wfu.uploadId;
+                var file_name = wfu.fileList[0].name;
+                golab_vertify_file_name += ',' + file_name ;
+                file_str  += id + ':' + file_name + ';';
+                $('#file_str').val(file_str);
+
+                var edit_flag = '{{ edit_first }}';
+                if(edit_flag == 1){
+                  var order_id = id.split('_')[0];
+                  //判断是否可以check
+                  count = 0;
+                  var file_arr = file_str.split(';');
+                  $.each(file_arr, function (idx, obj) {
+                    if(obj != null && obj != ''){
+                      var i = obj.split(':');
+                      if(i[0].indexOf(order_id) == 0){
+                        count++;
+                      }
+                    }
+                  });
+                  var js_auxiliary_information = '{{ js_auxiliary_information }}';
+                  var json = eval('(' + js_auxiliary_information + ')');
+                  var num = json['container_id_list'][order_id]['count'];
+                  var order_dom = '#' + order_id;
+                  var order_span = '#' + order_id +'_span';
+                  var order_real_name = $(order_span).attr('mean');
+                  var span_str = 'Sales Order ID:&nbsp;<span style="font-weight: bold;font-size: 16px;">'+order_real_name+ '</span>&nbsp;('+ count +'/'+ num +')';
+                  $(order_span).html(span_str);
+
+                }
+
+
+
+                var id = wfu.uploadId + '_show';
+                $('#' + id).children().eq(0).find('img').attr("src",wfu.resultData.data.tracking_number_img);
+                $('#' + id).children().eq(1).find('img').attr("src",wfu.resultData.data.order_id_img);
+                $('#' + id).children().eq(2).find('img').attr("src",wfu.resultData.data.weight_img);
+                $('#'+ id).show();
+
+                let uploadId = wfu.uploadId;
+                let subberProgress = $("#"+uploadId+" .subberProgress .progress>div");
+                // 格式化数据
+                percentNum = '100%';
+                // 设置长度
+                subberProgress.css("width",percentNum);
+                // 是否显示值
+                subberProgress.html(percentNum);
+              }
+
+            },500);
+
+          }else{
+
+            let intervalId = setInterval(function(){
+              var percent = $('#'+wfu.uploadId + ' .progress').children().eq(0).html();
+              if(percent == '99%'){
+                clearInterval(intervalId);
+//                      alert(wfu.resultData.msg);
+                alert('{{ error_file_size }}');
+                $('#'+wfu.uploadId + ' .cleanFileBt').trigger('click');
+
+              }
+
+            },500);
+
+
+
+          }
+        }
+      });
+    });
+  });
+  function getUploadFileByOrder(wfu) {
+
+    var file_str = $('#file_str').val();
+    var id = wfu.uploadId;
+    var file_name = wfu.fileList[0].name;
+    var file_size = wfu.fileList[0].size;
+    if(file_size == 0){
+      var size_err = '{{ error_file_size }}';
+      alert(size_err);
+      return false;
+    }
+    file_str  += id + ':' + file_name + ';';
+    var order_id = id.split('_')[0];
+    var file_name =  [];
+    var file_arr = file_str.split(';');
+    $.each(file_arr, function (idx, obj) {
+      if(obj != null && obj != ''){
+        var i = obj.split(':');
+        file_name.push(i[1]);
+      }
+    });
+    file_name_unique = [...new Set(file_name)];
+    if(file_name.length != file_name_unique.length){
+      alert('{{ error_file_repeated }}');
+      $('#'+wfu.uploadId + ' .fileItem').hide();
+      return false;
+
+    }
+    //判断是否可以check
+//      count = 0;
+//      var file_arr = file_str.split(';');
+//      $.each(file_arr, function (idx, obj) {
+//          if(obj != null && obj != ''){
+//             var i = obj.split(':');
+//             if(i[0].indexOf(order_id) == 0){
+//                 count++;
+//             }
+//          }
+//      });
+
+    var edit_flag = '{{ edit_first }}';
+    if(edit_flag == 1){
+
+      {#var js_auxiliary_information = '{{ js_auxiliary_information }}';#}
+      {#var json = eval('(' + js_auxiliary_information + ')');#}
+      {#var num = json['container_id_list'][order_id]['count'];#}
+      {#var order_dom = '#' + order_id;#}
+      {#var order_span = '#' + order_id +'_span';#}
+      {#var span_str = 'Sales Order ID:&nbsp;<span style="font-weight: bold;font-size: 16px;">'+order_id+ '</span>&nbsp;('+ count +'/'+ num +')';#}
+      {#$(order_span).html(span_str);#}
+
+    }else{
+      //验证edit_flag pdf 是否重复
+      var str = golab_vertify_file_name;
+      str += ',' + wfu.fileList[0].name;
+      var vertify_file_list = str.split(',');
+      vertify_file_list_unique = [...new Set(vertify_file_list)];
+      if(vertify_file_list.length != vertify_file_list_unique.length){
+        alert('{{ error_file_repeated }}');
+        $('#'+wfu.uploadId + ' .fileItem').hide();
+        return false;
+      }
+
+
+    }
+    return true;
+
+
+
+  }
+  function getcleanFile(wfu){
+    //代表此pdf 删除
+    //后端删除
+    var uploadId = wfu.uploadId;
+    var file_name = wfu.fileList[0].name;
+    var id = uploadId + '_show';
+    $('#' + id).children().eq(0).find('img').attr("src",'');
+    $('#' + id).children().eq(1).find('img').attr("src",'');
+    $('#' + id).children().eq(2).find('img').attr("src",'');
+    $('#'+ id).hide();
+    var del_url = '{{ dropship_file_unlink }}';
+    var order_id = uploadId.split('_')[0];
+    var file_str = $('#file_str').val();
+    var file_arr = file_str.split(';');
+    $.each(file_arr, function (idx, obj) {
+      if(obj != null && obj != ''){
+        var i = obj.split(':');
+        if(i[0] == uploadId){
+          var key = obj + ';';
+
+
+          //ajax 软删除文件
+          $.ajax({
+            url: del_url,
+            type: 'post',
+            dataType: 'json',
+//                async:false,
+            data: {'container_id':uploadId},
+            success:function (res) {
+              file_str = file_str.replace(key,'');
+
+              $('#file_str').val(file_str);
+
+
+              //判断是否可以check
+              count = 0;
+              var file_arr = file_str.split(';');
+              $.each(file_arr, function (idx, obj) {
+                if(obj != null && obj != ''){
+                  var i = obj.split(':');
+                  if(i[0].indexOf(order_id) == 0){
+                    count++;
+                  }
+                }
+              });
+              var edit_flag = '{{ edit_first }}';
+              if(edit_flag == 1){
+                var js_auxiliary_information = '{{ js_auxiliary_information }}';
+                var json = eval('(' + js_auxiliary_information + ')');
+                var num = json['container_id_list'][order_id]['count'];
+                var order_dom = '#' + order_id;
+                var order_span = '#' + order_id +'_span';
+                var order_real_name = $(order_span).attr('mean');
+                var span_str = 'Sales Order ID:&nbsp;<span style="font-weight: bold;font-size: 16px;">'+order_real_name+ '</span>&nbsp;('+ count +'/'+ num +')';
+                $(order_span).html(span_str);
+              }else{
+
+                var vertify_file_name = golab_vertify_file_name;
+                var vlist = vertify_file_name.split(',');
+                vlist.splice(($.inArray(file_name,vlist)),1);
+                var varr = vlist.join(',');
+                golab_vertify_file_name = varr;
+
+
+              }
+
+            }
+          })
+        }
+      }
+
+    });
+
+
+
+
+  }
+  //获取重复的pdf的名称
+  function duplicates(arr) {
+    var result = [];
+    for(var i= 0;i <  arr.length; i++){
+      if($.inArray(arr[i],result) == -1){
+        result.push(arr[i]);
+      }else{
+        return arr[i];
+
+      }
+
+
+    }
+
+
+    return result;
+  }
+  function checkInputInfo() {
+    if($('#ajaxFlag').val() == '0'){
+      alert('The tracking number is being verified, please be patient');
+      return false;
+    }
+    $('#btnClose').attr('disabled','disabled');
+    //验证 checkbox 是否选中 选中的checkbox中有choose file 和 tracking numerb
+    //tracking number 不为空不重复
+    var edit_flag = '{{ edit_first }}';
+    if(edit_flag == 0){
+      var file_str = $('#file_str').val();
+      var file_arr = file_str.split(';');
+      var file_num  =$('#file_num').val();
+      var str = golab_vertify_file_name;
+      var file_name = str.split(',');
+      //增加一个验证是否重复
+      //$.each(file_arr, function (idx, obj) {
+      //if(obj != null && obj != ''){
+      //var i = obj.split(':');
+      //file_name.push(i[1]);
+      //}
+      //});
+      file_name_unique = [...new Set(file_name)];
+      if(file_name.length != file_name_unique.length){
+        var repeat_label = duplicates(file_name);
+        alert('The label ['+ repeat_label +'] uploaded is repeat with the other label,please select again.');
+        $('#btnClose').attr('disabled',false);
+        return false;
+      }
+      if(parseInt(file_num) != file_arr.length - 1 ){
+        alert('{{ error_file_fill }}');
+        $('#btnClose').attr('disabled',false);
+        return false;
+      }
+      //验证tracking number
+      var js_auxiliary_information = '{{ js_auxiliary_information }}';
+      var json = eval('(' + js_auxiliary_information + ')');
+      var input_value  =  [];
+      var input_flag = 1;
+      var  order_id = $('#order_id').val();
+      var child_list =  json['container_id_list'][order_id]['child_list'];
+      for(var i = 0 ;i < child_list.length; i++){
+        input_value.push($('#'+ child_list[i] + '_input').val());
+        var cname = $('#'+ child_list[i] + '_input').val();
+        if( cname == '' || (cname.length>0 && cname.trim().length == 0)){
+          alert('{{ error_tracking_number_fill }}');
+          $('#btnClose').attr('disabled',false);
+          input_flag = 0;
+          return false;
+        }
+
+      }
+      if(input_flag == 0){
+        $('#btnClose').attr('disabled',false);
+        return false;
+      }
+
+      input_value_unique = [...new Set(input_value)];
+      if(input_value.length != input_value_unique.length){
+        alert('{{ error_tracking_number_repeated }}');
+        $('#btnClose').attr('disabled',false);
+        return false;
+      }
+
+
+    }else if(edit_flag == 1){
+
+      var js_auxiliary_information = '{{ js_auxiliary_information }}';
+      var json = eval('(' + js_auxiliary_information + ')');
+      var input_value  =  [];
+      var file_name = [];
+      var file_str = $('#file_str').val();
+
+      //增加一个验证是否重复的
+      var file_arr = file_str.split(';');
+      $.each(file_arr, function (idx, obj) {
+        if(obj != null && obj != ''){
+          var i = obj.split(':');
+          file_name.push(i[1]);
+        }
+      });
+      file_name_unique = [...new Set(file_name)];
+      if(file_name.length != file_name_unique.length){
+        var repeat_label = duplicates(file_name);
+        alert('The label ['+ repeat_label +'] uploaded is repeat with the other label,please select again.');
+        $('#btnClose').attr('disabled',false);
+        return false;
+
+      }
+      var input_flag = 1;
+
+      var  order_id = $('#order_id').val();
+      var child_list =  json['container_id_list'][order_id]['child_list'];
+      for(var i = 0 ;i < child_list.length; i++){
+        input_value.push($('#'+ child_list[i] + '_input').val());
+        var cname = $('#'+ child_list[i] + '_input').val();
+        if( cname == '' || (cname.length>0 && cname.trim().length == 0)){
+          alert('{{ error_tracking_number_fill }}');
+          $('#btnClose').attr('disabled',false);
+          input_flag = 0;
+          return false;
+        }
+        if(file_str.indexOf(child_list[i]) == -1){
+          alert('{{ error_file_fill }}');
+          $('#btnClose').attr('disabled',false);
+          input_flag = 0;
+          return false;
+        }
+
+      }
+      if(input_flag == 0){
+        $('#btnClose').attr('disabled',false);
+        return false;
+      }
+      input_value_unique = [...new Set(input_value)];
+      if(input_value.length != input_value_unique.length){
+        alert('{{ error_tracking_number_repeated }}');
+        $('#btnClose').attr('disabled',false);
+        return false;
+      }
+    }
+
+    //ajax 提交
+    $.ajax({
+      url: '{{ dropship_file_submit }}',
+      type: 'post',
+      data: $('#form-upload').serializeArray(),
+      beforeSend: function () {
+        parent.layer.load(1, {shade: [0.3, '#000']});
+      },
+      success: function (json) {
+        $('#btnClose').attr('disabled','disabled');
+        parent.layer.closeAll('loading');
+        layerMsg(json.msg, 2000);
+        setTimeout( function(){
+          var index = parent.layer.getFrameIndex(window.name);
+          parent.layer.close(index);
+        }, 2 * 1000 );
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+  function layerMsg(message, time = 2000) {
+    layer.msg(message, {time: time, skin: ''});
+  }
+  function  checkTrackNumber(obj,file_id = 0) {
+    if(obj.value != ''){
+        var tracking_number = obj.value;
+        var country_id = '{{ country_id }}';
+        //英国不进行验证
+        var regular = /^[a-zA-Z0-9]+$/g;
+        if(parseInt(country_id) == 222){
+            //ajax请求验证是否重复
+            $('#ajaxFlag').val(0);
+            $.ajax({
+                url: 'index.php?route=account/customer_order/vertifyDropShipTrackingNumber',
+                type: 'get',
+                dataType: 'json',
+//              async:false,
+                data: {'tracking_number':obj.value,'file_id':file_id},
+                success:function (res) {
+                    if(res['order_id'] != null){
+                        alert( obj.value + ' is repeat to the tracking number in order [' + res['order_id'] +']');
+                        $(obj).val(null);
+
+                    }
+                    $('#ajaxFlag').val(1);
+
+                }
+            })
+        }else{
+            if(!regular.test(tracking_number)){
+                var msg = '{{ error_tracking_number }}';
+                alert(msg);
+                $(obj).val(null);
+            }else{
+                //ajax请求验证是否重复
+                $('#ajaxFlag').val(0);
+                $.ajax({
+                    url: 'index.php?route=account/customer_order/vertifyDropShipTrackingNumber',
+                    type: 'get',
+                    dataType: 'json',
+//              async:false,
+                    data: {'tracking_number':obj.value,'file_id':file_id},
+                    success:function (res) {
+                        if(res['order_id'] != null){
+                            alert( obj.value + ' is repeat to the tracking number in order [' + res['order_id'] +']');
+                            $(obj).val(null);
+
+                        }
+                        $('#ajaxFlag').val(1);
+
+                    }
+                })
+            }
+        }
+    }
+  }
+  function getPdf(obj) {
+    var url =$(obj).attr('mean');
+    var  upload_info = '{{ text_preview_label }}';
+    parent.layer.open({
+      type: 2,
+      offset: ['150px','380px'],
+      area: ['700px', '400px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar:false,
+      content: url,
+
+    });
+
+  }
+  function getBolPdf(obj) {
+    var url =$(obj).attr('mean');
+    var  upload_info = 'Bol Label';
+    parent.layer.open({
+      type: 2,
+      offset: ['150px','380px'],
+      area: ['700px', '400px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar:false,
+      content: url,
+
+    });
+
+  }
+  function changeIconStatus(obj) {
+    //var  file_name = $(obj).attr('mean');
+    var file_name = $(obj).prev().text();
+    //删除的时候都可以删除
+
+    {% if edit_first == 0 %}
+    var vertify_file_name = golab_vertify_file_name;
+    var vlist = vertify_file_name.split(',');
+    vlist.splice(($.inArray(file_name,vlist)),1);
+    var varr = vlist.join(',');
+    golab_vertify_file_name = varr;
+    {% endif %}
+    var confirm_tips = 'Are you sure to delete this label?';
+    if(confirm(confirm_tips)){
+      $(obj).parent().hide();
+      $(obj).parent().prev().show();
+      $(obj).parent().parent().parent().next().hide();
+      var num = parseInt($('#file_num').val()) + 1;
+      $('#file_num').val(num);
+    }
+
+  }
+
+</script>

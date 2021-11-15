@@ -1,0 +1,180 @@
+
+
+<form v-show="payment_method=='cybersource_sop'" class="credit-card-form" id="cybersource_sop_form" enctype="multipart/form-data">
+  {% if need_pay %}
+    {#{% if cartInfoOption %}#}
+      {#<div id="add-new-account">#}
+        {#<select class="select-account" onchange="changeCardInfo()" id="cardInfoSelect">#}
+          {#<option value="0">--- {{ __('请选择', {}, 'common') }} ---</option>#}
+          {#{% for key,value in cartInfoOption %}#}
+            {#<option value="{{ key }}">{{ value }}</option>#}
+          {#{% endfor %}#}
+        {#</select>#}
+        {#<button class="add-account-btn" style="display: block;margin-top: 5px"><i#}
+        {#class="giga icon-action-add"></i>添加新账户#}
+        {#</button>#}
+      {#</div>#}
+    {#{% endif %}#}
+    {% for field in fields %}
+
+        {% if not field['no_open'] and field['entry'] !='Save card info' %}
+          <div class="credit-form-item">
+        {% endif %}
+        {% if not field['no_open'] and field['entry'] !='Save card info' %}
+        <p>{{ field['entry']}}</p>
+        {% endif %}
+
+        {% if field['type'] == 'select'  %}
+          <select name="{{ field['name']}}" id="{{field['name']}}" {{ field['multiple'] ? 'multiple="multiple"' : '' }} {{  field['param'] ? field['param'] : '' }} {{field['size'] ? 'size="'~field['size']~'"': ''}} validate="{{ field['validate'] ? field['validate'] : '' }}" class="form-item-select">
+            {% for key,value in field['options']%}
+              <option value="{{ key }}"{% if key in field['value'] or field['value'] == key %} selected="selected"{% endif %}>{{ value }}</option>
+            {% endfor %}
+          </select>
+        {% elseif  field['type'] == 'radio'%}
+          {% for key,value in  field['options']%}
+            <input type="radio" name="{{ field['name'] }}" id="{{ field['name'] }}" value="{{ key }}"{% if field['value'] == key %} checked="checked"{% endif %} {{ field['param'] ? field['param'] : '' }} validate="{{ field['validate'] ? field['validate'] : '' }}" class="form-item-select" />
+          {% endfor %}
+        {% elseif  field['type'] == 'text'%}
+          <input type="text" name="{{  field['name']  }}" value="{{ field['value'] }}" placeholder="{{ field['placeholder'] }}" {{ field['param'] ? field['param'] : '' }} req="{{ field['required'] }}" validate="{{ field['validate'] }}" id="{{field['name']}}" size="{{ field['size']}}"  maxlength="{{  field['maxlength']}}"  class="form-item-select" />
+        {% elseif  field['type'] == 'password'%}
+          <input type="password" name="{{field['name']}}" value="{{ field['value'] }}" placeholder="{{ field['placeholder'] is not null ? field['placeholder'] : '' }}" {{ field['param'] ? field['param'] : '' }} req="{{ field['required'] ? field['required'] : '' }}" validate="{{ field['validate'] ? field['validate'] : '' }}" id="{{field['name']}}" {{  field['size'] ? 'size="'~field['size']~'"' : '' }} {{  field['maxlength'] ? "maxlength=\""~field['maxlength']~"\"" : '' }} class="form-item-select" />
+        {% elseif  field['type'] == 'checkbox' %}
+          <div class="credit-form-item" style="display: none">
+            <span>Save card info</span>
+            <div style="display: inline-block;position: relative;top: 33%;margin-left: 10px">
+              <input id="save_card_info" type="checkbox" name="save_card_info" style="display: none" onchange="checkboxEvent(this)">
+              <label for="save_card_info">
+                <div class="save-toggle"></div>
+              </label>
+            </div>
+          </div>
+        {% elseif  field['type'] == 'hidden' %}
+          <input type="hidden" name="{{ field['name'] }}" value="{{ field['value'] }}" id="{{ field['name'] }}" {{ field['param'] ? field['param'] : '' }} />
+        {% elseif  field['type'] == 'textarea'%}
+          <textarea name="{{ field['name'] }}" req="{{ field['required'] ? field['required'] : '' }}" validate="{{ field['validate'] ? field['validate'] : '' }}" {{ field['param'] ? field['param'] : '' }} id="{{ field['name'] }}" cols="{{ field['cols'] }}" rows="{{ field['rows'] }}" class="form-item-select">{{ field['value'] }}</textarea>
+        {% elseif  field['type'] == 'label'%}
+          <label id="{{ field['name'] }}" class="form-control" {{ field['param'] ? field['param'] : '' }}>{{ field['value'] }}</label>
+        {% elseif  field['type'] == 'file'%}
+          <input req="{{ field['required'] ? field['required'] : '' }}" type="file" name="{{ field['name'] }}" {{ field['param'] ? field['param'] : '' }} />
+        {% endif %}
+
+        {% if field['help'] is not null  %}
+          <span class="help-block" style="display:inline-block;">{{ field['help'] }}</span>
+        {% endif %}
+
+        {% if not field['no_close'] and field['entry'] !='Save card info'  %}
+          </div>
+        {% endif %}
+
+      {% endfor %}
+    </fieldset>
+  {% endif %}
+
+</form>
+
+
+<script type="text/javascript"><!--
+  function check(){
+    var result = {};
+    var $items = $('#payment').find('[name]');
+    $items.each(function (i, e) {
+      var name = $(e).attr('name');
+      if(name=='card_year'){
+        name = 'card_mon';
+      }
+      var itemTitle = $('label[for='+name+']').html().replace(':','')
+      if($(e).attr('req')==1 && $(e).val().length<=0){
+        result['error'] = itemTitle+' is required!';
+        return false;
+      }
+    })
+    return result;
+  }
+
+  $('select[name=card_type]').change(function(){
+    if ($(this).val() == 'maestro' || $(this).val() == 'solo') {
+      $('#solo').show();
+    } else {
+      $('#solo').hide();
+    }
+  });
+
+  function country(element) {
+    $.ajax({
+      url: 'index.php?route=extension/payment/cybersource_sop/country&code=' + element.value,
+      dataType: 'json',
+      beforeSend: function() {
+        $('select[name=bill_to_address_country]').prop('disabled', true);
+      },
+      complete: function() {
+        $('select[name=bill_to_address_country]').prop('disabled', false);
+      },
+      success: function(json) {
+        // if (json['postcode_required'] == '1') {
+        //     $('input[name=bill_to_address_postal_code]').parent().parent().addClass('required');
+        // } else {
+        //     $('input[name=bill_to_address_postal_code]').parent().parent().removeClass('required');
+        // }
+
+        var html = '<option value="">{{ text_select }}</option>';
+
+        if (json['zone'] && json['zone'] != '') {
+          for (var i = 0; i < json['zone'].length; i++) {
+            html += '<option value="' + json['zone'][i]['code'] + '"';
+            if (json['zone'][i]['code'] == '{{ selected_state }}') {
+              html += ' selected="selected"';
+            }
+            html += '>' + json['zone'][i]['name'] + '</option>';
+          }
+        } else {
+          html += '<option value="0">{{ text_none }}</option>';
+        }
+
+        $('select[name=bill_to_address_state]').html(html);
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+  $('select[name$=bill_to_address_country]').trigger('change');
+
+  function checkboxEvent(obj) {
+    var forName = $(obj).attr('for');
+    $('input[name='+forName+']').val($(obj).prop('checked')? 1:0);
+
+  }
+
+  function changeCardInfo() {
+    var cardInfo = {{ cardInfo }};
+    var json = cardInfo[$('#cardInfoSelect').val()];
+      for(var key in json){
+        if(key=='zone'){
+          var html;
+          if (json['zone'] && json['zone'] != '') {
+            for (var i = 0; i < json['zone'].length; i++) {
+              html += '<option value="' + json['zone'][i]['code'] + '"';
+              if (json['zone'][i]['code'] == '{{ selected_state }}') {
+                html += ' selected="selected"';
+              }
+              html += '>' + json['zone'][i]['name'] + '</option>';
+            }
+          } else {
+            html += '<option value="0">{{ text_none }}</option>';
+          }
+
+          $('select[name=bill_to_address_state]').html(html);
+          $('#bill_to_address_state').val(json['bill_to_address_state']);
+        }else {
+          $('#' + key).val(json[key]);
+        }
+    }
+
+  }
+
+  //# sourceURL=payment_dynamic.js
+  //--></script>
+
+{#{% if merchid is not null  %}#}
+  {#<script type="text/javascript" src="https://h.online-metrix.net/fp/check.js?org_id={{ orgid }}&session_id={{ merchid }}{{ dfid }}"></script>#}
+{#{% endif %}#}

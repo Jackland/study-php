@@ -1,0 +1,282 @@
+<script type="text/javascript" src="catalog/view/javascript/summernote/summernote.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+<link rel="stylesheet" type="text/css" href="catalog/view/javascript/summernote/summernote.css">
+
+<form id="contactForm" method="POST" style="display: none;margin-top: 12px">
+  <div class="col-sm-12">
+    <div class="form-group">
+      <label>{{ text_from }}</label>
+      <input type="text" disabled="" readonly="" value="{{ from }}" class="form-control"/>
+      <input type="hidden" name="from" value="{{ from }}"/>
+      <input type="hidden" name="customer_id_to"/>
+    </div>
+    <div class="form-group">
+      <label>{{ text_subject }}</label>
+      <input type="text" maxlength="500" name="subject" class="form-control"/>
+    </div>
+    <div class="form-group">
+      <label>Content</label>
+      <textarea id="summernote" name="message"></textarea>
+    </div>
+    <div class="form-group">
+      <div class="pull-left" style="display:inline-block">
+        <label class="attach-file pointer" name="upload_files[]">
+          <i class="fa fa-upload"></i>
+          <input type="file" name='file[]' id="files" style="display:none" onchange="validate_fileupload(this);"><i
+            class="fa fa-times remove-file pointer"></i>
+        </label>
+        <span id="addFile" class="label-right pointer">+ Attach Files</span>
+      </div>
+      <div class="pull-right ">
+        <div class="btn btn-primary" onclick="sendMail()" >Send</div>
+        <div class="btn btn-default" onclick="layer.closeAll();" >Cancel</div>
+      </div>
+    </div>
+  </div>
+</form>
+<script>
+    $(document).ready(function() {
+        $('#summernote').summernote({
+            height: 200,
+            callbacks: {
+                onImageUpload: function(files, editor, welEditable) {
+                    sendFile(this,files[0]);
+                }
+            }
+        });
+    });
+    /**
+     *
+     * @param customerId  收件人id 多个以逗号分隔
+     * @param title  消息框的标题
+     */
+    function showMsgBox(customerId, title) {
+        $('#contactForm').find('[name=customer_id_to]').val(customerId);
+
+        layer.open({
+            type: 1,
+            zIndex:1041,
+            title: title,
+            //关闭按钮X
+            closeBtn: 0,
+            //点击阴影关闭
+            // shadeClose: false,
+            //弹框的宽高
+            area: ['760px', 'auto'],
+            content: $("#contactForm"),
+            resize: true,
+        });
+    }
+
+        function sendMail() {
+            if ($('#contactForm').find(' [name="subject"]').val().length == 0) {
+                alertError('Warning: Message subject can not be left blank.') ;
+                return ;
+            }
+
+            var msg = $('#contactForm').find(' [name="message"]').val();
+            if ( msg =='' || msg == '<p><br></p>') {
+                alertError('Warning: Message content can not be left blank.') ;
+                return ;
+            }
+            var formData = new FormData($('#contactForm')[0]);
+            var loadIdx;
+            //发送站内信
+            $.ajax({
+                url: '{{ communication_action }}',
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: "post",
+                dataType: 'json',
+                data: formData,
+                beforeSend: function() {
+                      loadIdx = layer.load(0,{shade: [0.1, '#393D49']});
+                },
+                complete: function() {
+                    //偶尔会出现在发完消息弹窗关闭时连续点击send提示'subject cannot be empty'
+                    //将遮罩层延时关闭
+                    setTimeout(function () {
+                        layer.close(loadIdx);
+                    },500)
+                },
+                success: function (json) {
+                    console.log(json);
+                    if (json['error']) {
+                        alertError(json['error'].join('\n'));
+                    } else if (json['success']) {
+                        //成功
+                        layer.closeAll();
+                        initContact();
+                        layer.msg(json['success'], {
+                            icon: 1,
+                            time: 3000
+                        });
+                        // 发送邮件
+                        setTimeout(function () {
+                          sendSmtpMail(formData);
+                        },0);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alertError('send message failed');
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
+        }
+
+        function sendSmtpMail(formData) {
+            $.ajax({
+                url: '{{ mail_action }}',
+                data: formData,
+                // async:false,
+                type: "post",
+                cache: false,
+                contentType: false,
+                dataType: 'json',
+                processData: false,
+                success: function (json) {
+                    console.log('sendMail success', json)
+                },
+                error: function (json) {
+                    console.log('sendMail error', json)
+                }
+            });
+        }
+
+        function initContact() {
+            $('#contactForm input[name="subject"]').val('');
+            $('#contactForm [name="message"]').val('');
+            $('#summernote').summernote("reset");
+            //移除附件
+            $('.attach-file').remove();
+            $('#addFile').trigger('click');
+        }
+
+        function sendFile(el, file) {
+            data = new FormData();
+            data.append("file", file);
+            $.ajax({
+                data: data,
+                type: "POST",
+                url: "index.php?route=customerpartner/profile/upload",
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data.error) {
+                        alertError(data.error);
+                    }
+                    if (data.success) {
+                        $(el).summernote('editor.insertImage', data.url);
+                    }
+                }
+            });
+        }
+
+var attachHtml = '<label class="attach-file pointer attach" >' +
+    '<i class="fa fa-upload"></i>' +
+    '<input type="file" name="file[]"  class="files" style="display:none"  onchange="validate_fileupload(this);">' +
+    '<i class="fa fa-times remove-file pointer"></i>' +
+    '</label>';
+
+        $('#addFile').unbind('click').bind('click',function(){
+            var maxNum = {{max}};
+            if($('.attach-file').length>=maxNum){
+                alertError("{{ error_max_file_num }}" + maxNum);
+                return;
+            }
+            $(this).before(attachHtml);
+        });
+
+        function validate_fileupload(_this) {
+            if(!validate(_this)){
+                $(_this).parent().replaceWith(attachHtml);
+                return false;
+            }else {
+                var file = _this.files[0];
+                var getImagePath = URL.createObjectURL(file);
+                var file_extension = file.name.split('.').pop();
+                $(_this).parent().css('background-image', 'url(' + getImagePath + ')');
+                $(_this).parent().find('.ex').remove();
+                $(_this).parent().find('.fa-upload').remove();
+                $(_this).parent().prepend('<span class="ex" style="position: absolute;margin-top:3px;margin-left:-9px;" ' +
+                    'title="'+file.name+'">' + file_extension + '</span>');
+                return true;
+            }
+        }
+        function validate(_this){
+            if(!_this.value){
+                return false;
+            }
+            var maxSize ={{size}};
+            var allowed_extensions ={{ extension|json_encode() }};
+            if (_this.type != 'file') {
+                alertError("{{ error_only_support_file_type }}" + allowed_extensions.join(','));
+                return false;
+            }
+            var fileName = _this.value;
+            var file_extension = fileName.split('.').pop();
+            if (!allowed_extensions.includes(file_extension)) {
+                alertError("{{ error_only_support_file_type }}" + allowed_extensions.join(','));
+                return false;
+            }
+
+            if ( _this.files[0].size > maxSize * 1024) {
+                alertError("{{ error_max_file_size }}{{ size_mb }}");
+                return false;
+            }
+            return true;
+        }
+        
+        function alertError(msg) {
+            layer.msg(msg, {
+                icon: 2,
+                // time: 3000 //3秒关闭（默认3秒）
+            });
+        }
+
+    $(document.body).on('click','.remove-file',function(event){
+            event.preventDefault();
+            $(this).parent().remove();
+        });
+        $(document.body).on('mouseenter','.attach-file',function(){
+            $(this).find('.remove-file').css("display","inline-block");
+        });
+        $(document.body).on('mouseleave','.attach-file',function(){
+            $(this).find('.remove-file').css("display","none");
+        });
+</script>
+<style type="text/css">
+  .attach-file .fa-upload {
+    position: absolute;
+    margin-top: 16px;
+    margin-left: -5px;
+  }
+  label.attach-file {
+    position: relative;
+    display: inline-block;
+    margin-right: 5px;
+    width: 50px;
+    height: 50px;
+    border: 1px dashed #DDD;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 35px;
+    overflow: hidden;
+    background: #F1F1F1 url('') no-repeat center;
+    background-size: 100%;
+    cursor: pointer;
+  }
+  .label-right {
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+    color: #325896;
+    font-weight: 600;
+  }
+  .remove-file{
+    float: right;
+    display: none;
+  }
+</style>

@@ -1,0 +1,259 @@
+{# start header column-left #}
+{{ header }}{{ separate_column_left }}
+{# end header column-left #}
+
+{% set container_info='class="container"' %}
+{% if separate_view is defined and separate_view %}
+  {% set container_info=' class="container-fluid" id="content" style="margin-left: 15%"' %}
+{% endif %}
+<div {{ container_info }}>
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  {# 列表 #}
+  <h1>Account Authorization List
+    <button id="add-btn" class="btn btn-submit" onclick="addNew()" {% if is_can_add_new == false %} disabled {% endif %}>
+      <i class="glyphicon glyphicon-plus-sign"></i>
+      {{ text_add_new }}</button>
+  </h1>
+  <div class="account-table">
+    <table class="table">
+
+      <thead>
+      <tr>
+        <th>No.</th>
+        <th>Account Manager Name</th>
+        <th>Date Added</th>
+        <th>Authorization Time</th>
+        <th>Revoke Time</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for authorize in authorizes %}
+      <tr>
+        <td>{{ authorize.index }}</td>
+        <td>{{ authorize.account_manager_name }}</td>
+        <td>{{ authorize.create_time }}</td>
+        <td>{{ authorize.authorize_time }}</td>
+        <td>{{ authorize.revoke_time }}</td>
+        <td>{{ authorize.status_name }}
+          {% if authorize.status == 3 and authorize.reject_reason  %}
+          <i class="giga icon-V10-wenhaotishi" style="font-size: 14px" data-toggle="tooltip" data-placement="top"  data-original-title="{{ authorize.reject_reason }}"></i>
+          {% endif %}
+        </td>
+        <td>
+          {% if authorize.status == 2 or authorize.status == 1 %}
+          {#    编辑    #}
+          <button id="fat-btn-edit" class="btn btn-primary" onclick="update('{{ authorize.edit_link }}')"
+                  type="button" data-toggle="tooltip" title="Edit Authority">
+            <span class="glyphicon glyphicon-check"></span>
+          </button>
+          {% endif %}
+          {% if authorize.status == 2 %}
+          <button id="fat-btn-revoke" class="btn btn-primary" onclick="revoke('{{ authorize.id }}')"
+                  type="button" data-toggle="tooltip" title="Revoke Authorization">
+            <span class="giga icon-action-cancel-edits"></span>
+          </button>
+          {% else %}
+          {#    删除    #}
+          <button id="fat-btn-remove" class="btn btn-primary" onclick="remove('{{ authorize.id }}')"
+                  type="button" data-toggle="tooltip" title="Remove Authorization">
+            <span class="glyphicon glyphicon-trash"></span>
+          </button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<style>
+  .account-table{
+    /*margin-right: 20px;*/
+    border-radius: 3px;
+    background-color: #fff;
+    margin-top: 3px;
+    padding:20px;
+    box-shadow: #aaa 0 0 6px;
+    margin-top: 20px;
+  }
+  .btn-default{
+    background-color: #488bff;
+    color: #fff;
+    border-radius: 5px;
+    border: unset;
+  }
+  #add-btn{
+    position: absolute;
+    right: 42px;
+    height: 40px;
+    line-height: 20px;
+  }
+  .oper-btn{
+    color: #488bff !important;
+  }
+  .oper-btn:hover{
+    color: #fff !important;
+  }
+  .btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn.active.focus {
+    outline: unset !important;
+    outline-offset: unset !important;
+    color: #fff;
+  }
+  .tooltip{
+    word-break: break-all !important;
+  }
+  .layui-layer-btn{
+    font-weight: normal;
+    text-align: center;
+    touch-action: manipulation;
+    cursor: pointer;
+    white-space: nowrap;
+    padding: 8px 13px;
+    font-size: 13px;
+    border-radius: 3px;
+    user-select: none;
+    opacity: 1;
+  }
+  .layui-layer-btn .layui-layer-btn0{
+    background:#3A75DC;
+    color: #fff;
+    border:1px solid #3A75DC;
+    height: 35px;
+    line-height: 35px;
+    opacity: 1;
+  }
+  .layui-layer-btn .layui-layer-btn1{
+    background: #fff;
+    border: 1px solid #fff;
+    color: #3A75DC;
+    box-shadow: 1px 1px 4px #b5b5b5;
+    height: 35px;
+    line-height: 35px;
+    opacity: 1;
+  }
+  .layui-layer-btn .layui-layer-btn0:hover{
+    background: #225CC1;
+    border: 1px solid #225CC1;
+    color: #fff;
+    opacity: 1;
+  }
+  .layui-layer-btn .layui-layer-btn1:hover{
+    background-color: #3A75DC;
+    border: 1px solid #3A75DC;
+    color: #fff;
+    opacity: 1;
+  }
+  .btn btn-submit{
+    padding: 10px 13px;
+    height: 40px;
+  }
+</style>
+<script>
+  // 新增
+  function addNew() {
+    window.location.href='{{ add_new_link }}';
+  }
+  // 编辑
+  function update(url) {
+    window.location.href=url;
+  }
+  // 删除
+  function remove(id) {
+    $('#fat-btn-remove').attr('disabled', true);
+    layer.confirm('Are you sure to remove this authorization?', {
+       skin: 'yzc_layer',
+      btnAlign: 'c',
+      title: 'Message',
+      btn: ['Confirm', 'Cancel'],
+      btn1: function () {
+        $.ajax({
+          url: '{{ remove_link }}',
+          type: 'post',
+          data: {authorize_id: id},
+          dataType: 'json',
+          success: function (json) {
+            if (json['code']) {
+              layer.msg(json['msg'], {area: ['400px'], time: 2000});
+              location.reload()
+            } else {
+              layer.alert(json['msg'], {
+                title: 'NOTICE',
+                skin: 'yzc_layer',
+                btn: ['OK'],
+                closeBtn: 0,
+                area: ['500px'],
+              }, function (index) {
+                layer.closeAll();
+              });
+            }
+          },
+          complete: function () {
+            $('#fat-btn-remove').attr('disabled', false);
+          }
+        });
+      },
+      btn2: function () {
+        $('#fat-btn-remove').attr('disabled', false);
+        layer.closeAll();
+      },
+      cancel: function () {
+        $('#fat-btn-remove').attr('disabled', false);
+        layer.closeAll();
+      }
+    })
+  }
+
+  function revoke(id) {
+    $('#fat-btn-revoke').attr('disabled', true);
+    layer.confirm('Are you sure to revoke this authorization?', {
+       skin: 'yzc_layer',
+      btnAlign: 'c',
+      title: 'Message',
+      btn: ['Confirm', 'Cancel'],
+      btn1: function () {
+        $.ajax({
+          url: '{{ revoke_link }}',
+          type: 'post',
+          data: {authorize_id:id},
+          dataType: 'json',
+          success: function (json) {
+            if (json['code']) {
+              layer.msg(json['msg'], {area: ['400px'], time: 2000});
+
+              location.reload()
+            } else {
+              layer.alert(json['msg'], {
+                title: 'NOTICE',
+                skin: 'yzc_layer',
+                btn: ['OK'],
+                closeBtn: 0,
+                area: ['500px'],
+              }, function (index) {
+                layer.closeAll();
+              });
+            }
+          },
+          complete: function () {
+            $('#fat-btn-revoke').attr('disabled', false);
+          }
+        });
+      },
+      btn2: function () {
+        $('#fat-btn-revoke').attr('disabled', false);
+        layer.closeAll();
+      },
+      cancel: function () {
+        $('#fat-btn-revoke').attr('disabled', false);
+        layer.closeAll();
+      }
+    })
+  }
+</script>
+{{ footer }}

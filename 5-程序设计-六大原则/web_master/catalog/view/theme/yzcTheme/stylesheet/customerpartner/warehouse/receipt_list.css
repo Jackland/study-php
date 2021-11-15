@@ -1,0 +1,134 @@
+.container-fluid{
+  margin-left: 235px;
+}
+::-webkit-scrollbar {
+  width: 0;
+}
+.mr-20{
+  margin-right: 20px;
+}
+.pd0{
+  padding: 0;
+}
+.pdr2{
+  padding-right: 2px;
+}
+.pdl2{
+  padding-left: 2px;
+}
+.brr-0-i{
+  border-radius: 4px 0 0 4px !important;
+}
+.pagination > li > a:focus{
+  background-color: #eee;
+  color: #242424;
+}
+.box-shadow{
+  border-radius: 3px;
+  background-color: #fff;
+  margin-top: 3px;
+  padding: 0 20px;
+  box-shadow: #aaa 0 0 6px;
+}
+.giga.icon-V10-wenhaotishi{
+  font-size: 16px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.receipt-con{
+  padding: 20px !important;
+  margin-bottom: 20px;
+}
+.receipt-con .search-info .btn.btn-primary,.receipt-con .add-application-con .btn.btn-primary{
+  height: 40px;
+}
+.receipt-con .float-lf{
+  float: left !important;
+}
+.btn.btn-default:hover {
+  color: #fff;
+  background-color: #3A75DC;
+}
+.form-group .datetime span button {
+  position: absolute;
+  height: 40px;
+  box-shadow: none;
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+  top: 0;
+  right: 1px;
+}
+.add-application-con{
+  margin-bottom: 20px;
+}
+.cursor-po{
+  cursor: pointer
+}
+.cursor-po-disabled{
+  cursor: not-allowed;
+}
+.font-weight{
+  font-weight: bolder;
+}
+.link-color{
+  color: #3A75DC;
+  cursor: pointer;
+}
+.link-color:hover{
+  color: #3A75DC;
+  text-decoration: underline;
+}
+.rules-con{
+  padding: 0 20px;
+  margin-bottom: 40px;
+}
+.rules-modal .rule-checkbox{
+  vertical-align: top;
+}
+.receipt-con .pagination{
+  margin: 0 15px;
+}
+.flex-end{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.pagination-bottom-none .page-info{
+  margin-bottom: 0;
+}
+.flex-between{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.btn.btn-disabled{
+  background-color: #dcdcdc !important;
+  color: #999;
+  border: 1px solid #dcdcdc !important;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.confirm-receipts-remind{
+  display: none;
+}
+.modal-header-radius{
+  border-radius: 5px 5px 0 0 !important;
+}
+.modal-content-radius{
+  border:none;
+}
+.oris-ingroup .oris-clear{
+  right: 50px;
+}
+.text-bold{
+  font-weight: bold;
+}
+.mr10{
+  margin-right: 10px;
+}
+.table > thead > tr > th.padding-small{
+  padding: 5px 8px;
+}
+.width-200{
+  width: 200px;
+}

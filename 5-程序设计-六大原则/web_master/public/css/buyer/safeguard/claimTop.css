@@ -1,0 +1,262 @@
+/* catalog/view/theme/yzcTheme/template/account/safeguard/claim/components/claim_top.twig
+* buyer保障服务理赔单申请
+*/
+.claim-top {
+  padding: 20px;
+  border: 1px solid #DCDCDC;
+}
+
+.claim-top .oris-table {
+  border-bottom: none;
+}
+
+.claim-process {
+  display: flex;
+  align-items: center;
+  padding: 0 70px 50px 70px;
+}
+
+.claim-process .process {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #fff;
+  background: #BCC3CB;
+  text-align: center;
+  border-radius: 50%;
+}
+
+.claim-process .process-icon {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  color: #fff;
+  text-align: center;
+}
+
+.claim-process .process-icon i.giga {
+  font-size: 44px;
+  color: #BCC3CB;
+  position: absolute;
+  left: 0;
+  top: -12px;
+}
+
+.claim-process .process .process-status,
+.claim-process .process-icon .process-status {
+  width: 400px;
+  font-size: 16px;
+  font-weight: bold;
+  position: absolute;
+  top: 42px;
+  left: -178px;
+  color: #333;
+}
+
+.claim-process .process .process-status .files-pendding {
+  display: inline-block;
+  font-size: 14px;
+  position: absolute;
+  top: 4px;
+  line-height: 18px;
+  background: #FFF0E5;
+  padding: 2px 10px;
+  margin-left: 8px;
+  width: 168px;
+  height: 40px;
+  font-weight: normal;
+  border-radius: 20px;
+}
+.claim-process .process .process-status .files-pendding i {
+  line-height: 36px;
+  float: left;
+  position: relative;
+  left: 4px;
+}
+.claim-process .process .process-status .files-pendding .days-left {
+  font-size: 13px;
+  text-align: left;
+  padding-left: 28px;
+}
+.info-add-tips div:first-child {
+  color: #FF6600;
+  font-weight: bold;
+}
+.claim-process .process.active {
+  background: #0AAD4F;
+}
+
+.claim-process .process-line {
+  width: 420px;
+  height: 3px;
+  background: #E1E1E1;
+  margin: 0 12px;
+  flex: 1;
+}
+
+.claim-status {
+  width: 100%;
+  min-height: 80px;
+  background: #F2F5FC;
+  border-radius: 2px;
+  padding: 16px 20px;
+  display: flex;
+}
+
+.claim-status>div {
+  padding-right: 50px;
+}
+
+.claim-status label {
+  color: #7382A5;
+  font-weight: bold;
+  padding-right: 6px;
+}
+.claim-status > div > div:not(:first-child) label{
+  margin-bottom: 0 !important;
+}
+
+.claim-status .status {
+  background: #F2F5FC;
+  border: 1px solid #2861CE;
+  border-radius: 2px;
+  color: #004BD8;
+  padding: 3px 12px;
+  margin-left: 10px;
+}
+
+.claim-status .underline:hover {
+  color: #004bd8;
+}
+
+.bootstrap-select .dropdown-toggle .filter-option-inner-inner {
+  text-overflow: ellipsis;
+}
+
+.in-block {
+  display: inline-block;
+  padding: 2px;
+}
+
+.in-block input[disabled] {
+  /* don't let button block mouse events from reaching wrapper */
+  pointer-events: none;
+}
+
+.calcTips {
+  padding-left: 14px;
+  height: 40px;
+  line-height: 40px;
+  background: #FFF0E5;
+}
+
+.fee-order-purchase-details {
+  z-index: 1099;
+}
+
+.w660 {
+  width: 660px;
+}
+
+.clock-tips {
+  font-size: 14px;
+  color: #333;
+  height: 26px;
+  line-height: 16px;
+  padding: 2px 12px;
+  font-weight: bold;
+  background: #FFF0E5;
+  border: 2px solid #FF974B;
+  border-radius: 13px;
+  margin-left: 10px;
+}
+
+.clock-tips i.giga {
+  font-weight: normal;
+  position: relative;
+  top: 1px;
+}
+
+.claim-top .oris-select .filter-option-inner-inner {
+  max-width: 660px;
+}
+
+.center-module .title-line .page-title {
+  display: flex;
+  align-items: center;
+}
+
+.modal-body .oris-table th i.icon-V10-wenhaotishi {
+  position: relative;
+  top: 1px;
+  left: 2px;
+}
+
+#claimCalcModal input::-webkit-outer-spin-button,
+#claimCalcModal input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+#claimCalcModal input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+#claimCalcModal .oris-table {
+  border-collapse: collapse;
+}
+
+.bootstrap-select.dropdown .filter-option-inner-inner {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selected-trackings {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #EDEFF3;
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+
+i.icon-wenhao {
+  color: #999999;
+  padding-right: 4px;
+  font-weight: 200;
+}
+
+.padding-title {
+  padding: 20px 0 16px 0;
+}
+
+.action-files-range .upload-btn:hover {
+  border-color: #666666;
+}
+
+.action-files-range .upload-btn:hover div.link-color {
+  text-decoration: underline;
+}
+
+.relat2 {
+  position: relative;
+  top: -2px;
+  right: -4px;
+}
+
+.tooltip {
+  z-index: 2000;
+}
+
+.oris-tooltip~.tooltip .tooltip-inner {
+  min-width: 180px;
+}
+
+#claimCalcModal .oris-tooltip~.tooltip .tooltip-inner {
+  min-width: 200px;
+}
+
+.open-purchase-details {
+  padding-right: 16px;
+}

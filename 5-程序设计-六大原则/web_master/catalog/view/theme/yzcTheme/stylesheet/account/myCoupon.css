@@ -1,0 +1,311 @@
+/* 
+ * 需求#1452 我的优惠券
+ * 2020-11-11
+ */
+
+
+/*头部尾部永远1200px*/
+
+body {
+  background-color: #f2f2f2 !important;
+}
+
+@font-face {
+  font-family: orisHelveticaBold;
+  src: url(../../../../font/number/HelveticaCondensedBold.ttf), url(../../../../font/number/HelveticaNeueLTStd-Bd.otf);
+}
+
+.my-coupon-page {
+  font-family: Arial, "Roboto", Helvetica, serif !important;
+}
+
+.my-coupon-page .font-number {
+  font-family: orisHelveticaBold !important;
+}
+
+@media (min-width: 1480px) {
+  .center-module {
+    width: 1200px;
+    margin: 0 auto;
+  }
+  footer .center-module {
+    width: 1440px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1200px;
+  }
+}
+
+.my-coupon-page .tab-content {
+  width: 1200px;
+  margin-bottom: 16px;
+}
+
+.my-coupon-page .nav-oris .tab-content {
+  min-height: 280px;
+  padding-bottom: 0;
+}
+
+.tab-available {
+  position: relative;
+}
+
+.my-coupon-page .no-data {
+  font-size: 16px;
+  color: #666666;
+  position: absolute;
+  width: 162px;
+  height: 16px;
+  top: 100px;
+  left: 519px;
+}
+
+.my-coupon-page .coupon-title {
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+
+.my-coupon-page .all-available {
+  margin-right: 18px;
+  margin-top: 18px;
+}
+
+.my-coupon-page .available-hide {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.my-coupon-page .available-hide .all-available:nth-child(4n+4) {
+  margin-right: 0px;
+}
+
+.my-coupon-page .available-hide .all-available:nth-child(-n+4) {
+  margin-top: 0px;
+}
+
+.my-coupon-page .available-top {
+  background-image: url(../../../../../../image/coupon/couponTopActive.png);
+}
+
+.my-coupon-page .top-background {
+  position: relative;
+  z-index: 99;
+  width: 275px;
+  height: 35px;
+}
+
+.my-coupon-page .used-top {
+  background-image: url(../../../../../../image/coupon/couponTopDisable.png);
+}
+
+.my-coupon-page .coupon-bottom {
+  position: relative;
+  z-index: 50;
+  width: 275px;
+  height: 140px;
+  margin-top: -4px;
+}
+
+.my-coupon-page .available-bottom {
+  background-color: #fff8f8;
+  border: solid 1px #ffc3bd;
+}
+
+.my-coupon-page .used-bottom {
+  background-color: #f2f2f2;
+  border: solid 1px #dcdcdc;
+}
+
+.my-coupon-page .giga-coupon {
+  width: 88px;
+  height: 13px;
+  font-size: 14px;
+  position: absolute;
+  top: 8px;
+  left: 12px;
+}
+
+.my-coupon-page .giga-available {
+  color: #ffffff;
+}
+
+.my-coupon-page .giga-used {
+  color: #333333;
+}
+
+.my-coupon-page .information {
+  padding-left: 14px;
+  padding-top: 20px;
+}
+
+.my-coupon-page .top-information {
+  display: flex;
+  position: relative;
+}
+
+.my-coupon-page .available-dollar,
+.my-coupon-page .available-much {
+  color: #e64545;
+}
+
+.my-coupon-page .used-dollar,
+.my-coupon-page .used-much {
+  color: #666666;
+}
+
+.my-coupon-page .mark-dollar {
+  font-size: 20px;
+  margin-top: 7px;
+}
+
+.my-coupon-page .much {
+  font-size: 36px;
+  font-weight: bold;
+  margin-top: -10px;
+  margin-left: 2px;
+  margin-right: 14px;
+  display: flex;
+  align-items: baseline;
+}
+
+.my-coupon-page .exclusive-to {
+  width: 148px;
+  height: 27px;
+  font-size: 14px;
+  color: #666666;
+}
+
+.my-coupon-page .much .decimal-num {
+  font-size: 15px;
+}
+
+.my-coupon-page .exclusive-to-new-buyer,
+.my-coupon-page .order-over {
+  line-height: 16px;
+}
+
+.my-coupon-page .effective-date {
+  font-size: 12px;
+  color: #333333;
+  position: absolute;
+  top: 58px;
+}
+
+.my-coupon-page .use-now {
+  font-size: 14px;
+  color: #e64545;
+  width: 120px;
+  height: 32px;
+  background-color: #fff8f8;
+  border-radius: 16px;
+  border: solid 1px #e64545;
+  position: absolute;
+  left: 80px;
+  top: 88px;
+  text-align: center;
+  padding-top: 4px;
+}
+
+.my-coupon-page .use-now:hover {
+  color: #333333;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+.my-coupon-page .used-picture {
+  position: absolute;
+  top: 68px;
+  left: 196px;
+}
+
+.my-coupon-page .coupon-description {
+  width: 1200px;
+  height: 220px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding-top: 20px;
+  padding-left: 20px;
+  margin-bottom: 30px;
+  border: 1px solid #dcdcdc;
+}
+
+.my-coupon-page .coupon-policy {
+  color: #333333;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.my-coupon-page .rules-num {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  width: 16px;
+  height: 16px;
+  background-color: #dcdcdc;
+  border-radius: 8px;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-coupon-page .coupon-rule {
+  height: 34px;
+  line-height: 34px;
+  color: #666666;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.my-coupon-page .rules-content {
+  margin-left: 10px;
+}
+
+.my-coupon-page .pane-content {
+  position: relative;
+  padding-bottom: 30px;
+}
+
+.my-coupon-page .tab-pane {
+  min-height: 170px;
+}
+
+.my-coupon-page .new-page {
+  position: absolute;
+  bottom: 0;
+  right: 20px;
+}
+
+.my-coupon-page .tab-content main {
+  padding-bottom: 0
+}
+
+.my-coupon-page .pos-static {
+  position: static;
+}
+
+.my-coupon-page .mb-12 {
+    margin-bottom: 12px;
+}
+
+.page-seller-portal .btn.btn-default.tab-btn:hover {
+  background-color: #fa6400;
+  border-color: #fa6400;
+}
+
+div.tab-btn>a.tab-btn {
+  padding: 9px 18px;
+  font-size: 16px;
+  margin-right: 5px;
+}
+.font13 {
+  font-size: 13px !important;
+}

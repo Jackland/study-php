@@ -1,0 +1,123 @@
+<style>
+  .table-hover > tbody > tr:hover td textarea {
+    background: #FFF3E5 !important;
+  }
+  .table thead > tr > td, .promotion-event-list .table tbody > tr > td{
+    border-bottom: none;
+  }
+  .text-warning {
+    color: #FA6400;
+  }
+</style>
+<div class="promotion-event-list">
+    {% if error_warning %}
+      <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ error_warning }}</div>
+    {% endif %}
+    {% if success %}
+      <div class="alert alert-success"><i class="fa fa-check-circle"> </i> {{ success }}</div>
+    {% endif %}
+      <div class="{{ class }}">
+        {{ content_top }}
+        <fieldset>
+          <div style="margin-top: 0">
+            <div style="position:relative">
+              <div class="table-responsive" style="border-bottom: 1px #eee solid;width: 100%">
+                <table id="tableMarginOffering" class="table table-hover">
+                  <thead>
+                  <tr style="border-top:none">
+                    <th class="text-left no-wrap" style="width:14%">{{ column_promotion_type }}</th>
+                    <th class="text-left no-wrap" style="width:13%">{{ column_duration }}</th>
+                    <th class="text-left no-wrap" style="width:13%">{{ column_registration_period }}</th>
+                    <th class="text-left no-wrap" style="width:10%">{{ column_promotion }}<br>{{ column_offering }}
+                    </th>
+                    <th class="text-left no-wrap" style="width:10%">{{ column_registration }}<br>{{ column_deadline }}
+                    </th>
+                    <th class="text-left no-wrap" style="width:10%">{{ column_status }}</th>
+                    <th class="text-left no-wrap" style="width:10%">{{ column_action }}</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% if margin_templates %}
+                    {% for template in margin_templates %}
+                        <tr>
+                          <td class="text-left " style="width:14%;">
+                            <span>{{ template.name }}</span>
+                          </td>
+                          <td class="text-left" style="width:13%;">
+                            <span>{{ template.effective_time }}<br>-<br>{{ template.expiration_time }}</span>
+                          </td>
+                          <td class="text-left" style="width:13%;">
+                            <span>{{ template.apply_start_time }}<br>-<br>{{ template.apply_end_time }}</span>
+                          </td>
+                          <td class="text-left" style="width:10%;">
+                            {{ template.type==2?'Free gifts':template.type==3?'Discount vouchers':template.type==1?'Banner advertising':'Others' }}
+                          </td>
+                          <td class="text-left" style="width:10%;">
+                            <span>{{ template.deadline }}</span>
+                          </td>
+                          <td class="text-left" style="width:10%;">
+                            {% if template.status==3 %}
+                            <span class="flex-layout text-small "><i class="giga icon-action-remove mr-05"></i>&nbsp;At Capactity</span>
+                            {% elseif  template.status==2 %}
+                              <span class="text-warning text-small flex-layout"><i class="giga icon-complete mr-05"></i>&nbsp;Registered</span>
+                            {% else %}
+                              <span class="text-success text-small flex-layout"><i class="giga icon-Action-Time mr-05"></i>&nbsp;Open</span>
+                           {% endif %}
+
+                          </td>
+                          <td class="text-left" style="width:10%;">
+
+                            <a href="{{ template.detail }}" class="btn btn-primary" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i>
+                            </a>
+                          </td>
+                        </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="7" class="text-center">
+                        <div style="font-size: 18px;margin-top: 15px;margin-bottom: 20px">{{ no_records }}</div>
+                      </td>
+                    </tr>
+                  {% endif %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% if margin_templates %}
+              <div class="oris-row oris-pagination">
+                <ul id="pagination_event_list"></ul>
+              </div>
+            {% endif %}
+          </div>
+        </fieldset>
+      </div>
+    </div>
+</div>
+<script>
+  $(function () {
+    paginationActivity();
+  });
+  function paginationActivity() {
+    $('#pagination_event_list').bootstrapPaginator({
+      /*当前使用的是3版本的bootstrap*/
+      bootstrapMajorVersion: 3,
+      /*配置的字体大小是小号*/
+      size: 'normal',
+      /*当前页*/
+      currentPage: {{ paginator.getPage() }},
+      /*一共多少页*/
+      totalPages: {{ max(paginator.getPageCount(), 1) }},
+      /*页面上最多显示几个含数字的分页按钮*/
+      numberOfPages: 5,
+      pageRange: [10, 20, 30, 50, 100],
+      rowsOfPage: {{ paginator.getPageSize() }},
+      total: {{ paginator.getTotalCount() }},
+      onPageClicked: function (event, originalEvent, type, page) {
+        block.blockUI();
+        $('#proEvents').load('{{ paginator.getUrlWithNoPage() }}&page=' + page, function () {
+          block.unBlockUI();
+        });
+      }
+    });
+  }
+</script>

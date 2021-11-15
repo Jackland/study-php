@@ -1,0 +1,525 @@
+footer {
+  background: #e7e7e7;
+  border-top: none;
+  width: 100%;
+  padding: 0;
+  color: #333333;
+  padding: 12px 0;
+}
+
+footer .comp-des {
+  margin: 24px auto;
+}
+
+footer .comp-des div {
+  padding-top: 12px;
+}
+
+footer .foot-des {
+  text-align: center;
+  width: 280px;
+}
+
+footer .foot-des .foot-icon {
+  width: 60px;
+  height: 60px;
+}
+
+footer .foot-des div:last-child {
+  color: #737373;
+  font-size: 13px;
+}
+
+footer hr {
+  margin: 8px 0;
+  border: 0;
+  border-top: 1px solid #c1c1c1;
+}
+
+footer .link-line {
+  justify-content: space-between;
+  margin-top: 48px;
+}
+
+footer .link-line .flex-layout {
+  align-items: center;
+}
+
+footer .link-left a {
+  margin-right: 40px;
+}
+
+footer .link-line i {
+  font-size: 20px;
+  color: #666666;
+}
+
+footer a.facebook {
+  margin-left: 8px;
+}
+
+footer .facebook:hover {
+  color: #415a99;
+}
+
+footer a.linkedin {
+  margin-left: 8px;
+}
+
+footer .linkedin:hover {
+  color: #1470cc;
+}
+
+footer a.instagram {
+  margin-left: 8px;
+}
+
+footer .instagram:hover {
+  color: #e5398f;
+}
+
+footer .flex-around {
+  justify-content: space-around;
+  align-items: stretch;
+}
+
+@-webkit-keyframes animateWidthshow {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes animateWidthshow {
+  to {
+    opacity: 1;
+  }
+}
+
+.right-suspension {
+  position: fixed;
+  width: 60px;
+  right: 16px;
+  bottom: 140px;
+  z-index: 110;
+  box-shadow: -2px 0px 8px rgba(0, 0, 0, 0.20);
+  border-radius: 4px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.right-suspension .suspension-btn {
+  display: block;
+  color: #666;
+  position: relative;
+  z-index: 109;
+  font-size: 12px;
+}
+
+.right-suspension .custom-service,
+.right-suspension .message-center {
+  position: relative;
+}
+
+.right-suspension .message-icon {
+  width: 100%;
+  text-align: center;
+  padding: 8px 0 12px 0;
+  font-size: 12px;
+}
+
+.right-suspension .message-icon i {
+  font-size: 20px;
+  display: block;
+}
+
+.right-suspension .service-right>a {
+  padding-bottom: 12px;
+}
+
+.right-suspension .service-right>a i {
+  width: 24px;
+  height: 24px;
+  margin-right: 4px;
+  background: #5395FF;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+}
+
+.right-suspension .service-right>a span {
+  color: #666;
+  font-size: 12px;
+}
+
+.right-suspension .service-right>a:hover span {
+  color: #004bd8;
+}
+
+.right-suspension .service-right a:nth-child(2) i {
+  background-color: #F76262;
+}
+
+.right-suspension .custom-service .suspension-btn i {
+  color: #ff6600;
+}
+
+.right-suspension .custom-service .service-right,
+.right-suspension .message-center .fmessage-right {
+  position: absolute;
+  bottom: 0;
+  right: calc(100% + 4px);
+  opacity: 0;
+  visibility: hidden;
+  color: #666;
+  background: #fff;
+  padding: 0 10px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.20);
+  border-radius: 4px;
+  -webkit-transition: .3s ease-out;
+  transition: .3s ease-out;
+  z-index: 100;
+}
+
+.right-suspension .custom-service .service-right:after,
+.right-suspension .message-center .fmessage-right:after {
+  content: '';
+  display: block;
+  z-index: 108;
+  height: 100%;
+  width: 4px;
+  position: absolute;
+  top: 0;
+  right: -4px;
+}
+
+.right-suspension .custom-service .service-right {
+  padding-top: 12px;
+  width: 158px;
+}
+
+.right-suspension .custom-service .service-right>a {
+  display: flex;
+  align-items: baseline;
+  height: 36px;
+}
+
+.right-suspension .message-center .fmessage-alert {
+  position: absolute;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.20);
+  opacity: 1;
+  z-index: 100;
+  top: 10px;
+  right: calc(100% + 10px);
+  width: 200px;
+  font-size: 12px;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.right-suspension .message-center .fmessage-alert:not(.fmessage-alert-hover).fmessage-hide {
+  display: none;
+}
+
+.right-suspension .message-center .fmessage-alert:after {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  background-color: #fff;
+  position: absolute;
+  top: calc(50% - 3px);
+  right: -3px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+.right-suspension .message-center .fmessage-alert .fmessage-alert-content {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  max-height: 50px;
+}
+
+.right-suspension .message-center .fmessage-alert .fmessage-alert-more {
+  display: flex;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding-left: 4px;
+}
+
+.right-suspension .message-center .fmessage-shade {
+  display: inline-block;
+  width: 48px;
+  height: 14px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 1));
+}
+
+.right-suspension .message-center .fmessage-right {
+  display: block;
+  width: 210px;
+  padding: 14px 16px;
+  height: auto;
+  color: #333;
+}
+
+.right-suspension .custom-service:hover .service-right,
+.right-suspension .message-center .suspension-btn:hover~.fmessage-right,
+.right-suspension .message-center .fmessage-right:hover {
+  visibility: visible;
+  animation-name: animateWidthshow;
+  animation-duration: .3s;
+  animation-fill-mode: forwards;
+}
+
+.right-suspension .message-icon>span:not(.icon-sum):not(.action-tooltip-1600) {
+  display: block;
+  line-height: 14px;
+}
+
+.right-suspension .message-icon .icon-sum {
+  top: 6px;
+  left: unset;
+  right: 6px;
+  border: 1px solid #fff;
+}
+
+.right-suspension .suspension-btn:hover .icon-sum {
+  color: #FF6A00;
+  background-color: #fff;
+}
+
+.right-suspension .side-toolbar {
+  position: relative;
+  width: 100%;
+  z-index: 109;
+}
+
+.right-suspension .back-to-top i {
+  font-size: 14px;
+  position: relative;
+  top: 4px;
+}
+
+.right-suspension .back-to-top>span:not(.action-tooltip-1600) {
+  display: block;
+  font-size: 12px;
+  width: 100%;
+}
+
+/*底部top message*/
+.right-suspension .back-to-top {
+  display: none;
+  color: #666;
+  height: 50px;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+.right-suspension .back-to-top:before {
+  padding-top: 4px;
+}
+
+.right-suspension .back-to-top:before,
+.right-suspension .suspension-btn:not(.contact-us):before {
+  content: '';
+  display: block;
+  margin: 0 6px;
+  border-top: 1px solid #F2F2F2;
+}
+
+.right-suspension>div:first-child .suspension-btn {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.right-suspension .bottom-radius4 {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.right-suspension>div:first-child>.suspension-btn:before {
+  display: none;
+}
+
+.right-suspension .back-to-top:hover:before,
+.right-suspension .suspension-btn:hover:before {
+  border-color: #FC761A;
+}
+
+.right-suspension .back-to-top:hover,
+.right-suspension .suspension-btn:hover {
+  cursor: pointer;
+  background-color: #FC761A;
+  color: #fff;
+}
+
+.right-suspension .custom-service .suspension-btn:hover i {
+  color: #fff;
+}
+
+.right-suspension .store-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #E5E5E5;
+  margin: 4px auto 6px auto;
+  overflow: hidden;
+}
+
+.right-suspension .store-img img {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+}
+.right-suspension .fmessage-right .fmessage-list {
+  position: relative;
+  left: -2px;
+}
+.right-suspension .fmessage-right .fmessage-list i.gcl {
+  font-size: 12px;
+  color: #999999 !important;
+}
+
+/*兼容历史样式*/
+.right-suspension .fmessage-right .fmessage-list span {
+  word-break: break-all !important;
+}
+.right-suspension .fmessage-right .fmessage-list a:not(.fmessage-more) {
+  margin: 6px 0;
+}
+
+.right-suspension .fmessage-right .fmessage-list i.gcl.text-danger {
+  color: #E34444 !important;
+}
+
+.right-suspension .message-center .fmessage-right .fmessage-more {
+  position: relative;
+  left: 16px;
+}
+
+.right-suspension .message-center .fmessage-more {
+  color: #004BD8;
+  background-color: #fff;
+}
+
+.right-suspension .message-center .fmessage-more:hover {
+  color: #004BD8;
+  text-decoration: underline;
+}
+
+.right-suspension .action-tooltip-1600 {
+  display: none;
+}
+
+.right-suspension .icon-V10_gerenzhongxinwuliuchaxun-01 {
+  position: relative;
+  top: 1px;
+  font-size: 21px !important;
+}
+
+/* 1600px屏幕下，右侧小图标处理 */
+@media (max-width: 1600px) {
+  .right-suspension {
+    width: 40px;
+    right: 10px;
+  }
+
+  .right-suspension .message-icon {
+    padding: 8px 0;
+  }
+
+  .right-suspension .hide1600 {
+    display: none !important;
+  }
+
+  .right-suspension .message-center .fmessage-alert {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .right-suspension .action-tooltip-1600 {
+    display: none !important;
+    position: absolute;
+    top: calc(50% - 20px);
+    right: calc(100% + 5px);
+    height: 40px;
+    width: max-content !important;
+    color: #fff;
+    background: #464C59;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.06);
+    opacity: 1;
+    border-radius: 4px;
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .right-suspension .action-tooltip-1600:after {
+    content: '';
+    display: block;
+    border: 4px solid #464C59;
+    position: absolute;
+    width: 0;
+    height: 0;
+    right: -2px;
+    top: calc(50% - 4px);
+    transform: rotate(45deg);
+  }
+
+  .right-suspension .hover1600:hover .action-tooltip-1600 {
+    display: block !important;
+    line-height: 14px;
+  }
+
+  .right-suspension .back-to-top {
+    height: 30px;
+  }
+
+  .right-suspension .back-to-top:before {
+    padding-top: 0;
+  }
+
+  .right-suspension .icon-sum:before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    background: #FC761A;
+    border: 1px solid #FFFFFF;
+    border-radius: 50%;
+    opacity: 1 !important;
+    position: relative;
+    top: 8px;
+    right: 10px;
+  }
+
+  .right-suspension .icon-sum,
+  .right-suspension .suspension-btn:hover .icon-sum {
+    font-size: 0;
+    content: '';
+    color: none !important;
+    background: none !important;
+    border: unset !important;
+    width: 0 !important;
+    height: 0 !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    padding: 0;
+  }
+
+  .right-suspension .suspension-btn:hover .icon-sum:before {
+    background: #FFFFFF;
+    border: 1px solid #FC761A;
+  }
+
+  .right-suspension .store-img {
+    width: 26px;
+    height: 26px;
+    margin: 0 auto;
+  }
+}

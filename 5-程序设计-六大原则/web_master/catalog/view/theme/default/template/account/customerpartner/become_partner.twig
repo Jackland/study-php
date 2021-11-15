@@ -1,0 +1,117 @@
+{{ header }}{{ separate_column_left }}
+{% if separate_view is defined and separate_view %}
+  <div class="container-fluid" id="content" style="">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+
+  {% if success %}
+    <div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> {{ success}}</div>
+  {% endif %}
+  {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning}}</div>
+  {% endif %}
+
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+    {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+
+    <div id="content" class="{{ class}}">
+      {{ content_top}}
+      <h1>
+        {{ heading_title_become_partner }}
+        <div class="pull-right">
+          <a href="{{ back}}" data-toggle="tooltip" title="{{ button_back}}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        </div>
+      </h1>
+
+      <fieldset>
+        <legend><i class="fa fa-list"></i> {{ heading_title_become_partner }}</legend>
+      {% if isMember %}
+        {% if not in_process %}
+        <form action="{{ action}}" method="post" enctype="multipart/form-data"  class="form-horizontal">
+
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-shoppartner"><span data-toggle="tooltip" title="{{ text_shop_name_info}}">{{ text_shop_name}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                <input type="text" name="shoppartner" value="{{ shoppartner}}" id="input-shoppartner" class="form-control" />
+              </div>
+
+              {% if error_shoppartner %}
+              <div class="text-danger">{{ error_shoppartner}}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-entry"><span data-toggle="tooltip" title="{{ text_say_info}}">{{ text_say}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <textarea id="input-entry" name="description" class="form-control" rows="3">{{ description}}</textarea>
+              {% if error_description %}
+              <div class="text-danger">{{ error_description}}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="pull-right">
+            <input type="submit" value="{{ button_continue}}" class="btn btn-primary"/>
+          </div>
+
+        </form>
+
+        {% else %}
+          <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ text_delay}}</div>
+        {% endif %}
+      {% else %}
+        <div class="text-danger">
+          {{ error_warning_authenticate}}
+        </div>
+      {% endif %}
+    </fieldset>
+  </div>
+{{ column_right}}</div>
+</div>
+
+{% if not in_process %}
+<script>
+$( "#input-shoppartner" ).change(function() {
+  thisshop = this;
+  shop = $(thisshop).val();
+
+  if(shop){
+
+    jQuery(thisshop).prev().html('<i class="fa fa-spinner fa-spin"></i>');
+
+    $.ajax({
+           type: 'POST',
+           data: ({shop: shop}),
+           dataType: 'json',
+           url: 'index.php?route=customerpartner/sell/wkmpregistation',
+           success: function(data){
+
+              if(data['success']){
+                jQuery(thisshop).prev().html('<span data-toggle="tooltip" class="text-success" title="{{ text_avaiable}}"><i class="fa fa-thumbs-o-up"></i></span>');
+              }else if(data['error']){
+                jQuery(thisshop).prev().html('<span data-toggle="tooltip" class="text-danger" title="{{ text_no_avaiable}}"><i class="fa fa-thumbs-o-down"></i></span>');
+              }
+
+            }
+        });
+  }
+});
+</script>
+{% endif %}
+{{ footer}}

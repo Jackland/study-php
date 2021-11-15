@@ -1,0 +1,261 @@
+{{header}}
+
+<style>
+    .breadcrumb {
+        display: none;
+    }
+
+    #errorinput {
+        border-color: #F8ACAC;
+        color: red;
+        display: none;
+    }
+
+    .breadcrumb {
+        display: none;
+    }
+
+    #errorinput {
+        border-color: #F8ACAC;
+        color: red;
+        display: none;
+        margin-top: 4px;
+    }
+
+    #wpq_div {
+        background: none repeat scroll 0 0 #EFEFEF;
+        border-bottom: 2px solid;
+        color: #008BB6;
+        font-size: 20px;
+        margin-bottom: 10px;
+        padding: 4px;
+    }
+
+    #wpq {
+        height: auto;
+        margin-bottom: 12px;
+        width: auto;
+    }
+
+    #wpq .list {
+        border: 0px;
+    }
+
+    #wpq thead td {
+        background: none repeat scroll 0 0 #008BB6;
+        border: 0 none;
+        color: #FFFFFF;
+    }
+
+    #wpq td, td a {
+        color: #696969;
+        font-family: 'Trebuchet MS';
+        font-size: 13px;
+        height: 18px;
+        margin: 0;
+        text-indent: 5px;
+        border: 0px;
+        vertical-align: top;
+        text-decoration: none;
+    }
+
+    #wpq td a:hover {
+        color: #008BB6;
+
+    }
+
+    #wpq input[type="text"], textarea {
+        width: 98%;
+        max-width: 476px;
+        border-radius: 3px 3px 3px 3px;
+    }
+
+    #wpq input[type="text"]:focus, textarea:focus {
+        border: 1px solid #fafafa;
+        border-radius: 3px 3px 3px 3px;
+        max-width: 476px;
+        width: 98%;
+        background: white;
+        box-shadow: 0px 0px 5px #007eff;
+    }
+
+    #wpq_tab {
+        border-collapse: separate;
+        border-spacing: 1em;
+    }
+
+    .wk_quote_edit, .wk_quote_delete {
+        background: url("catalog/view/theme/default/image/product_quotes/edit1.png") repeat scroll -639px 0 transparent;
+        display: inline-block;
+        height: 20px;
+        vertical-align: middle;
+        width: 20px;
+        margin-left: -14px;
+        margin-right: -8px;
+
+    }
+
+    .wk_quote_delete {
+        background: url("catalog/view/theme/default/image/product_quotes/delete.png") repeat scroll -639px 0 transparent;
+        margin-left: 25px;
+    }
+
+    #wpq .fix {
+
+    }
+</style>
+{% if error_warning %}
+    <div class="warning">{{ error_warning }} </div>
+{% endif %}
+{% if this.sessiondata['success']  and  this.sessiondata['success'] != "" %}
+    <div class="success">{{ this.sessiondata['success'] }} </div>
+{% endif %}
+{% if this.sessiondata['error_warning'] and this.sessiondata['error_warning']!="" %}
+<div class="warning">{{this.sessiondata['error_warning']}}this.sessiondata'error_warning''' </div>
+{% endif %}
+this.sessiondata'success'""
+{{column_left}}{{column_right}}
+<div id="content">{{content_top}}
+  <div class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+   {{breadcrumb.separator}} <a href="{{breadcrumb.href}} ">{{breadcrumb.text}} </a>
+    {% endfor %}
+  </div>
+
+  <div id="wpq_div">{{heading_title}} </div>
+  <form action="{{action}} " method="post" enctype="multipart/form-data" id="formwpq">
+    <div id="wpq">
+      <table class="list table-hover">
+        <thead>
+        <tr>
+          <td class="left">{{ wk_quotes_admin_pname }} </td>
+          <td class="left">{{ wk_product_quotes_quantity }}</td>
+          <td class="left">{{ wk_product_quotes_aprice }} </td>
+          <td class="left">{{ wk_product_quotes_qprice }} </td>
+          <td class="left ">{{ wk_product_quotes_quote }}</td>
+          <td class="left">{{ wk_quotes_admin_status }} </td>
+          <td class="left">{{ wk_product_quotes_act }} </td>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% if result_quotelist %}
+          {% for result_quoteadminss in result_quotelist %}
+        <tr>
+          <td class="left">
+            <a href="{{ result_quoteadminss.href }} ">{{ ucfirst(result_quoteadminss.pname) }} </a>
+            <input type="hidden" name="lastname_{{ result_quoteadminss.pid }} " value="{{ result_quoteadminss.lastname }} ">
+          </td>
+          <td class="left">{{ ucfirst(result_quoteadminss.quantity) }} </td>
+          <td class="left">{{ ucfirst(result_quoteadminss.pprice) }} </td>
+          <td class="left">{{ ucfirst(result_quoteadminss.price) }} </td>
+          <td class="left">{{ ucfirst(result_quoteadminss.quote) }} </td>
+          <td class="left">
+            {% if result_quoteadminss.status == 'unapprove' %}
+            {{ 'UnApprove' }}{% endfor %}{% endif %}{% elseif result_quoteadminss.status == 'approve' %}
+
+              <div class="cart">
+                <input type="hidden" name="quantity_{{ result_quoteadminss.pid }} " size="2" value="{{ result_quoteadminss.quantity }} "/>
+                <input type="hidden" name="product_id" size="2" value="{{ result_quoteadminss.pid }} "/>
+                <input type="button" id="button-cart" class="button" value="Add To Cart" onclick="addToCart({{ result_quoteadminss.pid }} )">
+              </div>
+
+            {% endif %}{% else %} {{ ucfirst(result_quoteadminss.status) }}  </td>
+
+          <td class="center">
+            {% ifresult_quoteadminss.status == not 'approve' AND result_quoteadminss.status == not 'sold' %}
+            {% for action in result_quoteadminss %}
+              <a href="{{ action.href }} " title="Edit" ><span class="wk_quote_edit"></span></a>
+            {% endfor %}{% endif %}
+
+            {% for action in result_quoteadminss %}
+              <a href="{{ action.href }} " title="Delete"><span class="wk_quote_delete"></span></a>
+            {% endfor %}
+
+
+          </td>
+        </tr>
+
+        {% else %}
+        <tr>
+          <td class="center" colspan="12">{{ "No Records Found" }} </td>
+        </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </form>
+
+{{content_bottom}} </div>
+
+{{footer}}
+<script type="text/javascript">
+function addToCart(product_id) {
+  var qty = $('input[name=quantity_'+product_id+']').val();
+  var varchar=jQuery('[name=lastname_'+product_id+']').val();
+  //jQuery('[name=lastname_'+product_id+']').val();
+
+  if(!qty){qty=1;}
+  $.ajax({
+    url: 'index.php?route=checkout/cart',
+    type: 'post',
+    data: 'coupon='+varchar,
+    dataType: 'json',
+    success: function(json) {
+      $('.success, .warning, .attention, .information, .error').remove();
+
+      if (json['redirect']) {
+        location = json['redirect'];
+      }
+
+      if (json['error']) {
+        if (json['error']['warning']) {
+          $('#notification').html('<div class="warning" style="display: none;">' + json['error']['warning'] + '<img src="catalog/view/theme/default/image/close.png" alt="" class="close" /></div>');
+        }
+      }
+
+      if (json['success']) {
+
+
+        $('#notification').html('<div class="success" style="display: none;">' + json['success'] + '<img src="catalog/view/theme/default/image/close.png" alt="" class="close" /></div>');
+
+        $('.success').fadeIn('slow');
+
+        $('#cart-total').html(json['total']);
+
+        $('html, body').animate({ scrollTop: 0 }, 'slow');
+      }
+    }
+  });
+
+  $.ajax({
+    url: 'index.php?route=checkout/cart/add',
+    type: 'post',
+    data: 'product_id=' + product_id + '&quantity=' + qty ,
+    dataType: 'json',
+    success: function(json) {
+      $('.success, .warning, .attention, .information, .error').remove();
+
+      if (json['redirect']) {
+        location = json['redirect'];
+      }
+
+      if (json['error']) {
+        if (json['error']['warning']) {
+          $('#notification').html('<div class="warning" style="display: none;">' + json['error']['warning'] + '<img src="catalog/view/theme/default/image/close.png" alt="" class="close" /></div>');
+        }
+      }
+
+      if (json['success']) {
+        $('#notification').html('<div class="success" style="display: none;">' + json['success'] + '<img src="catalog/view/theme/default/image/close.png" alt="" class="close" /></div>');
+
+        $('.success').fadeIn('slow');
+
+        $('#cart-total').html(json['total']);
+
+        $('html, body').animate({ scrollTop: 0 }, 'slow');
+      }
+    }
+  });
+}
+</script>

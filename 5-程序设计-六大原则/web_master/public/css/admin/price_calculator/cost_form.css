@@ -1,0 +1,45 @@
+
+.pd-t-24{
+  padding-top: 24px;
+}
+.cost-tip{
+  position: relative;
+}
+.cost-tip-position{
+  position: absolute;
+  right: 76px;
+  top: 0;
+}
+.suggest-price{
+  position: absolute;
+  top: 40px;
+  right: 100px;
+  color: #004BD8;
+  cursor: pointer;
+}
+.suggest-price:hover{
+  text-decoration: underline;
+}
+.cost-form .el-form-item__content{
+  position: relative;
+}
+.input-label{
+  position: absolute;
+  top: -7px;
+  left: 15px;
+  z-index: 99;
+  font-size: 12px;
+  font-family: Arial;
+  font-weight: 400;
+  line-height: 15px;
+  color: #999999;
+  background: #fff;
+  display: block;
+  padding: 0 4px;
+}
+.cost-form .el-input__suffix{
+  right: 20px;
+}
+.pd20{
+  padding: 20px 0 12px 0;
+}

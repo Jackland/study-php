@@ -1,0 +1,1042 @@
+{# 上门取货 库存匹配弹窗 - #24701 #}
+{# 1.上门取货上传label后自动弹出（多条订单数据） #}
+{# 2.订单列表页pay按钮点击弹出（只有一条订单数据） #}
+{{ css([
+  'css/common/common.css',
+  'static/account/inventory-match-modal.css',
+  'css/common/count-input.css'
+]) }}
+
+{{ js(['js/common/mathematical.js']) }}
+
+{{ cssOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css']) }}
+{{ jsOrigin(['/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js',
+  'catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js']) }}
+
+<div class="modal fade inventory-match-modal" tabindex="-1" role="dialog" data-backdrop="static"> 
+  <div class="modal-dialog oris-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          <i class="giga icon-V10_danchuangguanbi close-icon"></i>
+        </button>
+        <div class="modal-title">Sales Order List</div>
+      </div>
+      <div class="modal-body">
+        <div class="order-tip">Please check inventory to ensure there is enough avaliable to fulfill your imported order or purchase additional quantities</div>
+        <div class="order-table-container">
+          <div class="order-table-header">
+            <div class="item-code-col">
+              <input type="checkbox" class="oris-checkbox order-checkbox size-small" name="all_select" 
+              onclick="$('input[name*=\'selected\']').not(':disabled').prop('checked', this.checked);"/>
+              Item Code
+            </div>
+            <div class="qty-col text-center">QTY</div>
+            <div class="account-col text-center">Inventory to Account</div>
+            <div class="tobepaid-col text-center">To Be Paid</div>
+            <div class="store-col text-center">Store & Transaction Type for To Be Paid</div>
+            <div class="amount-col text-right">Payment Amount</div>
+          </div>
+          <div class="order-table-content">
+
+          </div>
+          <div class="error-container">
+            
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="text-center">
+          <button type="button" class="oris-button oris-button-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="oris-button inventory-submit-btn modal-new-btn-disabled" 
+            onclick="imm_page_{{from}}.modalSubmit()">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var imm_page_{{from}} = {
+    hasDisabledItem: false, //记录列表中是否存在不可用的item（用于列表pay按钮弹窗控制submit按钮禁用）
+
+    //记录请求参数用于刷新数据
+    setRedirctData: function(url, orderIds, importMode) {
+      this.url = url;
+      this.orderIds = orderIds;
+      this.importMode = importMode;
+    },
+
+    //初始化弹窗数据
+    initPage: function(data, from="import") {
+      this.hasDisabledItem = false;
+      this.outterDom =  {% if from == 'list' %} "#tab-orders" {% else %} "#tab-import" {% endif %};
+
+      if(!this.getData(data)) {
+        layer.closeAll();
+        // 转跳到sales order列表页
+        $('#customerOrderTabs a[href="#tab-orders"]').tab('show');
+        $('#order-import').load("{{ url('account/customer_order/customerOrderImport') }}");
+        clearTimer();
+        $('#order-show').load("{{ url('account/customer_order/customerOrderTable', {'filter_orderStatus': ''}) }}", function(){
+          $('#filter-button').click();
+          $('.modal-backdrop').remove();
+        });
+        return;
+      }
+
+      this.setInventoryData();
+      this.renderOrders(data.salesOrderList);
+
+      // 设置使用的囤货库存
+      this.setDefaultInventory();
+      // 更新To Be Paid数量页面显示
+      this.update2BPaid();
+      this.refreshCountDown(); // 更新组件
+      this.updateStoreInventory(); // 更新交易方式中门店的库存
+      this.hasNoAvailableStores(); // 无可用门店报错并关闭弹窗
+
+      let that = this;
+      // 鼠标悬浮到popover上不消失内容
+      $("[data-toggle=popover]").popover({
+        trigger: "manual",
+        html: true,
+        animation: false
+      }).on("mouseenter", function() {
+        var _this = this;
+        setTimeout(function() {
+          $('.popover').hide();
+          $(_this).popover("show");
+          // @danger 定位问题
+          $('.dropdown.bootstrap-select').removeClass('open');
+        }, 300)
+        $(".popover").on("mouseleave", function() {
+          $(_this).popover('hide');
+        });
+      }).on("mouseleave", function() {
+        var _this = this;
+        setTimeout(function() {
+          if (!$(".popover:hover").length) {
+            $(_this).popover("hide");
+          }
+        }, 200);
+      });
+      
+      $('.store-select .selectpicker').on('changed.bs.select', function() {
+        let order = $(this).data('order') + '';
+        let item = decodeItemCode($(this).data('itemcode') + '');
+        that.reRenderTrans(order, item, this.value);
+
+        that.update2BPaid()
+        that.refreshCountDown();
+        that.updateStoreInventory();
+      })
+
+      $('.trans-select .selectpicker').on('changed.bs.select', function() {
+        that.update2BPaid()
+        that.refreshCountDown();
+        that.updateStoreInventory();
+      })
+
+      $(`${that.outterDom} .order-checkbox`).on('click', function(){
+        that.noCheckDisabledBtn();
+      })
+
+      // 列表页，隐藏checkbox
+      if(from == "list" && that.orderList.length <= 1) {
+        $(`${this.outterDom} input[name*=\'selected\']`).not(':disabled').attr('checked','checked');
+        $(`${this.outterDom} input[name*=\'selected\']`).hide();
+        $(`${this.outterDom} input[name*=\'all_select\']`).hide();
+      }
+
+      // 如果存在未勾选的订单，禁用上传按钮
+      this.noCheckDisabledBtn();
+      $(`${this.outterDom} .inventory-match-modal`).modal();
+    },
+
+    // 获取可用数据 
+    // @return false 表示无可用订单，直接关闭弹窗
+    getData: function(data) {
+      this.orderList = data.salesOrderList;
+
+      // 如果没有可用的订单，直接转跳到订单列表页
+      if(data.salesOrderList && this.orderList.length === 0) {
+        $(`${this.outterDom} .inventory-match-modal`).modal('hide');
+        return false;
+      }
+
+      this.storeList = data.storeList;
+      //每个sku的囤货库存
+      for (let cost in data.costList) {
+        data.costList[cost]['calc_qty'] = data.costList[cost]['left_qty'];
+      }
+      this.costList = data.costList;
+      return true;
+    },
+
+    //数据渲染页面方法 ------ start ------
+    
+    // 判断是否为整行禁用
+    checkRowDisabled: function(order, item) {
+      return (this.inventoryList.get(order).get(item).left_qty == 0 && this.storeList[item].list.length == 0);
+    },
+
+    // 渲染订单数据
+    renderOrders: function(orders) {
+      this.disableCheckOrders = [];
+      let html = '';
+      for (let order of orders) {
+        html += `
+          <!--html-->
+          <div class="order-item-container" id="order__${order.order_id}">
+            <div class="order-item-header">
+              <div class="order-id">
+                <input class="oris-checkbox order-checkbox size-small" type="checkbox" name="selected[]" value="{{ message.id }}" 
+                  data-order="${order.order_id}"/>
+                <div title="${order.order_id}">Sales Order ID: ${order.order_id.length > 20 ? order.order_id.substring(0,20) + '...' : order.order_id }</div>
+              </div>
+              <div class="order-addr"><i class="giga icon-v10bzfwdw-01 location-icon"></i><div>${order.ship_address}</div></div>
+            </div>
+            <div class="order-item-products-container">
+            <!--!html-->
+        `
+        html += this.renderItems(order)
+
+        html += `
+            </div> 
+          </div>
+        `
+        $(`${this.outterDom} .order-table-content`).html(html);
+        $(`${this.outterDom} .selectpicker`).selectpicker();
+        $(`${this.outterDom} .countinput`).countinput();
+      }
+    },
+
+    // 没有选中的order禁用reset按钮
+    noCheckDisabledBtn: function() {
+      let allLength = $(`${this.outterDom} input[name*=\'selected\']`).not(':disabled').length;
+      let n = $(`${this.outterDom} input[name*=\'selected\']:checked`).not(':disabled').length;
+
+      {% if from == 'list' and this.orderList.length %}
+        // 存在整行禁用行项，取消默认勾选（由于list页面弹窗只有一个订单，直接取消）
+        if(this.hasDisabledItem) {
+          $('#tab-orders').find('.order-checkbox').removeAttr('checked');
+        }
+      {% endif %}
+      
+      // 全选的checkbox联动
+      if (n == allLength && n) {
+        $(`${this.outterDom} input[name*=\'all_select\']`).prop('checked',true);
+      } else {
+        $(`${this.outterDom} input[name*=\'all_select\']`).removeAttr('checked');
+      }
+      // 如果选择的数量为空，禁用提交按钮
+      if (!n) {
+        $(`${this.outterDom}`).find('.inventory-submit-btn').prop('disabled', true);
+      } else {
+        $(`${this.outterDom}`).find('.inventory-submit-btn').removeAttr('disabled');
+      }
+    },
+    
+    // 渲染订单中的item
+    renderItems: function(order) {
+      let html = '';
+      let items = order.item_list;
+      for (let [index, item] of items.entries()) {
+        if(!this.checkRowDisabled(order.order_id, item.item_code)) {
+          html += `
+            <!--html-->
+            <div class="order-item-product-row" id="order-item__${order.order_id}-${encodeItemCode(item.item_code)}" 
+              data-item="${encodeItemCode(item.item_code)}">
+              <div class="item-code-col item-code-col__content cell">
+                <img src="" style="display:none"/>
+                <div class="item-code-col__content-code" data-itemcode="${encodeItemCode(item.item_code)}">${item.item_code}<span></span></div>
+              </div>
+              <div class="cell qty-col text-center text-bold">${item.qty}</div>
+              <div class="cell account-col text-center"><div class="countinput"></div></div>
+              <div class="cell tobepaid-col text-center"></div>
+              <div class="cell store-col">
+                <div class="select-container">
+                  <div class="oris-select inventory-select store-select">
+                    <select class="selectpicker" data-container="body" data-order="${order.order_id}" 
+                      data-itemcode="${encodeItemCode(item.item_code)}">
+            <!--!html-->
+            `
+            
+            html += this.renderStores(item);
+
+            // 填充门店下拉
+            html += `
+            <!--html-->
+                    </select>
+                  </div>
+                  <div class="oris-select inventory-select trans-select">
+                    <select class="selectpicker" data-container="body" data-order="${order.order_id}" 
+                      data-itemcode="${encodeItemCode(item.item_code)}">
+            <!--!html-->`
+            
+            // 初始化第一个门店的交易方式
+            html += this.renderTrans(item);
+
+            html += `
+            <!--html-->
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="cell amount-col text-bold">
+                <span class="amount-text" data-toggle="popover" data-placement="bottom" data-trigger="manual"
+                  data-html="true" data-content=""></span>
+              </div>
+            </div>
+            <!--!html-->
+          `
+        } else {
+          this.disableCheckOrders.push(order.order_id);
+          html += `
+            <!-- html -->
+            <div class="order-item-product-row disabled" id="order-item__${order.order_id}-${encodeItemCode(item.item_code)}">
+              <div class="cell item-code-col item-code-col__content">
+                <div class="item-code-col__content-code">${item.item_code}</div>
+              </div>
+              <div class="cell qty-col text-center text-bold">${item.qty}</div>
+              <div class="cell account-col text-center">0</div>
+              <div class="cell reason-col text-left">           
+              </div>
+            </div>
+            <!-- !html -->
+          `
+
+          //列表订单只有一条，如果存在不可用的item，标记订单存在不可用item，无法提交
+          if('{{from}}' == 'list') {
+            this.hasDisabledItem = true;
+          }
+        }
+      }
+      return html;
+    },
+
+    // 渲染门店下拉框
+    renderStores: function(item) {
+      let html = '';
+      let stores = this.storeList[item.item_code].list;
+      for (let store of stores) {
+        html += `<option value="${store.customer_id}">${store.screenname}</option>`
+      }
+      return html;
+    },
+
+    // 渲染交易方式下拉框
+    renderTrans: function(item) {
+      let html = '';
+      let store = this.storeList[item.item_code].list[0];
+      if (store) {
+        for (let tran of store.transaction_type) {
+          // 非putong
+          let displayName = tran.type != 0 ? (tran.agreement_name + ':' + tran.agreement_code) : tran.agreement_name;
+          html += `<option value="${tran.type}-${tran.id || ''}-${tran.agreement_code || ''}-${tran.left_qty || ''}-${tran.product_id || ''}">
+            ${displayName}</option>`
+        }
+      }
+      return html;
+    },
+
+    // 切换门店之后重新渲染新的交易方式交易内容
+    reRenderTrans: function(order, item, customer_id) {
+      let selectDom = this.getItemDom(order, item).find('.trans-select').find('.selectpicker');
+      let html = '';
+      
+      if (this.storeList[item]) {
+        for(let store of this.storeList[item].list) {
+          if (customer_id == store.customer_id)
+            for (let tran of store.transaction_type) {
+              let displayName = tran.type != 0 ? (tran.agreement_name + ':' + tran.agreement_code) : tran.agreement_name;
+              html += `<option value="${tran.type}-${tran.id || ''}-${tran.agreement_code || ''}-${tran.left_qty || ''}-${tran.product_id || ''}">
+              ${displayName}</option>`
+            }
+        }
+      }
+      selectDom.html(html);
+      selectDom.selectpicker('refresh');
+    },
+
+    // 渲染支付价格计算内容
+    renderPaymentAmount: function(order, item, type, freight_show, price_show, zero = false) {
+      if (!zero) {
+        let paymentText = [0,1,4].includes(type) ? 'Unit Price' : 'Due Payment';
+        let content = `
+          <div class="amount-calc-container">
+            <div class="amount-calc-disc">Payment Amount = ( ${paymentText} + Fulfillment Per Unit ) * QTY</div>
+            <div class="amount-calc-row amount-calc-first-row"><div class="amount-calc-label">${paymentText}</div><div class="amount-calc-num">
+              ${price_show}
+            </div></div>
+            <div class="amount-calc-row"><div class="amount-calc-label">Fulfillment Per Unit</div><div class="amount-calc-num">
+              ${freight_show}
+            </div></div>
+          </div>
+        `
+        this.getItemDom(order, item).find(".amount-text").attr('data-content', content);
+        this.getItemDom(order, item).find(".amount-text").removeClass('zero');
+      } else {
+        this.getItemDom(order, item).find(".amount-text").attr('data-content', '');
+        this.getItemDom(order, item).find(".amount-text").addClass('zero');
+      }
+      $('.amount-text').popover('enable');
+      $('.amount-text.zero').popover('disable');
+    },
+
+    // 更新产品图片内容
+    updateItemCodeMisc: function(order, item, store) {
+      if (store.image) {
+        this.getItemDom(order, item).find('.item-code-col img').show();
+        this.getItemDom(order, item).find('.item-code-col img').attr('src', store.image);
+      } else {
+        this.getItemDom(order, item).find('.item-code-col img').hide();
+      }
+      let tagsDom = store.tags.join('');
+      this.getItemDom(order, item).find(".item-code-col__content-code span").html(tagsDom);
+    },
+
+    //数据渲染页面方法 ------ end ------
+
+    //数据处理部分 ------ start ------
+
+    // 格式化itemcode中的订单库存和囤货库存
+    setInventoryData: function() {
+      let inventoryList = new Map();
+      for(let order of this.orderList) {
+        for(let item of order.item_list) {
+          if (!inventoryList.get(order.order_id)) {
+            inventoryList.set(order.order_id, new Map());
+          }
+          if (!inventoryList.get(order.order_id).get(item.item_code)) {
+            inventoryList.get(order.order_id).set(item.item_code, {});
+          }
+        
+          if(!this.costList[item.item_code]) {
+            this.costList[item.item_code] = {};
+            this.costList[item.item_code]['left_qty'] = 0;
+            this.costList[item.item_code]['calc_qty'] = 0;
+          }
+          // 库存分为：活动库存和其他库存，取库存大的库存
+          this.storeList[item.item_code]['list'].forEach(aSku => {
+            aSku['transaction_type'].forEach(trans => {
+              // 交易方式
+              if (trans['time_limit_starting']) {
+                if (trans['time_limit_qty'] && trans['time_limit_qty'] >= trans['left_qty']) {
+                  // 该sku有限时限量活动并且活动库存大于等于其他库存，取活动库存
+                  trans['left_qty'] = trans['time_limit_qty'];
+                  trans['available_qty_tips'] = 'Promotional Qty: ';
+                } else {
+                  trans['available_qty_tips'] = 'Non-promotional Qty: ';
+                }
+              } else {
+                trans['available_qty_tips'] = 'Available Qty: ';
+              }
+              
+            })
+          })
+          // 订单需要购买的数量
+          let order_qty = item['qty'];
+          // sku总的囤货库存
+          let total_left_qty = this.costList[item.item_code]['left_qty'];
+          // sku计算之后剩余可使用的囤货库存
+          let left_qty = this.costList[item.item_code]['calc_qty'];
+          // 需要扣除的囤货库存
+          let need_left_qty = Math.min(left_qty, order_qty);
+          inventoryList.get(order.order_id).get(item.item_code)['order_qty'] = order_qty;
+          inventoryList.get(order.order_id).get(item.item_code)['total_left_qty'] = total_left_qty;
+          inventoryList.get(order.order_id).get(item.item_code)['left_qty'] = need_left_qty;
+          this.costList[item.item_code]['calc_qty'] -= need_left_qty;
+        }
+      }
+
+      this.inventoryList = inventoryList;
+    },
+
+    // 设置默认使用的囤货库存
+    setDefaultInventory: function() {
+      for(let [orderK, orderV] of this.inventoryList.entries()) {
+        for (let [itemK, itemV] of orderV.entries()) {
+          let that = this;
+          this.getItemDom(orderK, itemK).find('.countinput').countinput('update', 
+            { 
+              id: {order: orderK, item: itemK},
+              value: itemV.left_qty, 
+              max: Math.min(itemV.order_qty, itemV.total_left_qty),
+              min: 0,
+              changeCallback: that.countinputChange.bind(that)
+            });
+          // 如果可用的囤货库存为0的情况，计步器禁用
+          if(this.inventoryList.get(orderK).get(itemK)['total_left_qty'] == 0) {
+            this.getItemDom(orderK, itemK).find('.countinput').countinput('disable');
+          }
+        }
+      }
+    },
+
+    // 无可购买店铺
+    hasNoAvailableStores: function() {
+      let needDisableSubmit = false;
+      for(let order of this.orderList) {
+        for(let item of order.item_list) {
+          if(!this.storeList[item.item_code].list.length) {
+            let orderQty = this.inventoryList.get(order.order_id).get(item.item_code)['order_qty'];
+            let leftQty = this.inventoryList.get(order.order_id).get(item.item_code)['left_qty'];
+            let toBePaidQty = orderQty - leftQty;
+
+            // 无可用店铺的显示分为两种：1.全部走囤货库存显示无需购买，2.需要走采购但是没有可用店铺显示不可购买
+            let msg = '';
+            let amountText = '';
+            this.getItemDom(order.order_id, item.item_code).find(".amount-text").attr('data-content', '');
+            if (toBePaidQty == 0) {
+              msg = 'N/A';
+              amountText = '0.00';
+            } else {
+              msg = 'Not available';
+            }
+            this.getItemDom(order.order_id, item.item_code).find('.amount-text').html(amountText);
+            this.getItemDom(order.order_id, item.item_code).find(".amount-text").addClass('zero');
+            this.getItemDom(order.order_id, item.item_code).find('.selectpicker').selectpicker({title: msg})
+              .selectpicker('render');
+            this.getItemDom(order.order_id, item.item_code).find('.selectpicker').selectpicker('refresh');
+            
+            if (toBePaidQty != 0) {
+              needDisableSubmit = true;
+            }
+          }
+        }
+      }
+
+
+      {% if from == 'list' %}
+        // 列表的弹窗如果不可购买无法提交
+        if (!needDisableSubmit) {
+          $(`${this.outterDom} .inventory-submit-btn`).removeAttr("disabled");
+        } else {
+          $(`${this.outterDom} .inventory-submit-btn`).attr("disabled", "disabled");
+        }
+      
+      {% endif %}
+    },
+
+    // 更新门店剩余的门店数量（用于库存不足时的提示报错）
+    updateStoreInventory: function() {
+      // 重置店铺库存数据重新计算
+      // 实时sku store库存计算 （切换交易方式时，报错提示）
+      for(let item in this.storeList) {
+        for (let store of this.storeList[item].list) {
+          for (let trans of store.transaction_type) {
+            // 当前门店对应sku已经匹配的库存的剩余库存数量
+            trans['calc_left_qty'] = trans['left_qty'];
+          }
+        }
+      }
+      $(".error-info").remove();
+
+      $(".trans-select").find('.selectpicker').selectpicker('refresh');
+      for (let [orderK, orderV] of this.inventoryList.entries()) {
+        for (let [itemK, itemV] of orderV.entries()) {
+          let selectTranDom = this.getItemDom(orderK, itemK).find('.trans-select').find('.selectpicker');
+          let selectStoreDom = this.getItemDom(orderK, itemK).find('.store-select').find('.selectpicker');
+
+          // 整行禁用的类型，使用msg中的内容
+          let msg = this.storeList[itemK].msg;
+
+          this.getItemDom(orderK, itemK).find('.reason-col').html(msg);
+          for (let store of this.storeList[itemK].list) {
+            if (store.customer_id != selectStoreDom.val()) {
+              continue;
+            }
+
+            for (let tran of store.transaction_type) {
+              let tranType = selectTranDom.val().split('-')[0];
+              let tranId = selectTranDom.val().split('-')[1];
+              if (tranType == tran.type && tran.id == (tranId || undefined) ) {
+                // 更新库存价格
+                let orderQty = this.inventoryList.get(orderK).get(itemK)['order_qty'];
+                let leftQty = this.inventoryList.get(orderK).get(itemK)['left_qty'];
+                let toBePaidQty = orderQty - leftQty;
+                let tranLeftQty = tran.calc_left_qty;
+
+                // 店铺的剩余库存不足to be paid，提示出剩余库存量
+                if(toBePaidQty <= tranLeftQty) {
+                  tran['calc_left_qty'] -= toBePaidQty
+                } else {
+                  this.getItemDom(orderK ,itemK).find('.select-container').append(
+                    `<div class="error-info"> 
+                      ${tran['available_qty_tips']}${tran['calc_left_qty']}
+                    </div>`
+                  )
+                  if(!this.getItemDom(orderK ,itemK).find('.select-container').find('.countdown-item').length) {
+                    this.getItemDom(orderK ,itemK).find('.select-container').find('.error-info').css("margin-top","-8px");
+                  }
+                }
+                
+                // 重新计算行项价格                
+                let currency = store.currency;
+                this.getItemDom(orderK, itemK).find('.amount-text').html(
+                  mathematical.formatPrice(currency, toBePaidQty * Number(tran.price_all) ));
+                this.renderPaymentAmount(orderK, itemK, tran.type, store.freight_show, tran.price_show, toBePaidQty == 0);
+
+                // 根据店铺内容更新显示的itemcode中的icon和img
+                this.updateItemCodeMisc(orderK, itemK, store);
+              }
+
+            }
+          }
+        }
+      }
+    },
+
+    // 更新 to be paid 数量
+    update2BPaid: function() {
+      $('.order-checkbox').prop('disabled', false);
+
+      // 禁用存在不可用item的order的checkbox
+      for (let o of this.disableCheckOrders) {
+        $(`#order__${o}`).find('.order-checkbox').prop('disabled', true);
+      }
+
+      let disableOrders = new Set();
+      for(let [orderK, orderV] of this.inventoryList.entries()) {
+        for (let [itemK, itemV] of orderV.entries()) {
+          let order_qty = itemV['order_qty'];
+          let left_qty = itemV['left_qty'];
+          let toBePaid_qty = order_qty - left_qty;
+          this.getItemDom(orderK, itemK).find('.tobepaid-col').html(toBePaid_qty);
+
+          //当to be paid为0的情况下，表示无需采购，全部采用囤货库存，下拉框禁用
+          let store_selector = this.getItemDom(orderK, itemK).find('.selectpicker');
+          if(toBePaid_qty <= 0 || !this.storeList[itemK].list.length) {
+            store_selector.prop('disabled', true);
+          } else {
+            store_selector.prop('disabled', false);
+          }
+          store_selector.selectpicker('refresh');
+
+          // 存在不可购买情况（not available - 有囤货库存，但是无可用的门店）禁用订单的checkbox
+          if(!this.disableCheckOrders.includes(orderK)) {
+            if(toBePaid_qty > 0 && !this.storeList[itemK].list.length) {
+              disableOrders.add(orderK);
+            }
+          }
+        }
+      }
+
+      // 存在不可购买情况（not available - 有囤货库存，但是无可用的门店）禁用订单的checkbox
+      disableOrders.forEach(order => {
+        $(`#order__${order}`).find('.order-checkbox').removeAttr('checked');
+        $(`#order__${order}`).find('.order-checkbox').prop('disabled', true);
+      });
+      //动态调整checkbox的禁用启用之后，需要重新判断全选内容
+      this.noCheckDisabledBtn();
+
+      // 更新 to be paid数量之后，要重新判断门店中的库存数量
+      this.updateStoreInventory();
+      
+      // 判断店铺选择是否禁用
+      this.hasNoAvailableStores();
+    }, 
+
+    // 切换交易方式有倒计时刷新
+    refreshCountDown: function() {
+      for(let order of this.orderList) {
+        for(let item of order.item_list) {
+          let selectDom = this.getItemDom(order.order_id, item.item_code).find('.trans-select').find('.selectpicker');
+          outter_loop:
+          for (let store of this.storeList[item.item_code].list) {
+            for (let tran of store.transaction_type) {
+              let tranType = selectDom.val().split('-')[0];
+              let tranId = selectDom.val().split('-')[1];
+              this.getItemDom(order.order_id ,item.item_code).find('.select-container .countdown-item').remove();
+              if (tranType == tran.type && tran.id == (tranId || undefined) && tran.left_time_secs) {
+                let day = 24 * 3600
+                //如果超过24小时显示剩余天数，小于24小时显示倒计时
+                if (tran.left_time_secs >= day) {
+                  this.getItemDom(order.order_id ,item.item_code).find('.select-container').append(`
+                    <!-- html -->
+                    <div class="countdown-item">
+                      <i class="giga icon-naozhong m6-r"></i>
+                      <div>${Math.ceil((tran.left_time_secs) / day)} days left</div>
+                      </div>
+                    </div>
+                    <!-- !html -->`)
+                } else {
+                  let countdownVal = Math.abs(tran.left_time_secs);
+                  this.getItemDom(order.order_id ,item.item_code).find('.select-container').append(`
+                    <!-- html -->
+                    <div class="countdown-item">
+                      <i class="giga icon-naozhong m6-r"></i>
+                      <div class="timecountdown" data-countdown="${countdownVal}">
+                      </div>
+                    </div>
+                    <!-- !html -->`)
+                  let dom = `${this.outterDom} #order__${order.order_id} #order-item__${order.order_id}-${encodeItemCode(item.item_code)}` + ' .select-container .countdown-item .timecountdown';
+                  let countdown = new TimeCountDown(countdownVal, dom);
+                  countdown.start();
+                }
+
+                break outter_loop;
+              }
+            }
+          }
+        }
+      }
+
+
+      $(`${this.outterDom}`).find('.timecountdown').each(function() {
+        let count = new TimeCountDown($(this).data('countdown'), this);
+        count.start();
+      })
+    },
+
+    // 检查是否需要重新刷新默认的囤货库存
+    checkIfNeedUpdateInventory: function(order, item, value) {
+      let qty = 0; 
+      for (let [orderK, orderV] of this.inventoryList.entries()) {
+        for (let [itemK, itemV] of orderV.entries()) {
+          if (itemK == item && orderK == order) {
+            qty += value
+          } else if (itemK == item && orderK != order) {
+            qty += this.inventoryList.get(orderK).get(itemK)['left_qty'];
+          }
+        }
+      }
+      return qty > this.inventoryList.get(order).get(item)['total_left_qty']
+    },
+
+    // 操作之后更新库存数值
+    updateInventory: function(order, item, value, type="left_qty") {
+      // 检查当某一个sku增加的情况下，下面的第一个相同sku依次计算后减少
+      // 计算到底部时在从开头开始遍历计算
+      value = Math.min(this.inventoryList.get(order).get(item)['total_left_qty'], value);
+      this.inventoryList.get(order).get(item)[type] = value;
+
+      if (!this.checkIfNeedUpdateInventory(order,item,value)) {
+        return;
+      }
+
+      // 重新计算囤货库存部分
+      let resQty = null;
+      let start = false;
+      let fin = false;
+
+      for(let [orderK, orderV] of this.inventoryList.entries()) {
+        for(let [itemK, itemV] of orderV.entries()) {
+          if(resQty == null) {
+            resQty = itemV['total_left_qty'];
+          }
+          resQty = resQty - itemV['left_qty'];
+        }
+      }
+
+      upper_loop:
+      for (let [orderK, orderV] of this.inventoryList.entries()) {
+        for(let [itemK, itemV] of orderV.entries()) {
+          if(resQty >= 0) {
+            fin = true;
+            break upper_loop;
+          }
+          if(orderK == order && itemK == item) {
+            start = true;
+            continue;
+          }
+          if(itemK != item || start == false) {
+            continue;
+          }
+          if((resQty + itemV['left_qty']) >= 0) {
+            let left = itemV['left_qty'];
+            this.getItemDom(orderK, itemK).find('.countinput').countinput('update',{value: resQty + itemV['left_qty']});
+            this.inventoryList.get(orderK).get(itemK)['left_qty'] = resQty + itemV['left_qty'];
+            resQty += left;
+          } else {
+            let left = itemV['left_qty'];
+            this.getItemDom(orderK, itemK).find('.countinput').countinput('update',{value: 0});
+            this.inventoryList.get(orderK).get(itemK)['left_qty'] = 0;
+            resQty += left;
+          }
+        }
+      }
+      // 头部已处理
+      if(fin) {
+        return
+      } 
+
+      //从头部开始遍历
+      outter_loop:
+      for (let [orderK, orderV] of this.inventoryList.entries()) {
+        for(let [itemK, itemV] of orderV.entries()) {
+          if (resQty >= 0 || (orderK == order && itemK == item)) {
+            break outter_loop;
+          }
+          if (itemK == item) {
+            if((resQty + itemV['left_qty']) >= 0) {
+              let left = itemV['left_qty'];
+              this.getItemDom(orderK, itemK).find('.countinput').countinput('update',{value: resQty + itemV['left_qty']});
+              this.inventoryList.get(orderK).get(itemK)['left_qty'] = resQty + itemV['left_qty'];
+              resQty += left;
+            } else {
+              let left = itemV['left_qty'];
+              this.getItemDom(orderK, itemK).find('.countinput').countinput('update',{value: 0});
+              this.inventoryList.get(orderK).get(itemK)['left_qty'] = 0;
+              resQty += left;
+            }
+          }
+        }
+      }
+    },
+
+    //数据处理部分 ------ end ------
+    getItemDom(order, item) {
+      {% if from == 'list' %}
+        return $(`#tab-orders #order__${order} #order-item__${order}-${encodeItemCode(item)}`);
+      {% else %}
+        return $(`#tab-import #order__${order} #order-item__${order}-${encodeItemCode(item)}`);
+      {% endif %}
+    },
+
+    countinputChange: function(value,id) {
+      this.getItemDom(id.order, id.item).find('.countinput').countinput('update', { value: value });
+      this.inventoryList.get(id.order).get(id.item)['left_qty'] = value;
+      this.updateInventory(id.order, id.item, value);
+      this.update2BPaid();
+    },
+
+    // 获取提交数据
+    getPostData: function() {
+      let data = {salesOrder:[], costRecord:{}};
+      let that = this;
+      $(`${that.outterDom} input[name*=\'selected\']:checked`).each(function() {
+        let order = $(this).data('order') + '';
+        let itemsDom = $(`${that.outterDom} #order__${order}`).find('.order-item-product-row');
+        itemsDom.each(function() {
+          let orderData = {};
+          let item = decodeItemCode($(this).data('item') + '');
+          let qty = that.inventoryList.get(order).get(item).order_qty;
+          let cost_qty = that.inventoryList.get(order).get(item).left_qty;
+          orderData['item_code'] = item;
+          orderData['qty'] = qty;
+          orderData['cost_qty'] = cost_qty;
+          orderData['buy_qty'] = qty - cost_qty;
+          orderData['left_qty'] = 0;
+          // 订单行项
+          outter_loop:
+          for (let orderEle of that.orderList) {
+            if(orderEle.order_id == order) {
+              for(let itemEle of orderEle.item_list) {
+                if(itemEle.item_code == item) {
+                  orderData['sales_order_id'] = orderEle['sales_order_id'];
+                  orderData['order_id'] = orderEle['order_id'];
+                  orderData['sales_order_line_id'] = itemEle['sales_order_line_id'];
+                  break outter_loop;
+                }
+              }
+            }
+          }
+
+          if (orderData['buy_qty'] == 0) {
+            orderData['type'] = 0;
+            orderData['agreement_id'] = '';
+            orderData['agreement_code'] = '';
+            orderData['product_id'] = 0;
+            orderData['store_id'] = 0;
+          } else {
+            let tranValue = that.getItemDom(order, item).find('.trans-select').find('.selectpicker').val().split('-');
+            orderData['type'] = tranValue[0] || 0;
+            orderData['agreement_id'] = tranValue[1] || 0;
+            orderData['agreement_code'] = tranValue[2] || 0;
+            orderData['left_qty'] = tranValue[3] || 0;
+            orderData['product_id'] = tranValue[4] || 0;
+            let storeValue = that.getItemDom(order, item).find('.store-select').find('.selectpicker').val();
+            orderData['store_id'] = storeValue;
+          }
+          data.salesOrder.push(orderData);
+        })
+      })
+
+      // 囤货库存剩余数量
+      for (let item in that.costList) {
+        data.costRecord[item] = that.costList[item].left_qty;
+      }
+
+      return data;
+    },
+
+    // 弹窗提交操作
+    modalSubmit: function() {
+      let data = this.getPostData();
+      let formData = new FormData();
+      for(let i in data.salesOrder) {
+        for(let k in data.salesOrder[i]) {
+          formData.append(`salesOrder[${i}][${k}]`, data.salesOrder[i][k]);
+        }
+      }
+      for (let k in data.costRecord) {
+        formData.append(`costRecord[${k}]`, data.costRecord[k]);
+      }
+      formData.append('importMode', this.importMode);
+      let that = this;
+      $(`${that.outterDom} .inventory-submit-btn`).button('loading');
+      $.ajax({
+        url: "{{ url('sales_order/match/toBuy') }}",
+        type: 'post',
+        data: formData,
+        contentType: false,
+        processData: false,
+        beforeSend: function () {
+          $(`${that.outterDom} .inventory-submit-btn`).attr("disabled","disabled");
+        },
+        success: function (json) {
+          if(json.code == 200) {
+            top.location.href = `{{url('sales_order/confirm')}}&run_id=${json.data.runId}`;
+          } else {
+            if (json.code == 100) {
+              layer.msg(json.msg, {icon: 5});
+              let innerFormData = new FormData()
+              innerFormData.append('orderId', that.orderIds);
+              innerFormData.append('importMode', that.importMode);
+
+              $.ajax({
+                url: that.url,
+                type: 'post',
+                data: innerFormData,
+                processData: false,
+                contentType: false,
+                success: function(innerjson) {
+                  //初始化弹窗内容
+                  let innerRes = innerjson;
+                  if(innerRes.code == 200) {
+                    that.initPage(innerRes.data, '{{from}}');
+                  } else if (innerRes.code == 0) {
+                    $.toast({
+                      heading: false,
+                      text: innerRes.msg,
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 3000,
+                      allowToastClose: false,
+                      loader: false,
+                    });
+
+                    layer.closeAll();
+                    // 转跳到sales order列表页
+                    $('#customerOrderTabs a[href="#tab-orders"]').tab('show');
+                    $('#order-import').load("{{ url('account/customer_order/customerOrderImport') }}");
+                    clearTimer();
+                    $('#order-show').load("{{ url('account/customer_order/customerOrderTable', {'filter_orderStatus': ''}) }}", function(){
+                      $('#filter-button').click();
+                      $('.modal-backdrop').remove();
+                    });
+                    $(`${this.outterDom} .inventory-match-modal`).modal('hide');
+                  }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                  layer.msg('Load Failed', {icon: 5});
+                }
+              })
+            } else if (json.code == 120) { // 关闭弹窗且提示错误信息
+              $.toast({
+                heading: false,
+                text: json.msg,
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: 3000,
+                allowToastClose: false,
+                loader: false,
+              });
+              layer.closeAll();
+              // 转跳到sales order列表页
+              $('#customerOrderTabs a[href="#tab-orders"]').tab('show');
+              $('#order-import').load("{{ url('account/customer_order/customerOrderImport') }}");
+              clearTimer();
+              $('#order-show').load("{{ url('account/customer_order/customerOrderTable', {'filter_orderStatus': ''}) }}", function(){
+                $('#filter-button').click();
+                $('.modal-backdrop').remove();
+              });
+              $(`${that.outterDom} .inventory-match-modal`).modal('hide');
+            } else {
+              // $(`${that.outterDom} .error-container`).html(`<div class="error-info">${json.msg}</div>`);
+              $.toast({
+                heading: false,
+                text: json.msg,
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: 3000,
+                allowToastClose: false,
+                loader: false,
+              });
+            }
+            $(`${that.outterDom} .inventory-submit-btn`).button('reset');
+            $(`${that.outterDom} .inventory-submit-btn`).removeAttr("disabled");
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          $(`${that.outterDom} .inventory-submit-btn`).removeAttr("disabled");
+          layer.msg(xhr.responseText, {icon: 5});
+          $(`${that.outterDom} .inventory-submit-btn`).button('reset');
+        }
+      });
+    }
+  }
+
+  function encodeItemCode(item) {
+    return btoa(item).replaceAll('=','__equal').replaceAll('/','__slash').replaceAll('+','__plus');
+  }
+
+  function decodeItemCode(item) {
+    return atob(item.replaceAll('__equal','=').replaceAll('__slash','/').replaceAll('__plus','+'));
+  }
+
+  // 判断是否存在滚动条，用于控制弹窗内部样式
+  function hasScrollbar(dom) {
+    var scrollHeight = $(dom).get(0).scrollHeight;
+    return $(dom).height() < scrollHeight;
+  }
+
+  $(document).ready(function() {
+
+    let outterDom =  {% if from == 'list' %} "#tab-orders" {% else %} "#tab-import" {% endif %};
+
+    // 下拉框弹窗遮挡问题
+    $(`${outterDom} .inventory-match-modal`).on('show.bs.modal', function() {
+      $('body').append(`<div class="oris-select" id="body-select-container__inventory-match-body"></div>`);
+    })
+
+    $(`${outterDom} .inventory-match-modal`).on('shown.bs.modal', function() {
+      // 修改滚动条占位样式
+      if(hasScrollbar(`${outterDom} .order-table-content`)) {
+        $(`${outterDom}`).find('.order-table-content').addClass('has-scroll');
+      } else {
+        $(`${outterDom}`).find('.order-table-content').removeClass('has-scroll');
+      }
+    })
+
+    $(`${outterDom} .inventory-match-modal`).on('hidden.bs.modal', function() {
+      $('#body-select-container__inventory-match-body').remove();
+      $('#order-import').load("{{ url('account/customer_order/customerOrderImport') }}");
+    
+      {% if from == 'import' %}
+      layer.closeAll();
+      // 转跳到sales order列表页
+      $('#customerOrderTabs a[href="#tab-orders"]').tab('show');
+      clearTimer();
+      $('#order-show').load("{{ url('account/customer_order/customerOrderTable', {'filter_orderStatus': ''}) }}", function(){
+        $('#filter-button').click();
+        $('.modal-backdrop').remove();
+      });
+      {% endif %}
+    })
+
+    $(`${outterDom} .order-table-content`).on('scroll', function() {
+      // @danger 定位问题
+      $('.dropdown.bootstrap-select').removeClass('open');
+      $("[data-toggle=popover]").popover('hide');
+    })
+  })
+
+</script>
+

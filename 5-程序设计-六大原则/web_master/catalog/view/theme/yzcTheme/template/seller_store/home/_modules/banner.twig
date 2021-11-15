@@ -1,0 +1,20 @@
+{# 模板：轮播图 ------Start #}
+<section class="banner-module m20-b" id="module{{mIndex}}" data-mIndex="{{mIndex}}">
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      {% for banner in module.data.banners %}
+      <div class="swiper-slide">
+        <a href="{{ banner.link }}" target="_blank">
+          <div class="banner-image" style="background: url('{{ banner.pic_show }}');"></div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="swiper-pagination action-pagination"></div>
+  <div class="swiper-pager">
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+  </div>
+</section>
+{# 模板：轮播图 ------End #}

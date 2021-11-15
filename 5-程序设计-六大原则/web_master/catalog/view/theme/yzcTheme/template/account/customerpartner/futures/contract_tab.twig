@@ -1,0 +1,118 @@
+{{ header }}{{ separate_column_left }}
+
+<style>
+  p{
+    margin-bottom: 0;
+  }
+  .nav-tabs {
+    border: none;
+  }
+  .panel-default .nav-tabs > li.active > a, .panel-default .nav-tabs > li.active > a:hover, .panel-default .nav-tabs > li.active > a:focus{
+    color: #3a75dc;
+    cursor: default;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid;
+    border-radius: 0;
+  }
+  .nav {
+    margin-bottom: 2px;
+  }
+  /*.tab-content>.tab-pane {*/
+  /*  min-height: 100px;*/
+  /*}*/
+  .nav-tabs li {
+    position: relative;
+  }
+  .tab-content>.tab-pane{
+    padding: 10px 0;
+  }
+  .panel-default .nav-tabs > li{
+    padding: 0 10px;
+  }
+  .panel-default .nav{
+    border-bottom: 2px solid #ddd;
+  }
+  .panel-default .nav-tabs > li > a:hover {
+    border-color: transparent;
+  }
+  .panel-default .nav > li > a:hover, .nav > li > a:focus {
+    text-decoration: none;
+    background-color: transparent;
+    color: #3a75dc;
+  }
+  .nav-tabs > li > a{
+    border: none;
+  }
+  .tab-content>.tab-pane {
+    /*background: #fff;*/
+  }
+  .tab-pane{
+    padding: 0 20px;
+  }
+  /*标签页样式*/
+
+    #box-shadow{
+        position: relative;
+    }
+  .table > tbody > tr > th{
+      font-weight: initial;
+      vertical-align: middle;
+  }
+    .mt-2{
+        margin-top: 20px;
+    }
+    .red{
+        color: #FF414D;
+    }
+    .green{
+        color: #65B017;
+    }
+    .gray{
+        color: #aaa;
+    }
+</style>
+
+<div
+    {% if separate_view is defined and separate_view %}
+        class="container-fluid" id="content" style="margin-left: 235px"
+    {% else %}
+        class="container"
+    {% endif %}
+>
+    {% include 'giga/template/_parts/breadcrumb.twig' %}
+    <div class="row" style="margin-left: 0;margin-right: 0;">
+        {% include 'giga/template/_parts/column_place.twig' %}
+        <div class="{{ class }} giga-content">
+            <h1 style="display: inline-block">{{ tab_title }}</h1>
+        </div>
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active"><a href="#edit-contract" aria-controls="edit-contract" role="tab" data-toggle="tab">{{ text_tab_future_goods_contract }}</a></li>
+          <li role="presentation" ><a href="#associate-contract" aria-controls="associate-contract" role="tab" data-toggle="tab">{{ text_tab_related_agreement }}</a></li>
+          <li role="presentation" ><a href="#contract-log" aria-controls="contract-log" role="tab" data-toggle="tab">{{ text_tab_records_of_contract_changes }}</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content" id="box-shadow" style="margin-top: unset;margin-right: 0">
+            <div role="tabpanel" class="tab-pane  active" id="edit-contract">
+                <div id="edit-contract-pane"></div>
+            </div>
+            <div role="tabpanel" class="tab-pane " id="associate-contract">
+                <div id="associate-contract-pane"></div>
+            </div>
+            <div role="tabpanel" class="tab-pane " id="contract-log">
+                <div id="contract-log-pane"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#edit-contract-pane').load('{{ url("account/customerpartner/future/contract/edit") }}' + '&contract_id=' + '{{ contract_id }}');
+    $('#associate-contract-pane').load('{{ url("account/customerpartner/future/contract/associate") }}' + '&contract_id=' + '{{ contract_id }}');
+    $('#contract-log-pane').load('{{ url("account/customerpartner/future/contract/log") }}' + '&contract_id=' + '{{ contract_id }}');
+</script>
+
+{{ footer }}

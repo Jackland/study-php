@@ -1,0 +1,56 @@
+{# 模板：店铺介绍 ------Start #}
+<section class="infomation-module m20-b" id="module{{mIndex}}" data-mIndex="{{mIndex}}">
+  <div class="common-title">Why Choose Us</div>
+  <div class="information-content w1200">
+    <div class="module-flex">
+      {% if module.data.pics and module.data.pics|length >1 %}
+      <div class="banner-image">
+        <div class="swiper-container">
+          <div class="swiper-wrapper">
+            {% for pic in module.data.pics %}
+            <div class="swiper-slide">
+              <img class="banner-image" src="{{ pic.pic_show }}" alt="{{ pic.pic_show }}">
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-pagination action-pagination"></div>
+        <div class="swiper-pager">
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+      </div>
+      {% elseif module.data.pics|length == 1 %}
+      <div class="banner-image">
+        <img class="banner-image" src="{{ module.data.pics[0]['pic_show'] }}" alt="{{ module.data.pics[0]['pic_show'] }}">
+      </div>
+      {% endif %}
+      {% if module.data.desc is not empty %}
+      <div class="right-content">{{ module.data.desc }}</div>
+      {% endif %}
+    </div>
+    <div class="module-flex">
+      {# allContent标记tags下面是否都没有content内容，都没有则title居中 #}
+      {% set allContent = [] %}
+      {% for item in module.data.tags %}
+      {% if item.content %}
+        {% set allContent = allContent|merge(item) %}
+      {% endif %}
+      {% endfor %}
+      {% for i,one in module.data.tags %}
+      <div class="tag-item">
+        <img src="{{ one.icon_show }}">
+        {% if allContent|length == 0 %}
+        <div class="p10-l flex-layout module-largef text-bold">{{ one.title }}</div>
+        {% else %}
+        <div class="p10-l">
+          <div class="module-largef text-bold">{{ one.title }}</div>
+          <div class="module-grey module-bigf module-line2">{{ one.content }}</div>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{# 模板：店铺介绍 ------End #}

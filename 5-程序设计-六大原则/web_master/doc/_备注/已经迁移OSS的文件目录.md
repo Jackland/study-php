@@ -1,0 +1,21 @@
+- /image/wkseller -sunjiehuan
+- /image/misc -sunjiehuan
+- /storage/rebateRequest -taixing
+- /storage/orderCsv -taixing
+- /storage/new_product_csv  -taixing
+- /storage/priceCSV  -taixing
+- /storage/brand  seller 没有找到,线上也没有此目录 -taixing
+- /storage/bill_excel 仓租一期已弃用 -taixing
+- /storage/mappingSKu -taixing
+- /storage/shipmentFile -taixing
+- /storage/quoteFileUpload -taixing
+
+- /image/attachment -yaopengfei #21699
+- /storage/upload/cwf -yaopengfei #21699
+- /storage/dropshipPdf -yaopengfei #21699
+- /storage/rmaFile -fuyunnan #21699
+- /storage/upload/recharge/proofs -fuyunnan #21699
+- /storage/information -fuyunnan #21699
+- /storage/download/attachment -yaopengfei #21699
+- /image/ticket -yaopengfei #21699
+- /storage/upload/marketing_campaign -yaopengfei #21699

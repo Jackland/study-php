@@ -1,0 +1,40 @@
+/* 搜索，店铺，分类页面公用样式
+* 目前大部分公用样式在../yzcTheme/stylesheet/stylesheet.css
+* 需花时间整合到listStyle.css
+*/
+body .wishlist-class {
+  background-color: transparent;
+}
+
+body .wishlist-class .layui-layer-content {
+  background-color: #f0f9eb;
+}
+
+body .wishlist-class .layui-layer-content.layui-layer-loading1 {
+  background-color: transparent;
+}
+
+.side-list .search-inventory>input.search {
+  width: 100%;
+  border: solid 1px #cfcfcf;
+  padding: 4px;
+}
+
+.side-list .search-inventory>input.search::-webkit-input-placeholder {
+  color: #999;
+}
+
+.side-list .action-expand {
+  max-height: 180px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.side-list .action-expand::-webkit-scrollbar {
+  width: 8px;
+}
+
+.side-list .action-expand::-webkit-scrollbar-thumb {
+  background: #8A91A6;
+  border-radius: 0;
+}

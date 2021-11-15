@@ -1,0 +1,197 @@
+{{ '<?xml version="1.0" encoding="UTF-8"?>' ~ "\n" }}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="{{ direction }}" lang="{{ language }}" xml:lang="{{ language }}">
+<head>
+<title>{{ title }}</title>
+<base href="{{ base }}" />
+<link href="catalog/view/javascript/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen" />
+<link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<link href="catalog/view/theme/yzcTheme/stylesheet/fonts.googleapis.com_open+sans.css" rel="stylesheet" type="text/css" />
+<!-- <link href="catalog/view/theme/default/stylesheet/stylesheet.css" rel="stylesheet"> -->
+</head>
+<style type="text/css">
+td img{
+  border: 1px solid #D2DADA;
+}
+.logo{
+  background: url('{{ logo }}');
+  display: block;
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  top: -130px;
+}
+</style>
+<body style="padding: 6%;">
+{% for order in orders %}
+<div style="page-break-after: always;position:relative;" >
+  <span class="logo"></span>
+  <h1 class="text-right" style="text-align:center;">{{ text_invoice }}</h1>
+  <table class="table table-hover">
+    <tr>
+      <td style="width:30%;vertical-align: top;" >
+        {{ order['store_name'] }}<br />
+        {{ order['store_address'] }}<br />
+        {{ text_telephone }} {{ order['store_telephone'] }}<br />
+        {% if (order['store_fax']) %}
+        {{ text_fax }} {{ order['store_fax'] }}<br />
+        {% endif %}
+        {{ order['store_email'] }}<br />
+        {{ order['store_url'] }}</td>
+      <td align="left" style="width:40%;vertical-align: top;">
+        <table>
+          <tr>
+            <td><b>{{ text_date_added }}</b></td>
+            <td width="50%">{{ order['date_added_rma'] }}</td>
+          </tr>
+          <tr>
+            <td><b>{{ text_rmaid }} :</b></td>
+            <td width="50%">{{ order['id'] }}</td>
+          </tr>
+          <tr>
+            <td><b>{{ text_rma_status }} :</b></td>
+            <td width="50%" style="color:{{ order['color'] }};font-size:bold;">{{ order['rma_status'] }}</td>
+          </tr>
+          {% if (order['tracking']) %}
+          <tr>
+            <td><b>{{ text_customer_tracking }}</b></td>
+            <td width="50%">{{ order['tracking'] }}</td>
+          </tr>
+          {% endif %}
+        </table>
+        </td>
+        <td align="left" style="vertical-align: top;">
+          <table>
+              <tr>
+                <td><b>{{ text_date_added }}</b></td>
+                <td width="50%">{{ order['date_added'] }}</td>
+              </tr>
+              {% if (order['invoice_no']) %}
+              <tr>
+                <td><b>{{ text_invoice_no }}</b></td>
+                <td width="50%">{{ order['invoice_no'] }}</td>
+              </tr>
+              {% endif %}
+              <tr>
+                <td><b>{{ text_order_id }}</b></td>
+                <td width="50%">{{ order['order_id'] }}</td>
+              </tr>
+              <tr>
+                <td><b>{{ text_payment_method }}</b></td>
+                <td width="50%">{{ order['payment_method'] }}</td>
+              </tr>
+              {% if (order['shipping_method']) %}
+              <tr>
+                <td><b>{{ text_shipping_method }}</b></td>
+                <td width="50%">{{ order['shipping_method'] }}</td>
+              </tr>
+          {% endif %}
+        </table>
+       </td>
+       </tr>
+     </table>
+    </td>
+    </tr>
+  </table>
+
+  <table class="table table-hover">
+    <tr class="heading">
+      <td width="50%"><b>{{ text_to }}</b></td>
+      <td width="50%"><b>{{ text_ship_to }}</b></td>
+    </tr>
+    <tr>
+      <td>{{ order['payment_address'] }}<br/>
+        {{ order['email'] }}<br/>
+        {{ order['telephone'] }}</td>
+      <td>{{ order['shipping_address'] }}</td>
+    </tr>
+  </table>
+
+  <table class="table table-hover">
+    <tr class="heading">
+      <td><b>{{ column_product }}</b></td>
+      <td><b>{{ column_model }}</b></td>
+      <td align="right"><b>{{ column_quantity }}</b></td>
+      <td align="right"><b>{{ column_price }}</b></td>
+      <td align="right"><b>{{ text_reason }}</b></td>
+      <td align="right"><b>{{ column_total }}</b></td>
+    </tr>
+    {% for product in order['product'] %}
+    <tr>
+      <td>{{ product['name'] }}
+        {% for option in product['option'] %}
+        <br />
+        &nbsp;<small> - {{ option['name'] }}: {{ option['value'] }}</small>
+        {% endfor %}</td>
+      <td>{{ product['model'] }}</td>
+      <td align="right">{{ product['quantity'] }}</td>
+      <td align="right">{{ product['price'] }}</td>
+      <td align="right">{{ product['reason'] }}</td>
+      <td align="right">{{ product['total'] }}</td>
+    </tr>
+    {% endfor %}
+
+    {% for voucher in order['voucher'] %}
+    <tr>
+      <td align="left">{{ voucher['description'] }}</td>
+      <td align="left"></td>
+      <td align="right">1</td>
+      <td align="right">{{ voucher['amount'] }}</td>
+      <td align="right">{{ voucher['amount'] }}</td>
+    </tr>
+    {% endfor %}
+    {% for total in order['total'] %}
+    <tr>
+      <td align="right" colspan="5"><b>{{ total['title'] }}:</b></td>
+      <td align="right">{{ total['text'] }}</td>
+    </tr>
+    {% endfor %}
+    {% if (not returned_check) %}
+      <!-- <tr>
+        <td align="left">{{ text_admin_return_info }}</td>
+        <td align="right" colspan="5"><a class="btn btn-danger" href="{{ order['return_qty'] }}" ><i class="fa fa-reply"></i> {{ text_admin_return }}</a></td>
+      </tr> -->
+    {% endif %}
+  </table>
+
+  <table class="table table-hover">
+    <tr class="heading">
+      <td width="50%"><b>{{ text_addinfo }}</b></td>
+    </tr>
+    <tr>
+      <td>{{ order['add_info'] }}</td>
+    </tr>
+  </table>
+
+  {% if (order['images']) %}
+  <table class="table table-hover">
+    <tr class="heading">
+      <td width="50%"><b>{{ text_images }}</b></td>
+    </tr>
+    <tr>
+      <td>
+          {% for images in order['images'] %}
+            {% if (images) %}
+              <img src="{{ images }}"> &nbsp;
+            {% endif %}
+          {% endfor %}
+      </td>
+    </tr>
+  </table>
+  {% endif %}
+
+  {% if (order['comment']) %}
+  <table class="table table-hover">
+    <tr class="heading">
+      <td><b>{{ column_comment }}</b></td>
+    </tr>
+    <tr>
+      <td>{{ order['comment'] }}</td>
+    </tr>
+  </table>
+  {% endif %}
+</div>
+<br/><br/><br/><br/>
+{% endfor %}
+</body>
+</html>

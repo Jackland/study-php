@@ -1,0 +1,175 @@
+{{ header }}
+<link rel="stylesheet" href="catalog/view/javascript/bootstrap-select/css/bootstrap-select.css?v={{ app_version }}">
+<link rel="stylesheet" href="catalog/view/theme/yzcTheme/stylesheet/product/search.css?v={{ app_version }}">
+<link rel="stylesheet" href="catalog/view/theme/yzcTheme/stylesheet/app.css?v={{ app_version }}">
+{#<div class="breadcrumb-wrapper text-center clearfix">#}
+{#  <h1>{{ search }}</h1>#}
+{#  #}{#{% include 'giga/template/_parts/breadcrumb.twig' %}#}
+{#</div>#}
+<div class="main-bg just-flex">
+  <div id="product-category" class="center-module">
+    <div class="" id="search-result">
+      <div id="noResult">
+        <div>
+            <div class="no-result">
+                Your search
+                <span class="text-bold search-overflow">"{{ search }}</span> did not match any existing products. You may try to:
+            </div>
+            <div class="recommended-action">
+                <ul>
+                    <li>Confirm the spelling or item code is correct </li>
+                    <li>Use alternative keywords</li>
+                    <li>Still can’t find what you’re looking for?<br>
+                        <div class="text-light ml-1 mt-1">  Click the button below to fill out a form telling us more about the product you're looking for.
+                        We will get back to you with quotes for that product or similar products within 24 hours. </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <form id="form-feedback" action="{{ url('account/login', { 'search_flag': 1 }) }}" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="logged_redirect_url" value="{{ logged_redirect_url }}" class="input-focus"/>
+          <div class="feedback-problems" id="feedback">Product Information Form</div>
+        </form>
+        <div class="feedback-content">
+            <div class="issue-title">
+               <div class="flex-layout">
+                   <span class="text-tittle">Product Name</span>
+                   <div class="title-issue">
+                       <input id="limitInput" placeholder="Keywords of product(s) you are looking for" value="{{ search }}" maxlength="100">
+                   </div>
+                   <span class="point">You can enter <span id="titleLimit" class="text-danger">0</span>/100 characters</span>
+               </div>
+                <div class="error-msg text-danger text-left text-small none" id="errorInput" >Please enter the subject.</div>
+            </div>
+            <div class="issue-content flex">
+                <span class="text-tittle">Description</span>
+                <div class="content-issue">
+                    <textarea id="limitTextarea" placeholder="Enter any details describing the product(s) you are looking for.&#10;*Must contain a minimum of 20 characters." maxlength="1000"></textarea>
+                    <span class="limit-content">You can enter <span id="contentLimit" class="text-danger">0</span>/1000 characters</span>
+                    <div class="error-msg" id="errorTextarea">The description must contain a minimum of 20 characters.</div>
+                </div>
+            </div>
+            <button class="submit-feedback">Submit</button>
+        </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+{{ footer }}
+<script>
+  $(document).ready(function(){
+    var lenInput = $('#limitInput').val().length;
+    $("#titleLimit").text(lenInput);
+  });
+
+  $("#limitInput").bind("input propertychange change blur", function() {
+    var lenInput = $(this).val().length;
+    $("#titleLimit").text(lenInput);
+    if (lenInput < 1 || lenInput > 100) {
+      $("#errorInput").show()
+    } else {
+      $("#errorInput").hide()
+    }
+  });
+  $("#limitTextarea").bind("input propertychange change blur", function() {
+    var lenTextarea = $(this).val().length;
+    $("#contentLimit").text(lenTextarea);
+    if (lenTextarea < 1 || lenTextarea > 1000) {
+      $("#errorTextarea").show()
+    } else {
+      $("#errorTextarea").hide()
+    }
+  });
+  $("#feedback").on("click", function() {
+    //判断是否为登录状态，是显示以下内容，否跳转登录页
+    let isLogin = '{{ isLogin }}';
+    if(!isLogin){
+      $('#form-feedback').submit();
+    }else{
+      $(this).hide();
+      $(".feedback-content").show()
+    }
+  });
+
+  function check() {
+    if ($("#limitInput").val().length < 1 || $("#limitInput").val().length > 100) {
+        console.log($("#limitInput").val().length);
+      $("#errorInput").show();
+      return false;
+    } else {
+      $("#errorInput").hide();
+    }
+    if ($("#limitTextarea").val().length < 20 || $("#limitTextarea").val().length > 1000 ) {
+      $("#errorTextarea").show();
+      return false;
+    } else {
+      $("#errorTextarea").hide()
+    }
+    return true;
+  }
+  $(".submit-feedback").on('click', function() {
+    let isTrue = check();
+    if (isTrue) {
+      //构造数据提交
+      let keyword = $("#limitInput").val();
+      let content = $("#limitTextarea").val();
+      let data = {keyword:keyword,content:content};
+      $.ajax({
+        url: '{{ url('product/search/searchFeedBack') }}',
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        data: data,
+        beforeSend: function () {
+          layer.load(1, {shade: [0.3, '#000']});
+        },
+        success: function (json) {
+          layer.closeAll();
+          if (!json.error) {
+
+              $.toast({
+                heading: false,
+                text: json.msg,
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'success',
+                hideAfter: 5000,
+                allowToastClose: false,
+                loader: false
+              });
+
+              setTimeout(()=>{
+                window.location.href = "{{ url('common/home') }}"
+              },1000)
+
+          }else{
+            $.toast({
+              heading: false,
+              text: json.msg,
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: 5000,
+              allowToastClose: false,
+              loader: false
+            });
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          layer.closeAll();
+          $.toast({
+            heading: false,
+            text: thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false
+          });
+        }
+      });
+    }
+  })
+</script>

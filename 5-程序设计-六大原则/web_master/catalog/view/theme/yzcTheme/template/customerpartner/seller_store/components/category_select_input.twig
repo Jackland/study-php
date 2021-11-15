@@ -1,0 +1,213 @@
+{% trans_default_category 'catalog/view/customerpartner/seller_store/home/common' %}
+{# @file 产品选择弹窗 #}
+
+{{ css([
+  'static/customerpartner/seller_store/components/category-select-input.css'
+]) }}
+
+<script type="text/x-template" id="category-select-input">
+  <div class="category-select-input-container">
+    <div class="category-input" @click="handleSelectCategoriesClick" v-if="type == 'multiple'">
+      <div v-if="product_category.length <= 0" class="no-data">
+        {{ __('请选择', {}, 'common') }}
+      </div>
+      <div v-else class="category-item-container">
+        <draggable :list="product_category">
+          <div class="category-select-item" v-for="(category, index) of product_category" :key="index">
+            ${category.label}
+            <i class="el-icon-close remove-icon" @click.stop="removeCategory(index)"></i>
+          </div>
+        </draggable>
+      </div>
+    </div>
+    <el-input v-if="type == 'single'" @focus="handleSelectCategoriesClick" placeholder="{{ __('请选择', {}, 'common') }}" 
+      :disabled="disabled" :value="singleCategory.label" :title="singleCategory.label">
+    </el-input>
+    <el-dialog
+      width="30%"
+      append-to-body
+      title="Select Categories"
+      @close="handleCancel"
+      :close-on-click-modal="false"
+      :visible="categoryListDialogVisible">
+      <el-container>
+        <el-scrollbar>
+          <el-main style="height: 400px">
+            <el-tree
+              show-checkbox
+              :props="categoryTreeProps"
+              :data="categoryList"
+              ref="selectCategoryTree"
+              empty-text="No Data"
+              node-key="category_id"
+              :check-strictly="true"
+              @check="selectCategoryChange">
+            </el-tree>
+          </el-main>
+        </el-scrollbar>
+        <el-footer style="text-align:center;line-height: 60px" v-show="type != 'single'">
+          <el-button type="primary" @click="handleSelectCategoryConfirm">Submit</el-button>
+          <el-button @click="handleCancel">Cancel</el-button>
+        </el-footer>
+      </el-container>
+    </el-dialog>
+  </div>
+</script>
+<script>
+  Vue.component('category-select-input', {
+    template: '#category-select-input',
+    delimiters: ['${', '}'],
+    props: {
+      type: {
+        type: String,
+        default: "multiple"
+      },
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+      default: {
+        type: Object,
+        default: (() => [])
+      },
+      single_default: {
+        type: Object,
+        default: (() => {})
+      },
+      //可选择的数量上限
+      limit: {
+        type: Number,
+        default: -1
+      }
+    },
+    data: () => {
+      return {
+        axios: null,
+        categoryListDialogVisible: false,
+        categoryList: [],
+        categoryTreeProps: {
+          children: 'son',
+          label: 'name'
+        },
+        product_category: [],
+        singleCategory: {} //单选选择的元素
+      }
+    },
+    watch: {
+      default: {
+        immediate: true,
+        handler: function (list) {
+          this.product_category = list;
+        }
+      },
+      single_default: {
+        immediate: true,
+        handler: function (val) {
+          if (val) {
+            this.singleCategory = val;
+          }
+        }
+      }
+    },
+    computed: {
+    },
+    created() {
+      this.axios = axios.create({});
+    },
+    methods: {
+      getSelectCategories: async function () {
+        let ret = await this.axios.post('index.php?route=pro/product/getCates');
+        if (!ret || !(ret.status === 200)) {
+          console.error(ret);
+        }
+        return ret.data;
+      },
+
+      //清空single类型的选择框内容
+      clearSingleInput() {
+        this.singleCategory = {};
+      },
+
+      handleSelectCategoriesClick: async function () {
+        let _this = this;
+        _this.categoryListDialogVisible = true;
+        if (_this.categoryList.length === 0) {
+          _this.categoryList = await this.getSelectCategories();
+        }
+        if(this.type == 'multiple') {
+          let checkKeys = _this.product_category.map(function (item) {
+            return item.value;
+          });
+          _this.$nextTick(function () {
+            this.$refs['selectCategoryTree'].setCheckedKeys(checkKeys);
+          });
+        }
+      },
+      selectCategoryChange: function (node, ele) {
+        if(this.type == 'single') {
+          let categoryTreeRef = this.$refs['selectCategoryTree'];
+          let key = categoryTreeRef.getCheckedKeys()[0];
+
+          let product_category = [];
+          let node = categoryTreeRef.getNode(key);
+          let nodeNameArr = [];
+          while (node.parent !== null) {
+            nodeNameArr.push(node.data.name);
+            node = node.parent;
+          }
+          this.singleCategory = {value: key, label: nodeNameArr.reverse().join(' >> ')};
+
+          this.product_category = [];
+          this.categoryList = [];
+          this.$emit('change', this.singleCategory);
+          this.categoryListDialogVisible = false;
+        }
+      },
+      handleSelectCategoryConfirm: function () {
+        let categoryTreeRef = this.$refs['selectCategoryTree'];
+        let checkedKeys = categoryTreeRef.getCheckedKeys();
+        if (checkedKeys.length === 0) {
+          this.error('Please tick at least one category.');
+          return;
+        }
+        let product_category = [];
+        for (let key of checkedKeys) {
+          let node = categoryTreeRef.getNode(key);
+          let nodeNameArr = [];
+          while (node.parent !== null) {
+            nodeNameArr.push(node.data.name);
+            node = node.parent;
+          }
+          product_category.push({value: key, label: nodeNameArr.reverse().join(' >> ')});
+        }
+        this.$emit('change', product_category);
+        if (this.limit < 0 || product_category.length <= this.limit) {
+          this.product_category = product_category;
+        }
+        this.categoryListDialogVisible = false;
+      },
+      
+      // 删除选中分类
+      removeCategory (index) {
+        this.product_category.splice(index, 1);
+        this.$emit('change', this.product_category);
+      },
+
+      handleCancel () {
+        this.categoryListDialogVisible = false;
+      },
+
+      // 提示信息
+      error(message, title, duration) {
+        let conf = {
+          customClass: "ele-alert",
+          showClose: false,
+          duration: duration,
+          type: 'toast'
+        }
+        that.$message({...conf, message: message});
+      }
+    }
+  })
+</script>
+

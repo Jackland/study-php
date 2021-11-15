@@ -1,0 +1,2525 @@
+<script src="catalog/view/javascript/jquery/datetimepicker/moment/moment.min.js" type="text/javascript"></script>
+<script src="catalog/view/javascript/jquery/datetimepicker/moment/moment-with-locales.min.js" type="text/javascript"></script>
+<script src="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" media="screen"/>
+<link rel="stylesheet" type="text/css" href="catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css">
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<link href="public/css/common/common.css" rel="stylesheet">
+<link href="catalog/view/theme/yzcTheme/stylesheet/account/corderInfo.css" rel="stylesheet">
+<link href="//at.alicdn.com/t/font_1805932_anc8d44hkus.css" rel="stylesheet">
+<style type="text/css">
+  .control-label {
+    font-weight: bold;
+    color: #bfbfbf;
+  }
+
+  #form-order > div > table {
+    font-size: 12px
+  }
+
+  .pagination a {
+    cursor: pointer;
+  }
+
+  /*单选框*/
+  input[type="radio"] {
+    display: none;
+  }
+
+  input[type="radio"] + i:before {
+    color: #c5c5c5;
+  }
+
+  input[type="radio"]:checked + i:before {
+    color: #3A75DC;
+  }
+
+  #content {
+
+  }
+  .layui-layer-title{
+    font-size: 16px;
+    height: auto;
+    padding: 12px 15px;
+    line-height: 1.428571429;
+  }
+  .action-group  .btn-operate,.dropdown-group{
+    margin: 5px !important;
+  }
+
+  .dropdown-group{
+    display: inline-table !important;
+  }
+
+  .padding-none{
+    padding: 0;
+  }
+  .form-wrapper .datetimepicker-range .datetimepicker.margin-left-none{
+    margin-left: 0;
+  }
+
+  /*新写的样式*/
+  #tab-orders label{
+    font-weight: normal;
+    font-size: 14px;
+  }
+  #tab-orders .row .form-group input:not([type=checkbox]):not([type=radio]), #tab-orders .row .form-group select{
+    font-size: 14px;
+  }
+  .page-seller-portal table.table.main{
+    font-size: 14px;
+  }
+  .check-box-width{
+    display: inline-block;
+    min-width: 30px;
+    text-align: center;
+  }
+  .index-num{
+    display: inline-block;
+    min-width: 60px;
+    text-align: center;
+  }
+  .ship-address-width{
+    min-width: 220px;
+  }
+  .platform-style{
+    min-width: 180px;
+  }
+  .order-date-width,.order-check-time-width{
+    min-width: 110px;
+    margin-right: 4px;
+  }
+  .link-color{
+    color: #3A75DC;
+  }
+  .link-color:hover{
+    text-decoration: underline;
+  }
+  .no-margin{
+    margin: 0;
+  }
+  .wait-to-paid{
+    color: #fA6400;
+  }
+  .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle){
+    border-bottom-right-radius:4px;
+    border-top-right-radius:4px
+  }
+
+  .btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle){
+    border-radius: 4px;
+  }
+  .icon-drop-down{
+    vertical-align: revert;
+    margin-right: 10px;
+  }
+
+  .btn-zhifu {
+    background: #fa6400 !important;
+    color: #fff !important;
+  }
+  .form-wrapper input[type="checkbox"].filter-cancel-not-applied-rma{
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    vertical-align: super;
+  }
+
+  .giga-btn-primary{
+    height: 40px;
+    width: 70px;
+    padding: 0;
+    line-height: 40px;
+    font-size: 14px;
+    color: #fff;
+    background: #3A75DC;
+    font-weight: initial;
+    border: none;
+    border-radius: 4px;
+    vertical-align: middle;
+  }
+  .giga-btn-primary:hover, .giga-btn-primary:focus, .giga-btn-primary:active {
+    color: #fff;
+    background-color: #2d57a9;
+    border-color: #2d57a9;
+    outline: none;
+  }
+  .giga-btn-default{
+    background: #fff;
+    text-align: center;
+    height: 40px;
+    line-height: 38px;
+    color: #3A75DC;
+    border:1px solid #ddd;
+    border-radius: 4px;
+    vertical-align: middle;
+  }
+  .giga-btn-reset{
+    padding: 0 9.7px;
+  }
+  .giga-btn-download{
+    padding: 0 11px;
+  }
+  .giga-btn-manifest{
+    padding: 0 13px;
+  }
+  .giga-btn-default:hover,.giga-btn-default:focus,.giga-btn-default:active{
+    color: #fff;
+    background-color: #3A75DC;
+    border-color: #3A75DC;
+    outline: none;
+  }
+  .giga-btn-default.disabled{
+    border: 1px solid #ddd !important;
+  }
+  .page-seller-portal .table-responsive > .fixed-column-first{
+    left: 0;
+    top: 0;
+    background: #fff;
+    position: absolute;
+    display: inline-block;
+    width: auto;
+    box-shadow: 2px 0px 2px 0px #eee;
+    z-index: 99;
+  }
+  .batch-group-action{
+    border-radius: 4px;
+    background: #fA6400;
+    color: #fff;
+    border: 1px solid #fff;
+    display: inline-block;
+    height: 28px;
+    width: 28px;
+    padding: 1px;
+    text-align: center;
+    line-height: 24px;
+    margin: 0 8px;
+  }
+  .batch-group-action:hover{
+    background: #fff;
+    color: #fA6400;
+    border: 1px solid #fA6400;
+    cursor: pointer;
+  }
+  .flex-col-center{
+    display: flex;
+    align-items: center;
+  }
+  .page-list, .page-info{
+    position: static;
+  }
+  .flex-end{
+    justify-content: flex-end;
+  }
+  .pay-select{
+    font-size: 12px;
+  }
+  .icon-tables-selected-rows-action{
+    margin-left: 3px;
+  }
+  .display-none {
+    display: none;
+  }
+  .select-num{
+    font-style: normal;
+  }
+  .table-hover > tbody > tr:hover{
+    background: none;
+  }
+  input[type='checkbox']:hover{
+    cursor: pointer;
+  }
+  input[type='checkbox']:disabled:hover{
+    cursor: not-allowed;
+  }
+  .my-sort{
+    font-size: 12px;
+    color: #aaa;
+  }
+  .my-sort:hover{
+    color: #000;
+    cursor: pointer;
+  }
+  .my-sort.active{
+    color: #000;
+  }
+  .my-sort-up{
+    position: relative;
+    top: -4px;
+
+
+  }
+  .my-sort-down{
+    position: absolute;
+    top: 4px;
+    left: 0;
+  }
+  #page-sales-order-management table i.icon-action-warning.action-warning-color{
+    margin-right: 0;
+  }
+  .action-warning-color{
+    line-height: 26px;
+  }
+  /*新写的样式*/
+
+  /*check-disabled*/
+  input[type=checkbox][disabled]::before{
+    background: #eee;
+    border: 1px solid #ccc;
+  }
+  /*check-disabled*/
+  .sales-order-search-con .row{
+    margin-left: -4px;
+  }
+  .form-wrapper .form-group.no-mr-bottom{
+    margin-bottom: 0;
+  }
+  .inline-block{
+    display: inline-block;
+  }
+  .sort-outer-con{
+    position: relative;
+  }
+  .layui-layer-shade{
+      opacity: 0.1 !important;
+  }
+
+  /*公告滚动的样式*/
+  #boxShow ul, #boxShow ul li {
+    margin: 0;
+    padding: 0
+  }
+  .page-seller-portal table.table.main .action-group a.btn-zhifu i,a.btn-zhifu i{
+    font-size: 18px;
+  }
+  /*保障服务*/
+  .position-relative{
+    position: relative;
+  }
+  .guarantee-flag{
+    display: inline-block;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+    font-size: 0;
+    line-height: 0;
+    border-color:#2861CE transparent transparent #2861CE;
+    border-style: solid;
+    border-width: 22px;
+    position: absolute;
+    top: 0;
+    left: 2px;
+  }
+  .guarantee-flag-default{
+    border-color:#ccc transparent transparent #ccc;
+  }
+  .guarantee-flag-pending {
+    border-color: #becff0 transparent transparent #becff0;
+  }
+  .guarantee-flag-icon{
+    position: absolute;
+    color: #fff;
+    top: 2px;
+    left: 3px;
+  }
+  .popover{
+    max-width: 500px;
+  }
+  .gurantee-service-pop-title{
+    font-size: 13px;
+    color: #333333;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+    font-weight: bold;
+    padding: 10px 20px;
+  }
+  .service-list{
+    padding: 0 20px 10px 20px;
+  }
+  .flex-start{
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+  }
+  .flex-between{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .black-circle{
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #000;
+    margin-right: 8px;
+    position: relative;
+    top: -2px;
+  }
+  .service-title{
+    font-size: 14px;
+    color: #333;
+  }
+  .leave-time{
+    color: #405266;
+    font-style: italic;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 16px;
+    margin-top: 3px;
+  }
+  .service-item-btn{
+    margin-left: 40px;
+  }
+  .service-btn{
+    display: inline-block;
+    font-size: 13px;
+    width: 130px;
+    height: 32px;
+    line-height: 30px;
+    text-align: center;
+    color: #004BD8;
+    border: 1px solid #2861CE;
+    border-radius: 2px;
+  }
+  .service-btn:hover{
+    cursor: pointer;
+    background: #ECF1FC;
+  }
+  .service-item{
+    margin-bottom: 10px;
+  }
+  .service-item:last-child{
+    margin-bottom: 0;
+  }
+  .gurantee-service-con{
+    display: none;
+    position: absolute;
+    top: 14px;
+    left: 22px;
+    z-index: 9999;
+    padding-left: 20px;
+    margin-left: -20px;
+  }
+  .gurantee-service{
+    background: #fff;
+    box-shadow:0px 0px 8px 0px rgb(0 0 0 / 20%);
+  }
+  .gurantee-service-pointer-hover:hover{
+    cursor: pointer;
+  }
+  .gurantee-service-pointer-hover:hover + div.gurantee-service-con{
+    display: block;
+  }
+  div.gurantee-service-con:hover{
+    display: block;
+  }
+  .table-responsive{
+    min-height: 380px;
+  }
+  /*#tableSalesOrder tr:last-child .gurantee-service-con{*/
+  /*  top: auto;*/
+  /*  bottom: -12px;*/
+  /*}*/
+
+  .carrier-status {
+    color: #3a75dc;
+  }
+
+  .carrier-status:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* #6653 列表订单状态样式 */
+  .pick-icon {
+    margin-right: 4px;
+  }
+
+  .sales-subrow {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: #E64545;
+  }
+
+  .countdown-row {
+    color: #E64545;
+  }
+
+  .pickdate-row {
+    color: #004BD8;
+  }
+
+  .substatus {
+    margin-top: 4px;
+    padding: 1px 12px;
+    color: #000;
+    border-radius: 10px;
+  }
+
+  .bp-substatus {
+    background-color: rgba(0, 128, 0, .2);
+  }
+
+  .onhold-substatus {
+    background-color: #EDEDED;
+  }
+
+  {# 取消弹窗确认 #}
+  #cancelConfirmDialog .radio label {
+    padding-left: 8px !important;
+  }
+
+  .icon-pick-up {
+    font-size: 20px !important;
+  }
+
+  /*30246*/
+  .oris-modal .modal-header {
+    border-bottom: 1px solid #e5e5e5;
+  }
+  .oris-button.mini-button{
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  {# #24701 新增操作按钮 #}
+  #page-sales-order-management .btn-pay {
+    background-color: #fa6400;
+    color: #fff;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+</style>
+{% set payIconMap = { 223 : ' icon-meiyuanzhifu-01',107 : ' icon-riyuanzhifu-01',222 : ' icon-yingbangzhifu-01',81 : ' icon-ouyuanzhifu-01'} %}
+{% set payNewOrderIconMap = { 223 : ' gclmeiyuanzhifu-01',107 : ' gclriyuanzhifu-01',222 : ' gclyingbangzhifu-01',81 : ' gclouyuanzhifu-01'} %}
+<div role="tabpanel" class="tab-pane active">
+  <div class="bg-white p-2">
+    <div class="filter-wrapper form-wrapper mb-3 sales-order-search-con">
+      <div class="notice {{ label_view_show ? '' : 'display-none' }}" id="boxShow">
+        <i class="fa fa-volume-up"></i>
+        <div class="notice-con " id="newsTip">
+          <ul class="p-0 mb-0">
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label for="input-orderId">{{ column_orderId }}</label>
+            <input type="text" name="filter_orderId" value="{{ filter_orderId }}" class="form-control"
+                   id="input-orderId" placeholder="{{ column_orderId }}">
+          </div>
+          <div class="form-group">
+            <label for="input-import_mode">Platform</label>
+            <select name="filter_import_mode" id="input-import_mode" class="form-control">
+              <option value="-1" {% if filter_import_mode == k %}selected{% endif %} >{{ text_select }}</option>
+              {% for k,v in platformKeyList %}
+                <option value="{{ k }}" {% if filter_import_mode == k %}selected{% endif %}>{{ v }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="input-tracking_number">{{ column_tracking_number }}</label>
+            <select name="filter_tracking_number" id="input-tracking_number" class="form-control">
+              <option value="2" {% if filter_tracking_number == 2 %}selected{% endif %}>All</option>
+              <option value="1" {% if filter_tracking_number == 1 %}selected{% endif %}>Yes</option>
+              <option value="0" {% if filter_tracking_number == 0 %}selected{% endif %}>No</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-8 row">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="input-item_code">{{ column_item_code_search }}</label>
+                <input type="text" name="filter_item_code" value="{{ filter_item_code }}" class="form-control"
+                       id="input-item_code" placeholder="{{ column_item_code_search }}">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="input-orderStatus">{{ column_orderStatus }}</label>
+                <select name="filter_orderStatus" id="input-orderStatus" class="form-control">
+                  <option value="*">{{ text_select }}</option>
+                  {% for key,value in listCustomerSalesOrderStatus %}
+                    <option value="{{ key }}">{{ value }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="inputOrderDateRange">Order Date Range</label>
+                <select name="filter_order_date_range" id="inputOrderDateRange" class="form-control">
+                  <option {% if filter_order_date_range == 0 %} selected {% endif %} value="0">Any Time</option>
+                  <option {% if filter_order_date_range == 1 %} selected {% endif %}  value="1">Today</option>
+                  <option {% if filter_order_date_range == 2 %} selected {% endif %}  value="2">Past week</option>
+                  <option {% if filter_order_date_range == 3 %} selected {% endif %}  value="3">Past month</option>
+                  <option {% if filter_order_date_range == 4 %} selected {% endif %}  value="4">Past year</option>
+                  <option {% if filter_order_date_range == 5 %} selected {% endif %}  value="5">Custom range</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="input-orderDate-from">Order Date</label>
+                <div class="datetimepicker-range">
+                  <div class="col-sm-6 padding-none">
+                    <div class="datetimepicker margin-left-none">
+                      <input
+                        type="text"
+                        name="filter_orderDate_from"
+                        value="{{ filter_orderDate_from }}"
+                        class="form-control"
+                        id="input-orderDate-from"
+                        placeholder="Order Date From" autocomplete="off">
+                      <span class="title">From</span>
+                      <span class="icon"><i class="giga icon-date-icon"></i></span>
+                    </div>
+                  </div>
+                  <div class="col-sm-6 padding-none">
+                    <div class="datetimepicker">
+                      <input
+                        type="text"
+                        name="filter_orderDate_to"
+                        class="form-control"
+                        id="input-orderDate-to"
+                        placeholder="Order Date To"
+                        value="{{ filter_orderDate_to }}" autocomplete="off">
+                      <span class="title">To</span>
+                      <span class="icon"><i class="giga icon-date-icon"></i></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            {% if is_usa %}
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="input-tracking_number">Delivery Status</label>
+                  <select name="filter_delivery_status" id="input-filter_delivery_status" class="form-control">
+                    <option value="-1"
+                            {% if filter_delivery_status is defined and filter_delivery_status == -1 %}selected{% endif %} >
+                      ALL
+                    </option>
+                    {% for k,delivery in delivery_status_list %}
+                      <option value="{{ k }}"
+                              {% if filter_delivery_status is defined and filter_delivery_status == k %}selected{% endif %} >{{ delivery }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            {% endif %}
+            <div class="{{ is_usa ? 'col-sm-6' : 'col-sm-12' }}">
+              <div class="form-group pull-right" >
+                <div style="margin-top: 26px">
+                  <button type="button" id="filter-button" onclick="filter(this);" class="giga-btn-primary" title="Filter" data-toggle="tooltip">{{ button_filter }}</button>
+                  <button onclick="refreshOrder(this);" class="giga-btn-default giga-btn-reset" data-toggle="tooltip" title="Reset">
+                    <i class="giga icon-reset3"></i>
+                  </button>
+                  <button onclick="downloadOrderFulfillment();" class="giga-btn-default giga-btn-download" data-toggle="tooltip"
+                          title="Download">
+                    <i class="giga icon-xiazai"></i>
+                  </button>
+                  {% if has_manifest %}
+                    <button onclick="getManifestList();" class="giga-btn-default giga-btn-manifest"
+                            data-toggle="tooltip"
+                            data-trigger = "hover"
+                            title="Manifest Management">
+                      <i class="fa fa-file-text"></i>
+                    </button>
+                    {% if has_manifest_tips %}
+                      <i class="giga icon-gantanhaojinggao" data-trigger = "hover" data-toggle="tooltip" title="You have sales order(s) with no connected Manifest file(s)" style="color:red;font-size: 14px;cursor:pointer;position: relative;top:-12px;left: -12px;"></i>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+              {# N-1104 下面要显示 #}
+              <div id="div_cancel_not_applied_rma" class="form-group no-mr-bottom inline-block  pull-right" {% if filter_orderStatus != 16 %}style="display: none;" {% endif %} >
+                <label style="cursor: pointer; color:black;text-transform: none;margin-top: 38px;margin-right: 40px">
+                  {#value与取消弹窗中的rma_radio单选框的值保持一致#}
+                  <input class="filter-cancel-not-applied-rma" style="cursor: pointer;" type="checkbox" name="filter_cancel_not_applied_rma" value="0" {% if filter_cancel_not_applied_rma==0 %}checked="checked"{% endif %}>
+                  <span style="position: relative;top: -5px;"> Canceled but not applied RMA</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative">
+      <div class="table-responsive" style="">
+        <table id="tableSalesOrder" class="table main table-hover">
+          {% if orders %}
+          <thead>
+          <tr>
+            <th><span class="check-box-width"><input type="checkbox" class="checkAll"></span></th>
+            <th> <span class="index-num">#</span> </th>
+            <th class="text-left no-wrap">{{ column_orderId }}</th>
+            <th class="text-left no-wrap order-date-width">
+              {{ column_orderDate }}
+              <span class="sort-outer-con">
+                <i onclick="loadUrl('{{ sort.createUrl('created_time', 'asc') }}')" class="gcl gcldown-solid my-sort my-sort-up {{ sort.getAttributeSortDirection('created_time') == 'asc' ? 'active' : '' }}"></i>
+                <i onclick="loadUrl('{{ sort.createUrl('created_time', 'desc') }}')" class="gcl gcliup my-sort my-sort-down {{ sort.getAttributeSortDirection('created_time') == 'desc' ? 'active' : '' }}"></i>
+              </span>
+            </th>
+            <th class="text-left no-wrap">Shipping Recipient</th>
+            <th class="text-left no-wrap ship-address-width">{{ column_ship_address }}</th>
+            <th class="text-left no-wrap" style="text-align: center">{{ column_trackingNumber }}</th>
+            <th class="text-left no-wrap">{{ column_carrierName }}</th>
+            {% if country_id == 223%}
+              <th class="text-left no-wrap">{{ column_warehouse_code }}</th>
+            {% endif %}
+            <th class="text-left no-wrap">{{ column_orderStatus }}</th>
+            <th class="text-left no-wrap ">
+              <span class="order-check-time-width">{{ column_checkoutTime }}</span>
+            </th>
+            <th class="text-left no-wrap platform-style">Platform</th>
+            <th class="text-center no-wrap"><span style="display: inline-block;width: 136px">Action</span></th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for item in orders %}
+            <tr>
+              <td>
+                <span class="check-box-width">
+                  <input type="checkbox" class="checkOne" data-id="{{ item['Id'] }}" data-salesorderid="{{ item['OrderId'] }}"
+                    {% if filter_orderStatus == 1 %}                    
+                      {{ (item['OrderStatus'] != 127 and item['OrderStatus'] != 1) ? 'disabled' : '' }}
+                    {% else %}
+                      {{ item['OrderStatus'] != 127 ? 'disabled' : '' }}
+                    {% endif %}
+                  >
+                </span>
+              </td>
+              <td class="position-relative">
+{#                保障服务#}
+                {%  if item['safeguard_bills'] or  item.safeguard_bill_pay_error  %}
+                <div class="gurantee-service-pointer-hover">
+                  {% if item.safeguard_bill_pay_error %}
+                    <a href="javascript:void(0);"
+                       class="guarantee-flag">
+                    </a>
+                    <img class="gurantee-service-pointer-hover guarantee-flag-icon" src="catalog/view/theme/yzcTheme/image/cart/guarantee-danger-white.png" alt="">
+                  {% elseif item.safeguard_bill_is_active %}
+                    <a href="javascript:void(0);"
+                       class="guarantee-flag">
+                    </a>
+                    <img class="gurantee-service-pointer-hover guarantee-flag-icon" src="catalog/view/theme/yzcTheme/image/cart/guarantee-white.png" alt="">
+                  {% elseif item.safeguard_bill_is_pending %}
+                    <a href="javascript:void(0);"
+                       class="guarantee-flag guarantee-flag-pending">
+                    </a>
+                    <img class="gurantee-service-pointer-hover guarantee-flag-icon" src="catalog/view/theme/yzcTheme/image/cart/guarantee-white.png" alt="">
+                  {% else %}
+                    <a href="javascript:void(0);"
+                       class="guarantee-flag guarantee-flag-default">
+                    </a>
+                    <img class="gurantee-service-pointer-hover guarantee-flag-icon" src="catalog/view/theme/yzcTheme/image/cart/guarantee-default.png" alt="">
+                  {% endif %}
+                </div>
+                <div id="guranteeService" class="gurantee-service-con">
+                  <div class="gurantee-service">
+                    {% if not  v.safeguard_bill_pay_error %}
+                    <p class="nowrap gurantee-service-pop-title">Purchased Protection Service</p>
+
+                    <div class="service-list">
+                      {%  for safeguard_bill in  item['safeguard_bills']  %}
+
+                        {% set  service_btn_str='' %}
+                        {% set  service_desc_str='' %}
+
+                        {% if safeguard_bill.status==1 %}
+                            {% if safeguard_bill.effective_time< now and safeguard_bill.expiration_time> now %}
+                              {% if safeguard_bill.safeguardClaim is not empty %}
+                                {% if safeguard_bill.safeguard_claim_active_count>0 %}
+                                  {% set service_desc_str=safeguard_bill.safeguard_claim_active_count~' claim(s) in progress' %}
+                                  {% set  service_btn_str='<a type="button" href="'~url('account/safeguard/bill',{'filter_keywords': safeguard_bill.safeguard_no})~'#tab_claim_order" target="__blank" class="service-btn" data-text="Claim in Progress">Claim in Progress</a>' %}
+                                {% elseif safeguard_bill.safeguard_claim_succeed_count>0 %}
+                                  {% set  service_desc_str=safeguard_bill.safeguard_claim_succeed_count~' claims have been processed' %}
+                                  {% set  service_btn_str='<a type="button" href="'~url('account/safeguard/bill',{'filter_keywords': safeguard_bill.safeguard_no})~'#tab_claim_order" target="__blank" class="service-btn" data-text="Claim Processed">Claim Processed</a>' %}
+                                {% else %}
+                                  {% set  service_btn_str='<a type="button" href="'~url('account/safeguard/bill',{'filter_no': safeguard_bill.safeguard_no})~'" target="__blank" class="service-btn" data-text="Active">Active</a>' %}
+                                  {% set  service_desc_str=safeguard_bill.safeguard_expiration_days~' day(s) left to invalid' %}
+                                {% endif %}
+                              {% else %}
+                                {% set  service_btn_str='<a type="button" href="'~url('account/safeguard/bill',{'filter_no': safeguard_bill.safeguard_no})~'" target="__blank" class="service-btn" data-text="Active">Active</a>' %}
+                                {% set  service_desc_str=safeguard_bill.safeguard_expiration_days~' day(s) left to invalid' %}
+                              {% endif %}
+                            {% elseif safeguard_bill.effective_time> now %}
+                              {% set  service_btn_str='<a type="button" href="'~url('account/safeguard/bill',{'filter_no': safeguard_bill.safeguard_no})~'" target="__blank" class="service-btn" data-text="Pending">Pending</a>' %}
+
+                              {% set  service_desc_str='' %}
+                            {% elseif safeguard_bill.expiration_time< now %}
+                              {% set  service_btn_str='<a type="button" href="'~url('account/safeguard/bill',{'filter_no': safeguard_bill.safeguard_no})~'" target="__blank" class="service-btn" data-text="Invalid">Invalid</a>' %}
+
+                              {% set  service_desc_str=safeguard_bill.safeguard_expiration_days~' days overdue' %}
+                            {% endif %}
+                        {% elseif safeguard_bill.status==2 %}
+                          {% set  service_btn_str='<a type="button" href="'~url('account/safeguard/bill',{'filter_no': safeguard_bill.safeguard_no})~'" target="__blank" class="service-btn" data-text="Canceled">Canceled</a>' %}
+
+                          {% set  service_desc_str='The order has been canceled, and the <br> Protection Service Fee has been refunded.' %}
+                        {% elseif safeguard_bill.status==3 %}
+                          {% set  service_btn_str='<a type="button" href="'~url('account/safeguard/bill',{'filter_no': safeguard_bill.safeguard_no})~'" target="__blank" class="service-btn" data-text="Pending">Pending</a>' %}
+
+                          {% set  service_desc_str='Active after warehouse shipment' %}
+                        {% endif %}
+
+                        <div class="service-item flex-between">
+                          <div class="service-item-info">
+                            <div class="flex-start">
+                              <div class="black-circle"></div>
+                              <div>
+                                <div class="service-title nowrap">{{ safeguard_bill.safeguardConfig.title }}</div>
+                                <div class="leave-time nowrap">{{ service_desc_str }}</div>
+                              </div>
+                            </div>
+                          </div>
+                            <div class="service-item-btn">
+                               {{ service_btn_str }}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    </div>
+                    {% endif %}
+                    {% if item.safeguard_bill_pay_error  %}
+                      <p class="nowrap gurantee-service-pop-title no-bottom">The Protection Service is unable to be purchased since your account <br> balance is insufficient to deduct the Protection Service fee.</p>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endif %}
+{#                保障服务#}
+                <span class="index-num">{{ item.Number }}</span>
+
+              </td>
+              <td class="text-left no-wrap">
+                {{ item['OrderId'] }}
+                {% for tagDetail in item['tag'] %}
+                  {{ tagDetail }}
+                {% endfor %}
+                {% if item['pick_up_date'] %}
+                  <div class="pickdate-row sales-subrow">
+                    <i class="pick-icon giga icon-riliriqi"></i>
+                    {{ item['pick_up_date'] }}{# 取货日期 #}
+                  </div>
+                {% elseif item['seconds_remaining'] %}
+                  <div class="countdown-row sales-subrow">
+                    <i class="pick-icon giga icon-naozhong"></i>
+                    {{ dynamicWidget('time_count_down', { times:  item['seconds_remaining'] }) }}
+                    {# 取货信息待确认倒计时 {{ item['seconds_remaining'] }} #}
+                  </div>
+                {% endif %}
+              </td>
+              <td class="text-left order-date-width">{{ item['OrderDate'] }}</td>
+              <td class="text-left no-wrap" style="word-break: break-word">{{ item['ShipName'] }}</td>
+              <td class="text-left ship-address-width" style="word-break: break-word">{{ item['detail_address'] }}</td>
+              <td class="text-left no-wrap" style="word-break: break-word;text-align: center">
+                <ul class="list-unstyled no-margin">
+                  {% if item['import_mode'] == 8 %}<!--自提货-->
+                  <li>{{ item['TrackingNumber']['0']['trackingNumber'] }}</li>
+                  {% else %}<!--非自提货-->
+                  {% for ks,vs in item['TrackingNumber'] %}
+                    {% if vs.carrierName == 'Fedex' and  vs.trackingStatus != 0 %}
+                      <li>
+                        <a href="{{ text_fedex_homepage }}{{ vs.trackingNumber }}" target="_blank" class="cpbd link-color"
+                             data-clipboard-text="{{ vs.trackingNumber }}" style="cursor: pointer;">{{ vs.trackingNumber }}</a>
+                        {% if trackingSearchShow == 1  and vs.carrierStatus %}
+                          &nbsp;-&nbsp;<span class="carrier-status" data-order="{{ item.OrderId }}"
+                                             data-tracking="{{ vs.trackingNumber }}" data-shipsku="{{ vs.trackingShipSku }}">{{ vs.carrierStatus }}</span>
+                        {% endif %}
+                      </li>
+                    {% else %}
+                      <li>
+                        {{ vs.trackingNumber }}
+                        {% if trackingSearchShow == 1  and vs.carrierStatus and  vs.trackingStatus != 0 %}
+                          &nbsp;-&nbsp;<span class="carrier-status" data-order="{{ item.OrderId }}"
+                                             data-tracking="{{ vs.trackingNumber }}" data-shipsku="{{ vs.trackingShipSku }}">{{ vs.carrierStatus }}</span>
+                        {% endif %}
+                        {% if vs.trackingStatus == 0 %}
+                          {{ text_void_track }}
+                        {% endif %}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                  {% endif %}
+                </ul>
+              </td>
+              <td class="text-left no-wrap">
+                {% for ks,vs in item['CarrierName'] %}
+                  {{ vs }}<br/>
+                {% endfor %}
+              </td>
+              {% if country_id == 223%}
+                <td class="text-left no-wrap">
+                  {{ item['warehouse_code'] }}
+                </td>
+              {% endif %}
+              <td
+                  {% if item['OrderStatus'] == 1 %}
+                    class="text-left no-wrap order-status" style="color: red" data-orderId="{{ item['OrderId'] }}"
+                  {% elseif item['OrderStatus'] == 2 %}
+                    class="text-left no-wrap order-status" style="color: green" data-orderId="{{ item['OrderId'] }}"
+                  {% elseif item['OrderStatus'] == 16 %}
+                    class="text-left no-wrap order-status" style="color: red" data-orderId="{{ item['OrderId'] }}"
+                  {% else %}
+                    class="text-left no-wrap order-status" data-orderId="{{ item['OrderId'] }}"
+                  {% endif %}
+              >
+                {% if item['OrderStatus'] == 1 %}
+                  <a onclick="getOrderToBuy(this)"
+                     style="text-decoration: none;cursor: pointer">{{ item['OrderStatusName'] }}</a>
+                {% elseif item['OrderStatus'] == 2 %}
+                  <span style="color:#008000">{{ item['OrderStatusName'] }}</span>
+                  {# Being Processed 的子状态 #}
+                  {% if item['bp_sub_status_desc'] %}
+                    <br/><span class="substatus bp-substatus">{{ item['bp_sub_status_desc'] }}</span>
+                  {% endif %}
+                {% elseif item['OrderStatus'] == 4 %}
+                  <span style="color:#666666">{{ item['OrderStatusName'] }}</span>
+                  {% if item['on_hold_sub_status_desc'] %}
+                    <br/><span class="substatus onhold-substatus">{{ item['on_hold_sub_status_desc'] }}</span>
+                  {% endif %}
+                {% elseif item['OrderStatus'] == 16 %}
+                  <span style="color:#666666">{{ item['OrderStatusName'] }}</span>
+                {% elseif item['OrderStatus'] == 32 %}
+                  <span style="color:#666666">{{ item['OrderStatusName'] }}</span>
+                {% elseif item['OrderStatus'] == 64 %}
+                  <span style="color:#008000">{{ item['OrderStatusName'] }}</span>
+                {% elseif item['OrderStatus'] == 127 %}
+                  <span class="wait-to-paid">{{ item['OrderStatusName'] }}</span>
+                {% elseif item['OrderStatus'] == 128 %}
+                  <a data-toggle="tooltip" style="cursor: pointer" onclick="redirectToDeliveryList('{{ item.Id }}')"
+                     title="{{ text_shared_info }}">{{ item['OrderStatusName'] }}<i class="giga icon-V10-wenhaotishi"
+                                                                                      style="color: #229ac8"
+                                                                                      aria-hidden="true"></i></a>
+                {% elseif item['OrderStatus'] == 129 %}
+                  <span style="color:#FF0000">{{ item['OrderStatusName'] }}</span>
+                {% elseif item['OrderStatus'] == 257 %}
+                  <span class="wait-to-paid">{{ item['OrderStatusName'] }}</span>
+                {% endif %}
+                {% if item['remove_bind_stock'] == 1 %}
+                  <div data-toggle="popover"  class="bindRelationship link-color pointer" data-id="{{ item['Id'] }}"
+                        data-placement="bottom" data-content="" data-html="true"  data-trigger="manual" data-container="body">
+                   {{ item['order_status_label'] }}
+                </div>
+                {% else%}
+                  {{ item['order_status_label'] }}
+                {% endif %}
+              </td>
+              <td class="text-left" ><span class="order-check-time-width" style="word-break: break-word">{{ item['check_time'] }}</span></td>
+              <td class="text-left platform-style">{{ item.platform_name }}</td>
+              <td class="text-left no-wrap">
+                <div class="action-style">
+                  <div class="btn-group action-group">
+                    {# 预览 #}
+                    <a href="{{ url('account/customer_order/customerOrderSalesOrderDetails', {'id': item['Id']}) }}"
+                       target="_blank"
+                       data-toggle="tooltip"
+                       title="{% if item['seconds_remaining'] %} Confirm  Pick-up Info. {% else %} {{ text_button_view }} {% endif %}"
+                       class="btn btn-action btn-operate btn-action-operate">
+                      {% if item['seconds_remaining'] %}{# 取货信息待确认 #}
+                        <i class="giga icon-querenquhuotubiao-01"></i>
+                      {% else %}
+                        <i class="giga icon-chakan1"></i>
+                      {% endif %}
+                    </a>
+                    {# 费用待支付，支付按钮 #}
+                    {% if item['OrderStatus'] == 127 %}
+                      <a href="javascript:" onclick="createFeeOrder('{{ item['Id'] }}')"
+                         data-toggle="tooltip" title="{{ fee_wait_pay_tip }}" class="btn btn-action btn-operate btn-zhifu" >
+                        <i class="giga {{ payIconMap[country_id] }}"></i>
+                      </a>
+                    {% endif %}
+                    {% if item['OrderStatus'] == 1 %}
+                      <a href="javascript:;" onclick="list_inventory.inventoryMatchHandler(this)" data-orderid="{{ item['Id'] }}" data-salesorderid="{{ item['OrderId'] }}" data-importmode="{{ item['import_mode'] }}"
+                         data-toggle="tooltip" title="Check Inventory and Purchase" class="btn btn-action btn-operate btn-pay" >
+                        {# <i class="gcl {{ payNewOrderIconMap[country_id] }}"></i> #}
+                        <div class="pay-icon">pay</div>
+                      </a>
+                    {% endif %}
+                    <div class="dropdown-group">
+                      {% if item['lr_status'] == 3  and item['OrderStatus'] != 16 %}
+                        <span class="reject-icon"><i class="giga icon-gantanhaojinggao text-warning text-larger"></i></span>
+                      {% endif %}
+                      <button type="button" data-toggle="dropdown" class="btn btn-primary dropdown-toggle btn-action-operate">
+                        <i class="giga icon-action-more"></i>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-right">
+                        {#必读此项
+                          1. canCancel    英国订单无cancel
+                          2. canEditShip  dropship 不可以，其他都可以
+                        #}
+                        {# 取消订单 #}
+                        {% if item['canCancel'] %}
+                          {% if item['isCancelling'] %}
+                            <li class="li-disable" data-toggle="tooltip" title="The cancellation is being processed.">
+                              <a>
+                                <i class="giga icon-quxiaoshenqing icon-drop-down"></i> {{ text_order_cancel }}
+                              </a>
+                            </li>
+                          {% else %}
+                            <li>
+                              <a
+                                onclick="cancelConfirmDialog_corderInfo({{ item['Id'] }},'{{ item['OrderId'] }}',{{ item['OrderStatus'] }},'{{ item['OrderDate'] }}','{{ item['pick_up_status'] }}',{{ item['hasVirtualPayment'] }})">
+                                <i class="giga icon-quxiaoshenqing icon-drop-down"></i> {{ text_order_cancel }}
+                              </a>
+                            </li>
+                          {% endif %}
+                        {% endif %}
+                        {% if item['canReleased'] %}
+                          <li data-toggle="tooltip" title="Remove the on hold status then to purchase it.">
+                            <a onclick="releaseOrder({{ item['Id'] }})">
+                              <i class="giga icon-shifangdingdan icon-drop-down"></i> Released
+                            </a>
+                          </li>
+                        {% endif %}
+                        {# 修改地址 #}
+                        {% if item['canEditShip'] %}
+                          {% if item['isEditingShip'] %}
+                            <li class="li-disable" data-toggle="tooltip" title="The modification is being processed.">
+                              <a>
+                                <i class="giga icon-edit icon-drop-down"></i> {{ text_modify_shipping }}
+                              </a>
+                            </li>
+                          {% else %}
+                            <li>
+                              <a onclick="showModifyShipping('{{ item['address_limit_len'] }}','{{ item['Id'] }}','{{ item['ShipName'] }}','{{ item['Email'] }}','{{ item['ShipPhone'] }}','{{ item['ShipAddress1'] }}'
+                                ,'{{ item['ShipCity'] }}','{{ item['ShipState'] }}','{{ item['ShipZipCode'] }}','{{ item['ShipCountry'] }}','{{ item['CustomerComments'] }}')">
+                                <i class="giga icon-edit icon-drop-down"></i> {{ text_modify_shipping }}
+                              </a>
+                            </li>
+                          {% endif %}
+                        {% endif %}
+                        {#订单为On Hold状态和Canceled状态和LTL Check状态时不显示此按钮#}{# 修改标签 #}
+                        {% if item['canManageLabels'] %}
+                          <li>
+                            <a onclick="editDropshipFileInfo({{ item['Id'] }},{{ item['import_mode'] }},{{ item['is_american'] }},{{ item['canEditUpload'] }})">
+                              <i class="giga icon-viewlabel icon-drop-down"></i> {{ text_button_manage_label }} {% if item['showIconExclamation'] %}<i class="giga icon-exclamation-mark text-warning"></i>{% endif %}
+                            </a>
+                          </li>
+                        {% endif %}
+
+                        {% if item['trackShipmentTag'] and item['import_mode'] != 8 %}
+                          <li>
+                            <a
+                              href="{{ url('account/sales_order/tracking_search',{'sales_order_id':item.OrderId}) }}"
+                              target="_blank">
+                              <i class="giga icon-tracking icon-drop-down"></i> Track Shipment</a>
+                          </li>
+                        {% endif %}
+                        {# 签收付款 #}
+                        {% if item['OrderStatus'] == 128 %}
+                          <li>
+                            <a onclick="redirectToDeliveryList({{ item['Id'] }})">
+                              <i class="giga icon-meiyuan icon-drop-down"></i> {{ text_button_redirect_dm }}
+                            </a>
+                          </li>
+                        {% endif %}
+                        {% if item['safeguard_bill_is_active'] %}
+                          <li>
+                            <a  href="{{ url('account/safeguard/bill',{'filter_no': item['OrderId']}) }}"  target="_blank">
+                              <i class="giga icon-v10bzfybz icon-drop-down"></i> Claim
+                            </a>
+                          </li>
+                        {% endif %}
+                        {# 修改取货信息 #}
+                        {% if item['canEditPickUp'] %}
+                          <li>
+                            <a onclick="editPickingInfoHandle({{ item['Id'] }})">
+                              <i class="giga icon-edit icon-drop-down icon-pick-up"></i>Modify Pick-up Info.
+                            </a>
+                          </li>
+                        {% endif %}
+                      </ul>
+                    </div>
+                    {# 显示错误日志 #}
+                    {% if item['failure_log'] %}
+                      <a onclick="showFailureLog('{{ item['failure_log'] }}')"
+                         data-toggle="tooltip" title="{{ text_button_failure_log }}" class="btn btn-action btn-operate pull-right btn-action-operate">
+                        <b class="giga icon-action-warning action-warning-color"></b>
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          {% else %}
+            <tr>
+              {% if filter_flag == 'false' %}
+                <td class="text-center" colspan="12">{{ text_no_results }}</td>
+              {% endif %}
+            </tr>
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {% if filter_flag %}
+      <div class="row mt-2" style="margin-right: 0">
+        <div class="col-sm-12 flex-col-center">
+          <div class="col-sm-4">
+            <div class="flex-col-center" id="batchPayCon">
+              <i class="giga icon-tables-selected-rows-action "></i>
+              {% if filter_orderStatus != 1 %}
+              <a class="batch-group-action btn-zhifu" id="batch-btn-zhifu" data-toggle="tooltip" title="{{ fee_wait_pay_tip }}"><i class="giga {{ payIconMap[country_id] }}"></i></a>
+              {% else %}
+              {# #38451 批量支付按钮 #}
+              <a href="javascript:;" class="batch-group-action btn-zhifu" id="batch-btn-pay" style="font-weight: bold" 
+                  data-toggle="tooltip" title="Check Inventory and Purchase" class="btn btn-action btn-operate btn-pay" >
+                <div class="pay-icon">pay</div>
+              </a>
+              {% endif %}            
+              <span class="pay-select">Pay for selected( <i class="select-num">0</i> ) charges</span>
+            </div>
+          </div>
+          <div class="col-sm-8 flex-col-center text-right flex-end">
+            <ul id="bos_pagination"></ul>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {#{% include 'giga/template/_parts/pagination_simple.twig' %}#}
+  </div>
+</div>
+{#    Keep in stock 绑定关系展示框#}
+<div id="bindList" class="none">
+  <div class="bind-list text-color-normal">
+    <div>
+      After Sales Order has been canceled,any Purchase Orders linked to that Sales Order will no longer be attached.
+      The stock will be remained and can be purchased for other sales orders.
+      Input Purchase Order ID to apply for refund.
+    </div>
+    <div class="mt-1">
+      <table class="oris-table">
+        <thead>
+        <tr>
+          <td>Purchase Order ID</td>
+          <td>Quantity</td>
+          <td>Action</td>
+        </tr>
+        </thead>
+        <tbody class="purchase-list"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!--模态对话框-->
+<div class="modal fade" tabindex="-1" role="dialog" id="myModalDetail">
+  <div class="modal-dialog" style="width: auto;">
+    <div class="modal-content" id="myModalDetailContent">
+
+    </div>
+  </div>
+</div>
+
+{# 取消订单弹窗 #}
+{% include "yzcTheme/template/account/corder_info_cancel_order_modal.twig" with {'page_from': 'list'} %}
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="change_ship_dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          &times;
+        </button>
+        <h4 class="modal-title">
+          {{ dialog_title_edit_shipping }}
+        </h4>
+      </div>
+      <div class="modal-body" id="change_ship_body" style="font-size: small;">
+        <div id="change_ship_form" style="padding: 0px 10px;">
+          <br/>
+          <input id="order_id" value="" hidden>
+          <div class="dialog-form-line">
+            <label class="dialog-form-label"><i style="color: red">*</i>{{ text_ship_label_name }}</label>
+            <div style="width: 100%">
+              <input class="dialog-form-input" style="width: 100%" type="text" id="change_ship_name" maxlength="50"
+                     value="">
+              <span id="error_ship_name" class="dialog-form-warning">{{ error_ship_label_name }}</span>
+            </div>
+          </div>
+          <div class="dialog-form-line">
+            <label class="dialog-form-label"><i style="color: red">*</i>{{ text_ship_label_email }}</label>
+            <div style="width: 100%">
+              <input class="dialog-form-input" style="width: 100%" type="text" id="change_ship_email" maxlength="90"
+                     value="">
+              <span id="error_ship_email" class="dialog-form-warning">{{ error_ship_label_email }}</span>
+            </div>
+          </div>
+          <div class="dialog-form-line">
+            <label class="dialog-form-label"><i style="color: red">*</i>{{ text_ship_label_phone }}</label>
+            <div style="width: 100%">
+              <input class="dialog-form-input" style="width: 100%" type="text" id="change_ship_phone" maxlength="45"
+                     value="">
+              <span id="error_ship_phone" class="dialog-form-warning"></span>
+            </div>
+          </div>
+          <div class="dialog-form-line">
+            <label class="dialog-form-label"><i style="color: red">*</i>{{ text_ship_label_address }}</label>
+            <div style="width: 100%">
+              <input class="dialog-form-input" style="width: 100%" type="text" id="change_ship_address" maxlength="100"
+                     value="">
+              <span id="error_ship_address" class="dialog-form-warning"></span>
+            </div>
+          </div>
+          <div class="dialog-form-line">
+            <label class="dialog-form-label"><i style="color: red">*</i>{{ text_ship_label_city }}</label>
+            <div style="width: 100%">
+              <input class="dialog-form-input" style="width: 100%" type="text" id="change_ship_city" maxlength="40"
+                     value="">
+              <span id="error_ship_city" class="dialog-form-warning"></span>
+            </div>
+          </div>
+          <div class="dialog-form-line">
+            <label class="dialog-form-label"><i style="color: red">*</i>{{ text_ship_label_country }}</label>
+            <div style="width: 100%">
+              {#N-130 欧洲+日本New Order状态下增加修改地址和修改ItemCode功能 #}
+              <select name="country_select" id="change_ship_country" class="dialog-form-input" style="width: 100%"
+                      onchange="changeStateOption();">
+                <option value="0">{{ text_select_country }}</option>
+                {% if country_id == 223 %}
+                  <option value="US">United States</option>
+                {% elseif country_id == 222 %}
+                  <option value="GB">United kingdom</option>
+                {% elseif country_id == 81 %}
+                  <option value="DE">Germany</option>
+                {% elseif country_id == 107 %}
+                  <option value="JP">Japan</option>
+                {% else %}
+                {% endif %}
+              </select>
+              <span id="error_ship_country" class="dialog-form-warning">{{ error_ship_label_country }}</span>
+            </div>
+          </div>
+          <div class="dialog-form-line">
+            <label class="dialog-form-label"><i style="color: red">*</i>{{ text_ship_label_state }}</label>
+            <div style="width: 100%">
+              {% if country_id == 223 or country_id == 107 %}
+                <select name="state_select" id="change_ship_state" class="dialog-form-input" style="width: 100%">
+                  <option value="0">{{ text_select_state }}</option>
+                </select>
+                <span id="error_ship_state" class="dialog-form-warning">{{ error_ship_label_state }}</span>
+              {% else %}
+                <input class="dialog-form-input" name="state_select" style="width: 100%" type="text"
+                       id="change_ship_state" maxlength="50" value="">
+                <span id="error_ship_state" class="dialog-form-warning">The Shipping State field cannot be left blank and the maximum length is 50 characters </span>
+              {% endif %}
+
+            </div>
+          </div>
+          <div class="dialog-form-line">
+            <label class="dialog-form-label"><i style="color: red">*</i>{{ text_ship_label_code }}</label>
+            <div style="width: 100%">
+              <input class="dialog-form-input" style="width: 100%" type="text" id="change_ship_code" maxlength="18"
+                     value="">
+              <span id="error_ship_code" class="dialog-form-warning"></span>
+            </div>
+          </div>
+          <div class="dialog-form-line">
+            <label class="dialog-form-label">{{ text_ship_label_comments }}</label>
+            <div style="width: 100%">
+              <textarea style="max-width: 400px;min-width: 400px;" rows="3" id="change_ship_comments" maxlength="1500" value=""></textarea>
+              <span id="error_ship_comments" class="dialog-form-warning">{{ error_ship_label_comments }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{ dialog_btn_no }}
+        </button>
+        <button type="button" class="btn btn-primary btn-submit" id="ship_confirm_btn" onclick="confirmModifyShipping()">
+          {{ dialog_btn_yes }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="alert_dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          &times;
+        </button>
+        <h4 class="modal-title" id="alert_title">
+
+        </h4>
+      </div>
+      <div class="modal-body" id="alert_body" style="font-size: large;text-align: center">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-submit" data-dismiss="modal" id="alert_confirm">
+          {{ dialog_btn_ok }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js"></script>
+
+{# 编辑取货信息模态弹窗 #}
+{% include "yzcTheme/template/account/corder_info_edit_picking_info.twig" %}
+
+{% include "yzcTheme/template/account/inventory_match_modal.twig" with {'from':'list'} %}
+
+<script type="text/javascript">
+{#  30246 #}
+  $('body').off('click','.bindRelationship');
+  $('body').on('click','.bindRelationship',function () {
+    $(".bindRelationship").popover('destroy');
+    var orderId = $(this).attr('data-id');
+    var purchaseList = '';
+    var that = this;
+    $.ajax({
+      url: "index.php?route=account/customer_order/getSalesOrderAssociatedDeletedRecordList&sales_order_id=" + orderId,
+      type: "get",
+      error: function () {
+        parent.layer.alert("请联系IT处理");
+      },
+      success: function (res) {
+        let data = res.data;
+        if (res.code == 200 && data){
+          let tr ='';
+          for (var i = 0 ;i < data.length ; i++) {
+            tr = '<tr>' +
+              '<td>'+data[i].order_id+'</td> ' +
+              '<td>'+data[i].qty+'</td>' +
+              ' <td>' +
+              '<button class="oris-button mini-button" data-id="'+data[i].order_id+'">RMA</button>' +
+              '</td>' +
+              '</tr>'
+            purchaseList= purchaseList + tr
+          }
+        }else{
+          purchaseList=`<tr><td colspan="3">no data</td></tr>`
+        }
+        $(".bindRelationship").popover('destroy');
+        $("#bindList").find('.purchase-list').html(purchaseList);
+        var div = $("#bindList").html();
+        $(that).attr('data-content',div);
+        $(that).popover('show');
+      }
+    });
+  });
+  $('body').bind('click', function(event) {
+    var evt = event.srcElement ? event.srcElement : event.target;
+    if ( (evt.class == 'bindRelationship') || ($(evt).parents('.order-status').length!=0) || ($(evt).parents('.bind-list').length!=0) )
+      return; // 如果是元素本身，则返回
+    else {
+      $(".bindRelationship").popover('destroy');
+    }
+  });
+  $('body').on('click','.bind-list .mini-button',function () {
+    var fiter_order_id = $(this).attr('data-id');
+    window.location.href = "{{ url('account/rma_management') }}" + "&source=sale_canceled_order&filter_order_id=" + fiter_order_id;
+  })
+
+
+  $('.carrier-status').click(function () {
+    var order_id = $(this).attr("data-order");
+    var tracking_number = $(this).attr("data-tracking");
+    var data_shipsku = $(this).attr("data-shipsku");
+    openTrackStatusDialog(order_id, tracking_number, data_shipsku);
+  });
+
+  // trackingDetail订单状态详情页
+  function openTrackStatusDialog(order_id, tracking_number, data_shipsku) {
+    var trackingDetailUrl = "{{ url('account/sales_order/tracking_search/detail',{'order_id':''}) }}"
+      + escape(order_id) + '&tracking_number=' + escape(tracking_number) + '&tracking_shipsku=' + escape(data_shipsku);
+    layer.open(
+      {
+        type: 2,
+        area: ['520px', '526px'],
+        title: 'Detailed View',
+        fixed: false, //不固定Change
+        maxmin: false,
+        offset: "auto",
+        shadeClose: true,
+        skin: 'yzc_layer my_layer',
+        scrollbar: false,
+        resize:false,
+        content: trackingDetailUrl,
+        cancel: function (index, layer) {
+
+        },
+        success: function () {
+        }
+      }
+    );
+  }
+
+  $('.dropdown-group').each(function () {
+    if ($(this).find('ul li').length <= 0) {
+      $(this).remove();
+    }
+  });
+
+
+  const ANY_TIME = 0;
+  const TODAY = 1;
+  const PAST_WEEK = 2;
+  const PAST_MONTH = 3;
+  const PAST_YEAR = 4;
+  const CUSTOM_DATE = 5;
+  let inputOrderDateRange = $('#inputOrderDateRange');
+  let inputOrderDateFrom = $('#input-orderDate-from');
+  let inputOrderDateTo = $('#input-orderDate-to');
+  // 时间选择器
+  inputOrderDateFrom.datetimepicker({
+    pickDate: true,
+    pickTime: false,
+    format: 'YYYY-MM-DD 00:00:00'
+  }).on('dp.hide', function () {
+    inputOrderDateRange.val(CUSTOM_DATE);
+  });
+  inputOrderDateTo.datetimepicker({
+    pickDate: true,
+    pickTime: false,
+    format: 'YYYY-MM-DD 23:59:59'
+  }).on('dp.hide', function () {
+    inputOrderDateRange.val(CUSTOM_DATE);
+  });
+
+  $(document).ready(function () {
+    initPopover();
+    getNoticeMessage();
+    inputOrderDateRange.on('change', function () {
+      let selectValue = parseInt($(this).val());
+      switch (selectValue) {
+        case ANY_TIME: {
+          inputOrderDateFrom.val('');
+          inputOrderDateFrom.datetimepicker('update');
+          inputOrderDateTo.val('');
+          inputOrderDateTo.datetimepicker('update');
+          break;
+        }
+        case TODAY: {
+          let today = DateTime.getFormatDay(0);
+          inputOrderDateFrom.val(today + ' 00:00:00');
+          inputOrderDateFrom.datetimepicker('update');
+          inputOrderDateTo.val(today + ' 23:59:59');
+          inputOrderDateTo.datetimepicker('update');
+          break;
+        }
+        case PAST_WEEK: {
+          inputOrderDateFrom.val(DateTime.getFormatDay(-7) + ' 00:00:00');
+          inputOrderDateFrom.datetimepicker('update');
+          inputOrderDateTo.val(DateTime.getFormatDay(0) + ' 23:59:59');
+          inputOrderDateTo.datetimepicker('update');
+          break;
+        }
+        case PAST_MONTH: {
+          inputOrderDateFrom.val(DateTime.getFormatDay(-30) + ' 00:00:00');
+          inputOrderDateFrom.datetimepicker('update');
+          inputOrderDateTo.val(DateTime.getFormatDay(0) + ' 23:59:59');
+          inputOrderDateTo.datetimepicker('update');
+          break;
+        }
+        case PAST_YEAR: {
+          inputOrderDateFrom.val(DateTime.getFormatDay(-365) + ' 00:00:00');
+          inputOrderDateFrom.datetimepicker('update');
+          inputOrderDateTo.val(DateTime.getFormatDay(0) + ' 23:59:59');
+          inputOrderDateTo.datetimepicker('update');
+          break;
+        }
+        case CUSTOM_DATE: {
+          inputOrderDateFrom.val('');
+          inputOrderDateFrom.datetimepicker('update');
+          inputOrderDateTo.val('');
+          inputOrderDateTo.datetimepicker('update');
+          break;
+        }
+        default:
+          break;
+      }
+    });
+    $("input[name='rma_radio'][type='radio']").change(function () {
+      $("#rma_alert").css("display", "none");
+    });
+    $("#cancellation_reason").blur(function () {
+      $("#reason_alert").css("display", "none");
+    });
+
+    if (typeof timer !== 'undefined') {
+      clearInterval(timer);
+    }
+    $(function () {
+      $('[data-toggle="popover"]').popover()
+    });
+    $("#input-orderStatus").change(function(){
+      if($(this).val() == 16){
+        $("#div_cancel_not_applied_rma").show();
+      } else {
+        $("#div_cancel_not_applied_rma").hide();
+      }
+    });
+
+    $(".tooltip[role='tooltip']").remove();
+  });
+  function getNoticeMessage() {
+    let tipStrArr = [];
+    //获取提示信息
+    $.ajax({
+      url: '{{ url('account/customer_order/getLabelViewInfo') }}',
+      type: 'post',
+      data: {},
+      async: true,
+      success: function (json) {
+
+        if (json.error == 1 && json.data.length > 0) {
+          tipStrArr = json.data;
+          if(tipStrArr.length > 1){
+            $("#boxShow").removeClass('display-none');
+            //拼接UL
+            let noticeHtml='';
+            tipStrArr.forEach((item,i)=>{
+              noticeHtml += '<li>'+ item +'</li>';
+            });
+            $("#newsTip ul").html(noticeHtml);
+            let timer = setInterval("noticeUp('.notice-con ul','-44px',1000)", 3000);
+            timerIDArr.push(timer);
+            // $('[data-toggle="tooltip"]').tooltip();
+            stopScoll();
+          }else if(tipStrArr.length == 1){
+            $("#boxShow").removeClass('display-none');
+            let noticeHtml='';
+            tipStrArr.forEach((item,i)=>{
+              noticeHtml+='<li>'+ item +'</li>';
+            });
+            $("#newsTip ul").html(noticeHtml);
+          }else {
+            $("#boxShow").addClass('display-none');
+          }
+        } else {
+          $("#boxShow").addClass('display-none');
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+
+  }
+
+  function noticeUp(obj, top, time) {
+    $(obj).animate({
+      marginTop: top
+    }, time, function () {
+      $(this).css({marginTop: "0"}).find(":first").appendTo(this);
+    })
+  }
+  function stopScoll() {
+    $("#boxShow").hover(
+      function () {
+        clearTimer();
+      },
+      function () {
+        noticeUp('.notice-con ul','-44px',1000);
+        let timer = setInterval("noticeUp('.notice-con ul','-44px',1000)", 3000);
+        timerIDArr.push(timer);
+      }
+    )
+  }
+  function showDetail(id) {
+    var myModalSelector = $("#myModalDetail");
+    // 请求后台获取详细信息
+    myModalSelector.modal({
+      remote: "{{ url('account/customer_order/orderDetail',{'id':''}) }}" + id,
+      backdrop: 'static',
+      keyboard: false
+    });
+    // 每次隐藏时，清除数据。确保点击时，重新加载
+    myModalSelector.on("hidden.bs.modal", function () {
+      $(this).removeData("bs.modal");
+      $("#myModalDetailContent").html("");
+    });
+  }
+
+  function downloadOrderFulfillment() {
+    let url = '{{ url("account/customer_order/downloadOrderFulfillment") }}';
+    let filter_orderId = $('input[name="filter_orderId"]').val();
+    if (filter_orderId) {
+      url += '&filter_orderId=' + encodeURIComponent(filter_orderId);
+    }
+    let filter_orderStatus = $('select[name="filter_orderStatus"]').val();
+    if (filter_orderStatus != '*') {
+      url += '&filter_orderStatus=' + encodeURIComponent(filter_orderStatus);
+    }
+    let filter_orderDate_from = $('input[name="filter_orderDate_from"]').val();
+    if (filter_orderDate_from) {
+      url += '&filter_orderDate_from=' + encodeURIComponent(filter_orderDate_from);
+    }
+    let filter_orderDate_to = $('input[name="filter_orderDate_to"]').val();
+    if (filter_orderDate_to) {
+      url += '&filter_orderDate_to=' + encodeURIComponent(filter_orderDate_to);
+    }
+    let filter_item_code = $('input[name="filter_item_code"]').val();
+    if (filter_item_code) {
+      url += '&filter_item_code=' + encodeURIComponent(filter_item_code);
+    }
+    let filter_tracking_number = $('select[name="filter_tracking_number"]').val();
+    if (filter_tracking_number) {
+      url += '&filter_tracking_number=' + encodeURIComponent(filter_tracking_number);
+    }
+    let filter_delivery_status = $('select[name="filter_delivery_status"]').val();
+    if (filter_delivery_status) {
+      url += '&filter_delivery_status=' + encodeURIComponent(filter_delivery_status);
+    }
+    if ($("#div_cancel_not_applied_rma").is(":visible")) {
+      let filter_cancel_not_applied_rma = $('input[name="filter_cancel_not_applied_rma"]:checked').val();
+      if (filter_cancel_not_applied_rma !== undefined) {
+        url += '&filter_cancel_not_applied_rma=' + encodeURIComponent(filter_cancel_not_applied_rma);
+      }
+    }
+    let filter_import_mode = $('select[name="filter_import_mode"]').val();
+    if (filter_import_mode != '-1') {
+      url += '&filter_import_mode=' + encodeURIComponent(filter_import_mode);
+    }
+    location = url;
+  }
+
+  function init() {
+    let filter_orderStatus = '{{ filter_orderStatus }}';
+    if (filter_orderStatus) {
+      $('#input-orderStatus').val(filter_orderStatus);
+    }
+    //分页链接
+    pagination();
+  }
+
+  function pagination() {
+    if ({{ paginator.getPageCount() }}) {
+      $('#bos_pagination').bootstrapPaginator({
+        /*当前使用的是3版本的bootstrap*/
+        bootstrapMajorVersion: 3,
+        /*配置的字体大小是小号*/
+        size: 'normal',
+        /*当前页*/
+        currentPage: {{ paginator.getPage() }},
+        /*一共多少页*/
+        totalPages: {{ paginator.getPageCount() }},
+        /*页面上最多显示几个含数字的分页按钮*/
+        numberOfPages: 5,
+        rowsOfPage: {{ paginator.getPageSize() }},
+        total: {{ paginator.getTotalCount() }},
+        onPageClicked: function (event, originalEvent, type, page) {
+          let url = '{{ paginator.getUrlWithNoPage() }}&page_num=' + page;
+          clearTimer();
+          block.blockUI();
+          $('#order-show').load(url,function () {
+            block.unBlockUI();
+          });
+        }
+      });
+    }
+  }
+
+  $(function () {
+    //var layer = layui.layer;
+    block.unBlockUI();
+    init();
+  });
+
+  function getManifestList() {
+      layer.open({
+        type: 2,
+        area: ['1200px', '90%'],
+        title: 'Manifest Management',
+        fixed: false, //不固定Change
+        maxmin: true,
+        skin: 'yzc_layer',
+        btnAlign: 'c',
+        scrollbar: false,
+        content: '{{ url("account/customer_order/getManifestList") }}',
+        cancel: function (index, layero) {
+
+        },
+        end: function () {
+          var url = getUrl() + '&filter_button=1';
+          clearTimer();
+          $('#order-show').load(url);
+        }
+
+
+      });
+  }
+  function editDropshipFileInfo(itemId, import_mode , is_american, editFlag) {
+    var area = [ "1250px", '700px'];
+    if(import_mode==6 && is_american==1){
+       area =[ "1000px", '700px'];
+    }
+    if (editFlag == true) {
+      var upload_info = '{{ text_label }}';
+      var confirm_info = '{{ text_close_confirm_info }}';
+      var url = '{{ dropship_file_upload }}' + '&id=' + itemId;
+      layer.open({
+        type: 2,
+        area: area,
+        title: upload_info,
+        fixed: false, //不固定Change
+        maxmin: true,
+        skin: 'yzc_layer',
+        btnAlign: 'c',
+        scrollbar: false,
+        content: url,
+        cancel: function (index, layero) {
+
+        },
+        end: function () {
+          layer.load(1);
+          var url = getUrl() + '&filter_button=1';
+          clearTimer();
+          $('#order-show').load(url);
+          setTimeout(function () {
+            layer.closeAll('loading');
+          },2000)
+        }
+
+
+      });
+    } else {
+      var upload_info = '{{ text_label_details }}';
+      var url = '{{ dropship_file_upload }}' + '&id=' + itemId;
+      layer.open({
+        type: 2,
+        area:  area,
+        title: upload_info,
+        fixed: false, //不固定Change
+        maxmin: true,
+        skin: 'yzc_layer',
+        btnAlign: 'c',
+        scrollbar: false,
+        content: url,
+
+        end: function () {
+          layer.load(1);
+          var url = getUrl() + '&filter_button=1';
+          clearTimer();
+          $('#order-show').load(url);
+          setTimeout(function () {
+            layer.closeAll('loading');
+          },2000)
+        }
+      });
+    }
+  }
+
+  function getUrl() {
+    let url = '{{ url("account/customer_order/customerOrderTable", {"filter_button":"1"}) }}';
+    let filter_orderId = $('input[name="filter_orderId"]').val();
+    if (filter_orderId) {
+      url += '&filter_orderId=' + encodeURIComponent(filter_orderId);
+    }
+    let filter_orderStatus = $('select[name="filter_orderStatus"]').val();
+    if (filter_orderStatus != '*') {
+      url += '&filter_orderStatus=' + encodeURIComponent(filter_orderStatus);
+    }
+    let filter_orderDate_from = $('input[name="filter_orderDate_from"]').val();
+    if (filter_orderDate_from) {
+      url += '&filter_orderDate_from=' + encodeURIComponent(filter_orderDate_from);
+    }
+    let filter_orderDate_to = $('input[name="filter_orderDate_to"]').val();
+    if (filter_orderDate_to) {
+      url += '&filter_orderDate_to=' + encodeURIComponent(filter_orderDate_to);
+    }
+    let filter_item_code = $('input[name="filter_item_code"]').val();
+    if (filter_item_code) {
+      url += '&filter_item_code=' + encodeURIComponent(filter_item_code);
+    }
+    let filter_tracking_number = $('select[name="filter_tracking_number"]').val();
+    if (filter_tracking_number) {
+      url += '&filter_tracking_number=' + encodeURIComponent(filter_tracking_number);
+    }
+    let filter_delivery_status = $('select[name="filter_delivery_status"]').val();
+    if (filter_delivery_status) {
+      url += '&filter_delivery_status=' + encodeURIComponent(filter_delivery_status);
+    }
+    if ($("#div_cancel_not_applied_rma").is(":visible")) {
+      let filter_cancel_not_applied_rma = $('input[name="filter_cancel_not_applied_rma"]:checked').val();
+      if (filter_cancel_not_applied_rma !== undefined) {
+        url += '&filter_cancel_not_applied_rma=' + encodeURIComponent(filter_cancel_not_applied_rma);
+      }
+    }
+
+    let filter_import_mode = $('select[name="filter_import_mode"]').val();
+    if (filter_import_mode != '-1') {
+      url += '&filter_import_mode=' + encodeURIComponent(filter_import_mode);
+    }
+    return url;
+  }
+
+  function getUrlForFilter(page) {
+    let url = '{{ url("account/customer_order/customerOrderTable", {"filter_button":"1"}) }}';
+    let filter_orderId = $('input[name="filter_orderId"]').val();
+    if (filter_orderId) {
+      url += '&filter_orderId=' + encodeURIComponent(filter_orderId);
+    }
+    let filter_orderStatus = $('select[name="filter_orderStatus"]').val();
+    if (filter_orderStatus != '*') {
+      url += '&filter_orderStatus=' + encodeURIComponent(filter_orderStatus);
+    }
+    let filter_orderDate_from = $('input[name="filter_orderDate_from"]').val();
+    if (filter_orderDate_from) {
+      url += '&filter_orderDate_from=' + encodeURIComponent(filter_orderDate_from);
+    }
+    let filter_orderDate_to = $('input[name="filter_orderDate_to"]').val();
+    if (filter_orderDate_to) {
+      url += '&filter_orderDate_to=' + encodeURIComponent(filter_orderDate_to);
+    }
+    let filter_item_code = $('input[name="filter_item_code"]').val();
+    if (filter_item_code) {
+      url += '&filter_item_code=' + encodeURIComponent(filter_item_code);
+    }
+    let filter_tracking_number = $('select[name="filter_tracking_number"]').val();
+    if (filter_tracking_number) {
+      url += '&filter_tracking_number=' + encodeURIComponent(filter_tracking_number);
+    }
+    let filter_delivery_status = $('select[name="filter_delivery_status"]').val();
+    if (filter_delivery_status) {
+      url += '&filter_delivery_status=' + encodeURIComponent(filter_delivery_status);
+    }
+    let filter_order_date_range = inputOrderDateRange.val();
+    if (filter_order_date_range > 0) {
+      url += '&filter_order_date_range=' + encodeURIComponent(filter_order_date_range);
+    }
+    let filter_import_mode = $('select[name="filter_import_mode"]').val();
+    if (filter_import_mode != '-1') {
+      url += '&filter_import_mode=' + encodeURIComponent(filter_import_mode);
+    }
+    if ($("#div_cancel_not_applied_rma").is(":visible")) {
+      let filter_cancel_not_applied_rma = $('input[name="filter_cancel_not_applied_rma"]:checked').val();
+      if (filter_cancel_not_applied_rma !== undefined) {
+        url += '&filter_cancel_not_applied_rma=' + encodeURIComponent(filter_cancel_not_applied_rma);
+      }
+    }
+
+    //新增查询
+    return url;
+  }
+
+
+  function getRejectLabelView(obj) {
+    clearTimer();
+    block.blockUI();
+    let url = '{{ url('account/customer_order/customerOrderTable', { 'label_tag': 1,'filter_button': 1 }) }}';
+    $('#order-show').load(url);
+  }
+
+  function getFeeToBePaidView(obj) {
+    clearTimer();
+    block.blockUI();
+    let url = '{{ url('account/customer_order/customerOrderTable', { 'filter_orderStatus': 127,'filter_button': 1 }) }}';
+    $('#order-show').load(url);
+  }
+
+  //自提货待提货搜索
+  function getWaitingForPickUpView() {
+    clearTimer();
+    block.blockUI();
+    let url = '{{ url('account/customer_order/customerOrderTable', { 'filter_orderStatus': 257,'filter_import_mode': 8,'filter_button': 1 }) }}';
+    $('#order-show').load(url);
+  }
+
+  //自提货待确认搜索
+  function getPickUpInfoTbView() {
+    clearTimer();
+    block.blockUI();
+    let url = '{{ url('account/customer_order/customerOrderTable', { 'filter_orderStatus': 2,'filter_pick_up_status': 10,'filter_import_mode': 8,'filter_button': 1 }) }}';
+    $('#order-show').load(url);
+  }
+
+  function filter(button) {
+    clearTimer();
+    var url = getUrlForFilter();
+    loadUrl(url);
+    $(button).button('loading');
+  }
+
+  function loadUrl(url) {
+    clearTimer();
+    block.blockUI();
+    $('#order-show').load(url, function () {
+      block.unBlockUI();
+    });
+  }
+
+  function refreshOrder(button) {
+    $('input[name="filter_orderId"]').val("");
+    $('select[name="filter_orderStatus"]').val("*");
+    $('input[name="filter_orderDate_from"]').val("");
+    $('input[name="filter_orderDate_to"]').val("");
+    $('select[name="filter_order_date_range"]').val("0");
+    $('input[name="filter_item_code"]').val("");
+    $('select[name="filter_tracking_number"]').val("2");
+    $('select[name="filter_import_mode"]').val("-1");
+    $("input[name='filter_cancel_not_applied_rma']").prop("checked", false);
+    filter(button);
+  }
+
+  function showFailureLog($html_str) {
+    var myModal = $("#alert_dialog");
+    myModal.modal();
+    $('#alert_title').text("{{ dialog_title_fail_log }}");
+    $('#alert_body').html(decodeURI($html_str));
+    myModal.on("hidden.bs.modal", function () {
+      $(this).removeData("bs.modal");
+      $('#alert_title').text("");
+      $('#alert_body').html("");
+    });
+  }
+
+  function changeStateOption() {
+    var country_id = '{{ country_id }}';
+    let country_val = $('#change_ship_country').val();
+    let state_val = $('#change_ship_state').val();
+    let options = "<option value= '0'>{{ text_select_state }}</option>";
+    if (country_val === "") {
+      $('#change_ship_state').empty().append(options);
+      return;
+    } else if (country_val == "0") {
+      if (country_id == 223 || country_id == 107) {
+        $('#change_ship_state').val(0);
+      } else {
+        $('#change_ship_state').val(null);
+      }
+
+    }
+    if (country_id == 223 || country_id == 107) {
+      var data = {country_id: country_val};
+      $.ajax({
+        url: '{{ url("account/customer_order/getCountryState") }}',
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        cache: true,
+        data: data,
+        beforeSend: function () {
+          layer.load();
+        },
+        success: function (json) {
+          $.each(json, function (key, value) {
+            options += '<option value="' + value.code + '"  >' + value.name + '</option>';
+          });
+          $('#change_ship_state').empty().append(options);
+          layer.closeAll('loading');
+
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          layer.closeAll('loading');
+          alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      });
+    }
+  }
+
+  function showModifyShipping(len,id, name, email, phone, address, city, state, zipCode, country, comments) {
+    var shipModal = $("#change_ship_dialog");
+    shipModal.find("#change_ship_address").attr('data-len',len);
+    shipModal.modal();
+    initChangeShipDialog(id, name, email, phone, address, city, state, zipCode, country, comments);
+    shipModal.on("hidden.bs.modal", function () {
+      $(this).removeData("bs.modal");
+      resetChangeShipDialog();
+    });
+  }
+
+  function initChangeShipDialog(id, name, email, phone, address, city, state, zipCode, country, comments) {
+    var country_id = '{{ country_id }}';
+    $("#order_id").val(id);
+    $("#change_ship_name").val(name);
+    $("#change_ship_email").val(email);
+    $("#change_ship_phone").val(phone);
+    $("#change_ship_address").val(address);
+    $("#change_ship_city").val(city);
+    var arr = ['US', 'DE', 'JP'];
+    var arr_uk = ['GB', 'UK'];
+    if ($.inArray(country, arr_uk) != -1) {
+      country = 'GB';
+    } else {
+      if ($.inArray(country, arr) == -1) {
+        country = 0;
+      }
+    }
+    $('#change_ship_country').val(country);
+    $("#change_ship_code").val(zipCode);
+    $("#change_ship_comments").val(comments);
+    if (country_id == 223 || country_id == 107) {
+      changeStateOption();
+      if ($.inArray(country, arr) != -1) {
+        $('#change_ship_state').val(state);
+      }
+      if ($('#change_ship_state').val() == null) {
+        $('#change_ship_state').val(0);
+      }
+
+    } else {
+      $('#change_ship_state').val(state);
+    }
+
+
+    // $("#ship_confirm_btn").on("click", function () {
+    //     confirmModifyShipping();
+    // });
+  }
+
+  function resetChangeShipDialog() {
+    $(".dialog-form-input").val("");
+    $(".dialog-form-warning").css("display", "none");
+  }
+
+  function validateShippingInfo() {
+    let isValid = true;
+    var patt = /^[\s]*$/;//以空格开头并且已空格结尾，中间多次或者零次空格
+    var country_id = '{{ country_id }}';
+    let email_reg = new RegExp("[\\w-\\.]+@([\\w-]+\\.)+[a-z]{2,3}");
+    if (!$("#change_ship_name").val() || $("#change_ship_name").val().length > 50) {
+      $("#error_ship_name").css("display", "block");
+      isValid = false;
+    } else {
+      $("#error_ship_name").css("display", "none");
+    }
+    if (!$("#change_ship_email").val() || $("#change_ship_email").val().length > 90) {
+      $("#error_ship_email").text("{{ error_ship_label_email }}");
+      $("#error_ship_email").css("display", "block");
+      isValid = false;
+    } else if (!email_reg.test($("#change_ship_email").val())) {
+      $("#error_ship_email").text("{{ error_ship_label_email_reg }}");
+      $("#error_ship_email").css("display", "block");
+      isValid = false;
+    } else {
+      $("#error_ship_email").css("display", "none");
+    }
+    if (!$("#change_ship_phone").val() || $("#change_ship_phone").val().length > 45) {
+      $("#error_ship_phone").text(" {{ error_ship_label_phone }}");
+      $("#error_ship_phone").css("display", "block");
+      isValid = false;
+    }  else if ($("#change_ship_phone").val().indexOf('?') >=0 || $("#change_ship_phone").val().indexOf('？') >=0) {
+      $("#error_ship_phone").css("display", "none");
+    } else {
+      $("#error_ship_phone").css("display", "none");
+    }
+    var change_ship_address_len = $("#change_ship_address").attr('data-len');
+    if (!$("#change_ship_address").val() || $("#change_ship_address").val().length > change_ship_address_len) {
+      $("#error_ship_address").text("ShipToAddressDetail must be between 1 and "+change_ship_address_len+" characters!");
+      $("#error_ship_address").css("display", "block");
+      isValid = false;
+    } else if ($("#change_ship_address").val().indexOf('?') >=0 || $("#change_ship_address").val().indexOf('？') >=0){
+      $("#error_ship_address").css("display", "none");
+    } else {
+      $("#error_ship_address").css("display", "none");
+    }
+    if (!$("#change_ship_city").val() || $("#change_ship_city").val().length > 40) {
+      $("#error_ship_city").text("{{ error_ship_label_city }}");
+      $("#error_ship_city").css("display", "block");
+      isValid = false;
+    }  else if ($("#change_ship_city").val().indexOf('?') >=0 || $("#change_ship_city").val().indexOf('？') >=0){
+      $("#error_ship_city").css("display", "none");
+    } else {
+      $("#error_ship_city").css("display", "none");
+    }
+    if (country_id == 223 || country_id == 107) {
+      if ($("#change_ship_state").val() == 0) {
+        $("#error_ship_state").css("display", "block");
+        isValid = false;
+      } else {
+        $("#error_ship_state").css("display", "none");
+      }
+    } else {
+
+      if (patt.test($("#change_ship_state").val()) || $("#change_ship_state").val() == '') {
+        $("#error_ship_state").css("display", "block");
+        isValid = false;
+      } else {
+        $("#error_ship_state").css("display", "none");
+      }
+
+    }
+
+    if (!$("#change_ship_code").val() || $("#change_ship_code").val().length > 18 || patt.test($("#change_ship_code").val())) {
+      $("#error_ship_code").text("{{  error_ship_label_code  }}");
+      $("#error_ship_code").css("display", "block");
+      isValid = false;
+    } else if ($("#change_ship_code").val().indexOf('?') >=0 || $("#change_ship_code").val().indexOf('？') >=0){
+      $("#error_ship_code").css("display", "none");
+    } else {
+      $("#error_ship_code").css("display", "none");
+    }
+    if (!$("#change_ship_country").val()) {
+      $("#error_ship_country").css("display", "block");
+      isValid = false;
+    } else {
+      $("#error_ship_country").css("display", "none");
+    }
+    if ($("#change_ship_comments").val().length > 1500) {
+      $("#error_ship_comments").css("display", "block");
+      isValid = false;
+    } else {
+      $("#error_ship_comments").css("display", "none");
+    }
+    return isValid;
+  }
+
+  function confirmModifyShipping() {
+    if (!validateShippingInfo()){
+      return
+    }
+    let id = $("#order_id").val();
+    let name = $("#change_ship_name").val();
+    let email = $("#change_ship_email").val();
+    let phone = $("#change_ship_phone").val();
+    let address = $("#change_ship_address").val();
+    let city = $("#change_ship_city").val();
+    let state = $("#change_ship_state").val().toUpperCase();
+    let code = $("#change_ship_code").val();
+    let country = $("#change_ship_country").val().toUpperCase();
+    let comments = $("#change_ship_comments").val();
+    let postData = {
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'city': city,
+      'state': state,
+      'code': code,
+      'country': country,
+      'comments': comments,
+    };
+    if (validateShippingInfo()) {
+      var shipModal = $("#change_ship_dialog");
+      shipModal.modal('hide');
+      $.ajax({
+        type: 'POST',
+        url: "{{ url('account/customer_order/changeOrderShipping',{'id':''}) }}" + id,
+        data: postData,
+        dataType: 'json',
+        success: function (json) {
+          if (json['success']) {
+            var myModal = $("#alert_dialog");
+            myModal.modal();
+            $('#alert_title').text("{{ dialog_title_info }}");
+            $('#alert_body').html(json['success']);
+            $("#alert_confirm").on("click", function () {
+              var url = getUrl();
+              clearTimer();
+              $('#order-show').load(url);
+            });
+            myModal.on("hidden.bs.modal", function () {
+              $(this).removeData("bs.modal");
+              $('#alert_title').text("");
+              $('#alert_body').html("");
+            });
+          } else if (json['error']) {
+            var myModal = $("#alert_dialog");
+            myModal.modal();
+            $('#alert_title').text("{{ dialog_title_error }}");
+            $('#alert_body').html(json['error']);
+            myModal.on("hidden.bs.modal", function () {
+              $(this).removeData("bs.modal");
+              $('#alert_title').text("");
+              $('#alert_body').html("");
+            });
+          }
+        }
+      });
+    }
+  }
+
+  function releaseOrder(id){
+    layer.confirm('Do you comfirm to release this order?',{
+      title: 'Confirm',
+      skin:'yzc_layer',
+      btn:['Yes','No']
+    }, function(index){
+      layer.close(index);
+      let data = {"id":id};
+      $.ajax({
+        url:"{{ url('account/customer_order/releaseOrder') }}",
+        type:'POST',
+        dataType:'JSON',
+        data:data,
+        beforeSend: function (json) {
+          layer.load(1, {shade: [0.3, '#000']});
+        },
+        success: function (json) {
+          layer.closeAll('loading');
+          if(json.code != 200){
+            $.toast({
+              heading: false,
+              text: json.msg,
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: 5000,
+              allowToastClose: false,
+              loader: false
+            });
+          } else {
+            $.toast({
+              heading: false,
+              text: json.msg,
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'success',
+              hideAfter: 5000,
+              allowToastClose: false,
+              loader: false
+            });
+            filter($("#filter-button"));
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          layer.closeAll('loading');
+          layer.msg(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+            time: 5000,
+            skin: ''
+          });
+        }
+      });
+    });
+  }
+
+  function redirectToDeliveryList(id) {
+    window.location.href = '{{ url ("account/deliverySignature") }}&id=' + id;
+  }
+
+  function createFeeOrder(salesOrderIds) {
+    $.ajax({
+      type: 'GET',
+      url: '{{ url('account/fee_order/fee_order/createSalesOrderFeeOrder') }}',
+      data: {
+        sales_order_id: salesOrderIds,
+      },
+      success: function (data) {
+        if (data.code !== 200) {
+          layer.open({
+            title: 'Error',
+            content: `<div class="mag-center-padding">` + data.msg + `</div>`,
+            btnAlign: 'c',
+            skin: 'yzc_layer',
+            btn: ['Refresh Page'],
+            yes: function (index, layero) {
+              $('#filter-button').click(); // 重新刷新页面
+              layer.close(index);
+            }
+          });
+          return;
+        }
+        window.open(data.data.confirm_url);
+      }
+    });
+  }
+  //保障服务按钮浮动变Detail
+  $("body").on('mouseover','.service-btn',function () {
+    $(this).html('Details')
+  });
+  $("body").on('mouseout','.service-btn',function () {
+    $(this).html($(this).attr("data-text"))
+  });
+
+  // 修改取货信息弹窗修改事件
+  function editPickingInfoHandle(id) {
+    // 获取上门取货编辑信息
+    block.blockUI();
+    $.ajax({
+      type: 'GET',
+      url: '{{ url('account/customer_order/getBuyerPickUpOrderInfoByOrderId') }}',
+      data: {
+        id: id,
+      },
+      success: function (json) {
+        if (json.code == 200) {
+          setDefaultValue(json.data);
+          $("#editPickingInfoModal").modal();
+        } else {
+          layer.msg(json.msg, {icon: 5});
+        }
+        block.unBlockUI();
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.msg(xhr.responseText, {icon: 5});
+        block.unBlockUI();
+      }
+    })
+  }
+
+</script>
+<script type="text/javascript">
+  $('.date').datetimepicker({
+    pickTime: false
+  });
+
+  {% if orders %}
+  /*B2B pages update*/
+
+  // 末尾冻结
+  var $tabletableSalesOrder = $('#tableSalesOrder.table');
+
+  var $widthtableSalesOrder = $tabletableSalesOrder.find('th:last-child').width();
+  var $fixedColumntableSalesOrder = $tabletableSalesOrder.clone().insertAfter($tabletableSalesOrder).addClass('fixed-column');
+  $fixedColumntableSalesOrder.attr("id",'tableSalesOrderCloneLast');
+  $fixedColumntableSalesOrder.find('th:not(:last-child),td:not(:last-child)').remove();
+  function calctableSalesOrder() {
+    $fixedColumntableSalesOrder.find('tr').each(function (i, elem) {
+      $(this).height($tabletableSalesOrder.find('tr:eq(' + i + ')').height());
+      //$(this).find('td').width($widthtableSalesOrder);
+    });
+  }
+  //calctableSalesOrder();
+
+  //首列冻结
+  var $widthtableSalesOrderFirst = $tabletableSalesOrder.find('th:first-child').width();
+  var $fixedColumntableSalesOrderFirst = $tabletableSalesOrder.clone().insertBefore($tabletableSalesOrder).addClass('fixed-column-first');
+  $fixedColumntableSalesOrderFirst.attr("id",'tableSalesOrderCloneFrirst');
+  $fixedColumntableSalesOrderFirst.find('th:not(:first-child),td:not(:first-child)').remove();
+  function calctableSalesOrderFirst() {
+    $fixedColumntableSalesOrderFirst.find('tr').each(function (i, elem) {
+      $(this).height($tabletableSalesOrder.find('tr:eq(' + i + ')').height());
+      //$(this).find('td').width($widthtableSalesOrderFirst);
+    });
+  }
+  //calctableSalesOrderFirst();
+
+  $(document).ready(function() {
+    calctableSalesOrder();
+    calctableSalesOrderFirst();
+  });
+
+  /*END B2B pages update*/
+  {% endif %}
+
+
+{#tablehover 颜色整行标记#}
+  $('body').on('mouseover',"#tableSalesOrderCloneFrirst tbody tr",function () {
+    let mouseoverNum=$("#tableSalesOrderCloneFrirst tbody tr").index(this);
+    addTrColor(mouseoverNum);
+  });
+
+  $('body').on('mouseout',"#tableSalesOrderCloneFrirst tbody tr",function () {
+    let mouseouterNum=$("#tableSalesOrderCloneFrirst tbody tr").index(this);
+    removeTrColor(mouseouterNum);
+  });
+
+  $('body').on('mouseover',"#tableSalesOrder tbody tr",function () {
+    let mouseoverNum=$("#tableSalesOrder tbody tr").index(this);
+    addTrColor(mouseoverNum);
+  });
+
+  $('body').on('mouseout',"#tableSalesOrder tbody tr",function () {
+    let mouseouterNum=$("#tableSalesOrder tbody tr").index(this);
+    removeTrColor(mouseouterNum);
+  });
+
+  $('body').on('mouseover',"#tableSalesOrderCloneLast tbody tr",function () {
+    let mouseoverNum=$("#tableSalesOrderCloneLast tbody tr").index(this);
+    addTrColor(mouseoverNum);
+  });
+
+  $('body').on('mouseout',"#tableSalesOrderCloneLast tbody tr",function () {
+    let mouseouterNum=$("#tableSalesOrderCloneLast tbody tr").index(this);
+    removeTrColor(mouseouterNum);
+  });
+
+  function addTrColor(index) {
+    $("#tableSalesOrderCloneFrirst tbody tr").eq(index).css('background','#fff0e6');
+    $("#tableSalesOrder tbody tr").eq(index).css('background','#fff0e6');
+    $("#tableSalesOrderCloneLast tbody tr").eq(index).css('background','#fff0e6')
+  }
+  function removeTrColor(index) {
+    $("#tableSalesOrderCloneFrirst tbody tr").eq(index).css('background','none');
+    $("#tableSalesOrder tbody tr").eq(index).css('background','none');
+    $("#tableSalesOrderCloneLast tbody tr").eq(index).css('background','none')
+  }
+
+
+
+
+{#tablehover 颜色整行标记#}
+{#checkbox的逻辑#}
+  $('body').on('click',"#tableSalesOrderCloneFrirst .checkAll",function () {
+    if($(this).is(':checked')){
+      $('#tableSalesOrderCloneFrirst .checkOne').not('[disabled]').prop("checked",true)
+    }else{
+      $('#tableSalesOrderCloneFrirst .checkOne').not('[disabled]').prop("checked",false)
+    }
+    calcCheckNum();
+  });
+
+  $('body').on('click',"#tableSalesOrderCloneFrirst .checkOne",function () {
+    if($(this).is(':checked')){
+      let checkedNum=$("#tableSalesOrderCloneFrirst .checkOne:checked").length;
+      let checkboxNum=$("#tableSalesOrderCloneFrirst .checkOne").length;
+      if(checkedNum==checkboxNum){
+        $('#tableSalesOrderCloneFrirst .checkAll').prop("checked",true)
+      }else{
+        $('#tableSalesOrderCloneFrirst .checkAll').prop("checked",false)
+      }
+    }else{
+      $('#tableSalesOrderCloneFrirst .checkAll').prop("checked",false)
+    }
+    calcCheckNum();
+  });
+
+  function calcCheckNum() {
+    let checkNum=$("#tableSalesOrderCloneFrirst .checkOne:checked").length;
+    $('.select-num').html(checkNum);
+    // if(checkNum>0){
+    //   $("#batchPayCon").removeClass('hide')
+    // }else{
+    //   $("#batchPayCon").addClass('hide')
+    // }
+    return checkNum
+  }
+
+  $('#batchPayCon #batch-btn-zhifu').click(function () {
+    if( $("#tableSalesOrderCloneFrirst .checkOne:checked").length>0){
+      var salesOrderIds = [];
+      $("#tableSalesOrderCloneFrirst .checkOne:checked").each(function () {
+        salesOrderIds.push($(this).data('id'));
+      });
+      createFeeOrder(salesOrderIds.join(','));
+    }else{
+      layer.msg('please select at least one row first.');
+    }
+  });
+
+  // #38451 批量支付
+  $('#batchPayCon #batch-btn-pay').click(function () {
+    if( $("#tableSalesOrderCloneFrirst .checkOne:checked").length>0){
+      var salesOrderIds = [];
+      var orderIds = [];
+      $("#tableSalesOrderCloneFrirst .checkOne:checked").each(function () {
+        orderIds.push($(this).data('id'));
+        salesOrderIds.push($(this).data('salesorderid'));
+      });
+      list_inventory.beforeInventoryRequestCheckPreLocked(orderIds.join(','), salesOrderIds.join(','))
+    }else{
+      layer.msg('please select at least one row first.');
+    }
+  });
+</script>
+{#checkbox的逻辑#}
+
+<script type="text/javascript">
+  // 匹配库存弹窗
+  var list_inventory = {
+    inventoryRequest: function(orderId, salesorderId, importMode) {
+      let url = "{{ url('sales_order/match') }}";
+      let formData = new FormData()
+      formData.append('orderId', orderId);
+      if(importMode != null) {
+        formData.append('importMode', importMode);
+      }
+      if(salesOrderId != null) {
+        formData.append('salesOrderId', salesOrderId);
+      }
+      imm_page_list.setRedirctData(url, orderId, importMode);
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(json) {
+          res = json;
+          //初始化弹窗内容
+          if(res.code == 200) {
+            imm_page_list.initPage(res.data, "list");
+          } else if(res.code == 0) {
+            $.toast({
+              heading: false,
+              text: res.msg,
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: 3000,
+              allowToastClose: false,
+              loader: false,
+            });
+            layer.closeAll();
+            // 转跳到sales order列表页
+            $('#customerOrderTabs a[href="#tab-orders"]').tab('show');
+            $('#order-import').load("{{ url('account/customer_order/customerOrderImport') }}");
+            clearTimer();
+            $('#order-show').load("{{ url('account/customer_order/customerOrderTable', {'filter_orderStatus': ''}) }}", function(){
+              $('#filter-button').click();
+              $('.modal-backdrop').remove();
+            });
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          layer.msg('Upload Failed', {icon: 5});
+        }
+      })
+    },
+    batchInventoryMatchHandler: function(orderid) {
+      list_inventory.beforeInventoryRequestCheckPreLocked(orderid);
+    },
+    inventoryMatchHandler: function(el) {
+      let importMode = $(el).data('importmode');
+      let orderId = $(el).data('orderid');
+      let salesOrderId = $(el).data('salesorderid');
+
+      list_inventory.beforeInventoryRequestCheckPreLocked(orderId, salesOrderId, importMode)
+    },
+    beforeInventoryRequestCheckPreLocked: function (orderId, salesOrderId, importMode) {
+      $.ajax({
+        url: '{{ url("sales_order/match/getSalesOrdersPreLocked") }}',
+        type: 'POST',
+        data: {order_ids: orderId.toString()},
+        success:function (res) {
+          if(res.code && res.data.exist_locked){
+            let salesOrderIds = res.data.sales_order_ids;
+            let lockedQty = res.data.locked_qty;
+            let msg = 'The Sales Order (ID:'+salesOrderIds.join(',')+') have locked '+lockedQty+' products in inventory. By clicking \'Re-assign\', those products will be released by default, and then you will enter the pop-up window to manually assign the inventory again.';
+            layer.confirm(msg, {
+              skin: 'oris-layer',
+              title: 'Message',
+              btn: ['Re-assign'],
+              btnAlign:'c',
+              scrollbar: false
+            }, function (lay_index) {
+              layer.close(lay_index);
+              list_inventory.reassignSalesOrdersPreLocked(orderId, salesOrderId, importMode)
+            });
+          }else{
+            list_inventory.inventoryRequest(orderId, salesOrderId, importMode);
+          }
+        },
+        error:function () {
+          list_inventory.inventoryRequest(orderId, salesOrderId, importMode);
+        }
+      });
+    },
+
+    reassignSalesOrdersPreLocked: function (orderId, salesOrderId, importMode) {
+      $.ajax({
+        url: '{{ url("sales_order/match/reassignSalesOrdersPreLocked") }}',
+        type: 'POST',
+        data: {order_ids: orderId.toString()},
+        success:function (res) {
+          list_inventory.inventoryRequest(orderId, salesOrderId, importMode);
+        },
+        error:function () {
+
+        }
+      })
+    }
+  }
+</script>

@@ -1,0 +1,50 @@
+#page-language {
+  min-height: 884px;
+}
+
+/* 标题部分 */
+#page-language .header-title-container {
+  padding: 16px 24px;
+  border-bottom: 1px solid #E5E5E5;
+}
+
+#page-language .lan-header-label {
+  margin-bottom: 0px;
+}
+
+/* 设置内容部分 */
+#page-language .content-container {
+  padding: 16px 24px;
+}
+
+/* 按钮部分 */
+#page-language .btn-container {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+#page-language .btn-item {
+  margin: 0px 5px;
+}
+
+#page-language .radio-group-container {
+  margin-top: 26px;
+}
+
+/* radiobox 样式调整 */
+#page-language .radio-label {
+  padding-left: 8px;
+  color: #333;
+  font-size: 16px;
+}
+
+#page-language .radio-item {
+  line-height: 16px;
+  margin-bottom: 23px;
+  margin-left: 16px;
+}
+
+#page-language .radio-input {
+  margin-top: 0px;
+}

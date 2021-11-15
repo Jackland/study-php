@@ -1,0 +1,170 @@
+{% if accounts %}
+  {% for account in accounts %}
+      <div class="account-msg mb-4" data-line="{{ account.id }}">
+        <div class="flex-layout flex-between">
+          <div class="flex-layout">
+              {% if account.account_type == 1 %}
+                <div class="account-name text-larger value" data-num="47" title=" {{ account.company }}">
+                  {{ account.company }}
+                </div>
+              {% elseif account.account_type == 3  %}
+                <div class="account-name text-larger value" data-num="47" title=" {{ account.p_account_info.p_email_format }}">
+                  {{ account.p_account_info.p_email_format }}
+                </div>
+                {% else %}
+                <div class="account-name text-larger value" data-num="{{ account.id }}" title="">
+                  Unknown
+                </div>
+            {% endif %}
+            <div class="account-type">
+              {% if account.account_type == 1 %}
+                <div class="type corporate">{{ account.bank_account_info.account_type_format }}</div>
+              {% elseif account.account_type == 3 %}
+                <div class="type payoneer">{{ account.p_account_info.account_type_format }}</div>
+              {% else %}
+                  <div class="type payoneer">Unknown</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="account-operate flex-layout">
+            <div>Verdict:
+              {% if account.check_status == 0 %}
+                <span class="pending" id="verdict{{ account.id }}"> {{ account.verdict_format }} </span>
+              {% elseif account.check_status == 1%}
+                <span class="approved" id="verdict{{ account.id }}"> {{ account.verdict_format }} </span>
+              {% elseif account.check_status == 2%}
+                <span class="rejected" id="verdict{{ account.id }}"> {{ account.verdict_format }} </span>
+              {% else %}
+              {% endif %}
+            </div>
+            <div class="dropdown">
+              <button class="btn dropdown-toggle btn-operate" type="button" id="dropdownOperate" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                  Actions
+                <i class="giga icon-V10_shouyeyouxiadown text-small"></i>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownOperate">
+                {% if account.check_status == 0  %}
+                  <li><a href="javascript:void(0);" id="edit_account{{ account.id }}" class="disabled" ><i class="giga icon-edit"></i> Edit</a></li>
+                {% else %}
+                  <li><a  target="_blank" id="edit_account{{ account.id }}"  href="{{ url('account/seller_bill/account_manage/edit', {'id': account.id }) }}" disabled="disabled"><i class="giga icon-edit"></i> Edit</a></li>
+                {% endif %}
+                <li role="separator" class="divider"></li>
+                <li><a onclick="deleteModel('{{ account.id }}','{{ account.del_show_msg }}')"><i class="giga icon-quxiaoshenqing"></i> Delete</a></li>
+              </ul>
+            </div>
+            {% if account.status ==1 %}
+              <div class="flex-layout">
+                  <span class="mr-1" id="enable_span{{ account.id }}">Enable</span>
+                  {% if account.account_type == 1 %}
+                  <label class="switch"  onclick="toUnableUse(this,'1','{{ account.id }}','{{ account.bank_account_info.last_four_bank_num }}')">
+                    <input type="checkbox" checked disabled id="enableUse{{ account.id }}">
+                    <div class="slider round"></div>
+                  </label>
+                  {% elseif account.account_type == 3 %}
+                    <label class="switch"  onclick="toUnableUse(this,'3','{{ account.id }}','{{ account.p_account_info.front_four_p_num }}')">
+                      <input type="checkbox" checked disabled id="enableUse{{ account.id }}">
+                      <div class="slider round"></div>
+                    </label>
+                {% else %}
+                  <label class="switch" >
+                    <input type="checkbox" checked disabled>
+                    <div class="slider round"></div>
+                  </label>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="flex-layout">
+                <span class="mr-1" id="enable_span{{ account.id }}">Disable</span>
+                {% if account.check_status == 0 %}
+                  <label class="switch disabled">
+                    <input type="checkbox" disabled id="enableUse{{ account.id }}">
+                    <div class="slider round disabled "></div>
+                  </label>
+                {% else %}
+                  {% if account.account_type==1 %}
+                    <label class="switch"  onclick="toEnableUse(this,'1','{{ account.id }}','{{ account.bank_account_info.last_four_bank_num }}')">
+                      <input type="checkbox" disabled id="enableUse{{ account.id }}">
+                      <div class="slider round"></div>
+                    </label>
+                  {% elseif account.account_type==3 %}
+                    <label class="switch"  onclick="toEnableUse(this,'3','{{ account.id }}','{{ account.p_account_info.front_four_p_num }}')">
+                      <input type="checkbox" disabled id="enableUse{{ account.id }}">
+                      <div class="slider round"></div>
+                    </label>
+                  {% else %}
+                    <label class="switch">
+                      <input type="checkbox" disabled id="enableUse{{ account.id }}">
+                      <div class="slider round"></div>
+                    </label>
+                  {% endif %}
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        {% if account.account_type ==1 %}
+        <div class="card-num text-larger">
+          {{ account.bank_account_info.bank_account_format }}
+        </div>
+        <div class="text-larger account-bank flex-layout">
+          <div class="bank-name value" data-num="17" title="{{ account.bank_name }}">{{ account.bank_name }}</div>
+          <div class="dividing-line"></div>
+          <div class="bank-address value" data-num="47" title="{{ account.bank_address }}">{{ account.bank_address }}</div>
+        </div>
+        {% endif %}
+      </div>
+  {% endfor %}
+{% else %}
+  {% if total_no_page == 0 %}
+    <div class="no-data">
+        No profit collection account, please click on 'Create a Collection Account' to add.
+    </div>
+  {% else %}
+  <div class="text-center">
+    {% if display_disable == 0 %}
+      No Records.
+    {% else %}
+      - End -
+    {% endif %}
+  </div>
+    {% endif %}
+{% endif %}
+
+<script>
+  $(function () {
+    let total_no_page = "{{ total_no_page }}";
+    if (total_no_page > 0){
+       $("#display_disable").parent().show();
+    }
+  });
+
+  function toUnableUse(obj,account_type_id , account_id ,msg) {
+    $("#to_disable_model").attr('data-id',account_id);
+    var html = '';
+    if (account_type_id == 1){
+       html = 'Are you sure you want disable the collection account ending in <span class="cardNum">'+msg+'</span>?';
+    }else if(account_type_id == 3){
+       html = 'Are you sure you want disable the Payoneer account starting with  <span class="cardNum">'+msg+'</span>?';
+    }else{
+      return false;
+    }
+    $("#disable_model_html").html(html);
+    $("#unenableUseModal").modal("show");
+  }
+  function toEnableUse(obj,account_type_id,account_id,msg) {
+    var html = '';
+    if (account_type_id == 1){
+      html += 'Are you sure you want to make the account ending in '+ msg+' the enable account?';
+    }else if(account_type_id == 3){
+      html += 'Are you sure you want to make the Payoneer account starting with '+msg+' the enable account?';
+    }else{
+      return false;
+    }
+    $("#to_enable_model").attr('data-id',account_id);
+    html += ' Once approved, this will become the only enable account and your current enable account will be disabled.<br>\n' +
+      '    Please confirm the collection account information is correct and enter your reason for changing enable account.';
+    $("#reason_error_show").hide();
+    $("#enable_model_html").html(html);
+    $("#enableUseModal").modal("show") ;
+  }
+</script>

@@ -1,0 +1,257 @@
+
+.header-title{
+  font-size: 16px;
+  font-family: Arial;
+  font-weight: bold;
+  line-height: 16px;
+  color: #333333;
+}
+.unit-tab{
+  padding: 0;
+  list-style: none;
+  display: inline-flex;
+  border-radius: 2px;
+}
+.unit-tab li{
+  width: 62px;
+  height: 28px;
+  line-height: 26px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #DCDCDC;
+}
+.unit-tab-left-active{
+  border-radius: 2px 0 0 2px;
+  background: #375ACD;
+  color: #fff;
+  box-sizing: border-box;
+  border-color: #375ACD !important;
+}
+.unit-tab-right-active{
+  border-radius: 0 2px 2px 0;
+  background: #375ACD;
+  color: #fff;
+  border-color: #375ACD !important;
+  box-sizing: border-box;
+}
+.no-border-left{
+  border-left: 0 !important;
+  border-radius: 0 2px 2px 0;
+}
+.no-border-left:hover{
+  border-color: #375ACD;
+  color: #004bd8;
+}
+.no-border-right{
+  border-right: 0 !important;
+  border-radius: 2px 0 0 2px;
+}
+.no-border-right:hover{
+  border-color: #375ACD;
+  color: #004bd8;
+}
+.dividing-line{
+  border-top: 2px dotted #DCDCDC;
+  padding-top: 24px;
+  margin-top: 8px;
+}
+.old-product .el-form-item{
+  padding-left:30px;
+}
+/****************** 修改局部elementui样式 *********************/
+.price_calculator .el-col-12 .el-form-item__content{
+  width: calc(50% + 160px);
+}
+.price_calculator .el-col-12 .el-input{
+  width: calc(100% - 100px);
+}
+.price_calculator .el-input__inner{
+  border-radius: 2px;
+}
+.price_calculator .el-input__inner:hover,.price_calculator .el-select:hover .el-input__inner{
+  border-color: #333 !important;
+  color: #333;
+  border-bottom-left-radius: 2px !important;
+  border-top-left-radius: 2px !important;
+}
+.price_calculator .el-input__inner:focus,.price_calculator .el-select .el-input.is-focus .el-input__inner{
+  border-color: #375acd !important;
+  border-bottom-left-radius: 2px !important;
+  border-top-left-radius: 2px !important;
+  color: #333;
+}
+.price_calculator .el-input.is-disabled .el-input__inner:hover{
+  border-color: #c1c1c1 !important;
+}
+.price_calculator .el-input.is-disabled .el-input__inner{
+  background-color: #edeff3;
+  color: #666;
+}
+.price_calculator .el-input-group__append{
+  width: 54px;
+  padding: 0;
+  text-align: center;
+  color: #666;
+}
+.price_calculator .el-input__suffix-inner{
+  color: #666;
+}
+.price_calculator .el-form-item__label,.calc-item-label{
+  font-size: 14px;
+  font-family: Arial;
+  font-weight: 400;
+  color: #333333;
+  margin-bottom: 0;
+}
+.price_calculator .el-form-item{
+  margin-bottom: 24px;
+}
+.price_calculator .el-input{
+  border-radius: 2px;
+}
+.price_calculator .el-input::-webkit-input-placeholder{
+  color: #999 !important;
+}
+.price_calculator .el-input__inner{
+  border: 1px solid #C1C1C1;
+}
+.price_calculator .el-input-group__append{
+  background: #EDEFF3;
+  border: 1px solid #C1C1C1;
+  border-left: 0;
+  border-radius: 0px 2px 2px 0px;
+}
+.price_calculator .el-input.is-disabled .el-input__inner{
+  border: 1px solid #C1C1C1;
+}
+.price_calculator .el-select{
+  width: calc(100% - 100px);
+  display: block;
+}
+.price_calculator .el-select .el-input{
+  width: 100% !important;
+}
+.price_calculator .el-scrollbar,.price_calculator .el-select-dropdown{
+  width: calc(100% - 100px) !important;
+}
+.price_calculator input::-webkit-input-placeholder {
+  color: #999;
+}
+.price_calculator input::-moz-input-placeholder {
+  color: #999;
+}
+.price_calculator input::-ms-input-placeholder {
+  color: #999;
+}
+.el-select-dropdown__empty{
+  color: #666 !important;
+}
+.disabled-el-input .el-input.is-disabled .el-input__inner{
+  color: #999;
+}
+/****************** 修改局部elementui样式 *********************/
+.price_calculator .giga.icon-V10-wenhaotishi{
+  font-weight: unset !important;
+}
+.my-form-label label{
+  line-height: inherit !important;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.amount-label-gray,.p-gray{
+  font-family: Arial;
+  color: #666666;
+  font-size: 14px;
+  font-weight:400;
+}
+.amount-label-orange{
+  font-family: Arial;
+  color: #FF6600 !important;
+  font-size: 14px;
+  font-weight: bold !important;
+}
+
+.fixed-footer{
+  background: #FFFFFF;
+  width: calc(100% - 235px);
+  display: block;
+  position: fixed;
+  z-index: 111;
+  bottom: 0;
+  left: 235px !important;
+  box-shadow: 0px -3px 10px rgba(0, 0, 0, 0.1);
+  border: unset;
+  padding: 12px 24px;
+}
+
+.clear-fix{
+  width: 100%;
+  height: 72px;
+  z-index: 111;
+  position: sticky;
+  box-shadow: unset;
+  border-top: 2px dotted #DCDCDC;
+  padding-top: 31px;
+  margin-bottom: 7px;
+  margin-top: 32px;
+  line-height: 39px;
+}
+.btn-box{
+  display: inline-block;
+  float: right;
+}
+.btn-box button{
+  width: 120px;
+}
+.mar-r-10{
+  margin-right: 10px !important;
+}
+.ml-32{
+  margin-left: 32px;
+}
+.ml-120{
+  margin-left: 120px;
+}
+.mb-12{
+  margin-bottom: 12px;
+}
+.mb-22{
+  margin-bottom: 22px;
+}
+.mb-24{
+  margin-bottom: 24px;
+}
+.mb-32{
+  margin-bottom: 32px;
+}
+.font-18{
+  font-size: 18px;
+}
+.color-9{
+  font-size: 18px;
+  font-family: Arial;
+  font-weight: bold;
+  color: #999999;
+}
+.suggest-price-title{
+  font-size: 20px;
+  font-family: Arial;
+  font-weight: bold;
+  color: #FF6600;
+}
+.mb-12{
+  margin-bottom: 12px !important;
+}
+#calc-footer{
+  line-height: 39px !important;
+}
+#calc-footer span{
+  display: inline-block;
+  vertical-align: middle;
+}
+.tooltip-inner{
+  max-width: 280px;
+}

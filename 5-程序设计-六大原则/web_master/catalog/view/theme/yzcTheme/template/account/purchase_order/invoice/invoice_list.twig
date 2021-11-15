@@ -1,0 +1,169 @@
+{{ jsOrigin(['/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js']) }}
+{{ css(['static/message/message-common.css','static/account/purchase_order/invoice_list.css']) }}
+<div id="page-invoice_list">
+  <div class="main-con-box">
+    <div class="invoice-tip">Tips: Only the records of the past 7 days will be kept</div>
+    <div class="invoice-table">
+      <table class="oris-table m20-t">
+        <thead>
+          <tr>
+            <th class="text-left oris-w200">Store Code</th>
+            <th class="invoice-w280 text-left">Store</th>
+            <th class="invoice-w280 text-center">Generated Time</th>
+            <th class="invoice-w180 text-left">Generation status</th>
+            <th class="oris-w220 text-left">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in list %}
+          <tr>
+            <td class="text-left">{{item.firstname}}{{ item.lastname }}</td>
+            <td class="text-left"><span class="invoice-list-name" title="{{item.screenname}}">{{item.screenname}}</span></td>
+            <td class="text-center time_{{item.id}}">
+              {{ item.create_time }}
+            </td>
+            <td class="text-left status_{{item.id}}">    
+              {% if item.status == 1 %}
+              <span class="invoice-list-circle circle-pending"></span>
+              <span class="text-bold">In progress</span>
+              {% endif %}
+              {% if item.status == 2 %}
+              <span class="invoice-list-circle circle-failed"></span>
+              <span class="text-bold">Failed</span>
+              {% endif %}
+              {% if item.status == 3 %}
+              <span class="invoice-list-circle circle-completed"></span>
+              <span class="text-bold">Completed</span>
+              {% endif %}
+            </td>
+            <td class="text-left action_{{item.id}}">
+              {% if item.status == 3 and item.invoice_files|length > 0 %}
+                <span class="mr-25 action-hover"><a href="{{ item.invoice_files }}" target="_blank">View</a></span>
+                <span class="action-hover"><a href="{{ url('account/purchase_order/invoice/download', {'id':item.id}) }}">Download</a></span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if list|length < 1 %}
+      <div class="msg-empty">
+        <div class="msg-empty-container">
+          <div class="msg-empty-icon">
+            <img src="{{ asset("image/icons/empty.png") }}"></img>
+          </div>
+          <div class="msg-empty-title">No Records.</div>
+        </div>
+      </div>
+      {% endif %}
+      <div class="oris-row oris-pagination">
+        <ul id="invoiceTablePagination"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var currentpage=Number('{{ paginator.getPage() }}');
+  var currentList=({{list | json_encode}})
+  var timer;
+  // 加载url
+  function loadUrl(url) {
+    block.blockUI();
+    $('#tab_purchase_invoice').load(url, function () {
+      block.unBlockUI();
+    });
+  }
+
+  $(function(){
+    // 初始加载时，更改页面的路由
+    window.history.pushState({}, 0, '{{ url("account/order#tab_purchase_invoice") }}');
+    $('#invoiceTablePagination').bootstrapPaginator({
+      bootstrapMajorVersion: 3,
+      size: 'normal',
+      currentPage: {{ paginator.getPage() }},
+      totalPages: {{ max(paginator.getPageCount(), 1) }},
+      numberOfPages: 5,
+      pageRange: [10, 20, 30, 50, 100],
+      rowsOfPage: {{ paginator.getPageSize() }},
+      total: {{ paginator.getTotalCount() }},
+      onPageClicked: function (event, originalEvent, type, page) {
+        loadUrl('{{ paginator.getUrlWithNoPage() }}&page=' + page);
+      }
+    });
+    if(currentList&&currentList.length>0){
+      timeRefresh();
+    }
+  })
+
+  function timeRefresh(stringIds){
+    clearInterval(timer);
+    timer=setInterval(() => {
+      if($('#tab_purchase_invoice').css('display') == 'block'){
+        let ids = [];let stringIds=''
+        for(var i=0;i<currentList.length;i++){
+          if(currentList[i].status == 1){
+            ids.push(currentList[i].id);
+            stringIds=ids.join(',');
+          }
+        }
+        postInvoiceFn(stringIds);
+      }else{
+        clearInterval(timer);
+      } 
+    }, 5000);  
+  }
+  //监听dom display 变化
+  var target = document.querySelector('#tab_purchase_invoice');
+  // 创建观察者对象
+  var observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      if (mutation.target.style.display == 'block') {
+        timeRefresh();
+      } else {
+        clearInterval(timer);
+      }
+    });
+  });
+  // 配置观察选项:
+  var config = { attributes: true }
+  // 传入目标节点和观察选项
+  observer.observe(target, config);
+  function postInvoiceFn(ids) {
+    if(ids == ''){
+      clearInterval(timer);
+      return
+    }
+    $.ajax({
+      url: '/index.php?route=account/purchase_order/invoice/getInvoiceLastInfo',
+      dataType: 'json',
+      data: { ids:ids },
+      type: 'post',
+      success: function (json) {
+        if(json.data&&json.data.length>0){
+          for(var i=0;i<currentList.length;i++){
+            for(var k=0;k<json.data.length;k++){
+              if(currentList[i].id == json.data[k].id){
+                if(json.data[k].status == 2){
+                  currentList[i].status=json.data[k].status;
+                  $('.status_'+currentList[i].id).html(`<span class="invoice-list-circle circle-failed"></span>
+                  <span class='text-bold'>Failed</span>`)
+                }else if(json.data[k].status == 3){
+                  currentList[i].status=json.data[k].status;
+                  var downloadUrl = "{{ url('account/purchase_order/invoice/download') }}" + "&id=" + json.data[k].id;
+                  $('.status_'+currentList[i].id).html(`<span class="invoice-list-circle circle-completed"></span>
+                  <span class='text-bold'>Completed</span>`);
+                  $('.action_'+currentList[i].id).html(`<span class="mr-25 action-hover"><a href="${json.data[k].invoice_files}" target="_blank">View</a></span>
+                <span class="action-hover"><a href="${downloadUrl}">Download</a></span>`);
+                }
+              }
+            }
+          }
+        }     
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+
+</script>

@@ -1,0 +1,314 @@
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script src="catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/magnific/magnific-popup.css" type="text/css" rel="stylesheet"/>
+
+
+<div role="tabpanel" id="show-lists-sales-order" class="msgcent-mymessage">
+  <div>
+  {{ send_page }}
+    <div class="ticket-lists-right msgcent msg-form__container msg-pt-0">
+        <div class="oris-row mb-24">
+            <form class="ticket-lists-right-form">
+                <div class="oris-ingroup">
+                    <input id="wdSalesOrder" type="text" class="input-search-rma oris-input mr-10" placeholder="Search Request ID / Sales Order ID {% if submit_ticket_for==2 and right!=5 %} / Item Code {% endif %}" value="{{ wd }}">
+                    <button type="button" id="btnSearch" class="oris-button mr-10" onclick="filterSalesOrder(this)">Filter</button>
+                    <div class="oris-button oris-button-default submit-ticket-right__message submit-ticket-right-btn">Submit a Request</div>
+                </div>
+            </form>
+        </div>
+        <div class="msg-ticket__container mb-24">
+        {% for item in left_lists %}
+            <div class="msg-ticket__item {% if right==item.value %} active {% endif %}">
+                <a class="tickek-right-type-order" href="javascript:void(0);" value="&right={{ item.value }}">
+                    {{ item.name }}({{ item.count }})
+                    {# {% if item.isNoread  %}
+                        <span class="header-badge-dot"></span>
+                    {% endif %} #}
+                </a>
+            </div>
+        {% endfor %}
+        </div>
+        <div class="requests-list" style="overflow: auto">
+            <table class="main table-hover oris-table oris-scroll-table lists_sales_table">
+                <thead>
+                <tr>
+                    <th class="text-left" style="width:120px;">{{ column_ticket_id_long }}</th>
+                    <th class="text-left" style="width:120px;">{{ column_ticket_type }}</th>
+                    <th class="text-left" style="width:160px;">{{ column_sales_order_id }}</th>
+                    {% if submit_ticket_for==2 and right==19 %}
+                        {#需求101960调整列#}
+                        <th class="text-left" style="width:120px;">{{ column_item_code }}</th>
+                    {% elseif submit_ticket_for==2 and right==5 %}
+                        <th class="text-left" style="width:120px;">{{ column_processing_method }}</th>
+                    {% else %}
+                        <th class="text-left" style="width:120px;">{{ column_item_code }}</th>
+                        <th class="text-left" style="width:120px;">{{ column_processing_method }}</th>
+                    {% endif %}
+                    <th class="text-left" style="width: 160px;">
+                        {% if sort=='date_modified' %}
+                            <a href="javascript:void(0);" value="{{ sort_date_modified }}" class="ticketClickSortSalesOrder {{ order|lower }}">{{ column_date_modified }}</a>
+                        {% else %}
+                            <a href="javascript:void(0);" value="{{ sort_date_modified }}" class="ticketClickSortSalesOrder">{{ column_date_modified }}</a>
+                        {% endif %}
+                    </th>
+                    <th class="text-left" style="width: 110px;">
+                        {% if sort=='customer_is_read' %}
+                            <a href="javascript:void(0);" value="{{ sort_customer_is_read }}" class="ticketClickSortSalesOrder {{ order|lower }}">{{ column_status }}</a>
+                        {% else %}
+                            <a href="javascript:void(0);" value="{{ sort_customer_is_read }}" class="ticketClickSortSalesOrder">{{ column_status }}</a>
+                        {% endif %}
+                    </th>
+                    <th class="text-center fixed-right msg-action-col-th" style="height: 37px;">{{ column_action }}</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% if lists %}
+                    {% for item in lists %}
+                        <tr>
+                            <td class="text-left">{{ item.ticket_id }}</td>
+                            <td class="text-left">{{ item.ticket_type_name }}</td>
+                            <td class="text-left"><a href="{{ item.sales_order_url }}">{{ item.sales_order_id }}</a></td>
+                            {#需求101960调整列 start#}
+                            {% if submit_ticket_for==2 and right==19 %}
+
+                                <td class="text-left">{{ item.sales_item_code }}</td>
+                            {% elseif submit_ticket_for==2 and right==5 %}
+                                <td class="text-left">{{ item.processing_method_name }}</td>
+                            {% else %}
+                                <td class="text-left">
+                                    {% if item.sales_item_code %}
+                                        {{ item.sales_item_code }}
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </td>
+                                <td class="text-left">
+                                    {% if item.processing_method_name %}
+                                        {{ item.processing_method_name }}
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                            {#需求101960调整列 end#}
+                            <td class="text-left">{{ item.last_modified_time_format }}</td>
+                            <td class="text-left">
+                                {% if item.customer_is_read == 0 %}
+                                    <span class="glyphicon glyphicon-exclamation-sign hot-color"></span>
+                                {% endif %}
+                                {{ item.status_name }}
+                            </td>
+                            <td class="text-center fixed-right">
+                                <div class="action-group">
+                                    <a href="{{ url('account/message_center/ticket/view', {'id':item.id, 'type':submit_ticket_for}) }}" data-toggle="tooltip" title="{{ button_view }}"
+                                        class="btn-text pull-center"><i class="giga icon-chakan-01 msg-icon-chakan"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                    </tbody>
+                </table>
+                <div class="msg-empty">
+                    <div class="msg-empty-container">
+                    <div class="msg-empty-icon">
+                        <img src="{{ asset("image/icons/empty.png") }}"></img>
+                    </div>
+                    <div class="msg-empty-title">No Records Found !</div>
+                    </div>
+                </div>
+                {% endif %}
+        </div>
+
+
+        <div class="oris-row oris-pagination">
+           <ul id="bos_pagination_ticket_sales_order"></ul>
+        </div>
+    </div>
+
+  </div>
+</div>
+
+<textarea id="categoryRootidJsonSalesOrder" style="display: none;">{{ categoryRootid }}</textarea>
+<textarea id="culsterCountJsonSalesOrder" style="display: none;">{{ culsterCountJson }}</textarea>
+
+<script>
+    $(function () {
+        block.unBlockUI();
+        
+        initTicketSalesOrder();
+    });
+    globalSendPageFuns.initSelect =  function() {
+        $("#submit_ticket_for__message").selectpicker('val', 2).trigger('change');
+    };
+    function initTicketSalesOrder() {
+        //分页链接
+        paginationTicketSalesOrder();
+        upTicketTabCountSalesOrder('SalesOrder');
+        globalSendPageFuns.initSelect();
+    }
+
+    $(document).ready(function () {
+        $("#show-lists-sales-order").find(".tickek-right-type-order").click(function () {
+            let that = this;
+            block.blockUI();
+
+            $("#wdSalesOrder").val("");
+
+            $("#show-lists-sales-order").find(".tickek-right-type-order").parent().each(function (index, Ele) {
+                $(Ele).removeClass('li-active');
+            });
+            $(that).parent().addClass('li-active');
+
+            var url = getUrlForTicketSalesOrder();
+            //$('#show-lists-sales-order').load(url);
+            $('#tab-content').load(url);
+        });
+
+        $(".ticketClickSortSalesOrder").click(function(){
+            let that = this;
+            block.blockUI();
+
+            let url = getUrlForTicketSalesOrder();
+            let thatVal = $(that).attr('value');
+            let thatOrder = $(that).hasClass("asc")?'asc':'desc';
+
+            $(".ticketClickSortSalesOrder").removeClass('asc').removeClass('desc');
+            $(that).addClass(thatOrder == 'asc' ? 'asc' : 'desc');
+
+            url += thatVal;
+
+            //$('#show-lists-sales-order').load(url);
+            $('#tab-content').load(url);
+        });
+
+        $(".input-search-rma").keydown(function (e) {
+          if (e.keyCode == 13) {
+            filterSalesOrder($('#btnSearch'))
+            return false;
+          }
+        });
+    });
+
+    function upTicketTabCountSalesOrder(label){
+        let categoryRootidJson = {};
+        let culsterCountJson = {};
+        if ($("#categoryRootidJson" + label).val()) {
+            categoryRootidJson = JSON.parse($("#categoryRootidJson" + label).val());
+        }
+        if ($("#culsterCountJson" + label).val()) {
+            culsterCountJson = JSON.parse($("#culsterCountJson" + label).val());
+        }
+      $(".submit_ticket_for_count_2" ).find('span.count').html(culsterCountJson['new_reply_count']);
+        // for (var i in categoryRootidJson) {
+        //     var category_id = categoryRootidJson[i];
+        //     var tele = $(".submit_ticket_for_count_" + category_id);
+        //     var count = culsterCountJson['submit_ticket_for_count_' + category_id];
+        //     var noread = culsterCountJson['submit_ticket_for_noread_' + category_id];
+        //
+        //     var str = '' + count + '';
+        //     if (noread) {
+        //         str += '<span class="header-badge-dot"></span>';
+        //     }
+        //     $(tele).find('span.count').html(str);
+        // }
+    }
+
+    function paginationTicketSalesOrder() {
+        if ({{ total_pages }}) {
+            //total_pages
+            $('#bos_pagination_ticket_sales_order').bootstrapPaginator({
+                /*当前使用的是3版本的bootstrap*/
+                bootstrapMajorVersion: 3,
+                /*配置的字体大小是小号*/
+                size: 'normal',
+                /*当前页*/
+                currentPage: {{ page_num }},
+                /*一共多少页*/
+                totalPages: {{ total_pages }},
+                /*页面上最多显示几个含数字的分页按钮*/
+                numberOfPages: 5,
+                /*设置显示的样式，默认是箭头	*/
+                // itemTexts: function(type, page, current) {
+                //     switch(type) {
+                //         case "first": // type值固定
+                //             return `<span class="glyphicon glyphicon-fast-backward"></span>`;
+                //         case "prev":
+                //             return `<span class="glyphicon glyphicon-step-backward"></span>`;
+                //         case "next":
+                //             return `<span class="glyphicon glyphicon-step-forward"></span>`;
+                //         case "last":
+                //             return `<span class="glyphicon glyphicon-fast-forward"></span>`;
+                //         case "page":
+                //             return page;
+                //     }
+                // },
+                total: {{ total_num }},
+                rowsOfPage: {{ page_limit }},
+                onPageClicked: function (event, originalEvent, type, page) {
+                    block.blockUI();
+                    let url = getUrlForTicketSalesOrder(page);
+
+                    //sort column
+                    let sor = '';
+                    $(".ticketClickSortSalesOrder").each(function (index, ele) {
+                        if ($(ele).hasClass("asc") || $(ele).hasClass("desc")) {
+                            let ord = $(ele).hasClass("asc") ? "asc" : "desc";
+                            sor = $(ele).attr("value");
+                            url += (sor + "&order=" + ord);
+                            return false;
+                        }
+                    });
+
+                    //$('#show-lists-sales-order').load(url);
+                    $('#tab-content').load(url);
+                }
+            });
+        }
+    }
+
+    function getUrlForTicketSalesOrder(page) {
+        let url = '{{ url('account/message_center/ticket/showListsSalesOrder') }}' + "&right={{ right }}";
+
+        let submit_ticket_for = 2;
+        url += '&submit_ticket_for=2';
+
+        let tickek_right_type = '';
+        $(".tickek-right-type-order").parent().each(function (index, Ele) {
+            if ($(Ele).hasClass('li-active')) {
+                tickek_right_type = $(Ele).find('a').attr('value')
+                url += (tickek_right_type);
+                return false;
+            }
+        });
+
+        let wd = encodeURIComponent($.trim($("#wdSalesOrder").val()));
+        if(wd){
+            url += '&wd='+wd;
+        }
+
+        if (page) {
+            url += "&page_num=" + page;
+        }
+        return url;
+    }
+
+    function filterSalesOrder(button) {
+        block.blockUI();
+        var url = getUrlForTicketSalesOrder();
+        $('#tab-content').load(url);
+        $(button).button('loading');
+        block.blockUI();
+    }
+</script>
+
+<style>
+.lists_sales_table td,
+.lists_sales_table th
+{
+    padding: 10px 14px !important;
+}
+</style>

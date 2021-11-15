@@ -1,0 +1,368 @@
+{{ header }}
+{{ column_left }}
+
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+				<a class="btn btn-danger" href="{{ remove_url}}" data-toggle="tooltip" data-original-title="{{ button_reset_filter}}">
+					<i class="fa fa-eraser"></i>
+				</a>
+
+				<button type="submit" class="btn btn-primary">{{ button_mass_payout}}</button>
+				<!-- <span class="label bg-primary">{{ grand_total_paid}}</span>
+				<span class="label bg-primary">{{ grand_total_admin}}</span>
+				<span class="label bg-primary">{{ grand_total_rem}}</span> -->
+			</div>
+			<h1>{{ heading_title}}</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div class="container-fluid">
+
+		{% if error_warning %}
+	    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning}}
+	      <button type="button" class="close" data-dismiss="alert">&times;</button>
+	    </div>
+	    {% endif %}
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+        		<h3 class="panel-title"><i class="fa fa-list"></i> {{ heading_title}}</h3>
+			</div>
+			<div class="panel-body">
+				<div class="well">
+					<div class="row">
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label class="control-label">{{ text_seller_name}}</label>
+								<input type="text" class="form-control" placeholder="{{ text_seller_name }}" name="filter_seller_name" value="{{ seller_name}}" />
+							</div>
+							<div class="form-group">
+								<label class="control-label">{{ text_seller_amount}}</label>
+								<div class="input-group">
+									<span class="input-group-addon">
+										{{ text_from}}
+									</span>
+									<input type="text" class="form-control" placeholder="{{ text_from}}" name="filter_seller_amount_from" value="{{ seller_amount_from}}" />
+									<span class="input-group-addon">
+										{{ text_to}}
+									</span>
+									<input type="text" class="form-control" placeholder="{{ text_to }}" name="filter_seller_amount_to" value="{{ seller_amount_to}}" />
+								</div>
+							</div>
+
+						</div>
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label class="control-label">{{ text_commission}}</label>
+								<div class="input-group">
+									<span class="input-group-addon">
+										{{ text_from}}
+									</span>
+									<input type="text" class="form-control" placeholder="{{ text_from}}" name="filter_commission_from" value="{{ commission_from}}" />
+									<span class="input-group-addon">
+										{{ text_to}}
+									</span>
+									<input type="text" class="form-control" placeholder="{{ text_to }}" name="filter_commission_to" value="{{ commission_to}}" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="control-label">{{ text_admin_amount}}</label>
+								<div class="input-group">
+									<span class="input-group-addon">
+										{{ text_from}}
+									</span>
+									<input type="text" class="form-control" placeholder="{{ text_from}}" name="filter_admin_amount_from" value="{{ admin_amount_from}}" />
+									<span class="input-group-addon">
+										{{ text_to}}
+									</span>
+									<input type="text" class="form-control" placeholder="{{ text_to }}" name="filter_admin_amount_to" value="{{ admin_amount_to}}" />
+								</div>
+							</div>
+							<!-- <div class="form-group">
+								<label class="control-label">
+									{{ text_paid_to_seller}}
+								</label>
+								<div class="input-group">
+									<span class="input-group-addon">
+										{{ text_from}}
+									</span>
+									<input type="text" class="form-control" placeholder="{{ text_from}}" name="filter_paid_to_seller_from" value="{{ paid_to_seller_from}}" />
+									<span class="input-group-addon">
+										{{ text_to}}
+									</span>
+									<input type="text" class="form-control" placeholder="{{ text_to }}" name="filter_paid_to_seller_to" value="{{ paid_to_seller_to}}" />
+								</div>
+							</div> -->
+						</div>
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label class="control-label">{{ text_total_amount}}</label>
+								<div class="input-group">
+									<span class="input-group-addon">
+										{{ text_from}}
+									</span>
+									<input type="text" class="form-control" placeholder="{{ text_from}}" name="filter_total_amount_from" value="{{ total_amount_from}}" />
+									<span class="input-group-addon">
+										{{ text_to}}
+									</span>
+									<input type="text" class="form-control" placeholder="{{ text_to }}" name="filter_total_amount_to" value="{{ total_amount_to}}" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label">
+									{{ text_date_added}}
+								</label>
+								<div class="input-group datetime">
+									<span class="input-group-addon ">
+										<i class="fa fa-calendar"></i>
+									</span>
+									<input type="text" class="form-control datetimefrom" placeholder="{{ text_from}}" name="filter_date_added_from" value="{{ date_added_from}}" />
+									<span class="input-group-addon ">
+										<i class="fa fa-calendar"></i>
+									</span>
+									<input type="text" class="form-control datetimeto" placeholder="{{ text_to}}" name="filter_date_added_to" value="{{ date_added_to}}" />
+								</div>
+							</div>
+							<!-- <div class="form-group">
+								<label class="control-label">
+									{{ text_seller_name}}
+								</label>
+								<input type="text" class="form-control" placeholder="{{ text_commission }}" />
+							</div> -->
+							<button class="btn btn-primary pull-right" type="button" onclick="Filter()">
+								<i class="fa fa-filter"></i>
+								{{ button_filter}}
+							</button>
+						</div>
+					</div>
+				</div>
+				<form action="{{ masspayout}}" method="post" enctype="multipart/form-data" id="form-income">
+					<div class="table-responsive">
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th width="1" style="text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></th>
+									<th class="text-left">
+										<a href="{{ seller_name_url}}" class="{% if order is defined and order == 'c.firstname' %}{{ sort }}{%endif %}">
+											{{ text_seller_name}}
+										</a>
+									</th>
+									<!-- <th class="text-left">
+										<a href="{{ seller_commission_url}}" class="{% if order is defined and order == 'c.commission' %}{{ sort }}{%endif %}">
+											{{ text_commission}}
+										</a>
+									</th> -->
+									<th class="text-left">
+										<a href="{{ total_url}}" class="{% if order is defined and order == 'total' %}{{ sort }}{%endif %}">
+											{{ text_total_amount}}
+										</a>
+									</th>
+									<th class="text-left">
+										<a href="{{ customer_url}}" class="{% if order is defined and order == 'customer' %}{{ sort }}{%endif %}">
+											{{ text_seller_amount}}
+										</a>
+									</th>
+									<th class="text-left">
+										<a href="{{ admin_url}}" class="{% if order is defined and order == 'admin' %}{{ sort }}{%endif %}">
+											{{ text_admin_amount}}
+										</a>
+									</th>
+									<th class="text-left">
+										<!-- <a > -->
+											{{ text_paid_to_seller}}
+										<!-- </a> -->
+									</th>
+									<th class="text-left">
+										<!-- <a > -->
+											{{ text_rem_amount}}
+										<!-- </a> -->
+									</th>
+									<th class="text-center">
+										{{ text_action}}
+									</th>
+								</tr>
+							</thead>
+							{% if income_details %}
+								{% for key, income_detail in income_details %}
+								<tr>
+									<td style="text-align: center;">
+				                    	<input type="checkbox" name="selected[]" value="{{ income_detail['seller_id']}}" />
+				                    </td>
+
+									<td class="text-left">
+										<a href="{{ income_detail['dashborad_url']}}" target="_blank" data-toggle="tooltip" data-original-title="{{ income_detail['firstname'] ~ text_dashboard}}" >
+											{{ income_detail['seller_name'] }}
+										</a>
+									</td>
+									<!-- <td class="text-left">
+										{{ income_detail['commission']}}
+									</td> -->
+									<td class="text-left">
+										{{ income_detail['total']}}
+									</td>
+									<td class="text-left">
+										{{ income_detail['seller_total']}}
+									</td>
+									<td class="text-left">
+										{{ income_detail['admin_total']}}
+									</td>
+									<td class="text-left">
+										{{ income_detail['paid_total']}}
+									</td>
+									<td class="text-left">
+										{{ income_detail['amount_to_pay']}}
+									</td>
+									<td class="text-center">
+										<a href="{{ income_detail['pay_link']}}" class="btn btn-primary" {% if income_detail['button_status'] %}{{ 'disabled' }}{%endif %} style="width: auto;">
+											{{ income_detail['pay']}}
+										</a>
+									</td>
+								</tr>
+							{% endfor %}
+								<tr>
+									<td class="text-center" colspan="2">
+										<b>{{ text_grand_total}}</b>
+									</td>
+									<td>
+										{{ grand_total}}
+									</td>
+									<td>
+										{{ grand_total_seller}}
+									</td>
+									<td>
+										{{ grand_total_admin}}
+									</td>
+									<td>
+										{{ grand_total_paid}}
+									</td>
+									<td>
+										{{ grand_total_rem}}
+									</td>
+									<td></td>
+								</tr>
+							{% else %}
+							<tr>
+								<td colspan="9" class="text-center">{{ no_records}}</td>
+							</tr>
+							{% endif %}
+						</table>
+					</div>
+				</form>
+				<div class="row">
+					<div class="col-sm-12 text-right">{{ pagination}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+	$('.datetimefrom').datetimepicker({
+		pickDate: true,
+		pickTime: true,
+		format: 'YYYY-MM-DD HH:MM:SS'
+	});
+	$('.datetimeto').datetimepicker({
+		pickDate: true,
+		pickTime: true,
+		format: 'YYYY-MM-DD HH:MM:SS'
+	});
+
+	function Filter(){
+		url = "index.php?route=customerpartner/income&user_token={{ user_token}}";
+		seller_name = $('input[name="filter_seller_name"]').val();
+		if(seller_name) {
+			url += '&seller_name='+seller_name;
+		}
+		commission_from = $('input[name="filter_commission_from"]').val();
+		if(commission_from) {
+			url += '&commission_from='+commission_from;
+		}
+		commission_to = $('input[name="filter_commission_to"]').val();
+		if(commission_to) {
+			url += '&commission_to='+commission_to;
+		}
+		total_amount_from = $('input[name="filter_total_amount_from"]').val();
+		if(total_amount_from) {
+			url += '&total_amount_from='+total_amount_from;
+		}
+		total_amount_to = $('input[name="filter_total_amount_to"]').val();
+		if(total_amount_to) {
+			url += '&total_amount_to='+total_amount_to;
+		}
+		seller_amount_from = $('input[name="filter_seller_amount_from"]').val();
+		if(seller_amount_from) {
+			url += '&seller_amount_from='+seller_amount_from;
+		}
+		seller_amount_to = $('input[name="filter_seller_amount_to"]').val();
+		if(seller_amount_to) {
+			url += '&seller_amount_to='+seller_amount_to;
+		}
+		admin_amount_from = $('input[name="filter_admin_amount_from"]').val();
+		if(admin_amount_from) {
+			url += '&admin_amount_from='+admin_amount_from;
+		}
+		admin_amount_to = $('input[name="filter_admin_amount_to"]').val();
+		if(admin_amount_to) {
+			url += '&admin_amount_to='+admin_amount_to;
+		}
+		paid_to_seller_from = $('input[name="filter_paid_to_seller_from"]').val();
+		if(paid_to_seller_from) {
+			url += '&paid_to_seller_from='+paid_to_seller_from;
+		}
+		paid_to_seller_to = $('input[name="filter_paid_to_seller_to"]').val();
+		if(paid_to_seller_to) {
+			url += '&paid_to_seller_to='+paid_to_seller_to;
+		}
+		// rem_amount_from = $('input[name="filter_rem_amount_from"]').val();
+		// if(rem_amount_from) {
+		// 	url += '&rem_amount_from='+rem_amount_from;
+		// }
+		// rem_amount_to = $('input[name="filter_rem_amount_to"]').val();
+		// if(rem_amount_to) {
+		// 	url += '&rem_amount_to='+rem_amount_to;
+		// }
+		date_added_from = $('input[name="filter_date_added_from"]').val();
+		if(date_added_from) {
+			url += '&date_added_from='+date_added_from;
+		}
+		date_added_to = $('input[name="filter_date_added_to"]').val();
+		if(date_added_to) {
+			url += '&date_added_to='+date_added_to;
+		}
+
+		location = url;
+	}
+
+	$('input[name=\'filter_seller_name\']').autocomplete({
+	  delay: 0,
+	  source: function(request, response) {
+	    $.ajax({
+	      url: 'index.php?route=customerpartner/partner/autocomplete&user_token={{ user_token}}&filter_name=' +  encodeURIComponent(request)+'&filter_view=' +  jQuery('#view_all').val(),
+	      dataType: 'json',
+	      success: function(json) {
+	        response($.map(json, function(item) {
+	          return {
+	            label: item.name,
+	            value: item.id
+	          }
+	        }));
+	      }
+	    });
+	  },
+	  'select': function(item) {
+	    $('input[name=\'filter_seller_name\']').val(item['label']);
+	  }
+
+	});
+</script>
+
+{{ footer}}

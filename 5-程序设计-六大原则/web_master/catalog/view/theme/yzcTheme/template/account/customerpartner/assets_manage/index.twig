@@ -1,0 +1,141 @@
+{{ header }}
+<style>
+  .total-assets{
+  color: #333;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .total-assets-color{
+    color:#193564;
+    margin-left: 8px;
+    font-weight: bold;
+  }
+  .my-box{
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 3px;
+    box-shadow: #ddd 0 0 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .total-assets .icon-V10-wenhaotishi{
+    font-size: 16px;
+    position: absolute;
+    margin: 0;
+  }
+  .card{
+    width: 232px;border: 1px solid #DCDCDC;height: 150px;position: relative;margin-top: 45px;position: relative;
+    display: flex;justify-content: center;
+  }
+  .supply-chain-card{
+   border-top: 3px solid #F82B2B;
+  }
+  .green-card{
+    border-top: 3px solid #04A146;
+  }
+  .blue-card{
+    border-top: 3px solid #004BD8;
+  }
+  .card-content{
+    position: absolute;
+    margin:0 auto;
+    text-align: center;
+    top: 50%;
+    transform: translate(0,-50%);
+  }
+  .card-titile{
+    text-align: center;font-size:16px;color:#AAAAAA;font-weight: bold;
+  }
+  .amount{
+    text-align: center;font-size:16px;margin-top:20px;font-weight:bold
+  }
+  .supply-chain-amount{
+    color:#F82B2B;
+  }
+  .green-amount,.blue-amount{
+    color:#333333;
+  }
+  .margin-right30{
+    margin-right: 30px;
+  }
+  .positive-number{
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .symbol{
+    margin-left: 19px;
+  }
+</style>
+{{ separate_column_left }}
+{% trans_default_category 'catalog/view/customerpartner/assets_manage/index' %}
+<div class="container-fluid seller-center-con" id="content" style="margin-left: 235px">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  <h1 style="margin-left: 15px">{{ __('资产管理') }}</h1>
+  <div id="content" class="my-box">
+    <div>
+      <span class="total-assets">
+        {{ __('总资产') }}
+        <i class="giga icon-V10-wenhaotishi"  data-toggle="tooltip" title="{{ __('总资产计算') }}"></i>
+        <span class="symbol">:</span>
+        <span class="total-assets-color">{{ totalAssets|formatPrice(currency) }}</span>
+      </span>
+    </div>
+    <div class="positive-number" >
+    <div class="supply-chain-card card margin-right30">
+      <div class="card-content">
+        <div class="card-titile">{{ __('供应链金融') }}</div>
+      <div  class="amount supply-chain-amount">{{ assets.supply_chain_finance|formatPrice(currency) }}</div></div>
+    </div>
+      <div class="supply-chain-card card">
+        <div class="card-content">
+          <div class="card-titile">{{ __('抵押物支付期货保证金') }}</div>
+          <div  class="amount supply-chain-amount">{{ sellerCollateralAmount|formatPrice(currency) }}</div></div>
+      </div>
+    </div>
+    <div class="positive-number" >
+      <div class="green-card card margin-right30">
+        <div class="card-content">
+          <div class="card-titile">{{ __('预计应付款') }}</div>
+          <div class="amount green-amount">{{ estimatedAccounts|formatPrice(currency) }}</div></div>
+      </div>
+      <div class="green-card card margin-right30">
+          <div class="card-content">
+            <div class="card-titile">{{ __('在库抵押物') }}</div>
+            <div class="amount green-amount">{{ assets.collateral_value|formatPrice(currency) }}</div></div>
+        </div>
+      <div class="green-card card margin-right30">
+            <div class="card-content">
+              <div class="card-titile">{{ __('在途抵押物') }}</div>
+              <div class="amount green-amount">{{ assets.shipping_value|formatPrice(currency) }}</div></div>
+          </div>
+      <div class="green-card card margin-right30">
+              <div class="card-content">
+                <div class="card-titile">{{ __('人民币押金') }}</div>
+                <div class="amount green-amount">￥{{ assets.life_money_deposit ?? '0.00' }}</div></div>
+            </div>
+      <div class="green-card card">
+                <div class="card-content">
+                  <div class="card-titile">{{ __('资产调整金额') }}</div>
+                  <div class="amount green-amount">{{ assets.asset_adjustment|formatPrice(currency) }}</div></div>
+              </div>
+    </div>
+    <div class="positive-number" >
+      <div class="blue-card card margin-right30">
+        <div class="card-content">
+          <div class="card-titile">{{ __('纯物流预计费用') }}</div>
+          <div  class="amount blue-amount">{{ pureLogisticsFreight|formatPrice(currency) }}</div></div>
+      </div>
+      <div class="blue-card card">
+        <div class="card-content">
+          <div class="card-titile">{{ __('抵押物预计减值金额') }}</div>
+          <div  class="amount blue-amount">{{ pureLogisticsCollateralValueInBP|formatPrice(currency) }}</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}

@@ -1,0 +1,229 @@
+/* catalog/view/theme/yzcTheme/template/account/safeguard/claim/components/claim_detail.twig
+* buyer申请理赔详情提交记录
+*/
+.claim-detail {
+  margin-bottom: 10px;
+}
+
+.claim-detail .title {
+  height: 40px;
+  line-height: 40px;
+  font-size: 22px;
+  color: #fff;
+  background: #595959;
+  padding-left: 24px;
+}
+
+.claim-detail .claim-line {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.claim-detail .claim-line>div {
+  width: 50%;
+}
+
+.claim-detail .claim-line .detail_giga {
+  background: #EBEBEB;
+}
+
+.claim-detail .claim_records>div {
+  padding: 24px 20px;
+  border: 1px solid #DCDCDC;
+  border-top: none;
+}
+
+.claim-detail .claim_records>div:nth-child(2n) {
+  border-right: none;
+}
+
+.claim-detail .records-time {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.claim-detail .records-time i {
+  padding-right: 6px;
+}
+
+.claim-detail .records-time i:before {
+  font-size: 18px;
+}
+
+.claim-detail .records-content {
+  padding: 30px 20px 6px 20px;
+}
+
+.claim-detail .records-line {
+  padding-bottom: 8px;
+}
+
+.claim-detail .detail_me .records-line span:first-child {
+  font-weight: bold;
+  padding-right: 4px;
+}
+
+.claim-detail .detail_giga .records-line span:nth-child(2) {
+  font-weight: bold;
+  padding-left: 4px;
+}
+
+.claim-detail .prob-state {
+  width: 520px;
+  height: 160px;
+  color: #333333;
+  line-height: 22px;
+  background: #EDEFF3;
+  border-radius: 2px;
+  padding: 16px 8px 16px 16px;
+  margin-bottom: 16px;
+}
+
+.claim-detail .prob-state .oris-scrollbar {
+  height: 128px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.claim-detail .attachment i.icon-attachment {
+  color: #004BD8;
+  padding-right: 6px;
+  position: relative;
+  top: 1px;
+}
+
+.line22 {
+  line-height: 22px;
+}
+
+.add-files {
+  height: 24px;
+  color: #004BD8;
+  background: #EBEBEB;
+  border: 1px solid #2861CE;
+  border-radius: 12px;
+  padding: 4px 24px;
+  cursor: pointer;
+  margin-left: 38px;
+}
+
+.add-files:hover {
+  background: #F2F5FC;
+}
+
+.claim-detail .oris-comments textarea {
+  height: 160px;
+}
+
+.claim-detail .upload-btn {
+  width: 264px;
+  height: 160px;
+  border: 1px solid #C1C1C1;
+  border-radius: 2px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.claim-detail .upload-btn i.icon-shangchuanyunduan {
+  font-size: 80px;
+  color: #c0c4cc;
+  position: relative;
+  top: 16px;
+}
+
+.claim-detail .upload-suggestion {
+  padding: 0 20px 0 30px;
+}
+
+.claim-detail .upload-suggestion>.action-files-cover:not(.suggest) {
+  padding: 6px 0;
+}
+
+.claim-detail .upload-suggestion .suggest {
+  color: #7382A5;
+  font-weight: bold;
+}
+
+.claim-detail .files-tips {
+  display: flex;
+  padding: 12px 20px 12px 16px;
+  width: 520px;
+  background: #FFF0E5;
+  border: 1px solid #FF974B;
+  border-radius: 2px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.claim-detail .files-tips i.fa {
+  padding-right: 6px;
+  position: relative;
+  top: 2px;
+}
+
+.claim-detail .in-pendding {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  justify-content: center;
+  font-size: 16px;
+  padding: 0 120px;
+  text-align: center;
+}
+
+.claim-detail i.icon-shijian {
+  color: #9AA2B4;
+  font-size: 18px;
+}
+
+.addinfo-btn {
+  font-weight: bold;
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+  margin-left: 12px !important;
+  position: relative;
+}
+
+.claim-title {
+  padding: 30px 0 12px 0;
+}
+
+.descrip-text {
+  position: absolute;
+  bottom: 0;
+}
+
+.pop-info {
+  font-size: 13px;
+  color: #333;
+  position: absolute;
+  top: -20px;
+  left: 90px;
+  background: #FFF0E5;
+  border: 1px solid #FF6600;
+  padding: 4px 12px;
+  border-radius: 22px;
+}
+
+.pop-info:after {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #FFF0E5;
+  position: absolute;
+  left: 12px;
+  bottom: -5px;
+  -ms-transform: rotate(45deg);
+  /* IE 9 */
+  -webkit-transform: rotate(45deg);
+  /* Safari and Chrome */
+  transform: rotate(45deg);
+  border-right: 1px solid #FF6600;
+  border-bottom: 1px solid #FF6600;
+}
+.files-pendding-modal {
+  width: 800px;
+  max-height: calc(100vh - 60px);
+}

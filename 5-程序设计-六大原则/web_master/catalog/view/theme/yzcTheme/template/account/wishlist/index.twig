@@ -1,0 +1,1525 @@
+{{ header }}
+<script type="text/javascript" src="/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script type="text/javascript" src="/catalog/view/javascript/multistage%20select/selectUI.js"></script>
+<link href="/catalog/view/javascript/multistage%20select/selectUI.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="catalog/view/javascript/layui/layui.js"></script>
+<link rel="stylesheet" href="catalog/view/javascript/layui/css/layui.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css"
+      rel="stylesheet" type="text/css"/>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+
+
+<style>
+    .nav-tabs > li.active > a,
+    .nav-tabs > li > a:focus,
+    .nav-tabs > li > a:hover {
+        background-color: #3A75DC;
+        color: #fff;
+    }
+
+    .nav-tabs > li > a {
+        background-color: #fff;
+        text-align: center;
+        /*font-size: 18px;*/
+        border-right: 4px;
+        color: #183464;
+    }
+
+    .nav-tabs .unread {
+        display: inline-block;
+        width: 50px;
+        height: 20px;
+        background-color: #fff;
+        font-size: 14px;
+        border-radius: 15px;
+        border: 1px solid #eee;
+    }
+
+    .nav-tabs > li.active > a .unread,
+    .nav-tabs > li > a:focus .unread,
+    .nav-tabs > li > a:hover .unread {
+        color: #3A75DC;
+    }
+
+    .reason {
+        color: #ff414d;
+    }
+
+    .box-shadow {
+        border-radius: 4px;
+        background-color: #fff;
+        padding: 15px 20px;
+        box-shadow: #aaa 0 0 6px;
+    }
+
+    .check {
+        height: 40px;
+        line-height: 50px;
+    }
+
+    .form-group label {
+        font-weight: initial;
+        text-transform: uppercase;
+        font-size: 12px;
+    }
+
+    .row .form-group input:not([type=checkbox]):not([type=radio]),
+    .row .form-group select {
+        height: 40px;
+        border-radius: 4px;
+        background-color: #f3f5f7 ;
+        border: 1px solid #ccc;
+    }
+
+    input[type=checkbox] {
+        position: relative;
+        width: 15px;
+        height: 15px;
+        vertical-align: sub;
+    }
+
+    input[type=checkbox]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 15px;
+        height: 15px;
+        line-height: 15px;
+        text-align: center;
+        color: white;
+        font-size: 14px;
+        background-color: #fff;
+        border: 1px solid #aaa;
+    }
+
+    input[type=checkbox]:checked::before {
+        border: none;
+        content: '\e6ca';
+        background-color: #3a75dc;
+        font-family: "giga";
+        font-size: 12px;
+    }
+
+    .content-table .btn-text, .content-table .btn-create {
+        box-shadow: none;
+        font-size: 12px;
+        font-weight: inherit;
+        /*border-bottom: 2px solid transparent;*/
+    }
+
+
+    .content-table .btn-text.active {
+        color: #3A75DC;
+        border-bottom: 2px solid #3A75DC;
+        border-radius: 0;
+    }
+
+    .img-big {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        display: none;
+        z-index: 100;
+    }
+
+    .img:hover .img-big {
+        display: block;
+        top: -160px;
+        left: 0;
+    }
+
+    .name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .sku {
+        color: #ccc;
+        font-size: 12px;
+    }
+
+    .table .btn-action {
+        max-width: 40px;
+        max-height: 40px;
+        height: 35px;
+        width: 35px;
+        border: 1px solid #eee;
+    }
+
+    .table .btn-action i {
+        font-size: 16px;
+    }
+
+    thead {
+        background-color: #f3f5f7;
+    }
+
+    .operate .btn-operate {
+        width: 100px;
+        height: 30px;
+        background-color: #f3f5f7;
+        border: 1px solid #ccc;
+        font-size: 12px;
+        font-weight: inherit;
+        color: #3A75DC;
+        padding: 0;
+        line-height: 28px;
+    }
+
+    .form-group .btn-primary {
+        width: 80px;
+        height: 40px;
+    }
+
+    .form-group .btn-default {
+        width: 40px;
+        height: 40px;
+    }
+
+    .form-group .btn-primary,
+    .form-group .btn-default i {
+        line-height: 26px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        background-color: #3A75DC;
+        border-color: #3A75DC;
+    }
+
+    .modal-header, .modal-footer {
+        padding: 8px 15px;
+    }
+
+    .modal-header .close {
+        background-color: #193465;
+    }
+
+    .limit {
+        position: absolute;
+        padding: 0;
+        line-height: 38px;
+        right: 5px;
+        top: 0;
+        color: #ccc;
+    }
+
+    .table .btn-action i.fa-heart {
+      color: #FA6400;
+    }
+
+    .table .btn-action:hover i.fa-heart {
+      color: #fff;
+    }
+
+    input:not([type=checkbox]):not([type=radio]) {
+        height: 40px;
+        box-shadow: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .stockTips {
+        background-color: #fff0e6;
+        border: 1px solid #FA6400;
+        padding: 5px 8px;
+        width: 90%;
+        margin: 0 auto;
+        border-radius: 4px;
+    }
+
+    .stockTips p {
+        margin: 0;
+        font-size: 12px;
+    }
+
+    .dropdown-submenu {
+        position: relative;
+    }
+
+    .dropdown-submenu > .dropdown-menu {
+        top: 0;
+        left: 100%;
+        margin-top: -1px;
+        margin-left: 0;
+        -webkit-border-radius: 0 6px 6px 6px;
+        -moz-border-radius: 0 6px 6px;
+        border-radius: 0 6px 6px 6px;
+    }
+    .select-line .dropdown-submenu > .dropdown-menu{
+        border-radius: 0;
+    }
+
+    .dropdown-submenu:hover > .dropdown-menu {
+        display: block;
+    }
+
+    .dropdown-submenu > a:after {
+        display: block;
+        content: " ";
+        float: right;
+        width: 0;
+        height: 0;
+        border-color: transparent;
+        border-style: solid;
+        border-width: 5px 0 5px 5px;
+        border-left-color: #ccc;
+        margin-top: 5px;
+        margin-right: -10px;
+    }
+
+    .dropdown-submenu:hover > a:after {
+        border-left-color: #fff;
+    }
+
+    .dropdown-submenu.pull-left {
+        float: none;
+    }
+
+    .dropdown-submenu.pull-left > .dropdown-menu {
+        left: -100%;
+        margin-left: 10px;
+        -webkit-border-radius: 6px 0 6px 6px;
+        -moz-border-radius: 6px 0 6px 6px;
+        border-radius: 6px 0 6px 6px;
+    }
+
+    .modal-body > div {
+        margin-bottom: 10px;
+    }
+
+    .bootstrap-select {
+        width: calc(100% - 40px) !important;
+        width:-webkit-calc(100% - 40px) !important;
+        width:-moz-calc(100% - 40px) !important;
+        position: relative;
+
+
+    }
+
+    .bootstrap-select .btn-default,
+    .bootstrap-select .btn-default:hover,
+    .bootstrap-select .btn-default:focus {
+        border: 1px solid #ccc !important;
+        background-color: #fff !important;
+        color: #333 !important;
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+        outline: none !important;
+    }
+
+    .filter-option-inner-inner {
+        color: #333;
+        font-weight: initial;
+    }
+
+    .multipleChoice .box, .multipleChoice .box1 {
+        width: 100%;
+        height: auto;
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        display: none;
+    }
+
+    .btn-options {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: initial;
+        margin-right: 10px;
+        margin-bottom: 5px;
+    }
+
+
+
+    .bootstrap-select .dropdown-menu {
+        width: 100%;
+    }
+
+    .dropdown-menu.inner .selected {
+        background-color: #fff0e6;
+
+    }
+
+    .commodity .box1 .btn-options {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .clear-btn {
+        position: absolute;
+        border: none;
+        right: 0;
+        height: 40px;
+        background-color: transparent;
+        /*display: none;*/
+    }
+
+    .alert.alert-success,
+    .alert.alert-danger {
+        position: fixed;
+        top: 150px;
+        width: 40%;
+        z-index: 999;
+        left: 30%;
+        word-break: break-word;
+        word-wrap: break-word;
+    }
+    .alert button.close{
+    }
+
+    .operate-g {
+        width: 151px;
+    }
+    .operate-g:hover a,
+    .operate-g .group-operate .btn:hover{
+        color: #3A75DC;
+    }
+
+    .operate-g a.btn-text {
+        max-width: 110px !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-right: 26px;
+        position: relative;
+    }
+
+    .btn.dropdown-toggle.btn-default {
+        height: 40px;
+    }
+
+    .dropdown-menu .divider {
+        margin: 0;
+    }
+
+    .open > .dropdown-menu {
+        min-width: 150px;
+    }
+    .group-operate .btn-group {
+        padding: 0 !important;
+        background-color: #fff;
+        box-shadow: none !important;
+    }
+    table.table.save > thead > tr > th{
+        /*font-weight: initial;*/
+        vertical-align: middle;
+    }
+    #modal-setting .modal-body{
+        padding: 15px 0;
+    }
+    .unfold{
+        position:absolute;
+        right: 0;
+        z-index: 100;
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-bottom-right-radius: 4px;
+        border-top-right-radius: 4px;
+        border-left: none;
+    }
+    .bootstrap-select.show-tick .dropdown-menu .selected span.check-mark{
+        right: auto;
+        left: 8px;
+    }
+    .bootstrap-select .dropdown-menu li a{
+        padding-left: 30px;
+        display: inline-block;
+    }
+    .form-control:focus{
+        box-shadow: none;
+    }
+    .hover:hover{
+        color: #3A75DC;
+    }
+    .product .dropdown-menu li{
+        min-width: 1200px;
+    }
+    .store-name{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        word-break: break-all;
+    }
+    .btn-save:hover i{
+        color: #fff !important;
+        background-color: #fa6400 !important;
+    }
+    table.save .btn-shopping{
+        background-color:#fff0e6 ;
+        border:1px solid #fa6400;
+        font-size: 13px;
+        padding: 8px 18px;
+        font-weight: inherit;
+    }
+    .pagination > li > a, .pagination > li > span{
+        height: 36px;
+    }
+    #freight .dropdown-freight{
+        width: auto;
+        max-width: 400px;
+    }
+</style>
+
+
+<div class="page-seller-portal">
+    {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+    <div class="container" id="content">
+        <div class="row">
+            <h1>My Saved Items</h1>
+            <div class="col-md-12" style="margin-bottom: -5px">
+                {#Togglable tabs#}
+                <ul class="nav nav-tabs" role="tablist">
+                    <li id="available" {% if params.flag!='unavailable' %}class="active" {% endif %}>
+                        <a href="#tab-available" data-toggle="tab">Available</a></li>
+                    <li id="unavailable" {% if params.flag=='unavailable' %}class="active" {% endif %}>
+                        <a href="#tab-unavailable" data-toggle="tab">Unavailable</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{#tab页对应内容#}
+<div class="row mb-4" style="margin-right: 0">
+    <div class="col-md-12">
+        <div class="tab-content">
+            <div class="tab-pane{% if params.flag!='unavailable' %} active {% endif %}" id="tab-available">
+                <fieldset>
+                    <div id="bid-available"></div>
+                </fieldset>
+            </div>
+            <div class="tab-pane  {% if params.flag=='unavailable' %}active {% endif %}" id="tab-unavailable">
+                <fieldset>
+                    <div id="bid-unavailable"></div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</div>
+{# 价格曲线展示 #}
+<div id="price-modal" class="modal fade" role="dialog" style="display: none;">
+    <div class="modal-dialog" style="margin-left: 21%">
+        <div class="modal-content" style="width: 900px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title">Change in Unit Price</h4>
+            </div>
+            <div class="modal-body" style="overflow:auto;">
+                <div id="main" style="width: 880px;height:400px;"></div>
+                <div style="text-align: center">
+          <span style="font-size: 14px;font-weight: bolder">
+            Slide the red dots to check the unit price on specific dates.
+          </span>
+                </div>
+            </div>
+            <div class="modal-footer" style="border: none"></div>
+        </div>
+    </div>
+</div>
+
+{{ footer }}
+<script>
+  block.blockUI();
+  let tab_list_record = [];
+  let tab_current_group_id = [];
+  let current_group_id = parseInt({{ current_group_id }});
+  let download_url='';
+  suffix = '';
+  if (current_group_id) {
+    suffix = '&group_id=' + current_group_id;
+  }
+  if ('{{ params.flag }}' === 'unavailable') {
+    tab_current_group_id['available'] = 0;
+    tab_current_group_id['unavailable'] = current_group_id;
+  } else {
+    tab_current_group_id['available'] = current_group_id;
+    tab_current_group_id['unavailable'] = 0;
+  }
+  $("ul.nav-tabs li").on('click',function () {
+    let tab = $(this).attr('id');
+    current_group_id = tab_current_group_id[tab];
+    adjustGroupItems('#bid-' + tab);
+  });
+  $("div.dropdown.select-line").css('width','353px');
+
+  $('#bid-available').load('index.php?route=account/wishlist/list' + suffix);
+  $('#bid-unavailable').load('index.php?route=account/wishlist/list&flag=unavailable' + suffix);
+  block.unBlockUI();
+
+  function storeOptionDetailClick(obj) {
+    let show = $(obj).parent(".shop").find(".stores-box:eq(0)").css('display');
+    let box = $(obj).parent(".shop").find(".stores-box:eq(0)");
+    let flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+    if (show === 'block' || $(flag_tab + " select#wishStoreList.selectpicker:eq(0)").val() == null) {
+      box.css('display', 'none');
+    } else {
+      box.css('display', 'block');
+    }
+  }
+
+  function productOptionDetailClick(obj) {
+    let show = $(obj).parent(".product").find(".products-box:eq(0)").css('display');
+    let box = $(obj).parent(".product").find(".products-box:eq(0)");
+    let flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+    if (show === 'block' || $(flag_tab + " select#wishProductList.selectpicker:eq(0)").val() == null) {
+      box.css('display', 'none');
+    } else {
+      box.css('display', 'block');
+    }
+  }
+
+  function initStoreAndProduct() {
+    ajax(null, 'index.php?route=account/wishlist/getSavedStoreAndProductInWish', function (json) {
+      let stores = json.store;
+      let products = json.product;
+      let dom = '', xbox = null;
+      let flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+      $(flag_tab + " input#allProductAlert").val(json.qty.all);
+      $(flag_tab + " input#shopProductAlert").val(json.qty.store);
+      $(flag_tab + " input#productAlert").val(json.qty.product);
+      if (stores) {
+        let storeArr = [], storeName = [];
+        dom = '';
+        for (let i = 0; i < stores.length; i++) {
+          dom += '<button class="btn btn-options">' + stores[i].screenname + '<i id="removeStoreSpan" class="gcl gclcuowu2" store="' + stores[i].customer_id + '"></i></button>';
+          storeArr.push(stores[i].customer_id);
+          storeName.push(stores[i].screenname);
+        }
+        $(flag_tab + " select#wishStoreList.selectpicker:eq(0)").val(storeArr);
+        $(flag_tab + " select#wishStoreList.selectpicker:eq(0)").selectpicker('refresh');
+        if (storeName.length > 0) {
+          $(flag_tab + " div.stores-box:eq(0)").html(dom);
+          if (storeName.length > 3) {
+            //$(flag_tab + " div.filter-option-inner-inner").eq(0).html(storeName.length + ' items selected');
+          } else {
+            $(flag_tab + " div.filter-option-inner-inner").eq(0).html(storeName.join(', ')); //等待,强制刷新
+          }
+          xbox = $(flag_tab + " div.stores-box:eq(0) button i#removeStoreSpan");
+          for (let j = 0; j < stores.length; j++) {
+            //删除列表店铺事件
+            xbox.eq(j).on('click', function () {
+              delStore($(this).attr('store'));
+            });
+          }
+        } else {
+          $(flag_tab + " div.filter-option-inner-inner").eq(0).html('Please Select');
+        }
+      }
+      if (products) {
+        let productArr = [], productSku = [];
+        dom = '';
+        for (let i = 0; i < products.length; i++) {
+          dom += '<button class="btn btn-options">' + products[i].sku + '<i id="removeProductSpan" class="gcl gclcuowu2" product="' + products[i].product_id + '"></i></button>';
+          productArr.push(products[i].product_id);
+          productSku.push(products[i].sku);
+        }
+        $(flag_tab + " select#wishProductList.selectpicker:eq(0)").val(productArr);
+        $(flag_tab + " select#wishProductList.selectpicker:eq(0)").selectpicker('refresh');
+        if (productSku.length > 0) {
+          $(flag_tab + " div.products-box:eq(0)").eq(0).html(dom);
+          if (productSku.length > 3) {
+            //$("div.products-box").html(productSku.length + ' items selected');
+          } else {
+            $(flag_tab + " div.filter-option-inner-inner").eq(1).html(productSku.join(', ')); //等待,强制刷新 dom
+          }
+          xbox = $(flag_tab + " div.products-box button i#removeProductSpan");
+          for (let j = 0; j < products.length; j++) {
+            xbox.eq(j).on('click', function () {
+              delProduct($(this).attr('product'));
+            });
+          }
+        } else {
+          $(flag_tab + " div.filter-option-inner-inner").eq(1).html('Please Select');
+        }
+      }
+    });
+  }
+
+  function delStore(store_id) {
+    let flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+    let picker = $(flag_tab + " select#wishStoreList.selectpicker:eq(0)");
+    let stores = picker.val();
+    let index = stores.indexOf(store_id);
+    if (index > -1) {
+      stores.splice(index, 1);
+      picker.val(stores);
+      picker.selectpicker('refresh');
+    }
+    let selObj = $(flag_tab + " select#wishStoreList:eq(0) option");
+    let slen = selObj.length;
+    let dom = '', load = [], storeName = [];
+    for (let i = 0; i < slen; i++) {
+      if (stores.indexOf(selObj.eq(i).val()) > -1 && load.indexOf(selObj.eq(i).val()) == -1) {
+        dom += '<button class="btn btn-options">' + selObj.eq(i).text() + '<i id="removeStoreSpan" class="gcl gclcuowu2" store="' + selObj.eq(i).val() + '"></i></button>';
+        load.push(selObj.eq(i).val());
+        storeName.push(selObj.eq(i).text());
+      }
+    }
+    $(flag_tab + " div.stores-box:eq(0)").html(dom);
+    if (stores.length > 0) {
+      let xbox = $(flag_tab + " div.stores-box:eq(0) button i#removeStoreSpan");
+      if (xbox.length > 0) {
+        for (let j = 0; j < stores.length; j++) {
+          //删除列表店铺事件
+          xbox.eq(j).on('click', function () {
+            //console.log(j, $(this).attr('store'));
+            delStore($(this).attr('store'));
+          });
+        }
+      }
+    }
+  }
+
+  function storeSelectOnChange() {
+    let flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+    let picker = $(flag_tab + " select#wishStoreList.selectpicker:eq(0)");
+    let selObj = $(flag_tab + " select#wishStoreList:eq(0) option");
+    let slen = selObj.length;
+    let stores = picker.val();
+    if (stores == null) {
+      return 0;
+    }
+    let dom = '', storeName = [];
+    for (let i = 0; i < slen; i++) {
+      if (stores.indexOf(selObj.eq(i).val()) > -1) {
+        dom += '<button class="btn btn-options">'
+          + selObj.eq(i).text() + '<i id="removeStoreSpan" class="gcl gclcuowu2" store="' + selObj.eq(i).val() + '"></i></button>';
+        storeName.push(selObj.eq(i).text());
+      }
+    }
+    if (stores.length > 0) {
+      $(flag_tab + " div.stores-box:eq(0)").html(dom);
+      let xbox = $(flag_tab + " div.stores-box:eq(0) button i#removeStoreSpan");
+      for (let j = 0; j < stores.length; j++) {
+        //删除列表店铺事件
+        xbox.eq(j).on('click', function () {
+          delStore($(this).attr('store'));
+        });
+      }
+    }
+  }
+
+  function splitProduct(t) { //特别解析
+    return t.replace(/\s{3}\-\s{3}/, '@@').split('@@')[0].trim();
+  }
+
+  function delProduct(product_id) {
+    let flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+    let picker = $(flag_tab + " select#wishProductList.selectpicker:eq(0)");
+    let stores = picker.val();
+    if (stores == null) {
+      return 0;
+    }
+    let index = stores.indexOf(product_id);
+    if (index > -1) {
+      stores.splice(index, 1);
+      picker.val(stores);
+      picker.selectpicker('refresh');
+    }
+    let selObj = $(flag_tab + " select#wishProductList option");
+    let slen = selObj.length;
+    let dom = '', txt = [];
+    for (let i = 0; i < slen; i++) {
+      if (stores.indexOf(selObj.eq(i).val()) > -1) {
+        let t = splitProduct(selObj.eq(i).text());
+        txt.push(t);
+        dom += '<button class="btn btn-options">' + t + '<i id="removeProductSpan" class="gcl gclcuowu2" product="' + selObj.eq(i).val() + '"></i></button>';
+      }
+    }
+    $(flag_tab + " div.products-box:eq(0)").html(dom);
+    if (txt.length > 0) {
+      setTimeout(function () {
+        if (txt.length > 3) {
+          $(flag_tab + " div.filter-option-inner-inner").eq(1).html(txt.length + ' items selected');
+        } else {
+          $(flag_tab + " div.filter-option-inner-inner").eq(1).html(txt.join(', ')); //等待,强制刷新 dom
+        }
+      }, 0);
+    }
+    let xbox = $(flag_tab + " div.products-box:eq(0) button i#removeProductSpan");
+    if (xbox.length > 0) {
+      for (let j = 0; j < stores.length; j++) {
+        xbox.eq(j).on('click', function () {
+          delProduct($(this).attr('product'));
+        });
+      }
+    }
+  }
+
+  function productSelectOnChange() {
+    let flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+    let picker = $(flag_tab + " select#wishProductList.selectpicker:eq(0)");
+    let selObj = $(flag_tab + " select#wishProductList:eq(0) option");
+    let stores = picker.val();
+    if (stores == null) {
+      return 0;
+    }
+    let slen = selObj.length;
+    let dom = '', txt = [];
+    for (let i = 0; i < slen; i++) {
+      if (stores.indexOf(selObj.eq(i).val()) > -1) {
+        let t = splitProduct(selObj.eq(i).text());
+        txt.push(t);
+        dom += '<button class="btn btn-options">' + t + '<i id="removeProductSpan" class="gcl gclcuowu2" product="' + selObj.eq(i).val() + '"></i></button>';
+      }
+    }
+    if (txt.length > 0) {
+      $(flag_tab + " div.products-box:eq(0)").html(dom);
+      setTimeout(function () {
+        if (txt.length > 3) {
+          $(flag_tab + " div.filter-option-inner-inner").eq(1).html(txt.length + ' items selected');
+        } else {
+          $(flag_tab + " div.filter-option-inner-inner").eq(1).html(txt.join(', ')); //等待,强制刷新 dom
+        }
+      }, 0);
+      let xbox = $(flag_tab + " div.products-box:eq(0) button i#removeProductSpan");
+      for (let j = 0; j < stores.length; j++) {
+        xbox.eq(j).on('click', function () {
+          delProduct($(this).attr('product'));
+        });
+      }
+    }
+  }
+
+  //库存提醒设置全设置
+  function setProductAlertAll() {
+    let flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+    let url = 'index.php?route=account/wishlist/setProductAlertAll';
+    let data = {};
+    let all_qty = $(flag_tab + " input#allProductAlert:eq(0)").val();
+    let store_qty = $(flag_tab + " input#shopProductAlert:eq(0)").val();
+    let product_qty = $(flag_tab + " input#productAlert:eq(0)").val();
+    let stores = $(flag_tab + " select#wishStoreList.selectpicker:eq(0)").val();
+    let products = $(flag_tab + " select#wishProductList.selectpicker:eq(0)").val();
+
+    if (isValidNumber(all_qty) && isValidNumber(store_qty) && isValidNumber(product_qty)) {
+      data.all_qty = all_qty;
+      data.allProductsRemind = 1;
+
+      data.store_qty = store_qty;
+      data.seller_ids = stores === null ? '0' : stores.join(',');
+      data.sellersRemind = 1;
+
+      data.product_qty = product_qty;
+      data.product_ids = products === null ? '0' : products.join(',');
+      data.productsRemind = 1;
+      ajax(data, url, function (json) {
+        showMsg(json.success, json.message);
+      });
+      $(flag_tab + " div.modal-backdrop").hide();
+    } else {
+      showMsg(false, 'Please enter valid number');
+    }
+  }
+
+  function isValidNumber(n) {
+    return /\d/.test(n) && parseInt(n) >= 0;
+  }
+
+  //底部分组同步更新，动态显示分组列表
+  function adjustGroupItems(flag_tab = '') {
+    // 如果没传，取当前默认选择的tab
+    if (!flag_tab) {
+      flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+    }
+    if ($(flag_tab + ' .bottom-move-div').length > 0) {
+      $(flag_tab + " .bottom-move-li").show();
+      $(flag_tab + " .bottom-move-" + current_group_id).hide();
+      $(flag_tab + " .right-move-li").show();
+      $(flag_tab + " .right-move-" + current_group_id).hide();
+      // 解决只有1个分组时候的bug问题
+      let drop_down_menus = $(flag_tab + " .dropdown-menu-product");
+      drop_down_menus.each(function (key, item) {
+        let visible = false;
+        if ($(item).find('li').length !== $(item).find(".right-move-" + current_group_id).length){
+          visible = true;
+        }
+        if (visible) {
+          $(item).show();
+        } else {
+          $(item).hide();
+        }
+      });
+    }
+  }
+
+  //下拉菜单选择框
+  function clickGroup(obj, flag) {
+    let tab = $('.nav-tabs .active').attr('id');
+    let flag_tab = '#bid-' + tab;
+    let group_id = $(obj).attr('id'); //top_group-9
+    if (!group_id) {
+      return 0;
+    }
+    group_id = parseInt(group_id.split('-')[1]);
+    current_group_id = group_id;
+    $(flag_tab + " a.btn.btn-text.active:eq(" + flag + ")").removeClass('active');
+    $(flag_tab + " a#top_group-" + group_id + ".btn.btn-text:eq(" + flag + ")").addClass('active');
+    if (current_group_id === tab_current_group_id[tab]) {
+      return 0;
+    } else {
+      filter();
+      adjustGroupItems();
+      setGroupWith();
+    }
+  }
+
+  //下拉菜单选择框
+  function menuSelect(obj) {
+    let level = parseInt($(obj).attr('level'));
+    let flag = $('.nav-tabs .active').attr('id');
+    let flag_tab = '#bid-' + flag;
+    let txt = '';
+    let category_id;
+    if (level === 1) {
+      txt = $(obj).attr('cat_name');
+    } else if (level === 2) {
+      let pid = $(obj).attr('pid');
+      txt = $("a[id='" + pid + "']").attr("cat_name");
+      txt += ' / ' + $(obj).attr('cat_name');
+    } else if (level === 3) {
+      let pid = $(obj).attr('pid');
+      let p_pid = $("a[id='" + pid + "']").attr("pid");
+      txt = $("a[id='" + p_pid + "']").attr("cat_name");
+      txt += ' / ' + $("a[id='" + pid + "']").attr("cat_name");
+      txt += ' / ' + $(obj).attr('cat_name');
+    }
+    category_id = $(obj).attr('id');
+    $(flag_tab + " #Category").val(txt);
+    sessionStorage.setItem('cat_name', txt);
+    $(flag_tab + " #Category").attr('category_id', category_id);
+  }
+
+  //单选按钮
+  function changeStatusOne(obj) {
+    let state = $(obj).prop("checked");
+    let flag = $('.nav-tabs .active').attr('id');
+    let flag_tab = '#bid-' + flag;
+    if (state) {
+      $(obj).prop("checked", true);
+      let tmp = 0;
+      $(flag_tab + " .save input.check").each((i, item) => {
+        if ($(item).prop("checked")) {
+          tmp++;
+        }
+      });
+      if (tmp > 0) {
+        $(flag_tab + ' .operate').show();
+      } else {
+        $(flag_tab + ' .operate').hide();
+      }
+      flag = flag == 'unavailable' ? 1 : 0;
+      let list_record = tab_list_record[flag];
+      if (tmp == list_record) {
+        $(flag_tab + ' .allcheck').prop("checked", true);
+      }
+    } else {
+      $(obj).prop("checked", false);
+      $(flag_tab + ' .allcheck').prop("checked", false);
+      let tmp = 0;
+      $(flag_tab + " .save input.check").each((i, item) => {
+        if ($(item).prop("checked")) {
+          tmp++;
+        }
+      });
+      if (tmp > 0) {
+        $(flag_tab + ' .operate').show();
+      } else {
+        $(flag_tab + ' .operate').hide();
+      }
+    }
+  }
+
+  //点击全选按钮
+  function changeStatusAll(obj) {
+    let flag = $('.nav-tabs .active').attr('id');
+    let flag_tab = '#bid-' + flag;
+    flag = flag === 'unavailable' ? 1 : 0;
+    let list_record = tab_list_record[flag];
+    if (list_record === 0) {
+      $(obj).prop("checked", false);
+      $(flag_tab + ' .operate').hide();
+      return 0;
+    }
+    let state = $(obj).prop("checked");
+    if (state) {
+      $(obj).parentsUntil("div").find(".check").each(function () {
+        $(this).prop("checked", true);
+      });
+      $(flag_tab + ' .operate').show();
+    } else {
+      $(obj).parentsUntil("div").find(".check").each(function () {
+        $(this).prop("checked", false);
+      });
+      $(obj).prop("checked", false);
+      $(flag_tab + ' .operate').hide();
+    }
+  }
+
+  //批量移除收藏夹
+  function deleteGood() {
+    let flag = $('.nav-tabs .active').attr('id');
+    let flag_tab = '#bid-' + flag;
+    $(flag_tab + " div.modal-delete").modal("show");
+  }
+
+  function removeAllSelect() {
+    let flag = $('.nav-tabs .active').attr('id');
+    let flag_tab = '#bid-' + flag;
+    let list = [];
+    $(flag_tab + " .save input.check").each((i, item) => {
+      if ($(item).prop("checked") && $(item).prop('id') && $(item).attr('id').split('-')[1]) {
+        list.push($(item).attr('id').split('-')[1]);
+      }
+    });
+    if (list.length > 0) {
+      delProductsFromWishGroup(list.join(','));
+      filter();//location.reload();
+      $(flag_tab + " div.modal-backdrop").hide();
+    } else {
+      showMsg(false, 'Please Select')
+    }
+  }
+
+  //点击收藏夹心形图标
+  function changeHeartStatus(obj, group_id = null) {
+    let heart = $(obj).find('i');
+    if (heart.hasClass("icon-save-inactive")) {
+      heart.removeClass("icon-save-inactive");
+      heart.addClass("icon-quxiaoshoucang");
+      let product_id = heart.attr('id').split('-')[1];
+      let data = {};
+      let url = 'index.php?route=account/wishlist/setProductsToWishGroup';
+      data.product_id_str = product_id;
+      data.group_id = group_id;
+      ajax(data, url, function (json) {
+        showMsg(json.success, json.message);
+        if (json.success) {
+          filter();//location.reload();
+          $("div.modal-backdrop").hide();
+        }
+      });
+    } else {
+      heart.removeClass("icon-quxiaoshoucang");
+      heart.addClass("icon-save-inactive");
+      let product_id = $(obj).attr('id').split('-')[1];
+      delProductsFromWishGroup(product_id); //删除
+    }
+  }
+
+  //批量移动分组
+  function moveProductsToGroup(group_id, product_id = '0') {
+    let flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+    if (product_id === '0') {//all
+      let list = [];
+      let msg = false; //存在点击取消收藏的产品，点击删除的在后端判断
+      $(flag_tab + " .save input.check").each((i, item) => {
+        if ($(item).prop("checked") && $(item).prop('id') && $(item).attr('id').split('-')[1]) {
+          if ($($("button.btn.btn-action.btn-save")[i]).find('i').hasClass("icon-quxiaoshoucang")) {
+            list.push($(item).attr('id').split('-')[1]);
+          } else {
+            msg = true;
+            showMsg(false, "Can't move into group,because [" + $(flag_tab + " .save input.check").eq(i).attr('msg') + "] has been removed from the current list.");
+          }
+        }
+      });
+      if (msg) {
+        return 0;
+      }
+      if (list.length > 0) {
+        let url = 'index.php?route=account/wishlist/setProductsToWishGroup';
+        let data = {};
+        data.product_id_str = list.join(',');
+        data.group_id = group_id;
+        ajax(data, url, function (json) {
+          showMsg(json.success, json.message)
+          if (json.success) {
+            filter();//location.reload();
+            adjustGroupItems();
+          }
+        });
+        $("div.modal-backdrop").hide();
+      } else {
+        showMsg(false, 'Please Select')
+      }
+    } else {
+      if ($(flag_tab + " i#product_id-" + product_id).hasClass("icon-quxiaoshoucang") && parseInt(group_id) == 0 && current_group_id === 0) {
+        showMsg(false, "Already in the 'ungrouped'");
+      } else if ($(flag_tab + " i#product_id-" + product_id).hasClass("icon-quxiaoshoucang") || group_id == '0') { //必须红心
+        let data = {};
+        let url = 'index.php?route=account/wishlist/setProductsToWishGroup';
+        data.product_id_str = product_id;
+        data.group_id = group_id;
+        ajax(data, url, function (json) {
+          showMsg(json.success, json.message);
+          if (json.success) {
+            filter();//location.reload();
+            adjustGroupItems();
+          }
+        });
+        $("div.modal-backdrop").hide();
+      } else {
+        showMsg(false, 'Please add to the collection first');
+      }
+    }
+  }
+
+  //============================================= api函数、common函数 ========================================//
+  function showMsg(isSuccess, msg) {
+    let alertClass = isSuccess ? 'alert-success' : 'alert-danger';
+    let alertDuration = isSuccess ? 3000 : 8000;
+    let alertIcon = isSuccess ? '<i class="giga icon-check" style="margin-right: 10px"></i>' : '<i class="giga icon-error" style="margin-right: 10px"></i>';
+    $('<div class="alert ' + alertClass + '">' + alertIcon + msg+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+      '  <span aria-hidden="true">&times;</span>\n' +
+      '</button></div>').prependTo('.content-table')
+      .fadeOut(alertDuration, function () {
+        $(this).remove();
+      });
+  }
+
+  function ajax(data, url, successCallback, otherParams = null, errorCallback = undefined) {
+    $.ajax({
+      url: url,
+      type: 'POST',
+      dataType: 'json',
+      data: data,
+      success: function (json) {
+        successCallback(json, otherParams);
+      },
+      error: function (xhr, ajaxOptions, thrownError,) {
+        if (!errorCallback === undefined) {
+          alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      }
+    })
+  }
+
+  //分组添加
+  function addGroup() {
+    let flag = $(".nav-tabs .active").attr('id');
+    let flag_tab = '#bid-' + flag;
+    $(flag_tab + " div.modal-create").eq(0).modal("show");
+  }
+
+  function addWishGroup() {
+    let url = 'index.php?route=account/wishlist/addWishGroup';
+    let data = {};
+    let flag = $(".nav-tabs .active").attr('id');
+    let flag_tab = '#bid-' + flag;
+    data.name = $(flag_tab + " input#addWishGroup-name").eq(0).val();
+    ajax(data, url, function (json) {
+      if (json.success) {
+        filter2();//location.reload(); //<span style="position: absolute;right: 0">(0)</span>
+      } else {
+        showMsg(json.success, json.message);
+      }
+    });
+    $("div.modal-backdrop").hide();
+  }
+
+  //低库存设置
+  function lowInventorySettings() {
+    let flag = $('.nav-tabs .active').attr('id');
+    let flag_tab = '#bid-' + flag;
+    $(flag_tab + " div#modal-setting").modal("show");
+    initStoreAndProduct();
+  }
+
+  //分组改名传值
+  function renameWishGroupValue(group_id, group_name) {
+    let flag = $(".nav-tabs .active").attr('id');
+    let flag_tab = '#bid-' + flag;
+    $(flag_tab + " div.modal-edit-name").modal("show");
+    $(flag_tab + " button#renameWishGroup").attr('group_id', group_id);
+    let new_name = $(flag_tab + " button.rename-set-" + group_id).attr('new_name');
+    if (new_name) {
+      group_name = new_name;
+    }
+    $(flag_tab + " input#renameWishGroup-value").eq(0).val(group_name);
+    $(flag_tab + " .modal-edit-name div.limit span").text(group_name.length)
+  }
+
+  //分组改名
+  function renameWishGroup() {
+    let flag = $(".nav-tabs .active").attr('id');
+    let flag_tab = '#bid-' + flag;
+    let url = 'index.php?route=account/wishlist/renameWishGroup';
+    let data = {};
+    data.group_id = $(flag_tab + " button#renameWishGroup").attr('group_id');
+    data.new_name = $(flag_tab + " input#renameWishGroup-value").eq(0).val();
+    ajax(data, url, function (json) {
+      //showMsg(json.success, json.message);
+      if (json.success) {
+        //location.reload();
+        let span = '<span style="position: absolute;right: 0">';
+        span += $(flag_tab + " a#top_group-" + data.group_id + ' span').html();
+        span += '</span>';
+        $(flag_tab + " a#top_group-" + data.group_id).html(data.new_name + span);
+        $(flag_tab + " input#renameWishGroup-value").val(data.new_name);
+        $(flag_tab + " div.modal-edit-name").modal("hide");
+
+        $(flag_tab + " button.rename-set-" + data.group_id).attr('new_name', data.new_name);
+      }
+    });
+  }
+
+  //分组删除传值
+  function delWishGroupDia(group_id) {
+    let flag = $(".nav-tabs .active").attr('id');
+    let flag_tab = '#bid-' + flag;
+    $(flag_tab + " div.modal-del-group").eq(0).modal("show");
+    $(flag_tab + " button#delWishGroup").attr('group_id', group_id);
+  }
+
+  //分组删除
+  function delWishGroup() {
+    let flag = $(".nav-tabs .active").attr('id');
+    let flag_tab = '#bid-' + flag;
+    let url = 'index.php?route=account/wishlist/delWishGroup';
+    let data = {};
+    data.group_id = $(flag_tab + " button#delWishGroup").attr('group_id');
+    ajax(data, url, function (json) {
+      showMsg(json.success, json.message);
+      if (json.success) {
+        if (data.group_id == current_group_id) {
+          current_group_id = 0;
+        }
+        filter2();//location.reload();
+      } else {
+        showMsg(json.success, json.message);
+      }
+    });
+    $("div.modal-backdrop").hide();
+  }
+
+  //删除收藏商品
+  function delProductsFromWishGroup(product_id_str) {
+    let url = 'index.php?route=account/wishlist/delProductsFromWishGroup';
+    let data = {};
+    data.product_id_str = product_id_str;
+    ajax(data, url, function (json) {
+      showMsg(json.success, json.message)
+    });
+  }
+
+  function handlePage(event, originalEvent, type, page) {
+    filter(page)
+  }
+
+  function filter(page, page_info) {
+
+    var flag = $('.nav-tabs .active').attr('id');
+    var flag_tab = '#bid-' + flag;
+    var category_id = $(flag_tab + " #Category").attr('category_id');
+    var item_code = $(flag_tab + " #itemCode").val();
+    var product_name = $(flag_tab + " #productName").val();
+    var over_sized = $(flag_tab + ' #overSized').is(':checked') ? 1 : 0;
+    var change_price = $(flag_tab + ' #changePrice').is(':checked') ? 1 : 0;
+    var fulfillment = $(flag_tab + ' #fulfillment').val();
+    var sellerId = $(flag_tab + ' #seller_id').val();
+    var sort = $(flag_tab+' #sort').val();
+    var wishlist_sort=sessionStorage.getItem('wishlist_sort');
+    var url = "index.php?route=account/wishlist/list";
+    if (flag) {
+      url += "&flag=" + flag;
+    }
+    if (category_id) {
+      url += "&category_id=" + category_id;
+    }
+    if (item_code) {
+      url += "&item_code=" + item_code.trim();
+    }
+    if (product_name) {
+      url += "&product_name=" + product_name.trim();
+    }
+    if (change_price) {
+      url += "&change_price=" + change_price;
+    }
+    if (current_group_id) {
+      url += "&group_id=" + current_group_id;
+    }
+    if (document.getElementById("overSized") && over_sized) {
+      url += "&over_sized=" + over_sized;
+    }
+    if (fulfillment) {
+      url += "&fulfillment=" + fulfillment;
+    }
+    if (sellerId) {
+      url += "&seller_id=" + sellerId;
+    }
+    if (wishlist_sort) {
+      let arr = wishlist_sort.split('-')
+      url += "&" + arr[0] + "=" + arr[1];
+    }
+    if (page) {
+      url += "&page=" + page;
+    }
+    if (page_info) {
+      for (let i in page_info) {
+        url += '&' + i + '=' + page_info[i];
+      }
+    }
+    url=encodeURI(url);
+    block.blockUI();
+    download_url=url;
+    $(flag_tab).load(url);
+  }
+
+  function filter2() {
+    let tabs = ['available', 'unavailable'];
+    let urls = [];
+    for (let i=0; i<2; i++){
+      let flag_tab = '#bid-' + tabs[i];
+      let category_id = $(flag_tab + " #Category").attr('category_id');
+      let item_code = $(flag_tab + " #itemCode").val();
+      let product_name = $(flag_tab + " #productName").val();
+      let over_sized = $(flag_tab + ' #overSized').is(':checked') ? 1 : 0;
+      let change_price = $(flag_tab + ' #changePrice').is(':checked') ? 1 : 0;
+      let fulfillment = $(flag_tab + ' #fulfillment').val();
+      let url = "index.php?route=account/wishlist/list&flag=" + tabs[i];
+      if (category_id) {
+        url += "&category_id=" + category_id;
+      }
+      if (item_code) {
+        url += "&item_code=" + item_code;
+      }
+      if (product_name) {
+        url += "&product_name=" + product_name;
+      }
+      if (change_price) {
+        url += "&change_price=" + change_price;
+      }
+      if (current_group_id) {
+        url += "&group_id=" + current_group_id;
+      }
+      if (document.getElementById("overSized") && over_sized) {
+        url += "&over_sized=" + over_sized;
+      }
+      if (fulfillment) {
+        url += "&fulfillment=" + fulfillment;
+      }
+      urls[i]=url;
+    }
+    block.blockUI();
+    $('#bid-available').load(urls[0]);
+    $('#bid-unavailable').load(urls[1]);
+    //block.unBlockUI();
+  }
+
+  function addCart(product_id) {
+    $fulfillmentType = $("#fulfillment").val();
+    if ($fulfillmentType == 2) {
+      cart.add(product_id, 1, 'cwf')
+    } else {
+      cart.add(product_id)
+    }
+  }
+
+  function addSelected() {
+    $('.alert-dismissible, .text-warning').remove();
+    var length = $('.checkboxes').length;
+    var index = 0;
+    for (var i = 0; i < length; i++) {
+      if ($('.checkboxes').eq(i).is(":checked")) {
+        $fulfillmentType = $("#fulfillment").val();
+        if ($fulfillmentType == 2) {
+          cart.add($('.checkboxes').eq(i).val(), 1, 'cwf');
+        } else {
+          cart.add($('.checkboxes').eq(i).val());
+        }
+        index++;
+      }
+    }
+    if (index == 0) {
+      var tmplayer = layer.alert('{{ text_warning }}', {
+        title: 'Message',
+        btn: 'OK',
+        skin: 'yzc_layer' //样式类名
+        , closeBtn: 1
+      }, function () {
+        layer.close(tmplayer);
+      });
+    }
+  }
+
+  function downloadAvailableWishList() {
+    let url='index.php?route=account/wishlist/downExcel';
+    if (download_url) {
+      url = url+download_url.substr(download_url.indexOf('&'));
+    }
+    location = url;
+  }
+
+  function TimeDown(id, startDate, endDate) {
+    //相差的总秒数
+    let totalSeconds = parseInt((endDate - startDate) / 1000);
+    //天数
+    let days = Math.floor(totalSeconds / (60 * 60 * 24));
+    //取模（余数）
+    let modulo = totalSeconds % (60 * 60 * 24);
+    //小时数
+    let hours = Math.floor(modulo / (60 * 60));
+    modulo = modulo % (60 * 60);
+    //分钟
+    let minutes = Math.floor(modulo / 60);
+    //秒
+    let seconds = modulo % 60;
+
+    let str = hours + ":" + (Array(2).join(0) + minutes).slice(-2)+ ":" +  (Array(2).join(0) + seconds).slice(-2);
+    if (days > 0) {
+      str = days+1 + ' days';
+    }
+    if (seconds < 0) {
+      str = '-';
+    }
+    //输出到页面
+    document.getElementById(id).innerHTML = str;
+    //延迟一秒执行自己
+    let t = setTimeout(function () {
+      TimeDown(id, startDate + 1000, endDate);
+    }, 1000)
+    return t;
+  }
+
+  function resetFilter(button) {
+    let flag = $('.nav-tabs .active').attr('id');
+    let flag_tab = '#bid-' + flag;
+    let url = "index.php?route=account/wishlist/list";
+    if (flag) {
+      url += "&flag=" + flag;
+    }
+    download_url = url;
+    sessionStorage.removeItem('wishlist_sort');
+    block.blockUI();
+    current_group_id = 0;
+    $(flag_tab).load(url);
+    adjustGroupItems();
+  }
+
+  function setGroupWith() {
+      let flag_tab = '#bid-' + $('.nav-tabs .active').attr('id');
+      let allWidth = $(flag_tab + " .content-table").width();
+      let createWidth = $(flag_tab + " .content-table .pull-right").outerWidth();
+      //let allGroupWidth = $(flag_tab + " .content-table.pull-left>a").outerWidth();
+      let allGroupWidth = 83;
+      let groupListWidth = Number(allWidth) - Number(createWidth) - Number(allGroupWidth) - 2;
+      let width = Number(groupListWidth) / 6 - 3;
+      $(flag_tab + ' .groupList').css('width', groupListWidth);
+      $(flag_tab + ' .groupList .operate-g').css('width', width);
+      $(flag_tab + ' .groupList .operate-g a').css('max-width', width - 40);
+  }
+
+  {# 价格变化曲线 #}
+  function showPriceHistory(product_id) {
+      layer.load();
+      $.ajax({
+          url: 'index.php?route=account/wishlist/getPriceHistory',
+          dataType: 'json',
+          type: 'post',
+          data: {product_id: product_id},
+          complete: function (){
+              layer.closeAll();
+          },
+          success: function (json) {
+              if (json['success']) {
+                  var date = [];
+                  var data = [];
+                  for (var i = 0; i < json['data'].length; i++) {
+                      date.push(json['data'][i]['add_date_format'].split(' ')[0]);
+                      data.push(json['data'][i]['price']);
+                  }
+                  // 基于准备好的dom，初始化echarts实例
+                  var myChart = echarts.init(document.getElementById('main'));
+                  myChart.setOption({
+                      tooltip: {
+                          // 当trigger为’item’时只会显示该点的数据，为’axis’时显示该列下所有坐标轴所对应的数据。
+                          trigger: 'axis',
+                          axisPointer: {
+                             type:'cross'
+                          },
+                      },
+                      // toolbox：这是ECharts中的工具栏。内置有导出图片、数据视图、动态类型切换、数据区域缩放、重置五个工具。
+                      toolbox: {
+                          // feature 各工具配置项: dataZoom 数据区域缩放;restore 配置项还原;saveAsImage下载为图片;magicType动态类型切换
+                          feature: {
+                              saveAsImage: {
+                                  name: json['item_code']
+                              }
+                          },
+                          left: 800
+                      },
+                      xAxis: {
+                          type: 'category', // category为一级分类,适用于离散的类目数据
+                          boundaryGap: false,  // 无间隙
+                          data: date
+                      },
+                      yAxis: {
+                          name: 'Unit Price(' + json['currency'] + ')',
+                          type: 'value', // 'value' 数值轴，适用于连续数据。
+                          boundaryGap: [0, '100%'] // 分别表示数据最小值和最大值的延伸范围，可以直接设置数值或者相对的百分比，
+                      },
+                      dataZoom: [{                 // 内置于坐标系中，使用户可以在坐标系上通过鼠标拖拽、鼠标滚轮、手指滑动（触屏上）来缩放或漫游坐标系
+                          type: 'inside',
+                          start: 0,
+                          end: 100
+                      }, {
+                          start: 0,
+                          end: 100,                  // handleIcon 手柄的 icon 形状，支持路径字符串
+                          handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+                          handleSize: '80%',        //  控制手柄的尺寸，可以是像素大小，也可以是相对于 dataZoom 组件宽度的百分比，默认跟 dataZoom 宽度相同。
+                          handleStyle: {
+                              color: 'pink',
+                              shadowBlur: 3,      // shadowBlur图片阴影模糊值，shadowColor阴影的颜色
+                              shadowColor: 'red',
+                              shadowOffsetX: 2,
+                              shadowOffsetY: 2
+                          }
+                      }],
+                      series: [
+                          {
+                              name: 'Unit Price',
+                              type: 'line',
+                              smooth: true,  // 开启平滑处理。true的平滑程度相当于0.5
+                              sampling: 'average', //  取过滤点的平均值
+                              itemStyle: {
+                                  normal: {
+                                      color: 'rgb(103, 121, 153)' //  图形的颜色。
+                                  }
+                              },
+                              position: 'left',
+                              data: data
+                          }
+                      ]
+                  });
+                  {# 显示弹框 #}
+                  $("div#price-modal").modal("show");
+              }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+              var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+                  title: 'Message',
+                  btn : 'OK',
+                  skin: 'yzc_layer' //样式类名
+                  ,closeBtn: 0
+              }, function(){
+                  layer.close(tmplayer);
+              });
+          }
+      });
+  }
+
+</script>
+

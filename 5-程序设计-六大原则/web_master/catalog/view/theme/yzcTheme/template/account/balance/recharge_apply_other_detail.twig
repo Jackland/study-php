@@ -1,0 +1,588 @@
+{{ header }}
+<style>
+  *{
+    font-family: Roboto;
+    font-size: 14px;
+  }
+  .recharge-apply-process {
+    background: #fff;
+    box-shadow: 0px -5px 7px rgba(0, 0, 0, 0.35);
+    padding: 20px 25px;
+  }
+
+  .recharge-apply-process-header {
+    display: flex;
+    padding: 15px 100px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+  }
+
+  .recharge-apply-process-content {
+    min-height: 400px;
+    margin-top: 20px;
+  }
+  .re-de-info-title{
+    color: #3A75DC;
+  }
+  .re-de-info-title span{
+    font-weight: bolder;
+    border-bottom: 2px solid #3A75DC;
+    display: inline-block;
+    padding: 0 30px 6px 30px;
+  }
+
+  .info-detail{
+    min-height: 200px;
+    border: 1px solid #f3f5f7;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  .recharge-label{
+    height: 38px;
+    line-height: 38px;
+  }
+  .recharge-label.required:before{
+    content: "*";
+    color: #ff414d;
+    position: relative;
+    top: -2px;
+  }
+  .upload-imgs-tip{
+    font-size: 12px;
+    color: #888;
+    padding-left: 10px;
+  }
+  .customer-item{
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+  }
+  .customer-item:last-child{
+    border-bottom: none;
+  }
+  .customer-item-inner{
+    display: flex;
+    margin-bottom: 10px;
+  }
+  .customer-item-inner-top{
+    justify-content: space-between;
+  }
+  .customer-item-inner-left{
+    display: flex;
+  }
+  .recharge-customer-name,.recharge-customer-country,.recharge-customer-fee{
+    /*display: flex;*/
+  }
+  .recharge-customer-name label,.recharge-customer-country label,.recharge-customer-fee label{
+    line-height: 23px;
+  }
+  .recharge-customer-name label{
+    /*width: 90px;*/
+    line-height: 23px;
+  }
+  .recharge-customer-name input{
+    width: 536px;
+    border-radius: 4px;
+    margin-right: 60px;
+  }
+  .recharge-customer-country .input-group input{
+    width: 113px;
+    border-radius: 4px;
+  }
+  .recharge-customer-fee input{
+    width: 60px;
+    border-radius: 4px 0 0 4px;
+    padding: 8px 6px;
+  }
+  .recharge-customer-fee input.customer-currency{
+    width: 40px;
+    width: 40px;
+    border-radius: 0 4px 4px 0;
+  }
+  .recharge-customer-fee .icon-help-inactive,.recharge-customer-exchange .icon-help-inactive,.recharge-customer-relmoney .icon-help-inactive{
+    position: relative;
+    top: -4px;
+  }
+  .recharge-customer-money,.recharge-customer-exchange,.recharge-customer-relmoney{
+    margin-right: 60px;
+  }
+
+  .recharge-customer-money .input-group input{
+    width: 113px;
+    border-radius: 4px 0 0 4px;
+  }
+  .recharge-customer-money .input-group .input-group-addon{
+    border-radius: 0 4px 4px 0;
+  }
+  .recharge-customer-exchange .input-group input{
+    width: 113px;
+    border-radius: 4px 0 0 4px;
+  }
+  .recharge-customer-exchange .input-group .input-group-addon{
+    border-radius: 0 4px 4px 0;
+  }
+  .recharge-customer-relmoney .input-group input{
+    border-radius: 4px 0 0 4px;
+  }
+  .recharge-customer-relmoney .input-group .input-group-addon{
+    border-radius: 0 4px 4px 0;
+  }
+  .recharge-customer-country{
+    margin-right: 80px;
+  }
+  .item-recharge-country{
+    border-radius: 0 4px 4px 0;
+  }
+  .item-recharge-country img{
+    margin: 0 2px;
+  }
+  .font-weight-b{
+    font-weight: bolder;
+  }
+  .e-de-info-top .re-de-label{
+    width:220px ;
+    text-align: right;
+    margin-right: 20px;
+  }
+  span.required:before{
+    content: "*";
+    color: #ff414d;
+    position: relative;
+    top: -2px;
+  }
+  .info-detail>div{
+    margin-bottom: 15px;
+  }
+  .input-group.rechange-total-money{
+    border-radius: 4px;
+  }
+  .rechange-total-money input.form-control{
+    border-radius: 4px 0 0 4px;
+  }
+  .rechange-total-money span.input-group-addon{
+    border-radius: 0 4px 4px 0;
+  }
+
+  /*进度条新样式*/
+  .process-item-left{
+    width: 25%;
+    position: relative;
+  }
+  .process-item-middle{
+    width: 50%;
+    position: relative;
+  }
+  .process-item-right{
+    width: 25%;
+    position: relative;
+  }
+  .line{
+    height: 2px;
+    background: #f3f5f7;
+  }
+  .process-item.active .line{
+    background: #3A75DC;
+  }
+
+  .process-icon1{
+    position: absolute;
+    text-align: center;
+    left: -60px;
+    top: -24px;
+  }
+  .process-icon2{
+    position: absolute;
+    text-align: center;
+    left: 50%;
+    transform:translateX(-50%);
+    -webkit-transform:translateX(-50%);  /*兼容-webkit-引擎浏览器*/
+    -moz-transform:translateX(-50%);
+    top: -24px;
+  }
+  .process-icon3{
+    position: absolute;
+    text-align: center;
+    right: 0;
+    transform:translateX(50%);
+    -webkit-transform:translateX(50%);  /*兼容-webkit-引擎浏览器*/
+    -moz-transform:translateX(50%);
+    top: -24px;
+  }
+  .process-icon1 p,.process-icon2 p,.process-icon3 p{
+    margin: 2px 0;
+  }
+  .process-icon1 i,.process-icon2 i,.process-icon3 i{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    border: 2px solid #f3f5f7;
+    border-radius: 50%;
+    color: #e3e3e3;
+    margin: 0 auto;
+    background: #fff;
+  }
+  .process-icon1 .process-txt,.process-icon2 .process-txt,.process-icon3 .process-txt{
+    color: #e3e3e3;
+  }
+  .process-item.active .process-icon1 .process-txt,.process-item.active .process-icon2 .process-txt,.process-item.active .process-icon3 .process-txt{
+    color: #3A75DC;
+  }
+  .process-item.active .process-icon1,.process-item.active .process-icon1 i,.process-item.active .process-icon2,.process-item.active .process-icon2 i,.process-item.active .process-icon3,.process-item.active .process-icon3 i {
+    color: #3A75DC;
+  }
+  .process-item.active .process-icon1 i,.process-item.active .process-icon2 i,.process-item.active .process-icon3 i{
+    border-color: #3A75DC;
+  }
+  .process-item.active.complete .process-icon1 i,.process-item.active.complete .process-icon2 i,.process-item.active.complete .process-icon3 i{
+    color: #fff;
+    background: #3A75DC;
+  }
+  .process-time{
+    color: #888;
+    font-size: 12px;
+  }
+  .rechange-error-mag{
+    margin-left: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid #ff414d;
+    background: #ffecee;
+    width: 98%;
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 12px;
+  }
+  .rechange-error-mag i{
+    color: #ff414d;
+    margin-right: 4px;
+  }
+  .flex-s{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .imgList{
+    overflow: hidden;
+    padding: 0;
+  }
+  .imgList .img{
+    float: left;
+    list-style: none;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #eee;
+    margin-left: 10px;
+    position: relative;
+    border-radius: 4px;
+    line-height: 100px;
+    overflow: hidden;
+  }
+  .imgList .img:first-child{
+    margin-left: 0;
+  }
+  .operationButtons{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    height: 100%;
+    line-height: 100px;
+    color: #fff;
+    cursor: pointer;
+  }
+  /*.operationButtons.hide{*/
+  /*  display: none;*/
+  /*}*/
+  .operationButtons .gcl{
+    font-size: 20px;
+    margin-right: 5px;
+  }
+  .operationButtons .gcl:hover{
+    color: #3A75DC;
+  }
+  .show{
+    text-align: center;
+  }
+  .img-modal-content .close span{
+    font-size: 25px;
+  }
+  .help{
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 12px;
+  }
+  i.icon-help-inactive{
+    font-size: 14px;
+  }
+  .rejectionReason .reason{
+    width: 750px;
+    height: 80px;
+    border-radius: 4px;
+    border: 1px solid #e3e3e3;
+    padding: 10px;
+    background: #eee;
+  }
+  .rejectionReason .reason:focus{
+    border: 1px solid #183464;
+    outline: none;
+  }
+  .btn-return{
+    border: 1px solid #ccc;
+    background-color: #f3f5f7;
+    color: #3A75DC;
+    width: 80px;
+  }
+  /*进度条新样式*/
+
+  #page-account-balance-container input{
+    box-shadow: none;
+  }
+  .input-group-addon {
+    background-color: #fff;
+    padding: 0;
+    width: 38px;
+  }
+  #page-account-balance-container label{
+    font-weight: normal;
+  }
+</style>
+<div id="page-account-balance-container" class="page-account-balance page-seller-portal">
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>{{ detail_heading_title }}</h1>
+        <a class="help" href="{{ recharge_instructions_url }}"><i
+            class="giga icon-V10-wenhaotishi"></i> {{ title_adding_account_funds }}</a>
+        <div class="tab-content main mb-4" style="width: 100%">
+          <div class="recharge-apply-process">
+            <div class="recharge-apply-process-header">
+              <div class="process-item process-item-left active {{ recharge_item.status > 1 ? 'complete' : '' }}">
+                <div class="process-icon1">
+                  <i class="giga icon-xieyixiangqing picon"></i>
+                  <p class="process-txt">{{ title_status_application }}</p>
+                  <p class="process-time">{{ recharge.create_time }}</p>
+                </div>
+                <p class="line"></p>
+              </div>
+              <div class="process-item process-item-middle {{ recharge_item.status > 1 ? 'active complete' : '' }}">
+                <div class="process-icon2">
+                  <i class="giga icon-pending picon"></i>
+                  <p class="process-txt">{{ title_status_pending }}</p>
+                  <p class="process-time"></p>
+                </div>
+                <p class="line"></p>
+              </div>
+              <div class="process-item process-item-right {{ recharge_item.status in [3,4] ? 'active complete' : '' }}">
+                <div class="process-icon3">
+                  <i class="giga {{ recharge_item.status == 3 ? 'icon-cuowu2 picon' : 'icon-duihao1 picon' }}"></i>
+                  <p class="process-txt">{{ recharge_item.status == 3 ? title_status_rejected : title_status_completed }}</p>
+                  <p class="process-time">{{ recharge_item.status in [3,4] and recharge_item.approval_time ? recharge_item.approval_time : '' }}</p>
+                </div>
+                <p class="line"></p>
+              </div>
+            </div>
+            <div class="recharge-apply-process-content">
+              <div class="re-de-info e-de-info-top" style="margin-bottom: 15px">
+                <div class="re-de-info-title"><span>{{ title_recharge_information }}</span></div>
+                <div class="info-detail">
+                  <div class="flex-s">
+                    <div class="re-de-label "><span class="required">{{ title_recharge_method }}</span></div>
+                    <div class="re-de-text"><input class="form-control" style="border-radius: 4px;width: 296px;" disabled type="text" value="{{ recharge.recharge_method_str }}"></div>
+                  </div>
+                  <div class="flex-s">
+                    <div class="re-de-label "><span class="required">{{ recharge_order_title }}</span></div>
+                    <div class="re-de-text"><input class="form-control" style="border-radius: 4px;width: 296px;" disabled type="text" value="{{ recharge_item.serial_number }}"></div>
+                  </div>
+                  <div class="flex-s">
+                    <div class="re-de-label "><span class="required">{{ title_recharge_amount }}</span></div>
+                    <div class="input-group rechange-total-money">
+                      <input name="" type="text" class="form-control" disabled value="{{ recharge.amount }}" style="width: 100px">
+                      <span class="input-group-addon" style="background: #fff;">{{ recharge.currency }}</span>
+                    </div>
+                  </div>
+                  <div class="flex-s">
+                    <div class="re-de-label "><span class="required">{{ title_upload_proof }}</span></div>
+                    <div class="voucherList">
+                      <ul class="imgList">
+                        {% for proof in proofs %}
+                          <li class="img">
+                            <img src="{{ proof.url }}" width="100%" data-src="{{ proof.path }}" data-orig-name="{{ proof.orig_name }}">
+                            <a class="operationButtons hide">
+                              <i class="gcl gclfangda"></i>
+                              <i class="gcl gclxiazai"></i>
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="re-de-info">
+                <div class="re-de-info-title"><span>{{ title_account_information }}</span></div>
+                <div class="info-detail">
+                  <div class="recharge-main-con">
+                    <div class="customer-item">
+                      <div class="customer-item-inner customer-item-inner-top">
+                        <div class="customer-item-inner-left">
+                          <div class="recharge-customer-name">
+                            <label for="" class="control-label ">{{ title_recharge_account }}</label>
+                            <input name="buyer_id" class="form-control" type="hidden" value="">
+                            <input name="recharge_buyer" class="form-control" type="text" disabled="" value="{{ recharge_item.buyer.value }}">
+                          </div>
+                          <div class="recharge-customer-country">
+                            <label for="" class="control-label ">{{ title_country }}</label>
+                            <div class="input-group">
+                              <input type="text" class="form-control" disabled="" value="{{ recharge_item.buyer.country }}">
+                              <span class="input-group-addon item-recharge-country" style="background: #fff" >
+                                <img src="{{ asset("image/HDFlags/#{recharge_item.buyer.country}.png") }}" alt="USA $" width="24px" height="16px" title="USA $">
+                              </span>
+                            </div>
+                          </div>
+                          {% if recharge.recharge_method == 'pcard' and recharge_item.buyer_id == recharge.buyer_id %}
+                            <div class="recharge-customer-fee">
+                            <label for="" class="control-label ">{{ title_commission }} <i class="giga icon-V10-wenhaotishi" style="cursor:pointer;" data-toggle="modal"  data-target="#rechargeCustomerFeeModal"></i></label>
+                            <div style="display: flex">
+                              <input id="item_commission" name="commission" type="text" class="form-control" disabled="" value="{{ recharge_item.commission }}">
+                              <input type="text" class="form-control customer-currency" style="background: #fff" disabled="" value="USD">
+                            </div>
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                      <div class="customer-item-inner">
+                        <div class="recharge-customer-money">
+                          <label for="" class="control-label ">{{ title_recharge_account_amount }}</label>
+                          <div class="input-group">
+                            <input name="item_recharge_amount" type="text" class="form-control item-recharge-amount-input" disabled value="{{ recharge_item.recharge_amount }}">
+                            <span class="input-group-addon item-recharge-currency" style="background: #fff" >{{ recharge.currency}}</span>
+                          </div>
+                        </div>
+                        <div class="recharge-customer-exchange">
+                          <label for="" class="control-label ">{{ title_exchange_rate }} <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title="" data-original-title="{{ tips_exchange_rate }}"></i></label>
+                          <div style="display: flex;align-items: center">
+                            <div class="input-group">
+                              <input type="text" class="form-control" value="1" disabled="">
+                              <span class="input-group-addon item-recharge-symbol" style="background: #fff">{{ recharge.currency_data.symbol_left }}{{ recharge.currency_data.symbol_right }}</span>
+                            </div>
+                            <i class="giga icon-zhuanhuan" style="font-size: 12px;margin: 0 5px"></i>
+                            <div class="input-group">
+                              <input name="recharge_exchange_rate_show" type="text" class="form-control" disabled="" value="{{ recharge_item.status==4 ? recharge_item.actual_exchange_rate : recharge_item.recharge_exchange_rate }}">
+                              <span class="input-group-addon" style="background: #fff">{{ recharge_item.account_currency_code}}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="recharge-customer-relmoney">
+                          <label for="" class="control-label ">{{ recharge_item.status==4 ? title_actual_amount : title_expect_amount }}
+                            {% if recharge_item.buyer_id == recharge.buyer_id %}
+                              <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title="" data-original-title="{{ recharge_item.status==4 ? tips_account_amount : tips_expect_amount }}"></i>
+                            {% endif %}
+                          </label>
+                          <div class="input-group" >
+                            <input style="width: 113px" name="expect_amount" type="text" class="form-control" disabled="" value="{{ recharge_item.status==4 ? recharge_item.actual_amount : recharge_item.expect_amount }}">
+                            <span class="input-group-addon" style="background: #fff">{{ recharge_item.account_currency_code }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      {% if recharge_item.status == 3%}
+                      {#拒绝了才有理由#}
+                      <div class="rejectionReason">
+                        <div><label for="" class="control-label  re-de-label">{{ title_deposit_unsuccessful }} </label></div>
+                        <div>
+                          <textarea class="reason" disabled>{{ recharge_item.reason }}</textarea>
+                        </div>
+                      </div>
+                      {% endif %}
+                      <div class="rechange-error-mag" style="display: none"></div>
+                      <div class="text-center mt-5" >
+                        <a class="btn btn-primary" href="{{ backUrl }}">{{ btn_back }}</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="show_image">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content img-modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>
+{#手续费模态框#}
+<div class="modal fade" id="rechargeCustomerFeeModal" tabindex="-1" role="dialog" aria-labelledby="rechargeCustomerFeeModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span style="font-size: 21px" aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="rechargeCustomerFeeModalLabel">{{ title_transaction_fee_rate }}</h4>
+      </div>
+      <div class="modal-body">
+        <div style="margin-left: 0;width: 100%;margin-bottom: 15px;margin-top: 0" class="rechange-error-mag"><i class="giga icon-gantanhaojinggao"></i>
+          {{ tips_transaction_fee_rate }}
+        </div>
+        <table style="margin-bottom: 0" class="table  table-bordered table-responsive">
+          <thead>
+          <tr>
+            <th style="text-align: center">{{ title_account_funds_amount }}</th>
+            <th style="text-align: center">{{ title_commission }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for commission in commissions %}
+            <tr>
+              <td style="text-align: center">{{ commission.desc }}</td>
+              <td style="text-align: center">${{ commission.commission }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{#手续费模态框#}
+<script>
+  $(function () {
+    let body = $('body');
+    body.delegate('.imgList .img','mouseover',function () {
+      $(this).children('a.operationButtons').removeClass('hide');
+    });
+    body.delegate('.imgList .img','mouseleave',function () {
+      $(this).children('a.operationButtons').addClass('hide');
+    });
+    body.delegate('.imgList .img a .gclfangda','click',function () {
+      var path = $(this).parentsUntil('.imgList').find('img');
+      var imgSrc= path.attr('src');
+      let modal = $(".img-modal-content .modal-body");
+      modal.html('<div class="show"><img class="img-responsive" src="' + imgSrc+ '" alt=""><div>');
+      $('#show_image').modal('show');
+    });
+    body.delegate('.imgList .img a .gclxiazai','click',function () {
+      var path = $(this).parentsUntil('.imgList').find('img');
+      var url= path.attr('data-src');
+      var fileNmae = path.attr('data-orig-name');
+      window.location.href = '{{ url('account/balance/recharge/downLoadFile') }}' + '&filePath=' + url + '&fileName=' + fileNmae;
+    })
+  })
+</script>
+{{ footer }}

@@ -1,0 +1,125 @@
+{% trans_default_category 'catalog/view/account/message_center/setting/my_complain_list' %}
+
+{{ css(['static/message/setting/my-complain-list.css']) }}
+
+{{ css([
+  'css/common/common.css',
+  'css/common/common-ext.css',
+  'static/message/message-common.css',
+  'static/message/buyer-message-common.css',
+  'static/message/setting/suggest.css'
+]) }}
+
+<style>
+.view-disabled {
+  color: #999;
+}
+
+.view-disabled:hover i{
+  cursor: not-allowed; 
+  color: #999;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css">
+<script type="text/javascript" src="/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+
+<div id="page-my_complain_list">
+  <div class="msgcent msg-page-container">
+    <div class="msgcent msg-form__container msg-pt-0">
+      <div class="msgcent msg-table__container">
+        <table class="oris-table">
+          <thead>
+            <tr>
+                <th class="oris-w42">#</th>
+                <th class="text-left oris-w220">Reason for Complaint</th>
+                <th class="text-left oris-w220">Type</th>
+                <th class="text-left">Name of Complained User</th>
+                <th>Processed</th>
+                <th class="text-left">Complaint Initiation Time</th>
+                <th class="text-center">View Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if list %}
+                {% for message in list %}
+                    <tr>
+                      <td class="oris-w42">{{ message.no }}</td>
+                      <td class="text-left oris-w220" style="word-break:break-all">{{ message.reason }}</td>
+                      <td class="text-left oris-w220">{{ message.type_format }}</td>
+                      <td class="text-left"><span class="msg-subject-tdspan" title="{{ message.screenname }}">{{ message.screenname }}</span></td>
+                      <td>{{ message.status_format }}</td>
+                      <td class="text-left">{{ message.create_time }}</td>
+                        <td class="text-center">
+                          <a {% if message.msg_id and message.type == 1 %} onclick="showDetail({{message.id}})" data-toggle="tooltip" title="View"{% endif %} class="btn-text {% if message.type == 2 %} view-disabled {% endif %}" data-mark="view" >
+                              <i class="giga icon-chakan-01 msg-icon-chakan"></i>
+                          </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+                </tbody>
+            </table>
+            <div class="msg-empty">
+                <div class="msg-empty-container">
+                <div class="msg-empty-icon">
+                    <img src="{{ asset("image/icons/empty.png") }}"></img>
+                </div>
+                <div class="msg-empty-title">No Records Found !</div>
+                </div>
+            </div>
+            {% endif %}
+      </div>
+      <div class="oris-row oris-pagination">
+        <ul id="bos_pagination"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+//分页
+ $('#bos_pagination').bootstrapPaginator({
+  /*当前使用的是3版本的bootstrap*/
+  bootstrapMajorVersion: 3,
+  /*配置的字体大小是小号*/
+  size: 'normal',
+  /*当前页*/
+  currentPage: {{ paginator.getPage() }},
+  /*一共多少页*/
+  totalPages: {{ max(paginator.getPageCount(), 1) }},
+  /*页面上最多显示几个含数字的分页按钮*/
+  numberOfPages: 5,
+  pageRange: [10, 20, 30, 50, 100],
+  total: {{ paginator.getTotalCount() }},
+  rowsOfPage: {{ paginator.getPageSize() }},
+  onPageClicked: function (event, originalEvent, type, page) {
+      let url = '{{ paginator.getUrlWithNoPage() }}&page=' + page;
+      block.blockUI();
+      $('#tab-content').load(url,function () {
+          block.unBlockUI();
+      });
+  }
+});
+
+
+function showDetail(id) {
+  //@TODO 需要再对应的行项绑定数据
+  //投诉明细弹窗
+  layer.open({
+      type: 2,
+      area: ['860px', '800px'],
+      title: 'My Complaint',
+      fixed: false,
+      skin: 'oris-layer msgcent msg-layer',
+      scrollbar: true,
+      content: '{{ url('account/message_center/complain/detail') }}' + '&id=' + id,
+  });
+}
+</script>
+
+<style>
+</style>

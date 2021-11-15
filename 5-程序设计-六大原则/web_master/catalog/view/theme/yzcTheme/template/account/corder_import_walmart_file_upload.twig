@@ -1,0 +1,1390 @@
+<script src="catalog/view/javascript/jquery/jquery-2.1.1.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+<script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+<link href="catalog/view/theme/yzcTheme/stylesheet/font_demo/iconfont.css" rel="stylesheet" type="text/css"/>
+<link href="catalog/view/theme/yzcTheme/stylesheet/fonts.googleapis.com_open+sans.css" rel="stylesheet" type="text/css"/>
+<link type="text/css" href="/public/fonts/giga/iconfont.css?v={{ app_version }}" rel="stylesheet">{#B2B页面改版 图标字体#}
+<link href="catalog/view/theme/yzcTheme/stylesheet/stylesheet.css?v={{ app_version }}" rel="stylesheet">
+<link rel="icon" href="data:;base64,=">
+
+<script src="catalog/view/javascript/layer/layer.js" type="text/javascript"></script>
+<script src="catalog/view/javascript/common.js?v={{ app_version }}" type="text/javascript"></script>
+<link href="catalog/view/javascript/diyUpload/file_upload/css/iconfont.css" rel="stylesheet" type="text/css"/>
+<link href="catalog/view/javascript/diyUpload/file_upload/css/fileUpload.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="catalog/view/javascript/diyUpload/file_upload/js/fileUploadWalmart.js"></script>
+<link href="/catalog/view/javascript/layer/theme/yzc/layuiOris.css" rel="stylesheet" />
+<style>
+  form {
+    width: 100%;
+  }
+
+  i {
+
+    padding-right: 5px;
+  }
+
+  #column1 {
+    padding: 5px;
+    background-color: #fff5ef;
+    border-radius: 5px;
+    color: #fa6400;
+    margin: 10px 0;
+  }
+
+  #column1 a {
+    float: right;
+    padding: 0;
+  }
+
+  #column1 .well {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  #column1 .well ul {
+    padding: 0 15px;
+  }
+
+  .content {
+    /*background-color: #e2eafa;*/
+    overflow: hidden;
+
+  }
+
+  .name {
+    color: #666;
+    opacity: 0.85;
+    padding: 10px 0;
+  }
+
+  .value {
+    color: #000;
+    opacity: 0.85;
+    padding: 10px 0 10px 5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .order_value {
+    color: #000;
+    opacity: 0.85;
+    padding: 10px 0 10px 0;
+    vertical-align: text-bottom;
+    display: inline-block;
+    margin-right: 5px;
+  }
+
+  .list {
+    margin: 5px 0;
+    width: 100%;
+    float: left;
+    /*overflow: hidden;*/
+  }
+
+  .item {
+    height: 40px;
+    background-color: #fff5ef;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 5px;
+  }
+
+  .item div {
+    overflow: hidden;
+  }
+
+  .detail {
+    padding: 5px 0;
+    clear: both;
+    height: 45px;
+  }
+
+  .detail .num {
+    color: #FA6400;
+    border: 1px solid #FA6400;
+    border-radius: 5px;
+    padding: 2px 6px;
+    margin: 5px 10px 5px 5px;
+    float: left;
+    width: 25px;
+
+  }
+
+  .s2 p, .detail p {
+    float: right;
+    min-width: 30%;
+    margin: 0;
+  }
+
+  input[type=text] {
+    #background-color: #e3e5e7;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  input[type=checkbox] {
+    position: relative;
+    width: 18px;
+    height: 19px;
+    margin-left: 5px;
+    vertical-align: super;
+  }
+
+  input[type=checkbox]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #aaa;
+    line-height: 15px;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    background-color: #fff;
+    border-radius: 3px;
+
+  }
+
+  input[type=checkbox]:checked::before {
+    content: '\2714';
+    background-color: #468bff;
+  }
+
+  .s2s {
+    color: #fff;
+    background-color: #FA6400;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 2px 3px;
+    margin: 10px 5px;
+    width: 30px;
+    float: left;
+  }
+
+  .img_show {
+    background-color: #eee;
+    width: 100%;
+    float: left;
+    overflow: hidden;
+    margin-top: 5px;
+  }
+
+  .s2 {
+    background-color: #e8f8d6;
+    padding: 5px 0;
+    width: 100%;
+    float: left;
+    overflow: hidden;
+  }
+
+  .s2 p {
+    padding-right: 30px;
+    width: 30%;
+  }
+
+  .btn-primary {
+    background-color: #468bff;
+    border-color: #468bff;
+  }
+
+  .btn-default {
+    border-color: #eee;
+    color: #428BDD;
+  }
+
+  .selectFileBt {
+    height: 35px;
+    line-height: 35px;
+    background-color: #468bff !important;
+  }
+
+  .icon-shanchu {
+    color: #468bff !important;
+  }
+
+  .fileUploadContent .subberProgress .progress > div {
+    background-color: #468bff !important;
+  }
+
+  .la {
+    width: 10%;
+    float: left;
+    padding-left: 8px;
+    text-align: left;
+  }
+
+  .modal-footer-walmart {
+    text-align: center;
+  }
+
+  .top-i-150 {
+    top: 150px !important;
+  }
+</style>
+
+<form enctype="multipart/form-data" id="form-upload">
+  <div class="modal-body">
+    <div id="column1">
+      <i class="fa fa-info-circle" style=" color: #fa6400;"></i>User Notice
+      <a class="btn " role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
+         aria-controls="collapseExample">
+        <i class="fa fa-angle-double-down"></i>
+      </a>
+      <div class="collapse" id="collapseExample">
+        <div class="well">
+          <ul>
+            <li>If the product is a combo product, please upload the shipping label for each sub-item and fill in the
+              corresponding tracking numbers.
+            </li>
+            <li>If the order is an S2S order, please upload the store label for each product(or sub-item).</li>
+            <li>Before submitting, please make sure the tracking number and Order ID are consistent with those in
+              preview picture of uploaded Label.
+            </li>
+            <li>
+              Giga Cloud does not accept FedEx Express Overnight labels. Related service types include, but are not limited to: FedEx First Overnight, FedEx Priority Overnight, FedEx Standard Overnight etc.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="file_str" name="file_str" value="">
+    <input type="hidden" id="bol_str" name="bol_str" value="">
+    <input type="hidden" id="store_input_str" name="store_input_str" value="">
+    <div id="column2">
+      {% for order in upload_file_info %}
+      <div class="order">
+        <div class="content">
+          <div style="float: left;width: 100%;background: #E2EAFA;padding: 0 5px">
+            <div style="float: left;width: 30%">
+              <input class="name col-sm-1" type="checkbox" onclick="getCheckBoxNum()" name="{{ order.id }}"
+                     id="{{ order.id }}" style="cursor:pointer;margin-top: 10px;margin-right: 5px;">
+              <input type="hidden" id="order_id" name='order_id' value={{ order.id }}>
+              <span class="name col-sm-4">Sales Order ID:</span>
+              <span class="order_value">{{ order.order_id }}</span>
+              <span id="{{ order.id }}_span" class="order_value">(0/{{ order.total_file_amount }})</span>
+
+            </div>
+            {% if order.bol_flag == 1 %}
+              <div
+                style="width:69%;margin-left:1%;font-size:14px;height:35px;line-height: 35px;text-align: center;float: left;margin-top: 3px;">
+                <div style="float:left;text-align:right;width: 9%;margin-right: 1%">
+                  <span>BoL:</span>
+                </div>
+                <div style="float: left;width: 36%">
+                  <div id="{{ order.id }}_bol" class="fileUploadContent"
+                       style="height:35px;width:100%;float: left;"></div>
+                </div>
+                <div style="float: left;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;"
+                     id="{{ order.id }}_bol_show"></div>
+
+              </div>
+            {% endif %}
+
+          </div>
+          {% for children in order.childrenList %}
+            {% if not children.is_combo %}
+              <div class="list">
+                <div class="item">
+                  {% if children.ship_to == 'Store' %}
+                    <div style="width: 40px;float: left;">
+                      <div class="s2s">S2S</div>
+                    </div>
+                  {% else %}
+                    <div style="width: 40px;float: left;height: 1px">
+                    </div>
+                  {% endif %}
+                  <div>
+                    <div class="col-sm-3">
+                      <span class="name col-sm-4">{{ text_item_code }}:</span>
+                      <span class="value col-sm-8">{{ children.item_code }}</span>
+                    </div>
+                    <div class="col-sm-1">
+                      <span class="name col-sm-5">{{ text_qty }}: </span>
+                      <span class="value col-sm-7">{{ children.qty }}</span>
+                    </div>
+                    <div class="col-sm-2">
+                      <span class="name col-sm-4">Weight:</span>
+                      <span class="value col-sm-8">{{ children.weight }} {{ children.unit_name }}</span>
+                    </div>
+                    <div class="col-sm-4">
+                      <span class="name col-sm-4">{{ text_ship_method }}: </span>
+                      <span class="value col-sm-8" title="{{ children.carrier }}">{{ children.carrier }}</span>
+                    </div>
+                    {% if children.ship_to == 'Store' %}
+                      <div class="col-sm-2">
+                        <span class="name col-sm-5">Store ID: </span>
+                        <span class="value col-sm-7">{{ children.store_id }}</span>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                {% if children.ship_to == 'Store' %}
+                  <div class="s2">
+                    {% if children.ship_to == 'Store' %}
+                      <div style="width: 40px;float: left;">
+                        <div class="s2s">S2S</div>
+                      </div>
+                    {% else %}
+                      <div style="width: 40px;float: left;height: 1px">
+                      </div>
+                    {% endif %}
+                    <div class="name la">Store Label:</div>
+
+                    <div id="{{ children.store_label_container_id }}" class="fileUploadContent col-sm-3"
+                         style="height:35px;"></div>
+                    <div
+                      style="float:left;width:20%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;line-height: 35px"
+                      id="{{ children.store_label_container_id }}_pdf_show">
+                    </div>
+                    <p style="width: 30%"><span class="name col-sm-4">Package ASN:</span> <span
+                        class="value col-sm-8"  title="{{ children.package_asn }}">{{ children.package_asn }}</span></p>
+                  </div>
+
+                  <div class="img_show" id="{{ children.store_label_container_id }}_show" style="display: none">
+                    <div style="width:5%;float: left;margin-left: 36px" class="name">
+                      Preview:
+                    </div>
+                    <div style="width:35%;float: left;">
+                      <span style="float: left;overflow: hidden" class="name"> Order ID: &nbsp;&nbsp;</span>
+                      <img src="" style="height:25px;margin-left: 2%;margin-top:10px;width: 30%">
+                    </div>
+                    <div style="width:26%;float: left" class="name">
+                      <span style="float: left;overflow: hidden"> Store ID:&nbsp;&nbsp;</span>
+                      <img src="" style="height:25px;margin-left: 2%;width: 40%">
+                    </div>
+                    <div style="width:29%;float: left;margin-left: 5px" class="name">
+                      <span style="color:#938593;float: left;overflow: hidden"> &nbsp;Package ASN:</span>
+                      <img src="" style="height:25px;margin-left: 2%;width: 40%;">
+                    </div>
+                  </div>
+                {% endif %}
+                {% set k = 1 %}
+                {% for detail in children.combo_info %}
+                  <div class="detail">
+                    <div class="num">{{ k }}</div>
+                    <div class="la name"> Shipping Label:</div>
+                    <div id="{{ detail.container_id }}" class="fileUploadContent col-sm-3" style="height:35px;"></div>
+                    <div
+                      style="float:left;width:20%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;line-height: 35px"
+                      id="{{ detail.container_id }}_pdf_show">
+                    </div>
+                    <p><span class="name col-sm-5">Tracking Number:</span>
+                      {% if order.tracking_number_method %}
+                        <input id="{{ detail.container_id }}_tracking_number" style="background-color: #e3e5e7;height: 35px"
+                               type="text" readonly="readonly" name="{{ detail.container_id }}_tracking_number"
+                               value="{{ detail.tracking_id }}" class="value col-sm-7">
+                      {% else %}
+                        <input id="{{ detail.container_id }}_tracking_number" type="text" style="height: 35px"
+                               onblur="pushTrackingNumber(this)" name="{{ detail.container_id }}_tracking_number"
+                               value="{{ detail.tracking_id }}" class="value col-sm-7">
+                      {% endif %}
+                    </p>
+                  </div>
+                  <div class="img_show" id="{{ detail.container_id }}_show" style="display: none">
+                    <div style="width:5%;float: left;margin-left: 36px" class="name">
+                      Preview:
+                    </div>
+                    <div style="width:35%;float: left;">
+                      <span style="float: left;overflow: hidden" class="name"> Order ID: &nbsp;&nbsp;</span>
+                      <img src="" style="height:25px;margin-left: 2%;margin-top:10px;width: 30%">
+                    </div>
+                    <div style="width:26%;float: left" class="name">
+                      <span style="float: left;overflow: hidden"> Weight:&nbsp;&nbsp;</span>
+                      <img src="" style="height:25px;margin-left: 2%;width: 40%">
+                    </div>
+                    <div style="width:29%;float: left;margin-left: 5px" class="name">
+                      <span style="color:#938593;float: left;overflow: hidden"> &nbsp;Tracking Number:</span>
+                      <img src="" style="height:25px;margin-left: 2%;width: 40%;">
+                    </div>
+                  </div>
+                  {% set k = k + 1 %}
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="list">
+                <div class="item">
+                  {% if children.ship_to == 'Store' %}
+                    <div style="width: 40px;float: left;">
+                      <div class="s2s">S2S</div>
+                    </div>
+                  {% else %}
+                    <div style="width: 40px;float: left;height: 1px"></div>
+                  {% endif %}
+                  <div>
+                    <div class="col-sm-3">
+                      <span class="name col-sm-4">{{ text_item_code }}:</span>
+                      <span class="value col-sm-8">{{ children.item_code }}
+                       {# <i class="giga icon-combox"
+                         ></i>#}
+                        {{ image_icon_url }}
+                      </span>
+                    </div>
+                    <div class="col-sm-1">
+                      <span class="name col-sm-5">{{ text_qty }}:</span>
+                      <span class="value col-sm-7">{{ children.qty }}</span>
+                    </div>
+                    <div class="col-sm-4">
+                      <span class="name col-sm-4">{{ text_ship_method }}:</span>
+                      <span class="value col-sm-8" title="{{ children.carrier }}">{{ children.carrier }}</span>
+                    </div>
+                    <div class="col-sm-2">
+                      {% if children.ship_to == 'Store' %}
+                        <span class="name col-sm-5">Store ID: </span>
+                        <span class="value col-sm-7">{{ children.store_id }}</span>
+                      {% endif %}
+                    </div>
+                    <div class="col-sm-2"></div>
+                  </div>
+                </div>
+              </div>
+              {% if children.ship_to == 'Store' %}
+                <div class="s2">
+                  <div class=''>
+                    {% if children.ship_to == 'Store' %}
+                      <div style="width: 40px;float: left;">
+                        <div class="s2s">S2S</div>
+                      </div>
+                    {% else %}
+                      <div style="width: 40px;float: left;height: 1px"></div>
+                    {% endif %}
+                    <div class="name la">Store Label:</div>
+                    <div id="{{ children.store_label_container_id }}" class="fileUploadContent col-sm-3"
+                         style="height:35px;"></div>
+                    <div
+                      style="float: left;width:20%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;margin-left: 10%;line-height: 35px"
+                      id="{{ children.store_label_container_id }}_pdf_show">
+                    </div>
+                    <p><span class="name col-sm-4">Package ASN:</span> <span
+                        class="value col-sm-8"  title="{{ children.package_asn }}">{{ children.package_asn }}</span></p>
+                  </div>
+                </div>
+                <div class="img_show" id="{{ children.store_label_container_id }}_show" style="display: none">
+                  <div style="width:5%;float: left;margin-left: 36px" class="name">
+                    Preview:
+                  </div>
+                  <div style="width:35%;float: left;">
+                    <span style="float: left;overflow: hidden" class="name"> Order ID: &nbsp;&nbsp;</span>
+                    <img src="" style="height:25px;margin-left: 2%;margin-top:10px;width: 30%">
+                  </div>
+                  <div style="width:26%;float: left" class="name">
+                    <span style="float: left;overflow: hidden"> Store ID:&nbsp;&nbsp;</span>
+                    <img src="" style="height:25px;margin-left: 2%;width: 40%">
+                  </div>
+                  <div style="width:29%;float: left;margin-left: 5px" class="name">
+                    <span style="color:#938593;float: left;overflow: hidden"> &nbsp;Package ASN:</span>
+                    <img src="" style="height:25px;margin-left: 2%;width: 40%;">
+                  </div>
+                </div>
+              {% endif %}
+
+              {% for detail in children.combo_info %}
+                <div class="list">
+                  <div class="item">
+                    <div style="width: 40px;float: left;height: 1px">
+                    </div>
+                    <div>
+                      <div class="col-sm-3">
+                        <span class="name col-sm-6">{{ text_subitem_code }}:</span>
+                        <span class="value col-sm-6">{{ detail.sku }}</span></div>
+                      <div class="col-sm-1">
+                        <span class="name col-sm-5">QTY:</span>
+                        <span class="value col-sm-7">{{ detail.qty }}</span>
+                      </div>
+                      <div class="col-sm-2">
+                        <span class="name col-sm-5">Weight:</span>
+                        <span class="value col-sm-7">{{ detail.weight }} {{ detail.unit_name }}</span>
+                      </div>
+                      <div class="col-sm-2"></div>
+                    </div>
+                  </div>
+                  {% set k = 1 %}
+                  {% for line in detail.line %}
+                    <div class="detail">
+                      <div class="num">{{ k }}</div>
+                      <div class="la name"> Shipping Label:</div>
+                      <div id="{{ line.container_id }}" class="fileUploadContent col-sm-3" style="height:35px;"></div>
+                      <div
+                        style="float:left;width:20%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;line-height: 35px"
+                        id="{{ line.container_id }}_pdf_show">
+                      </div>
+                      <p><span class="name col-sm-5">Tracking Number:</span>
+                        {% if order.tracking_number_method %}
+                          <input id="{{ line.container_id }}_tracking_number" type="text"
+                                 style="background-color: #e3e5e7;height: 35px" readonly="readonly"
+                                 name="{{ line.container_id }}_tracking_number" value="{{ line.tracking_id }}"
+                                 class="value col-sm-7">
+                        {% else %}
+                          <input id="{{ line.container_id }}_tracking_number" onblur="pushTrackingNumber(this)" style="height: 35px"
+                                 type="text" name="{{ line.container_id }}_tracking_number"
+                                 value="{{ line.tracking_id }}" class="value col-sm-7">
+                        {% endif %}
+                      </p>
+                    </div>
+                    <div class="img_show" id="{{ line.container_id }}_show" style="display: none">
+                      <div style="width:5%;float: left;margin-left: 36px" class="name">
+                        Preview:
+                      </div>
+                      <div style="width:35%;float: left;">
+                        <span style="float: left;overflow: hidden" class="name"> Order ID: &nbsp;&nbsp;</span>
+                        <img src="" style="height:25px;margin-left: 2%;margin-top:10px;width: 30%">
+                      </div>
+                      <div style="width:26%;float: left" class="name">
+                        <span style="float: left;overflow: hidden"> Weight:&nbsp;&nbsp;</span>
+                        <img src="" style="height:25px;margin-left: 2%;width: 40%">
+                      </div>
+                      <div style="width:29%;float: left;margin-left: 5px" class="name">
+                        <span style="color:#938593;float: left;overflow: hidden"> &nbsp;Tracking Number:</span>
+                        <img src="" style="height:25px;margin-left: 2%;width: 40%;">
+                      </div>
+                    </div>
+                    {% set k = k + 1 %}
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="modal-footer-walmart">
+      <span style="float: left;margin-top: 15px;"> <span id="checkboxNum"> 0 </span> orders are selected</span>
+      <button type="button" class="btn btn-primary" onclick="checkInputInfo()" name="sub">SUBMIT</button>
+      <button type="button" class="btn btn-default" onclick="cancelAction()" id="btnClose" data-dismiss="modal">CANCEL
+      </button>
+    </div>
+</form>
+
+<script>
+  var walmart_bol_list = [];
+  var submit_flag = 1;
+  var walmart_common_label = [];
+  var walmart_store_label = [];
+  var walmart_tracking_number = [];
+  var js_auxiliary_information = '{{ js_auxiliary_information }}';
+  var json = eval('(' + js_auxiliary_information + ')');
+  var special_common_label = [];  //不需要验证的special common label
+  var special_tracking_number = []; // 不需要验证的tracking number
+  $(function () {
+    $(".btn i").click(function () {
+      if (
+        $(this).hasClass("fa-angle-double-down")) {
+        $(this).removeClass("fa-angle-double-down");
+        $(this).addClass("fa-angle-double-up")
+      }
+      else if (
+        $(this).hasClass("fa-angle-double-up")) {
+        $(this).removeClass("fa-angle-double-up");
+        $(this).addClass("fa-angle-double-down")
+      }
+    });
+    $.each(json.container_id_list.id_list, function (idx, obj) {
+      var name = obj;
+      var order_id = obj.split('_')[0];
+      if (json['validation_rule'][order_id]['is_special'] == 1) {
+        special_common_label[name] = '';  //不需要验证的special common label
+        special_tracking_number[name] = ''; // 不需
+      } else {
+        walmart_tracking_number[name] = '';
+        walmart_common_label[name] = '';
+      }
+      let wfu = new WpFileUpload(name);
+      var check_url = '{{ dropship_file_check_url }}' + '&container_id=' + name;
+      var receive_url = '{{ dropship_file_deal_url }}' + '&container_id=' + name;
+      wfu.initUpload({
+        "uploadUrl": receive_url,//上传文件信息地址
+        "progressUrl": check_url,//获取进度信息地址，可选，注意需要返回的data格式如下（{bytesRead: 102516060, contentLength: 102516060, items: 1, percent: 100, startTime: 1489223136317, useTime: 2767}）
+        "scheduleStandard": true,
+        "fileType": ['pdf'],
+        "showProgressNum": true,
+        "autoCommit": true,
+        "showSummerProgress": true,
+        "maxFileNumber": 1,
+        "ismultiple": false,
+        "size": 5 * 1024,
+        //"uploadFileParam":'files',
+        "showFileItemProgress": false, //"是否显示单文件进度条，默认显示"
+        "beforeUpload": function (wfu) {// 在上传前面执行的回调函数
+          return getUploadFileByOrder(wfu);
+        },
+        "onUpload": function () {// 在上传之后
+          if (wfu.resultData.error == 0) {
+            let intervalId = setInterval(function () {
+              var percent = $('#' + wfu.uploadId + ' .progress').children().eq(0).html();
+              if (percent == '99%') {
+                clearInterval(intervalId);
+                // 验证tracking number 是手填还是自动生成 自动生成的
+                if (json['validation_rule'][order_id]['is_special'] == 1) {
+                  var ret = false;
+                  special_tracking_number[wfu.uploadId] = wfu.fileList[0].name;
+                  //填入input框
+                } else {
+
+                  if (json['validation_rule'][order_id]['tracking_number_method'] == 1 || wfu.resultData.data.tracking_number != '') {
+                    walmart_tracking_number[wfu.uploadId] = wfu.resultData.data.tracking_number;
+                    var ret = verifyTrackingNumber(wfu.uploadId);
+                    //自动填写
+                    //填入input框
+                  } else {
+                    var ret = false;
+                  }
+
+                }
+                if (ret == false) {
+                  var file_str = $('#file_str').val();
+                  var id = wfu.uploadId;
+                  var file_name = wfu.fileList[0].name;
+                  file_str += id + ':' + file_name + ';';
+                  $('#file_str').val(file_str);
+                  var id = wfu.uploadId + '_show';
+                  $('#' + id).children().eq(1).find('img').attr("src", wfu.resultData.data.order_id_img);
+                  $('#' + id).children().eq(2).find('img').attr("src", wfu.resultData.data.weight_img);
+                  $('#' + id).children().eq(3).find('img').attr("src", wfu.resultData.data.tracking_number_img);
+                  $('#' + id).show();
+                  //tracking number 更改
+                  var tracking_number_id = wfu.uploadId + '_tracking_number';
+                  if(wfu.resultData.data.tracking_number){
+                    $('#' + tracking_number_id).val(wfu.resultData.data.tracking_number);
+                  }
+                  var pdf_show = '#' + wfu.uploadId + '_pdf_show';
+                  $(pdf_show).empty();
+                  $(pdf_show).show();
+                  var info = '<a style="cursor:pointer;color:#23527c;text-decoration:underline;"  title="' + wfu.resultData.data.file_name + '" onclick="getCommonLabelPdf(this)" mean="' + wfu.resultData.data.deal_file_path + '" >' + wfu.resultData.data.file_name + '</a>';
+                  $(pdf_show).append(info);
+                  // 更新
+                  calcOrderInfo(wfu.uploadId);
+                  if (json['validation_rule'][order_id]['is_special'] == 1) {
+                    special_common_label[wfu.uploadId] = wfu.fileList[0].name;
+                  } else {
+                    walmart_common_label[wfu.uploadId] = wfu.fileList[0].name;
+                  }
+                  let uploadId = wfu.uploadId;
+                  let subberProgress = $("#" + uploadId + " .subberProgress .progress>div");
+                  // 格式化数据
+                  percentNum = '100%';
+                  // 设置长度
+                  subberProgress.css("width", percentNum);
+                  // 是否显示值
+                  subberProgress.html(percentNum);
+                } else {
+                  walmart_tracking_number[wfu.uploadId] = '';
+                  layerMsg('The selected orders contain repeat tracking numbers [' + ret + ']', 3000);
+                  $('#' + wfu.uploadId + ' .cleanFileBt').trigger('click');
+
+                }
+              }
+            }, 500);
+
+          } else {
+
+            let intervalId = setInterval(function () {
+              var percent = $('#' + wfu.uploadId + ' .progress').children().eq(0).html();
+              if (percent == '99%') {
+                clearInterval(intervalId);
+                //layerMsg(wfu.resultData.msg);
+                layerMsg(wfu.resultData.msg);
+                $('#' + wfu.uploadId + ' .cleanFileBt').trigger('click');
+              }
+            }, 500);
+          }
+        }
+
+      });
+    });
+    // bol 更改
+    if (json.walmart_bol) {
+      $.each(json.walmart_bol, function (idx, obj) {
+        var name = obj;
+        walmart_bol_list[name] = '';
+        let wfu = new WpFileUpload(name);
+        var receive_url = '{{ walmart_bol_deal_url }}' + '&container_id=' + name;
+        wfu.initUpload({
+          "uploadUrl": receive_url,//上传文件信息地址
+          "scheduleStandard": true,
+          "fileType": ['pdf'],
+          "showProgressNum": true,
+          "autoCommit": true,
+          "showSummerProgress": true,
+          "maxFileNumber": 1,
+          "ismultiple": false,
+          "size": 5 * 1024,
+          //"uploadFileParam":'files',
+          "showFileItemProgress": false, //"是否显示单文件进度条，默认显示"
+          "beforeUpload": function (wfu) {// 在上传前面执行的回调函数
+            //不验证是否是相同的
+            return getUploadBolByOrder(wfu);
+          },
+          "onUpload": function () {// 在上传之后
+//            console.dir(wfu.resultData.data);
+            if (wfu.resultData.error == 0) {
+              let intervalId = setInterval(function () {
+                var percent = $('#' + wfu.uploadId + ' .progress').children().eq(0).html();
+                if (percent == '99%') {
+                  clearInterval(intervalId);
+                  let uploadId = wfu.uploadId;
+                  let subberProgress = $("#" + uploadId + " .subberProgress .progress>div");
+                  // 格式化数据
+                  percentNum = '100%';
+                  // 设置长度
+                  subberProgress.css("width", percentNum);
+                  // 是否显示值
+                  subberProgress.html(percentNum);
+                  var bol_show = '#' + uploadId + '_show';
+                  $(bol_show).empty();
+                  var info = '<a style="cursor:pointer;color:#23527c;text-decoration:underline;"  title="' + wfu.resultData.data.file_name + '" onclick="getBolPdf(this)" mean="' + wfu.resultData.data.deal_file_path + '" >' + wfu.resultData.data.file_name + '</a>';
+                  $(bol_show).append(info);
+                  $(bol_show).show();
+                  walmart_bol_list[uploadId] = wfu.resultData.data.file_name;
+                  // 也需要验证是否可以勾选 checkbox
+                  calcOrderInfo(uploadId);
+                }
+
+              }, 500);
+            } else {
+              let intervalId = setInterval(function () {
+                var percent = $('#' + wfu.uploadId + ' .progress').children().eq(0).html();
+                if (percent == '99%') {
+                  clearInterval(intervalId);
+                  layerMsg('{{ error_file_size }}');
+                  $('#' + wfu.uploadId + ' .cleanFileBt').trigger('click');
+                }
+              }, 500);
+            }
+          }
+        });
+      });
+    }
+    // store label
+    if (json.container_id_list.order_id_list) {
+      $.each(json.container_id_list.order_id_list, function (idx, obj) {
+        $.each(json['container_id_list'][obj]['walmart_store_label'], function (k, v) {
+          var name = v;
+          walmart_store_label[name] = '';
+          let wfu = new WpFileUpload(name);
+          var receive_url = '{{ dropship_file_deal_url }}' + '&container_id=' + name;
+          wfu.initUpload({
+            "uploadUrl": receive_url,//上传文件信息地址
+            "scheduleStandard": true,
+            "fileType": ['pdf'],
+            "showProgressNum": true,
+            "autoCommit": true,
+            "showSummerProgress": true,
+            "maxFileNumber": 1,
+            "ismultiple": false,
+            "size": 5 * 1024,
+            //"uploadFileParam":'files',
+            "showFileItemProgress": false, //"是否显示单文件进度条，默认显示"
+            "beforeUpload": function (wfu) {// 在上传前面执行的回调函数
+              return getUploadStoreLabelByOrder(wfu);
+            },
+            "onUpload": function () {// 在上传之后
+//            console.dir(wfu.resultData.data);
+              if (wfu.resultData.error == 0) {
+                let intervalId = setInterval(function () {
+                  var percent = $('#' + wfu.uploadId + ' .progress').children().eq(0).html();
+                  if (percent == '99%') {
+                    clearInterval(intervalId);
+                    let uploadId = wfu.uploadId;
+                    let subberProgress = $("#" + uploadId + " .subberProgress .progress>div");
+                    // 格式化数据
+                    percentNum = '100%';
+                    // 设置长度
+                    subberProgress.css("width", percentNum);
+                    // 是否显示值
+                    subberProgress.html(percentNum);
+                    //显示
+                    var id = wfu.uploadId + '_show';
+                    $('#' + id).children().eq(1).find('img').attr("src", wfu.resultData.data.order_id_img);
+                    $('#' + id).children().eq(2).find('img').attr("src", wfu.resultData.data.store_id_img);
+                    $('#' + id).children().eq(3).find('img').attr("src", wfu.resultData.data.package_asn_img);
+                    $('#' + id).show();
+                    walmart_store_label[uploadId] = wfu.resultData.data.file_name;
+                    var pdf_show = '#' + uploadId + '_pdf_show';
+                    $(pdf_show).empty();
+                    $(pdf_show).show();
+                    var info = '<a style="cursor:pointer;color:#23527c;text-decoration:underline;"  title="' + wfu.resultData.data.file_name + '" onclick="getStoreLabelPdf(this)" mean="' + wfu.resultData.data.store_deal_file_path + '" >' + wfu.resultData.data.file_name + '</a>';
+                    $(pdf_show).append(info);
+                    calcOrderInfo(uploadId);
+                  }
+
+                }, 500);
+              } else {
+                let intervalId = setInterval(function () {
+                  var percent = $('#' + wfu.uploadId + ' .progress').children().eq(0).html();
+                  if (percent == '99%') {
+                    clearInterval(intervalId);
+                    layerMsg('{{ error_file_size }}');
+                    $('#' + wfu.uploadId + ' .cleanFileBt').trigger('click');
+                  }
+                }, 500);
+              }
+            }
+          });
+        });
+      });
+    }
+  });
+  function getUploadFileByOrder(wfu) {
+    var file_str = $('#file_str').val();
+    var id = wfu.uploadId;
+    var file_name = wfu.fileList[0].name;
+    var file_size = wfu.fileList[0].size;
+    if (file_size == 0) {
+      var size_err = '{{ error_file_size }}';
+      layerMsg(size_err);
+      return false;
+    }
+    var order_id = id.split('_')[0];
+    var is_special = json['validation_rule'][order_id]['is_special'];
+    // is_special 1 为全不校验， 0 为不校验
+    if (is_special == 0) {
+      var temp = [];
+      walmart_common_label[id] = file_name;
+      for(let key  in walmart_common_label){
+        if(walmart_common_label[key]){
+          temp.push(walmart_common_label[key])
+        }
+      }
+      file_name_unique = [...new
+      Set(temp)
+      ];
+      if (temp.length != file_name_unique.length) {
+        layerMsg('{{ error_file_repeated }}');
+        $('#' + wfu.uploadId + ' .fileItem').hide();
+        walmart_common_label[id] = '';
+        return false;
+      }
+      walmart_common_label[id] = '';
+    }
+    return true;
+  }
+  function getUploadBolByOrder(wfu) {
+    var file_name = wfu.fileList[0].name;
+    var file_size = wfu.fileList[0].size;
+    if (file_size == 0) {
+      var size_err = '{{ error_file_size }}';
+      layerMsg(size_err);
+      return false;
+    }
+    var ret = 1;
+    $.each(json.walmart_bol, function (idx, obj) {
+      if (file_name == walmart_bol_list[obj]) {
+        layerMsg('{{ error_bol_repeated }}');
+        $('#' + wfu.uploadId + ' .fileItem').hide();
+        ret = 0;
+        return false;
+      }
+    });
+    if(ret == 0){
+      return  false;
+    }
+
+    //判断是否可以check
+    return true;
+  }
+  function getUploadStoreLabelByOrder(wfu) {
+    var file_str = $('#file_str').val();
+    var file_name = wfu.fileList[0].name;
+    var file_size = wfu.fileList[0].size;
+    if (file_size == 0) {
+      var size_err = '{{ error_file_size }}';
+      layerMsg(size_err);
+      return false;
+    }
+    //判断是否可以check
+    return true;
+  }
+  function getcleanFile(wfu) {
+    //代表此pdf 删除
+    //后端删除
+    var uploadId = wfu.uploadId;
+    var verify = uploadId.split('_')[1];
+    if (uploadId.split('_').length == 3) {
+      verify = 'store';
+    }
+    if (verify == 'bol') {
+      var id = uploadId + '_show';
+      $('#' + id).empty();
+      //后台软删除
+      var del_url = '{{ dropship_file_unlink }}';
+      var order_id = uploadId.split('_')[0];
+      $.ajax({
+        url: del_url,
+        type: 'post',
+        dataType: 'json',
+        //                async:false,
+        data: {'container_id': uploadId},
+        success: function (res) {
+          walmart_bol_list[uploadId] = '';
+          //删除的情况下需要重新更新span 数量 和 checkbox
+          calcOrderInfo(uploadId);
+        }
+      });
+    } else if (verify == 'store') {
+      var file_name = wfu.fileList[0].name;
+      var id = uploadId + '_show';
+      $('#' + id).children().eq(0).find('img').attr("src", '');
+      $('#' + id).children().eq(1).find('img').attr("src", '');
+      $('#' + id).children().eq(2).find('img').attr("src", '');
+      $('#' + id).hide();
+      var pdf_show = uploadId + '_pdf_show';
+      $('#' + pdf_show).empty();
+      var del_url = '{{ dropship_file_unlink }}';
+      var order_id = uploadId.split('_')[0];
+      $.ajax({
+        url: del_url,
+        type: 'post',
+        dataType: 'json',
+        //async:false,
+        data: {'container_id': uploadId},
+        success: function (res) {
+          walmart_store_label[uploadId] = '';
+          //判断是否可以check
+          calcOrderInfo(uploadId);
+        }
+      });
+    } else {
+      var file_name = wfu.fileList[0].name;
+      var id = uploadId + '_show';
+      $('#' + id).children().eq(0).find('img').attr("src", '');
+      $('#' + id).children().eq(1).find('img').attr("src", '');
+      $('#' + id).children().eq(2).find('img').attr("src", '');
+      $('#' + id).hide();
+      var tracking_number_id = uploadId + '_tracking_number';
+      $('#' + tracking_number_id).val(null);
+      var pdf_show = uploadId + '_pdf_show';
+      $('#' + pdf_show).empty();
+      var del_url = '{{ dropship_file_unlink }}';
+      var order_id = uploadId.split('_')[0];
+      var file_str = $('#file_str').val();
+      var file_arr = file_str.split(';');
+      $.each(file_arr, function (idx, obj) {
+        if (obj != null && obj != '') {
+          var i = obj.split(':');
+          if (i[0] == uploadId) {
+            var key = obj + ';';
+            //ajax 软删除文件
+            $.ajax({
+              url: del_url,
+              type: 'post',
+              dataType: 'json',
+              //                async:false,
+              data: {'container_id': uploadId},
+              success: function (res) {
+                file_str = file_str.replace(key, '');
+
+                $('#file_str').val(file_str);
+                //判断是否可以check
+                calcOrderInfo(uploadId);
+                var order_id = uploadId.split('_')[0];
+                if (json['validation_rule'][order_id]['is_special'] == 1) {
+                  special_common_label[wfu.uploadId] = '';
+                  walmart_tracking_number[wfu.uploadId] = '';
+                } else {
+                  walmart_common_label[wfu.uploadId] = '';
+                  walmart_tracking_number[wfu.uploadId] = '';
+
+                }
+
+              }
+            })
+          }
+        }
+      });
+    }
+  }
+  function getBolPdf(obj) {
+    var url = $(obj).attr('mean');
+    var upload_info = 'Bol Label';
+    parent.layer.open({
+      type: 2,
+      offset: ['150px', '380px'],
+      area: ['700px', '400px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar: false,
+      content: url,
+    });
+  }
+  function getCommonLabelPdf(obj) {
+    var url = $(obj).attr('mean');
+    var upload_info = 'Common Label';
+    parent.layer.open({
+      type: 2,
+      offset: ['150px', '380px'],
+      area: ['700px', '400px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar: false,
+      content: url,
+    });
+  }
+  function getStoreLabelPdf(obj) {
+    var url = $(obj).attr('mean');
+    var upload_info = 'Store Label';
+    parent.layer.open({
+      type: 2,
+      offset: ['150px', '380px'],
+      area: ['700px', '400px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar: false,
+      content: url,
+    });
+  }
+  function layerMsg(message, time = 2000) {
+    parent.layer.msg(message, {time: time});
+  }
+  function calcOrderInfo(uploadId) {
+    //多少个订单被选中
+    //已上传的文件个数
+    //订单是否需要被选中
+    var file_str = $('#file_str').val();
+    var order_id = uploadId.split('_')[0];
+    var count = 0;
+    // label上传的部分
+    var file_arr = file_str.split(';');
+    $.each(file_arr, function (idx, obj) {
+      if (obj != null && obj != '') {
+        var i = obj.split(':');
+        if (i[0].indexOf(order_id) == 0) {
+          count++;
+        }
+      }
+    });
+    var num = json['container_id_list'][order_id]['count'];
+    // 计算bol部分
+    var bol_id = order_id + '_bol';
+    if (walmart_bol_list[bol_id]) {
+      count++;
+    }
+    // 计算store_label部分
+    if (json['container_id_list'][order_id]['walmart_store_label']) {
+      $.each(json['container_id_list'][order_id]['walmart_store_label'], function (idx, obj) {
+        if (walmart_store_label[obj] != null && walmart_store_label[obj] != '') {
+          if (obj.indexOf(order_id) == 0) {
+            count++;
+          }
+        }
+      });
+    }
+    // 更改显示数量
+    var order_span = '#' + order_id + '_span';
+    var span_str = '(' + count + '/' + num + ')';
+    $(order_span).html(span_str);
+    if (count == num) {
+      $('#' + order_id).prop("checked", true);
+    } else {
+      $('#' + order_id).prop("checked", false);
+    }
+    getCheckBoxNum();
+//    console.dir(walmart_store_label);
+//    console.dir(walmart_bol_list);
+//    console.dir(walmart_common_label);
+//    console.dir(special_common_label);
+  }
+  //获取重复的pdf的名称
+  function duplicates(arr) {
+    var result = [];
+    for (var i = 0; i < arr.length; i++) {
+      if ($.inArray(arr[i], result) == -1) {
+        result.push(arr[i]);
+      } else {
+        return arr[i];
+      }
+    }
+    return result;
+  }
+  function verifyTrackingNumber(uploadId) {
+    var tmp = [];
+    var order_id = uploadId.split('_')[0];
+    $.each(json.container_id_list.id_list, function (idx, obj) {
+      if (walmart_tracking_number[obj] != null && walmart_tracking_number[obj] != '') {
+        if (obj.indexOf(order_id) == 0) {
+          tmp.push(walmart_tracking_number[obj]);
+        }
+      }
+    });
+    var ret = duplicates(tmp);
+    if ($.isArray(ret)) {
+      return false;
+
+    }
+    return ret;
+
+  }
+  //关闭弹窗
+  function cancelAction() {
+    var index = parent.layer.getFrameIndex(window.name);
+    parent.layer.close(index);
+    var url_purchase = '{{ dropship_order_purchase }}';
+    var url_cancel = url_purchase.replace('orderPurchase', 'dropshipOrderState');
+    window.parent.uploadFinish(url_cancel);
+  }
+  function pushTrackingNumber(obj) {
+    var input_id = $(obj).attr('id');
+    input_id = input_id.replace('_tracking_number', '');
+    var order_id = input_id.split('_')[0];
+    // 需要验证is_special
+    var is_special = json['validation_rule'][order_id]['is_special'];
+    if (is_special == 1) {
+      special_tracking_number[input_id] = $.trim($(obj).val());
+    } else {
+      walmart_tracking_number[input_id] = $.trim($(obj).val());
+      var tmp = [];
+      $.each(json.container_id_list.id_list, function (idx, obj) {
+        if (walmart_tracking_number[obj] != null && walmart_tracking_number[obj] != '') {
+          if (obj.indexOf(order_id) == 0) {
+            tmp.push(walmart_tracking_number[obj]);
+          }
+        }
+      });
+      var ret = duplicates(tmp);
+      if (!$.isArray(ret)) {
+        layerMsg('The selected orders contain repeat tracking numbers [' + ret + ']', 3000);
+      }
+    }
+  }
+  function getCheckBoxNum() {
+    var count_check_box = 0;
+    $("input:checkbox").each(function () {
+      if ($(this).prop("checked") == true) {
+        count_check_box++;
+      }
+    });
+    $('#checkboxNum').html(count_check_box);
+  }
+  function checkInputInfo() {
+    $('#btnClose').attr('disabled', 'disabled');
+    var count_check_box = 0;
+    var notice = '';
+    $("input:checkbox").each(function () {
+      count_check_box++;
+    });
+    var total_amount = count_check_box;
+    var file_amount = $('#checkboxNum').html();
+    file_amount = parseInt(file_amount);
+    if (file_amount < total_amount) {
+      var left = total_amount - file_amount;
+      if (left != total_amount && left != 0) {
+        notice = 'Are you sure to upload the labels of these ' + file_amount + ' order(s)?  The uploaded labels in unselected orders will be discarded.';
+      } else {
+        layerMsg('{{ error_order_no_choose }}');
+        $('#btnClose').attr('disabled', false);
+        return false;
+      }
+    } else {
+      notice = 'Are you sure to upload the labels of these ' + file_amount + ' order(s)?';
+    }
+    var btn = null;
+    layer.confirm(notice, {
+      title: 'Message',
+      skin: 'yzc_layer top-i-150', //样式类名
+      btn: ['Yes', 'No'],
+      yes: function (index) {
+        btn = $("a.layui-layer-btn0");
+        if(btn.hasClass("layui-btn-disabled")){
+            return;
+        }
+        btn.addClass("layui-btn-disabled");
+
+        var file_name = [];
+        var file_str = $('#file_str').val();
+        //验证是否有重复的label
+        var temp_label = [];
+        for(let ks  in walmart_common_label){
+          if(walmart_common_label[ks]){
+            temp_label.push(walmart_common_label[ks])
+          }
+        }
+        var file_name_unique = [...new
+        Set(temp_label)
+        ];
+        if (temp_label.length != file_name_unique.length) {
+          var repeat_label = duplicates(temp_label);
+          layerMsg('The label [' + repeat_label + '] uploaded is repeat with the other label,please upload again.');
+          $('#btnClose').attr('disabled', false);
+          return false;
+        }
+        //验证所有的提交的bol是否有重复的
+        var bol_label = [];
+        for(let ks  in walmart_bol_list){
+          if(walmart_bol_list[ks]){
+            bol_label.push(walmart_bol_list[ks])
+          }
+        }
+        var file_name_unique = [...new
+        Set(bol_label)
+        ];
+        if (bol_label.length != file_name_unique.length) {
+          var repeat_label = duplicates(bol_label);
+          layerMsg('The label [' + repeat_label + '] uploaded is repeat with the other label,please upload again.');
+          $('#btnClose').attr('disabled', false);
+          return false;
+        }
+        //验证所有提交的tracking 是否有重复的
+        // 验证tracking是否重复
+        var tmp = [];
+
+        if (submit_flag == 0) {
+          $('#btnClose').attr('disabled', false);
+          submit_flag = 1;
+          btn && btn.removeClass("layui-btn-disabled");
+          return false;
+        }
+        //到具体每一个checkbox来做判断
+        var bol_input_str = '';
+        var store_input_str = '';
+        var checkboxName = '';
+        $("input:checkbox").each(function () {
+          var order_id = $(this).attr('id');
+          var child_list = json['container_id_list'][order_id]['child_list'];
+          if ($(this).prop("checked") == true) {
+            // bol
+            var bol_id = order_id + '_bol';
+            if ($('#' + bol_id).length > 0) {
+              if (walmart_bol_list[bol_id] == '') {
+                layerMsg('{{ error_bol_fill }}');
+                submit_flag = 0;
+                return false;
+              } else {
+                bol_input_str += bol_id + ':' + walmart_bol_list[bol_id] + ';';
+              }
+            }
+            // store_label
+            $.each(json['container_id_list'][order_id]['walmart_store_label'], function (idx, obj) {
+              if (walmart_store_label[obj] == null || walmart_store_label[obj] == '') {
+                layerMsg('{{ error_file_fill }}');
+                $('#btnClose').attr('disabled', false);
+                submit_flag = 0;
+                return false;
+              } else {
+                store_input_str += obj + ':' + walmart_store_label[obj] + ';';
+              }
+            });
+            // common label 每一个都提交了
+            checkboxName += order_id + ',';
+            for (var i = 0; i < child_list.length; i++) {
+              // 验证label
+              if (file_str.indexOf(child_list[i]) == -1) {
+                layerMsg('{{ error_file_fill }}');
+                submit_flag = 0;
+                return false;
+              }else{
+                if (json['validation_rule'][order_id]['is_special'] == 1) {
+                  tmp.push(special_tracking_number[child_list[i]]);
+                }else{
+                  tmp.push(walmart_tracking_number[child_list[i]]);
+                }
+              }
+              // 验证 tracking number
+              if (json['validation_rule'][order_id]['is_special'] == 1) {
+                if (special_tracking_number[child_list[i]] == null || special_tracking_number[child_list[i]] == '') {
+                  layerMsg('{{ error_tracking_number_fill }}', 3000);
+                  submit_flag = 0;
+                  return false;
+                }
+              } else {
+                if (walmart_tracking_number[child_list[i]] == null || walmart_tracking_number[child_list[i]] == '') {
+                  layerMsg('{{ error_tracking_number_fill }}', 3000);
+                  submit_flag = 0;
+                  return false;
+                }
+
+              }
+            }
+          }
+        });
+
+        var ret = duplicates(tmp);
+        if (!$.isArray(ret)) {
+          layerMsg('The selected orders contain repeat tracking numbers [' + ret + ']', 3000);
+          $('#btnClose').attr('disabled', false);
+          submit_flag = 0;
+          btn && btn.removeClass("layui-btn-disabled");
+          return false;
+        }
+        if (submit_flag == 1) {
+
+          $.ajax({
+            url: '{{ walmart_verify_tracking }}',
+            type: 'post',
+            data: {'tracking_number_list': tmp},
+            async: false,
+            beforeSend: function () {
+            },
+            success: function (json) {
+              if (json.error == 1) {
+                var tracking_str = json.result.join(', ');
+                var tracking_error = 'The selected orders contain repeat tracking numbers [' + tracking_str + '], it cannot be submitted.';
+                layerMsg(tracking_error, 3000);
+                submit_flag = 0;
+                btn && btn.removeClass("layui-btn-disabled");
+              }
+            }
+          });
+        }
+        if (submit_flag == 0) {
+          $('#btnClose').attr('disabled', false);
+          submit_flag = 1;
+          btn && btn.removeClass("layui-btn-disabled");
+          return false;
+        }
+        //bol 也是要提交的
+        //store label
+        $('#bol_str').val(bol_input_str);
+        $('#store_input_str').val(store_input_str);
+        $.ajax({
+          url: '{{ dropship_file_submit }}',
+          type: 'post',
+          data: $('#form-upload').serializeArray(),
+          async: false,
+          beforeSend: function () {
+            parent.layer.load();
+          },
+          success: function (json) {
+            parent.layer.closeAll('loading');
+            layerMsg(json.msg, 2000);
+            setTimeout(function () {
+              $('#btnClose').attr('disabled', false);
+              //验证文件名是否相同
+              var index = parent.layer.getFrameIndex(window.name);
+              parent.layer.close(index);
+              // var url_redirct = '{{ dropship_order_purchase }}' + '&order_id=' + checkboxName;
+              // window.parent.uploadFinish(url_redirect);
+              
+              // #24701 上门取货上传流程优化
+              var url_redirect = '{{ dropship_order_match }}';
+              window.parent.inventoryMatchHandler(url_redirect, checkboxName);
+            }, 2 * 1000);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#btnClose').attr('disabled', false);
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+            layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        });
+      },
+      end: function () {
+        btn && btn.removeClass("layui-btn-disabled");
+        return false;
+      }
+    });
+
+  }
+</script>

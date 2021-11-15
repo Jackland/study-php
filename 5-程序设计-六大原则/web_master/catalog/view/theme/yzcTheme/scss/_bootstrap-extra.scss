@@ -1,0 +1,144 @@
+@charset "UTF-8";
+
+//
+// @copyright        2017 opencart.cn - All Rights Reserved
+// @link             http://www.guangdawangluo.com
+// @author           Sam Chen <sam.chen@opencart.cn>
+// @created          2017-11-30 10:02:13
+// @modified         2019-10-30 11:18:40
+//
+
+// Padding/margin helper, ie. p-0, pt-0, pr-0, pb-0, pl-0
+@for $i from 0 through 5 {
+  @each $short, $long in (p, padding), (m, margin) {
+    .#{$short}-#{$i} {
+      #{$long}: ($gutter * $i);
+    }
+
+    @each $pos, $position in (t, top), (r, right), (b, bottom), (l, left) {
+      .#{$short}#{$pos}-#{$i} {
+        #{$long}-#{$position}: ($gutter * $i);
+      }
+    }
+
+    @each $pos, $y, $x in (y, bottom, top), (x, left, right) {
+      .#{$short}#{$pos}-#{$i} {
+        #{$long}-#{$y}: ($gutter * $i);
+        #{$long}-#{$x}: ($gutter * $i);
+      }
+    }
+  }
+}
+
+// Extra columns
+@each $column in 5, 7, 8, 9, 10 {
+  .col-lg-#{$column}p, .col-md-#{$column}p, .col-sm-#{$column}p, .col-xs-#{$column}p {
+    position: relative;
+    min-height: 1px;
+    padding-right: $gutter;
+    padding-left: $gutter;
+    float: left;
+  }
+
+  .col-xs-#{$column}p {
+    width: percentage(1 / $column);
+  }
+
+  @each $type, $media in (sm: 768px, md: 992px, lg: 1200px) {
+    @media (min-width: #{$media}) {
+      .col-#{$type}-#{$column}p {
+        width: percentage(1 / $column);
+      }
+    }
+  }
+}
+
+.btn {
+  text-transform: uppercase;
+  font-weight: 700;
+
+  &:active,
+  &.active {
+    box-shadow: none;
+  }
+
+  &,
+  &:active,
+  &.active {
+    &:focus,
+    &.focus {
+      outline: none;
+    }
+  }
+}
+
+.btn-lg {
+  padding: 15px 30px;
+}
+
+.btn-default {
+  &:hover, &:active, &:focus, &:active:hover {
+    background: $color_orange;
+    border-color: $color_orange;
+    color: #fff;
+  }
+}
+
+.btn-lg, .btn-group-lg>.btn {
+  font-size: 14px;
+}
+
+// .pagination {
+//   > li {
+//     display: inline-block;
+//     margin: 0 3px;
+
+//     span, a {
+//       padding: 5px 10px;
+//     }
+
+//     a {
+//       color: #444;
+
+//       &:hover {
+//         background-color: $brand-primary;
+//         border-color: $brand-primary;
+//         color: #fff;
+//       }
+//     }
+//   }
+// }
+
+// legend {
+//   font-size: 18px;
+//   padding: 7px 0px;
+// }
+
+// .table {
+//   tr {
+//     th, td {
+//       vertical-align: middle !important;
+//     }
+//   }
+// }
+
+// .table {
+//   > thead > tr {
+//     > th, > td {
+//       border-bottom-width: 1px;
+//     }
+//   }
+// }
+
+// @media (min-width: 1290px) {
+//   .container {
+//     width: 1200px;
+//   }
+// }
+
+// @media (min-width:1450px) {.container { width: 1400px; }}
+// @media (max-width:1449px) {.container { width:1170px; }}
+// @media (max-width:1199px) {.container { width:980px; }}
+// @media (max-width:1023px) {.container { width:945px; }}
+// @media (max-width:979px) {.container { width:734px; }}
+// @media (max-width:767px) {.container { width:100%; }}

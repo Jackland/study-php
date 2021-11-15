@@ -1,0 +1,86 @@
+<script src="catalog/view/javascript/qrcode.js" type="text/javascript"></script>
+<style>
+  #wechat_payinfo .wechatLabel{
+    color: grey;
+    font-size: 15px;
+  }
+  #wechat_payinfo .wechatContent{
+    color: black;
+    font-size: 15px;
+    margin-left: 0.5em;
+  }
+</style>
+<div id="wechat_payinfo" class="col-sm-12" style="min-height: 22em;">
+  <div class="col-sm-8 text-left">
+    <div class="form-group" style="display: flex">
+      <label style="font-weight: bold;color: #525252;font-size: 14px;">
+        Please use WeChat to scan the QR code below to finish the payment.</label>
+    </div>
+    <div class="form-group" style="margin-top:3em;display: flex">
+      <label class="wechatLabel">Total:</label>
+      <span class="wechatContent" id="total"></span>
+    </div>
+    <div class="form-group" style="display: flex">
+      <label class="wechatLabel">Current exchange rates:</label>
+      <span class="wechatContent" id="rate"></span>
+    </div>
+    <div class="form-group" style="display: flex">
+      <label class="wechatLabel">Amount to pay:</label>
+      <span class="wechatContent" id="total_cny"></span>
+    </div>
+
+  </div>
+  <div class="col-sm-4 text-right">
+    <div id="qrcode">
+    </div>
+</div>
+</div>
+<script>
+    $(function () {
+        var payInfo = paymentApp.payInfo;
+         new QRCode('qrcode', {
+            text: payInfo.qrcodeUrl,
+            width: 200,
+            height: 200,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+
+//         Total: 订单总金额（货币种类）
+//         Current exchange rates: 1 USD= 7.0926 CNY（当前汇率：各国别转人民币）
+//          Amount to pay: XXXXX CNY订单总金额（人民币）【保留两位小数，四舍五入】
+        $('#total').html(payInfo.total_yzc+' '+payInfo.currency_yzc);
+        $('#rate').html('1 '+payInfo.currency_yzc+' = '+payInfo.rate_yzc+' CNY');
+        $('#total_cny').html('<span style="color:#ff0000;font-weight:bold;">'+payInfo.total_cny+'</span> CNY');
+
+  });
+
+    function chekOrderStatus() {
+        var loop = true;
+        $.ajax({
+            url: 'index.php?route=extension/payment/wechat_pay/isOrderPaid&order_id={{ order_id }}',
+            dataType: 'json',
+            success: function (json) {
+                if (json['paid']) {
+                    loop = false;
+                    location.href = "{{ success }}";
+                }
+                if (loop) {
+                    setTimeout("chekOrderStatus()", 1000);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+                  title: 'Message',
+                  btn : 'OK',
+                  skin: 'yzc_layer' //样式类名
+                  ,closeBtn: 1
+                }, function(){
+                  layer.close(tmplayer);
+                });
+            }
+        });
+    }
+    chekOrderStatus();
+//--></script>

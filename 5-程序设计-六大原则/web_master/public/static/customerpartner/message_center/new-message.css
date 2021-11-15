@@ -1,0 +1,84 @@
+#page-new-message .form-container {
+  padding: 16px 32px 24px 32px;
+}
+
+#page-new-message .split-line {
+  width: 1px;
+  border: 1px solid #DCDCDC;
+  height: 9px;
+}
+
+#page-new-message .recipient-label-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  border-radius: 2px;
+}
+
+#page-new-message .btn-container {
+  display: flex;
+  align-items : center;
+  justify-content: flex-end;
+}
+
+#page-new-message .btn-container .add-btn {
+  margin: 0px 16px;
+}
+
+.common-words-label {
+  color: #999 !important;
+  font-size: 14px;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  font-weight: 400 !important;
+}
+
+#page-new-message .btn-container-group {
+  margin-top: 0px !important;
+}
+
+#page-new-message .btn-container {
+  margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#page-new-message .content-container {
+  margin-top: 8px;
+}
+
+#page-new-message .upload-btn {
+  padding: 0px 12px;
+  min-width: 120px;
+  height: 40px;
+}
+
+#page-new-message .upload-btn .upload-icon {
+  padding-right: 8px;
+}
+
+#group-picker-dialog .group-item-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+#group-picker-dialog .group-item-label {
+  word-break: break-all;
+}
+
+#file-list-container {
+  width: 320px;
+}
+
+.note-editor.note-frame {
+  margin-bottom: 0px;
+}
+
+#page-new-message .form-group {
+  padding-top: initial !important;
+  padding-bottom: initial !important;
+}

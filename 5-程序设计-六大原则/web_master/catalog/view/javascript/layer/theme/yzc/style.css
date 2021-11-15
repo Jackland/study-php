@@ -1,0 +1,62 @@
+/*
+ * 基于layui的全局样式修改请到layuiOris.css
+ * 
+ * style.css暂时不维护，重构时layuiOris.css全局替换
+ */
+.yzc_layer {
+  border-radius: 5px;
+}
+
+.yzc_layer .layui-layer-title {
+  border-radius: 5px 5px 0 0;
+  background-color: #183465 !important;
+  font-weight: normal;
+  color: white;
+}
+
+.yzc_layer .layui-layer-setwin .layui-layer-close1 {
+  background-position: -155px -37px;
+  border-radius: 9px;
+  margin-top: -2px;
+}
+
+.yzc_layer .layui-layer-setwin a {
+  width: 18px;
+  height: 18px;
+}
+
+.yzc_layer .layui-layer-btn {
+  padding: 0px 15px 6px;
+  /*border-top: 1px solid rgba(0, 0, 0, 0.25);*/
+}
+
+.yzc_layer .layui-layer-btn .layui-layer-btn0 {
+  border-radius: 5px;
+}
+
+.yzc_layer .layui-layer-btn .layui-layer-btn1 {
+  border-radius: 5px;
+}
+
+.yzc_layer .layui-layer-content{
+  padding: 12px 30px;
+  text-align: center;
+}
+.yzc_layer.no-padding .layui-layer-content{
+  padding: 0;
+}
+.yzc_layer .layui-layer-padding{
+  padding: 20px 20px 20px 55px;
+}
+.yzc_layer.yzc_layer-msg{
+  min-width: 100px;
+  background-color: #000;
+  filter: alpha(opacity=60);
+  background-color: rgba(0, 0, 0, .6);
+  color: #fff;
+  border: none
+}
+
+.layui-layer-setwin .layui-layer-max {
+  background-position: -31px -40px;
+}

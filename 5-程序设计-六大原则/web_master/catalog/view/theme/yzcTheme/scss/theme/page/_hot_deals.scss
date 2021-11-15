@@ -1,0 +1,108 @@
+#hot-deals {
+  background-color: #fff;
+
+  .deals {
+    height: 120px;
+    padding-top: 5px;
+    margin-top: 0px;
+    background-color: #f7f7f7;
+
+    h1 {
+      text-transform: uppercase;
+    }
+
+    p {
+      font-size: 15px;
+    }
+  }
+
+  .banner {
+    height: 320px;
+    margin-top: 30px;
+    background-image: url( "/image/catalog/giga/banner/hot-deals-img.png" );
+    background-size: 100% 100%;
+    text-align: center;
+
+    .btn {
+      margin-top: 60px;
+      padding-left: 50px !important;
+      padding-right: 50px !important;
+      border: 1px solid #193465;
+      color: #193465;
+      background: #fff;
+      font-size: 20px;
+
+      &:hover {
+        background: darken(#193465, 3%);
+        color: #fff;
+      }
+    }
+
+    p {
+      padding-top: 80px;
+      font-size: 32px;
+      font-weight: normal;
+      color: #193465;
+    }
+  }
+
+  .product {
+    margin-top: 30px;
+    overflow: hidden;
+    border: 1px solid #eee;
+
+    img {
+      float: left;
+      height: 300px;
+      width: 400px;
+    }
+
+    .right-wrapper {
+      margin-left: 400px;
+      padding-left: 40px;
+      padding-right: 40px;
+
+      h3 {
+        text-transform: uppercase;
+        color: $brand-primary;
+      }
+
+      p.subtitle {
+        font-size: 20px;
+        text-transform: uppercase;
+        color: $color_orange;
+      }
+
+      .text {
+        margin-top: 18px;
+        font-size: 16px;
+        color: #737373;
+      }
+
+      .bottom {
+        margin-top: 30px;
+        overflow: hidden;
+
+        .time {
+          float: left;
+          padding-top: 15px;
+          color: #737373;
+          font-size: 16px;
+        }
+
+        .btn {
+          float: right;
+          font-size: 16px;
+          background-color: $color_orange;
+          color: #fff;
+
+          &:hover {
+            border: 1px solid $color_orange;
+            background-color: #fff;
+            color: $color_orange;
+          }
+        }
+      }
+    }
+  }
+}

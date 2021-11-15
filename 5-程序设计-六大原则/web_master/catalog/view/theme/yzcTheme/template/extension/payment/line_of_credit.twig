@@ -1,0 +1,114 @@
+<style>
+
+</style>
+<div class="buttons">
+  <div class="pull-right">
+    <input type="button" value="{{ button_confirm }}" id="button-confirm" data-loading-text="{{ text_loading }}" class="btn btn-primary" />
+  </div>
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel"></h4>
+      </div>
+      <div class="modal-body" id="myModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary btn-submit" id="jumpCartButton">跳转购物车</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+$('#button-confirm').on('click', function() {
+  {% if second_passwd %}
+  layer.open({
+    title: 'Message',
+    skin: 'yzc_layer', //样式类名
+    content: '<div class="dialog-form-line">\n' +
+    '            <label class="dialog-form-label"><i style="color: red">*</i>&nbsp;&nbsp;Please enter the checkout password</label>\n' +
+    '            <div style="width: 100%">\n' +
+    '              <input class="dialog-form-input" style="width: 100%" type="text" id="secondPassword" name="secondPassword" maxlength="50" value="">\n' +
+    '            </div>\n' +
+    '          </div>',
+    btn:['Confirm','Cancel'],
+    yes: function(index, layero){
+       var secondPassword = $('#secondPassword').val();
+      $('#errorMsg').remove();
+      $.ajax({
+        url: 'index.php?route=extension/payment/line_of_credit/checkSecondPassword',
+        type: 'post',
+        data: 'secondPassword=' + secondPassword,
+        success: function(json) {
+          if(json['success']){
+            layer.close(index);
+            confirmOrder();
+          }else{
+            $('#secondPassword').after('<p style="color: red" id="errorMsg">'+json['text']+'</p>')
+          }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+          alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      })
+    }
+  })
+  {% else %}
+  confirmOrder();
+  {% endif %}
+});
+function confirmOrder() {
+  $.ajax({
+    url: 'index.php?route=extension/payment/line_of_credit/confirm',
+    dataType: 'json',
+    beforeSend: function() {
+      $('#button-confirm').button('loading');
+    },
+    // complete: function() {
+    //   $('#button-confirm').button('reset');
+    // },
+    success: function(json) {
+      if (json['status'] == "2" || json['status'] == "3") {
+        if (json['redirect']) {
+          location = json['redirect'];
+        }
+      } else {
+        if (json['status'] == "0") {
+          alert(json['msg']);
+        } else if (json['status'] == "1") {
+          // 购买的产品数量超过了供应商库存
+          $('#myModalLabel').text("下列产品数量超过了供应商库存");
+          $('#myModalBody').empty();
+          $('#myModalBody').append("<table class='table table-condensed table-hover table-bordered'><thead style='text-align: center; font-weight: bold'><tr><td>No.</td><td>Item Name</td><td>Qty</td><td>Qty Avail</td></tr></thead><tbody id='dataBody' style='text-align: center;font-weight: bold'></tbody></table>");
+          let datas = json['data'];
+          for (let i = 0; i < datas.length; i++) {
+            let data = datas[i];
+            let rowData = '<tr>';
+            rowData += '<td>' + i + '</td>';
+            rowData += '<td>' + data.itemName + '</td>';
+            rowData += '<td>' + data.qty + '</td>';
+            rowData += '<td style="color: red">' + data.qtyAvail + '</td>';
+            rowData += '</tr>';
+            $('#dataBody').append(rowData);
+          }
+          $('#jumpCartButton').click(function() {
+            location = json['redirect'];
+          });
+          $('#myModal').modal();
+        } else if (json['status'] == '4') {
+          if (confirm(json['msg'])) {
+            location = json['redirect'];
+          }
+        }
+      }
+      // location = json['redirect'];
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+    }
+  });
+}
+//--></script>

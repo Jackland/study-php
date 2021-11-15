@@ -1,0 +1,23 @@
+{{ this.title(__('个人中心', {}, 'catalog/document')) }}
+{{ this.params('breadcrumbs', [
+  'home',
+  'seller_center',
+  {
+    text: __('修改导航', {}, 'catalog/document'),
+    href: url('修改url'),
+  },
+  'current'
+]) }}
+{{ this.params('pageTitle', {backUrl: false}) }}
+{{ webpack_entry_asset('common/test_webpack/sampleAsset') }}
+
+<div id="app">
+  <h1>Hello</h1>
+  <div class="center">
+    <span class="label">Auto Count: </span>
+    <span class="num" id="counter">0</span>
+  </div>
+
+  <h1>全局参数</h1>
+  <div id="global-container"></div>
+</div>

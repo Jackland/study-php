@@ -1,0 +1,497 @@
+<link href="/catalog/view/javascript/layer/theme/yzc/layuiOris.css" rel="stylesheet"/>
+{{ js(['js/common/orisComponents.js']) }}
+<div id="automaticPurchase" class="automatic-purchase">
+  <div class="purchase-msg just-flex">
+    <i class="giga icon-icn--n"></i>
+    <div class="m10-l">
+      Due to the particularity of Auto-Purchase,
+      if you want to set up the Auto-purchase of Protection Service for sales orders,
+      please set the scope for Orders Covered,
+      and the system will automatically purchase the selected Protection Service for orders within the scope.
+      You can modify this setting at any time.</div>
+  </div>
+  <div class="m24-t">
+    <button class="oris-button-light"  onclick="createPlan()">Create a Plan</button>
+  </div>
+  <div class="program-list m24-t">
+{#   配置方案 #}
+    {% for firstData in list %}
+    <div class="configuration-program m24-t">
+      <div class="flex-between">
+        <div class="program-status {% if firstData.status=='Active' %}program-active{% elseif firstData.status=='Terminated'  %}program-terminated{% else %}program-complete{% endif %}">
+          {{firstData.status}}
+        </div>
+        <div class="action-list">
+          {% if firstData.canEdit == true %}
+          <a class="pointer mr-octal3 btn-edit" data-id="{{ firstData.planId }}">
+            <i class="giga icon-seller_bianji-big"></i>
+            <span class="oris-link">Edit</span>
+          </a>
+          {% endif %}
+          {% if firstData.canTerminate == true%}
+          <a class="pointer mr-octal3 btn-terminate" id="btnTerminate" data-id="{{ firstData.planId }}">
+            <i class="giga icon-ziyuanldpi"></i>
+            <span class="oris-link">Terminate</span>
+          </a>
+          {% endif %}
+          <a class="pointer btn-log" id="btnLog" data-id="{{ firstData.planId }}">
+            <i class="giga icon-wenjian_2"></i>
+            <span class="oris-link">Log</span>
+          </a>
+        </div>
+      </div>
+      <div class="mt-octal2">
+        <div class="just-flex">
+          <div class="w60 text-bold">Orders Covered by the Auto-Purchase Plan</div>
+          <div class="w40 text-bold">Protection Service for Purchase</div>
+        </div>
+        <div class="program-detail mt-octal1">
+          {% for detail in firstData.info%}
+          <div class="flex-layout program-line">
+            <div class="just-flex w60">
+              <div class="text-blueG mr-1">Order Being Processed :</div>
+              {% if detail.expiration_time %}
+                <div class="text-bold">{{detail.effective_time}} - {{detail.expiration_time}}</div>
+              {% else %}
+                <div class="text-bold">{{detail.effective_time}} - <span class="no-termination">NA</span></div>
+              {% endif %}
+            </div>
+            <div class="w40">
+              {% for data in detail.safeguard_config%}
+              <div class="col-sm-6 service-type" >
+                {% if data.valid==true%}
+                  <span class="flex-layout">
+                    <i class="giga icon-baozhangfuwuduihao-01 m4-r"></i>
+                    <span class="text-ellipsis nowrap">{{data.title}}</span>
+                  </span>
+                {% else %}
+                  <span class="pointer flex-layout" data-toggle="popover" data-placement="top"
+                        data-content="You don't have the right to purchase this protection service. Please contact the customer service for details."
+                        data-html="true"  data-trigger="hover" data-container="#automaticPurchase">
+                    <i class="giga icon-gantanhaoxin-01 m4-r text-warning-i"></i>
+                    <span class="text-ellipsis nowrap">{{data.title}}</span>
+                  </span>
+                {% endif %}
+
+              </div>
+             {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+  {% if total >1 %}
+  <div class="text-right mt-octal2">
+    <span id="showMore" class="pointer flex-end">
+      <span class="oris-link m4-r">Show all the historical plans ({{total-1}})</span>
+      <i class="giga icon-V10_shouyeyouxiadown "></i>
+    </span>
+  </div>
+  {% endif %}
+</div>
+{#创建方案#}
+{% include 'yzcTheme/template/account/safeguard/auto_buy_plan/createProtection.twig' %}
+{#编辑方案#}
+{% include 'yzcTheme/template/account/safeguard/auto_buy_plan/editProtection.twig' %}
+
+{#查看历史#}
+<div class="modal fade bs-example-modal-lg log-protection auto-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+     id="logProtection" data-backdrop="static" data-container="#automaticPurchase">
+  <div class="modal-dialog modal-lg oris-buyer oris-modal" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <i class="giga icon-V10_danchuangguanbi"></i>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">View all modification records</h4>
+      </div>
+      <div class="modal-body" style="padding-right: 0 !important;">
+       <div id="logList" class="log-list maxH-650 p24-r-i"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$(document).ready(function () {
+  $(".no-termination").html('9999-12-31'+' 23:59:59')
+})
+  var close=false;
+  //历史方案
+  $("#showMore").on('click',function () {
+    $(this).hide()
+    $(".program-list").children('.configuration-program').show()
+  });
+
+  var minDate;
+  // 初始化日期选择器
+  function initialize(){
+    $('.startDate').datetimepicker({
+      pickDate: true,
+      pickTime: false,
+      format: 'YYYY-MM-DD 00:00:00',
+      minDate : minDate,
+      useCurrent: false
+    });
+    $('.endDate').datetimepicker({
+      pickDate: true,
+      pickTime: false,
+      format: 'YYYY-MM-DD 23:59:59',
+      minDate : minDate,
+      useCurrent: false
+    });
+  }
+  var endDateMsg;
+  $('[data-toggle="popover"]').popover();
+
+  //终止时间提示
+  $('body').on('mouseenter','.endDateMsg',function () {
+    $(this).attr('data-content',endDateMsg);
+  });
+  $('body').on('click','.endDateMsg',function () {
+    $(this).parentsUntil('table.protection-table').find('.endDateMsg').popover('hide');
+    var that =this;
+    if (close==false){
+      setTimeout(function () {
+        $(that).popover('show');
+      },200);
+    }
+    setTimeout(function () {
+      $(that).popover('hide');
+    },15000);
+  });
+  //关闭终止时间提示
+  $('body').on('click','.close-timeTip',function () {
+    $(".endDateMsg").popover('destroy');
+    endDateMsg='';
+    $.ajax({
+      url: "index.php?route=account/safeguard/auto_buy_plan/closeExpirationNotice",
+      type: "get",
+      async: false,
+      error: function () {
+      },
+      success: function (res) {
+        close=true;
+      }
+    });
+  });
+</script>
+
+
+<script>
+  //删除
+  $('body').on('click','.delete-automatic',function () {
+    var $tr=$(this).closest("tr");
+    $tr.find('.endDateMsg').popover('hide');
+    $tr.remove();
+    if ($("#EditAutomaticList").children('tr').length < 1){
+      $("#EditAutomaticList").next('tfoot').removeClass('none');
+    }
+  });
+  //勾选授权
+  $("#agreeAgreement,#EditAgreement").on('change',function () {
+    var checked = $(this).is(':checked');
+    if (checked){
+      $("#submitTable,#EditTable").removeAttr('disabled').attr('data-original-title','');
+    }else{
+      $("#submitTable,#EditTable").attr('disabled','disabled').attr('data-original-title','Please check the box above first to confirm the authorization.');
+    }
+  });
+  //是否勾选所需保障服务
+  // $('body').on('change','input[type=checkbox][name=automatic]',function () {
+  //   var checked= $(this).is(':checked');
+  //   if (checked){
+  //     $(this).parentsUntil('.guarantee-service').find('.service-required').addClass('none');
+  //   }
+  // });
+  //获取创建的保障服务
+  function getTableRow(that){
+    var obj =$(that).parentsUntil('.oris-modal').find('.protection-table tbody').children('tr');
+    let tableData = [];
+    obj.each(function (i) {
+      let object = {planDetail:'',effectiveTime:'',expirationTime:'',safeguardConfigIdList:[]}
+      $(this).find('input').each(function (j) {
+        let val = $(this).val();
+        var name = $(this).attr('name');
+        var planDetailId = $(this).attr('data-planid') ||'';
+        if (name=='service'){
+          object.planDetail = planDetailId ==''?null:planDetailId
+        }
+        if (name=='startDate'){
+          object.effectiveTime = val == ''?null:val;
+        }
+        if (name=='endDate'){
+          object.expirationTime = val == ''?'':val;
+        }
+        if(name=='automatic'){
+          var checked = $(this).is(':checked');
+          if (checked==true){
+            object.safeguardConfigIdList.push(parseInt(val))
+          }
+        }
+      })
+      tableData.push(object)
+    })
+    return tableData
+  }
+  //校验
+  function checkService(that){
+    var obj =$(that).parentsUntil('.oris-modal').find('.protection-table tbody').children('tr');
+    var flag = true;
+    if (flag){
+      obj.each(function () {
+        if (flag){
+          //判断日期
+          var date = [];
+          $(this).find('.datetimepicker').each(function(){
+            var startDate = $(this).children().val();
+            date.push(startDate);
+            var start = new Date(date[0]).getTime();
+            var end = new Date(date[1]).getTime();
+            if(!date[0]){
+              $(this).parent().children('.service-required').removeClass('none');
+              $(this).parent().children('.time-earlier').addClass('none');
+              $(this).parent().find('.startDate').addClass('text-border');
+              $('#createProtection .modal-body').animate({scrollTop: $(this).offset().top - 50});
+              $('#editProtection .maxH-560').animate({scrollTop: $(this).offset().top - 200});
+              flag= false;
+            }else{
+              $(this).parent().children('.service-required').addClass('none');
+              if (start>=end){
+                $(this).parent().children('.time-earlier').removeClass('none');
+                $(this).parent().find('.startDate').addClass('text-border');
+                $('#createProtection .modal-body').animate({scrollTop: $(this).offset().top - 50});
+                $('#editProtection .maxH-560').animate({scrollTop: $(this).offset().top - 200});
+                flag = false
+              }else{
+                $(this).parent().children('.time-earlier').addClass('none');
+                $(this).parent().find('.startDate').removeClass('text-border');
+                flag=true
+              }
+            }
+          });
+        }
+       if (flag){
+         //判断服务
+         var service = [];
+         $(this).find('input[type=checkbox]').each(function(){
+           var checked = $(this).is(':checked');
+           if (checked==true){
+             service.push($(this).val())
+           }
+           if (service.length>0){
+             $(this).parentsUntil('.guarantee-service').next('.service-required').addClass('none');
+             flag =true
+           }else {
+             $(this).parentsUntil('.guarantee-service').next('.service-required').removeClass('none');
+             $('#createProtection .modal-body').animate({scrollTop: $(this).offset().top - 50});
+             $('#editProtection .maxH-560').animate({scrollTop: $(this).offset().top - 200});
+             flag=false
+           }
+         });
+
+         if ($(this).find('input[type=checkbox]').length < 1){
+           $(this).find('.guarantee-service').find('.service-required').removeClass('none');
+           $('#createProtection .modal-body').animate({scrollTop: $(this).offset().top - 50});
+           $('#editProtection .maxH-560').animate({scrollTop: $(this).offset().top - 200});
+           flag=false;
+           return false;
+         }
+       }
+      })
+    }
+    return flag;
+  }
+
+
+</script>
+
+{#查看历史记录#}
+<script>
+  //查看历史记录
+  $(".btn-log").on('click',function () {
+    var id = $(this).attr('data-id');
+    $.ajax({
+      url: "index.php?route=account/safeguard/auto_buy_plan/planLog&plan_id="+id,
+      type: "get",
+      async: false,
+      error: function () {
+
+      },
+      success: function (res) {
+        var data = res.data;
+        var logList =``;
+        for(var i in data){
+          if (data[i].action==1){
+            var status = 'Create a Plan:'
+          }else if (data[i].action==2){
+            var status = 'Edit the Plan:'
+          }else{
+            var status = 'Edit Status:'
+          }
+          var statusNewValue = data[i].statusNewValue;
+          var statusOldValue = data[i].statusOldValue;
+          var planDetail =``;
+          if (data[i].info.length > 0){
+            var planInfo =``;
+            for(var j in data[i].info){
+              var program =``;
+              for(var m in data[i].info[j].safeguard_config){
+                if (data[i].info[j].safeguard_config[m].valid==true){
+                  var icon =` <i class="giga icon-baozhangfuwuduihao-01 m4-r"></i>`
+                }else{
+                  var icon = ` <i class="giga icon-gantanhaoxin-01 m6-r text-warning-i"></i>`
+                }
+                program +=`
+                    <div class="just-flex service-type">
+                      ${icon}
+                      <div class="max-line1">${data[i].info[j].safeguard_config[m].title}</div>
+                    </div>
+                `
+              }
+              if(data[i].info[j].expiration_time==null){
+                var expiration_time = '9999-12-31'+' 23:59:59';
+              }else{
+                var expiration_time = data[i].info[j].expiration_time;
+              }
+              planInfo +=`
+                <tr>
+                  <td class="text-left">
+                    <div class="text-blueG">Order Being Processed</div>
+                    <div>${data[i].info[j].effective_time} - ${expiration_time}</div>
+                  </td>
+                  <td class="text-left">${program}</td>
+                </tr>
+              `
+            }
+            planDetail=`
+             <div class="m10-t">
+                <span class="text-bold">${status}</span>
+                <a id="viewDetail" class="pointer link-color">
+                   <span class="underline"> Show details</span>
+                   <i class="giga icon-V10_shouyeyouxiadown text-size-normal"></i>
+                </a>
+                <a id="foldUp" class="pointer link-color none">
+                   <span class="underline">Hide details</span>
+                   <i class="giga icon-V10_shouyeyouxiaTOP text-size-normal"></i>
+                </a>
+              </div>
+              <table class="oris-table border-table m10-t none">
+                <thead>
+                <tr>
+                  <th class="text-left" width="50%">Orders Covered by the Auto-Purchase Plan</th>
+                  <th class="text-left" width="50%">Protection Service for Purchase</th>
+                </tr>
+                </thead>
+                <tbody>${planInfo}</tbody>
+              </table>
+            `
+          }
+          else{
+            planDetail=`
+            <div class="m10-t">
+                <span class="text-bold">${status}</span>
+                <span class="text-larger ml-06">
+                  <span class="text-tips line-through">${statusOldValue}</span>
+                  <i class="giga icon-danxiangjiantouyou-01"></i>
+                  <span>${statusNewValue}</span>
+                </span>
+              </div>
+            `
+          }
+          logList +=`
+           <div class="just-flex log-detail m40-b">
+            <div class="oris-circle mt-octal1"></div>
+            <div class="flex1">
+              <div class="text-blueG">
+                <span class="text-bold">${data[i].createTime}</span>
+                <span class="ml-06">${data[i].operatorName}</span>
+              </div>
+              ${planDetail}
+            </div>
+          </div>
+          `
+        }
+        $("#logList").html(logList)
+      }
+    });
+
+    $('#logProtection').modal('show');
+  });
+
+  $("body").on('click','#viewDetail',function () {
+    $(this).addClass('none');
+    $(this).next('#foldUp').removeClass('none');
+    $(this).parent().next('table').removeClass('none');
+  });
+
+  $("body").on('click','#foldUp',function () {
+    $(this).addClass('none');
+    $(this).prev('#viewDetail').removeClass('none');
+    $(this).parent().next('table').addClass('none');
+  })
+</script>
+{#终止保障#}
+<script>
+  //终止保障
+  $(".btn-terminate").on('click',function () {
+    var content='Do you confirm to terminate this plan? If yes, Protection Service will not be purchased automatically according to this plan any more.';
+    var id = $(this).attr('data-id');
+    var lock = false;
+    layer.confirm(content, {
+          title: 'Confirm',
+          skin: 'oris-layer', //样式类名
+          btn: ['Yes', 'No'],
+          btnAlign:'c'
+    },function () {
+      if (!lock){
+        lock = true;
+        $.ajax({
+          url: "index.php?route=account/safeguard/auto_buy_plan/terminatePlan&plan_id="+id,
+          type: "get",
+          async: false,
+          error: function () {
+          },
+          success: function (res) {
+            if (res.code==200){
+              $('#tab_auto_buy_plan').load('index.php?route=account/safeguard/auto_buy_plan/list');
+              if (res.data.isAboutToExpire) {
+                $('#dueSoon').removeClass('noneI');
+              } else {
+                $('#dueSoon').addClass('noneI');
+              }
+              $.toast({
+                heading: false,
+                text: res.msg,
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'success',
+                hideAfter: 3000,
+                allowToastClose: true,
+                loader: false
+              })
+            }else{
+              $('#tab_auto_buy_plan').load('index.php?route=account/safeguard/auto_buy_plan/list');
+              $.toast({
+                heading: false,
+                text: res.msg,
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: 3000,
+                allowToastClose: true,
+                loader: false
+              })
+            }
+            layer.closeAll();
+          }
+        });
+      }
+    })
+  })
+</script>
+
+

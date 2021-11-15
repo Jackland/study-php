@@ -1,0 +1,127 @@
+{{ assetBundle('Seller\\VatAsset') }}
+{{ jsOrigin(['/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js'])}}
+
+{{ this.title(__('Complex Transactions List', {}, 'catalog/document')) }}
+{{ this.params('breadcrumbs', [
+  {
+    text: __('Complex Transaction Management', {}, 'catalog/document'),
+    href: 'javasctipt:void(0)',
+  },
+  'current'
+]) }}
+{{
+  this.params('pageTitle', {
+    show: true,
+    title: __('Complex Transactions List'),
+    backUrl: '',
+    buttons: []
+  })
+}}
+<style type="text/css">
+  .loading-text {
+    position: relative;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+    top: 70px;
+    color: #999;
+  }
+</style>
+<div class="nav-oris">
+    <div class="row">
+        {% set class = 'col-sm-12' %}
+      <div class="{{class}}">
+         {{content_top}}
+          <ul class="nav nav-tabs">
+            {% if quote_enable %}
+              <li id="quotes_li" {% if tab=='quotes' or not tab  %} class="active" {% endif %}>
+                <a href="#tab-quotes" data-toggle="tab">{{ tab_title_quote }}<span class="tab-number">&nbsp;{{ spot_extra }}</span>
+                </a>
+              </li>
+              <li id="rebates_li" {% if tab=='rebates'  %} class="active"{% endif %}>
+                <a href="#tab-rebates" data-toggle="tab">{{ tab_title_rebate }}<span class="tab-number">&nbsp;{{ rebates_extra }}</span>
+                </a>
+              </li>
+            {% else %}
+              <li id="rebates_li" class="active">
+                <a href="#tab-rebates" data-toggle="tab">{{ tab_title_rebate }}<span class="tab-number">&nbsp;{{ rebates_extra }}</span>
+                </a>
+              </li>
+            {% endif %}
+            <li id="margin_li" {% if tab=='margin'%}class="active" {% endif %} ><a href="#tab-margin" data-toggle="tab">Margin Agreements<span class="tab-number" id="margin_tab_mark_count">&nbsp;{{ margin_extra }}</span></a></li>
+            <li id="futures_li"   {% if tab=='futures'%}class="active" {% endif %}><a href="#tab-futures" data-toggle="tab">Future Goods Agreements<span class="tab-number">&nbsp;{{ future_extra }}</span></a></li>
+          </ul>
+          <div class="tab-content">
+            {% if quote_enable %}
+                <div class="tab-pane {% if tab=='quotes' or not tab  %} active{% endif %} " id="tab-quotes">
+                  <fieldset>
+                    <div id="bid-quotes"><div class="loading-text">Loading...</div></div>
+                  </fieldset>
+                </div>
+                <div class="tab-pane   {% if tab=='rebates'  %} active{% endif %}" id="tab-rebates">
+                  <fieldset>
+                    <div id="bid-rebates"><div class="loading-text">Loading...</div></div>
+                  </fieldset>
+                </div>
+            {% else %}
+              <div class="tab-pane active" id="tab-rebates">
+                <fieldset>
+                  <div id="bid-rebates"><div class="loading-text">Loading...</div></div>
+                </fieldset>
+              </div>
+            {% endif %}
+              <div class="tab-pane {% if tab=='margin'  %} active{% endif %} " id="tab-margin">
+                  <fieldset>
+                      <div id="bid-margin"><div class="loading-text">Loading...</div></div>
+                  </fieldset>
+              </div>
+            <div class="tab-pane  {% if tab=='futures'  %} active{% endif %}" id="tab-futures">
+              <fieldset>
+                <div id="bid-future"><div class="loading-text">Loading...</div></div>
+              </fieldset>
+            </div>
+          </div>
+         {{content_bottom}}
+      </div>
+    </div>
+</div>
+<script>
+  let quote_enable = '{{ quote_enable }}';
+  var tab = '{{ tab }}';
+  var filter_buyer_name = '{{ filter_buyer_name }}';
+  if (quote_enable) {
+    $('#bid-quotes').load('index.php?route=account/customerpartner/wk_quotes_admin/getList');
+  }
+  if(tab == 1){
+      var rebates_url = 'index.php?route=account/product_quotes/rebates_contract&status_flag=1&filter_buyer_name=' + encodeURIComponent(filter_buyer_name);
+  }else{
+      var rebates_url = 'index.php?route=account/product_quotes/rebates_contract&status_flag=1';
+  }
+  $('#bid-rebates').load(rebates_url);
+  $('#bid-margin').load('index.php?route=account/product_quotes/margin_contract');
+  $('#bid-future').load('index.php?route=account/product_quotes/futures/sellerBidList');
+  $('.nav-tabs li').click(function () {
+      $('.nav-tabs li').find(".badge").css({
+          "border-color": "#aaa",
+          "color": "rgba(24, 52, 100, 1.0)"
+      })
+      $(this).find(".badge").css({
+          "border-color": "#FA6400",
+          "color": "#FA6400"
+      })
+  });
+  $('.nav-tabs li:not(.active)').hover(function () {
+      $(this).find(".badge").css({
+          "border-color": "#FA6400",
+          "color": "#FA6400"
+      })
+  }, function () {
+      if (!$(this).hasClass('active')) {
+          $(this).find(".badge").css({
+              "border-color": "#aaa",
+              "color": "rgba(24, 52, 100, 1.0)"
+          })
+      }
+  })
+</script>

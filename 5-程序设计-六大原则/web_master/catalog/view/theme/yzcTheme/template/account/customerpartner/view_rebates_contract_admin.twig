@@ -1,0 +1,271 @@
+{{ header }}
+{{ separate_column_left }}
+{% for style in styles %}
+  <link href="{{ style }}" type="text/css" rel="stylesheet"/>
+{% endfor %}
+{% for script in scripts %}
+  <script type="text/javascript" src="{{script}}"></script>
+{% endfor %}
+{% if separate_view is defined and separate_view %}
+  <div class="container-fluid" id="content" style="margin-left: 235px">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }} </a></li>
+    {% endfor %}
+  </ul>
+
+  <div class="row">
+    {% set class = 'col-sm-12' %}
+    <div id="content" class="{{ class }}">
+      {{ content_top }}
+      <h1>
+        {{ heading_title }}
+      </h1>
+      <div class="bg-white p-2 liti">
+        <h4 style="font-weight: bold">
+          <i class="fa fa-file-text-o"></i> {{ contract_title }}
+        </h4>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <tbody>
+            {% if contract_detail %}
+              <tr>
+                <th class="contract-th">{{ column_contract_id }} #</th>
+                <td class="contract-td">{{ contract_detail.contractId }}</td>
+                <th class="contract-th">{{ column_status }}</th>
+                <td class="contract-td">{{ contract_detail.status_text }}</td>
+                <th class="contract-th">{{ column_modified_date }}</th>
+                <td class="contract-td">{{ contract_detail.update_time }}</td>
+              </tr>
+              <tr>
+                <th class="contract-th">{{ column_buyer_name }}</th>
+                <td class="contract-td">
+                  <span class="user_portrait" data-user_customer_id="{{ contract_detail.buyer_id }}" >
+                  {{ contract_detail.buyer_name }}
+                  </span>
+                  <span>
+                    <img data-toggle="tooltip" style="padding-left: 1px"
+                         src="{{ contract_detail.is_home_pickup ? asset('image/icons/HomePickup/home_pickup-15x15.png') : asset('image/icons/HomePickup/drop_shipping-15x15.png') }}"
+                         data-original-title="{{ contract_detail.is_home_pickup?tip_home_pickup_logo:tip_drop_shipping_logo }}">
+                  </span>
+                </td>
+              <th class="contract-th">{{ column_effect_time }}</th>
+              <td class="contract-td">{{ contract_detail.effect_time }}</td>
+              <th class="contract-th">{{ column_expire_time }}</th>
+              <td class="contract-td">{{ contract_detail.expire_time }}</td>
+
+              </tr>
+              <tr>
+                <th class="contract-th">{{ column_item_code }}</th>
+                <td class="contract-td">{{ contract_detail.sku }}</td>
+                <th class="contract-th">{{ column_mpn }}</th>
+                <td class="contract-td">{{ contract_detail.mpn }}</td>
+                <th class="contract-th"></th>
+                <td class="contract-td"></td>
+              </tr>
+              <tr>
+                <th class="contract-th">{{ column_product_name }}</th>
+                <td style="font-size: 15px;font-weight: normal;" colspan="5">
+                  <img src="{{ contract_detail.image }}">
+                  <a href="{{ contract_detail.product_link }}" target="_blank">{{ contract_detail.product_name }}</a>
+                </td>
+              </tr>
+              <tr>
+              <th class="contract-th">{{column_detail_day_to_sell }}</th>
+              <td class="contract-td">{{ contract_detail.day }}</td>
+              <th class="contract-th">{{ column_detail_qty }}</th>
+              <td class="contract-td text-price">{{ contract_detail.qty }}</td>
+              <th class="contract-th">{{ column_detail_discount_amount }}</th>
+              <td class="contract-td text-price">{{ contract_detail.rebates_amount }}</td>
+            </tr>
+            <tr>
+              <th class="contract-th">{{ column_detail_price }}</th>
+              <td class="contract-td">{{ contract_detail.price }}</td>
+              <th class="contract-th">{{ column_detail_price_limit }}</th>
+              <td class="contract-td text-price">{{ contract_detail.limit_price }}</td>
+              </tr>
+
+            {% endif %}
+            </tbody>
+          </table>
+        </div>
+        <h4 style="font-weight: bold">
+          <i class="fa fa-comments"></i> {{ message_title }}
+        </h4>
+        <div style="border: 1px solid #ddd">
+          <div style="padding: 10px 10px 10px 10px">
+            <div class="message-div" id="contract_message_history">
+              {% if messages %}
+                {% for msg in messages %}
+                  {% if msg.writer_id == customer_id %}
+                    <div class="message-my-div">
+                      <div>
+                        <span class="message-name"><li>{{ msg.name }}</li></span>
+                        <span class="message-date"><i class="fa fa-clock-o"></i>{{ msg.msg_date }}</span>
+                      </div>
+                      <div class="message-body">
+                        {{ msg.message }}
+                      </div>
+                    </div>
+                  {% else %}
+                    <div class="message-other-div">
+                      <div>
+                        <span class="message-name"><li>{{ msg.name }}</li></span>
+                        <span class="message-date"><i class="fa fa-clock-o"></i>{{ msg.msg_date }}</span>
+                      </div>
+                      <div class="message-body">
+                        {{ msg.message }}
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            </div>
+            {% if contract_detail.status == 1 %}
+              <div style="position: relative">
+                {% if contract_detail.status == 1 %}
+                  <label style="font-weight: bold;padding-bottom: 5px"><i class="fa fa-edit"></i>{{ label_process_result }}
+                  </label>
+                  <label style="padding-left: 20px"><input type="radio" name="contract_status" id="contract_status_3"
+                                                           value="3"/>{{ text_status_3 }}</label>
+                  <label style="padding-left: 20px"><input type="radio" name="contract_status" id="contract_status_2"
+                                                           value="2"/>{{ text_status_2 }}</label>
+                {% else %}
+                  <span>{{ text_message_title }}</span>
+                {% endif %}
+
+                <textarea id="contract_message" style="resize: none;height: 60px;width: 92%;border: 1px solid #ddd;"
+                          placeholder="{{ text_message_placeholder }}" maxlength="2000" required></textarea>
+                <button class="btn btn-primary" style="position: absolute;top: 38%;right: 5px;width: 70px" type="button"
+                        onclick="sendMessage(this)">{{ btn_send }}</button>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {{ content_bottom }}
+    </div>
+  </div>
+</div>
+{{ footer }}
+<script>
+  function messageToEnd() {
+    var message_div = $('#contract_message_history');
+    var h = $(document).height() - $(window).height();
+    message_div.scrollTop(h);
+  }
+
+  $(document).ready(function () {
+    var status = {{ contract_detail.status }};
+    $('#contract_status_' + status).attr('checked', 'checked');
+    messageToEnd();
+  })
+
+  function sendMessage(button) {
+    $(button).button('loading');
+    var msg = $('#contract_message').val();
+    var contract_status = $('input[name=\'contract_status\']:checked').val();
+
+    if(!contract_status){
+      alert('{{ error_approve_empty }}');
+      $(button).button('reset');
+      return;
+    }
+    if (contract_status === '3') {
+      if (!confirm('{{ text_confirm_approve }}')) {
+        $(button).button('reset');
+        return;
+      }
+    }
+    if (msg) {
+      if (msg.length <= 2000) {
+        var param = {
+          'message': msg,
+          'contract_id':{{ contract_detail.contractId }},
+          'contract_status': contract_status,
+          'contract_day':{{ contract_detail.day }},
+          'product_id': {{ contract_detail.product_id }},
+          'contract_qty': {{ contract_detail.qty }}
+        };
+        $.ajax({
+          url: '{{ send_message_action }}',
+          dataType: 'json',
+          type: 'post',
+          data: param,
+          success: function (json) {
+            if (json['success']) {
+              alert('{{ success_saved_seller_msg }}');
+              location.href = '{{ refresh_action }}';
+            } else if (json['error']) {
+              alert(json['error']);
+              $(button).button('reset');
+            }
+          }
+        });
+      } else {
+        alert('{{ error_msg_large }}');
+        $(button).button('reset');
+      }
+    } else {
+      alert('{{ error_msg_empty }}');
+      $(button).button('reset');
+    }
+  }
+</script>
+<style>
+  .contract-th {
+    background-color: #F2F2F2;
+    font-size: 15px;
+    font-weight: normal;
+    width: 12%;
+  }
+
+  .contract-td {
+    width: 18%;
+    font-size: 15px;
+    font-weight: normal;
+  }
+
+  .message-div {
+    border-bottom: 1px solid #ddd;
+    height: 170px;
+    margin-bottom: 20px;
+    overflow: auto;
+  }
+
+  .message-my-div {
+    float: right;
+    width: 60%;
+    background-color: #DFF0D8;
+    border-radius: 5px;
+    margin: 10px 10px 10px 10px;
+  }
+
+  .message-other-div {
+    float: left;
+    width: 60%;
+    background-color: #F4E4D7;
+    border-radius: 5px;
+    margin: 10px 10px 10px 10px;
+  }
+
+  .message-name {
+    display: inline-block;
+    width: 70%;
+    margin: 0 10px 0 10px;
+  }
+
+  .message-date {
+    display: inline-block;
+    text-align: right;
+    margin: 0 10px 0 10px;
+  }
+
+  .message-body {
+    margin: 0 10px 0 10px;
+    word-break: break-word;
+  }
+</style>

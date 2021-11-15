@@ -1,0 +1,72 @@
+{# detail:仓租单明细 item:费用单明细 #}
+<style>
+  .width-320{
+    width: 320px;
+  }
+  .table-title{
+    color: #333;
+    font-size: 12px;
+  }
+  .table-sub-title{
+    color: #405266;
+    font-size: 13px;
+    font-weight: normal;
+  }
+  .pay-tip{
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .pay-tip .text{
+    color: #666;
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+  .pay-tip .value{
+    text-align: right;
+    color: #333;
+    font-weight: bold;
+    /*width: 80px;*/
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+</style>
+<div>
+  <table class="oris-table no-hover width-320">
+    <thead>
+    <tr>
+      <th class="warehouse-day-detail-title"><span class="table-title">Days in Inventory</span> <br> <span class="table-sub-title">(day)</span></th>
+      <th><span class="table-title">Storage Fee Rate</span> <br> <span class="table-sub-title">({{ currency_symbol }}/m³ per day)</span></th>
+      <th><span class="table-title">Total</span><br><span class="table-sub-title">({{ currency_symbol }})</span></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for fee_range in detail.fee_detail_range %}
+      <tr>
+        <td>{{ fee_range.start }}-{{ fee_range.end }}</td>
+        <td>{{ fee_range.storage_fee }}</td>
+        <td>{{ fee_range.total|formatPrice(currency,{is_symbol:false}) }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if detail.paid > 0 %}
+    <div class="pay-tip">
+      <div class="text">Past Payment:</div>&nbsp;
+      <div class="value">
+        <a
+          href="{{ url('account/fee_order/fee_order/paidFeeOrderJump',{'storage_id': detail.storage_fee_ids|join(','),'end_time':item.created_at.timestamp}) }}"
+          target="_blank">
+          <div class="value link-color">
+            {{ detail.paid|formatPrice(currency) }}
+          </div>
+        </a>
+      </div>
+    </div>
+  {% endif %}
+  <div class="pay-tip">
+    <div class="text">{{ text_storage_fee_due_amount ?? 'Current Payment' }}:</div>&nbsp;
+    <div class="value">{{ detail.need_pay|formatPrice(currency) }}</div>
+  </div>
+</div>

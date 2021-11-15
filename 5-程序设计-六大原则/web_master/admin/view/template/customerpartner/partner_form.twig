@@ -1,0 +1,589 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-product" data-toggle="tooltip" title="{{ button_save}}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel}}" data-toggle="tooltip" title="{{ button_cancel}}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title}}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning}}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form}}</h3>
+      </div>
+
+      <div class="panel-body">
+
+      <form action="{{ action}}" method="post" enctype="multipart/form-data" id="form-product" class="form-horizontal">
+        <ul class="nav nav-tabs">
+          <!-- <li><a href="#tab-general" data-toggle="tab">{{ tab_general}}</a></li> -->
+          <li class="active"><a href="#tab-dashboard" data-toggle="tab">{{ "Dashboard"}}  <i class="fa fa-spinner fa-spin remove-me"></i></a></li>
+          <li class=""><a href="#tab-profile" data-toggle="tab">{{ tab_info}}</a></li>
+          <li><a href="#tab-commission" data-toggle="tab">{{ tab_commission}}</a></li>
+          {#<!-- <li><a href="#tab-order" data-toggle="tab">{{ tab_order}}</a></li> -->#}
+          {#<!-- <li><a href="#tab-transaction" data-toggle="tab">{{ tab_transaction}}</a></li> -->#}
+          <li><a href="#tab-location" data-toggle="tab">{{ tab_location}}</a></li>
+          <li><a href="#tab-product" data-toggle="tab">{{ tab_product}}</a></li>
+        </ul>
+
+        <div class="tab-content">
+
+          <!-- <div class="tab-pane active" id="tab-general"></div> -->
+
+          <div id="tab-dashboard" class="tab-pane active">
+
+          </div>
+
+          <div class="tab-pane " id="tab-profile">
+
+            <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ tab_profile_info}}
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-screenname"><span data-toggle="tooltip" title="{{ entry_screenname_info}}">{{ entry_screenname}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+              <div class="col-sm-10">
+                <input type="text" name="customer[screenname]" value="{{ screenname}}"  id="input-screenname" class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-image"><span data-toggle="tooltip" title="{{ entry_avatar_info}}">{{ entry_avatar}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+              <div class="col-sm-10">
+                <a href="" id="thumb-image-avatar" data-toggle="image" class="img-thumbnail">
+                  <img src="{{ avatar_placeholder}}" alt="" title="" data-placeholder="{{ placeholder}}" />
+                </a>
+                <input type="hidden" name="customer[avatar]" value="{{ avatar}}" id="input-image-avatar" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-image"><span data-toggle="tooltip" title="{{ entry_qr_code_info }}">{{ entry_qr_code }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+              <div class="col-sm-10">
+                <a href="" id="thumb-image-qr-code" data-toggle="image" class="img-thumbnail">
+                  <img src="{{ qr_code_placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}"/>
+                </a>
+                <input type="hidden" name="customer[qr_code]" value="{{ qr_code }}" id="input-image-qr-code" />
+              </div>
+            </div>
+
+            {#Visibility seller是否隐藏属性#}
+            {#<div class="form-group">#}
+              {#<label class="col-sm-2 control-label" for="input-image"><span data-toggle="tooltip" title="{{ entry_visibility_info }}">{{ entry_visibility }}<i class="giga icon-V10-wenhaotishi"></i></span></label>#}
+              {#<div class="col-sm-10">#}
+                {#<select name="customer[`show`]" id="input-visibility" class="form-control">#}
+                  {#<option value="1" {% if show == 1 %}{{ 'selected' }}{%endif %}>Visible</option>#}
+                  {#<option value="0" {% if show == 0 %}{{ 'selected' }}{%endif %}>Invisible</option>#}
+                {#</select>#}
+              {#</div>#}
+            {#</div>#}
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-gender">{{ entry_gender}}</label>
+              <div class="col-sm-10">
+                <select name="customer[gender]" class="form-control">
+                  <option> </option>
+                  <option value="M" {% if gender == 'M' %}{{ 'selected' }}{%endif %} > Male </option>
+                  <option value="F" {% if gender == 'F' %}{{ 'selected' }}{%endif %} > Female </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-shortprofile">{{ entry_profile}}</label>
+              <div class="col-sm-10">
+                <textarea name="customer[shortprofile]" id="input-shortprofile" class="form-control">{{ shortprofile}}</textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-companyname">{{ entry_company}}</label>
+              <div class="col-sm-10">
+                <input type="text" name="customer[companyname]" value="{{ companyname}}"  id="input-companyname" class="form-control" />
+                {% if error_companyname %}
+                  <div class="text-danger">{{ error_companyname}}</div>
+                {% endif %}
+              </div>
+            </div>
+
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-twitterid">{{ entry_twitter}}</label>
+              <div class="col-sm-10">
+                <input type="text" name="customer[twitterid]" value="{{ twitterid}}"  id="input-twitterid" class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-facebookid">{{ entry_facebook}}</label>
+              <div class="col-sm-10">
+                <input type="text" name="customer[facebookid]" value="{{ facebookid}}"  id="input-facebookid" class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-companylocality">{{ entry_locality}}</label>
+              <div class="col-sm-10">
+                <input type="text" name="customer[companylocality]" value="{{ companylocality}}"  id="input-companylocality" class="form-control" />
+              </div>
+            </div>
+            {% if customer_id %}
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-country">{{ entry_country}}</label>
+              <div class="col-sm-10">
+                <div class="input-group">
+                  <span class="input-group-addon"><i>
+                    <img src="../image/flags/{{ country|lower }}.png" id="country">
+                  </i></span>
+                  {% set customer_country = [] %}
+                  {% for value_country in countries %}
+                    {% if value_country['iso_code_2'] == country %}
+                    {% set customer_country = value_country %}
+                    {% endif %}
+                  {% endfor %}
+                  <input
+                    type="text"
+                    style="display:none"
+                    name="customer[country]"
+                    value="{{ customer_country['iso_code_2'] }}"
+                    id="input-country"
+                    class="form-control">
+                  <input
+                    type="text"
+                    disabled
+                    value="{{ customer_country['name'] }}"
+                    class="form-control">
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-country">{{ entry_country}}</label>
+              <div class="col-sm-10">
+                <div class="input-group">
+                  <span class="input-group-addon"><i>
+                    <img src="../image/flags/{{ country|lower }}.png" id="country">
+                  </i></span>
+                  <select name="customer[country]" id="input-country" class="form-control">
+                    <option value=""></option>
+                    {% if countries %}
+                      {% for value_country in countries %}
+                        {% if value_country['iso_code_2'] == country %}
+                          <option value="{{ value_country['iso_code_2']}}" selected>{{ value_country['name']}}</option>
+                        {% else %}
+                          <option value="{{ value_country['iso_code_2']}}">{{ value_country['name']}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-backgroundcolor"><span data-toggle="tooltip" title="{{ entry_theme}}">{{ entry_theme}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+              <div class="col-sm-10">
+                <div class="input-group colorpicker">
+                  <span class="input-group-addon"><i></i></span>
+                  <input type="text" name="customer[backgroundcolor]" value="{{ backgroundcolor}}"  id="input-backgroundcolor" class="form-control" />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-image"><span data-toggle="tooltip" title="{{ entry_banner_info}}">{{ entry_banner}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+              <div class="col-sm-10">
+                <a href="" id="thumb-image-companybanner" data-toggle="image" class="img-thumbnail">
+                  <img src="{{ companybanner_placeholder}}" alt="" title="" data-placeholder="{{ placeholder }}" />
+                </a>
+                <input type="hidden" name="customer[companybanner]" value="{{ companybanner}}" id="input-image-companybanner" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-image"><span data-toggle="tooltip" title="{{ entry_logo_info}}">{{ entry_logo}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+              <div class="col-sm-10">
+                <a href="" id="thumb-image-companylogo" data-toggle="image" class="img-thumbnail">
+                  <img src="{{ companylogo_placeholder}}" alt="" title="" data-placeholder="{{ placeholder}}" />
+                </a>
+                <input type="hidden" name="customer[companylogo]" value="{{ companylogo}}" id="input-image-companylogo" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-companydescription">{{ entry_store}}</label>
+              <div class="col-sm-10">
+                <textarea name="customer[companydescription]" id="input-companydescription" class="form-control">{{ companydescription}}</textarea>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- transaction -->
+          <!-- <div class="tab-pane" id="tab-transaction">
+
+            <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ tab_transaction_info}}
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+
+            <div id="transaction"></div>
+            <br/>
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-description">{{ entry_description}}</label>
+              <div class="col-sm-10">
+                <input type="text" name="description" placeholder="{{ entry_description}}" id="input-description" class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-group">
+             <label class="col-sm-2 control-label" for="input-amount">{{ entry_amount}}</label>
+              <div class="col-sm-10">
+                <input type="text" name="amount" placeholder="{{ entry_amount}}" id="input-amount" class="form-control" />
+              </div>
+            </div>
+
+            <div class="text-right">
+              <button type="button" id="button-transaction" data-loading-text="{{ text_loading}}" class="btn btn-primary"><i class="fa fa-plus-circle"></i> {{ button_add_transaction}}</button>
+            </div>
+          </div> -->
+
+          <!-- order -->
+          {#<div class="tab-pane" id="tab-order">#}
+
+            {#<div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ tab_order_info}}#}
+              {#<button type="button" class="close" data-dismiss="alert">&times;</button>#}
+            {#</div>#}
+
+            {#<div class="panel panel-default">#}
+
+              {#<div class="panel-heading">#}
+                {#<h3 class="panel-title"><i class="fa fa-shopping-cart"></i> {{ tab_order}}</h3>#}
+              {#</div>#}
+
+              {#<div class="table-responsive">#}
+                {#<table class="table table-hover">#}
+                  {#<thead>#}
+                    {#<tr>#}
+                      {#<td class="text-right">{{ entry_orderid}}</td>#}
+                      {#<td class="text-left">{{ entry_name}}</td>#}
+                      {#<td class="text-left">{{ entry_products}}</td>#}
+                      {#<td class="text-left">{{ column_date_added}}</td>#}
+                      {#<td class="text-left">{{ entry_status|replace({':':''}) }}</td>#}
+                      {#<td class="text-left">{{ entry_total}}</td>#}
+                      {#<td class="text-left">{{ column_action}}</td>#}
+                    {#</tr>#}
+                  {#</thead>#}
+                  {#<tbody>#}
+                    {#{% if partner_orders is defined and partner_orders %}#}
+                      {#{% for partner_order in partner_orders %}#}
+                        {#<tr>#}
+                          {#<td class="text-right">{{ partner_order['order_id']}}</td>#}
+                          {#<td class="text-left">{{ partner_order['name']}}</td>#}
+                          {#<td class="text-left">#}
+                            {#{% if partner_order['productname'] is defined %}#}
+                              {#{{ partner_order['productname']|slice(0,-2) }}#}
+                            {#{% endif %}#}
+                          {#</td>#}
+                          {#<td class="text-left">{{ partner_order['date_added']}}</td>#}
+                          {#<td class="text-left">{{ partner_order['orderstatus']}}</td>#}
+                          {#<td class="text-left">#}
+                            {#{% if partner_order['total'] is defined %}#}
+                              {#{{ partner_order['total'] }}#}
+                            {#{% endif %}#}
+                          {#</td>#}
+                          {#<td class="text-left">#}
+                            {#<a href="{{ partner_order['view']}}" data-toggle="tooltip" title="{{ text_view}}" class="btn btn-primary"><i class="fa fa-eye"></i></a>#}
+                            {#<a href="{{ partner_order['edit']}}" data-toggle="tooltip" title="{{ text_edit}}" class="btn btn-primary"><i class="fa fa-pencil"></i></a>#}
+                          {#</td>#}
+                        {#</tr>#}
+                      {#{% endfor %}#}
+                    {#{% else %}#}
+                      {#<tr><td class="text-center" colspan="7">{{ text_no_results}}</td></tr>#}
+                    {#{% endif %}#}
+                  {#</tbody>#}
+                {#</table>#}
+              {#</div>#}
+            {#</div>#}
+
+          {#</div>#}
+
+          <!-- tab commission -->
+          <div class="tab-pane" id="tab-commission">
+            <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ tab_commission_info}}
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+            <div class="form-group">
+             <label class="col-sm-2 control-label" for="input-commission">{{ entry_commission}}</label>
+              <div class="col-sm-10">
+                <div class="input-group">
+                  <input type="text" name="customer[commission]" value="{{ commission}}" placeholder="{{ entry_commission}}" id="input-commission" class="form-control" />
+                  <span class="input-group-addon"> <b>%</b> </span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+             <label class="col-sm-2 control-label" for="input-paypalfirst">{{ entry_firstname}}</label>
+              <div class="col-sm-10">
+                <input type="text" name="paypalfirst" value="{{ paypalfirst}}"  placeholder="{{ entry_firstname}}" id="input-paypalfirst" class="form-control" />
+              </div>
+            </div>
+            <div class="form-group">
+             <label class="col-sm-2 control-label" for="input-paypallast">{{ entry_lastname}}</label>
+              <div class="col-sm-10">
+                <input type="text" name="paypallast" value="{{ paypallast}}"  placeholder="{{ entry_lastname}}" id="input-paypallast" class="form-control" />
+              </div>
+            </div>
+            <div class="form-group">
+             <label class="col-sm-2 control-label" for="input-paypalid">{{ entry_paypalid}}</label>
+              <div class="col-sm-10">
+                <input type="text" name="customer[paypalid]" value="{{ paypalid}}"  placeholder="{{ entry_paypalid}}" id="input-paypalid" class="form-control" />
+              </div>
+            </div>
+            <div class="form-group">
+             <label class="col-sm-2 control-label" for="input-otherpayment">{{ entry_otherinfo}}</label>
+              <div class="col-sm-10">
+                <textarea name="customer[otherpayment]" placeholder="{{ entry_otherinfo}}" id="input-otherpayment" class="form-control">{{ otherpayment}}</textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+             <label class="col-sm-2 control-label" for="input-taxinfo">{{ entry_othertaxinfo}}</label>
+              <div class="col-sm-10">
+                <textarea name="customer[taxinfo]" placeholder="{{ entry_othertaxinfo}}" id="input-taxinfo" class="form-control">{{ taxinfo}}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- tab product -->
+          <div class="tab-pane" id="tab-product">
+            <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ tab_product_info}}
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label"></label>
+              <div class="col-sm-8">
+                <input type="text" name="filter_name" placeholder="{{ entry_product_name }}" value="{% if filter_name is defined and filter_name %}{{ filter_name }}{% endif %}" id="input-screenname" class="form-control" />
+              </div>
+              <div class="col-sm-1">
+                <button type="button" onclick="filter();" class="btn btn-primary pull-right"><i class="fa fa-search"></i> {{ button_filter }}</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-product"><span data-toggle="tooltip" title="{{ entry_product_id_info}}">{{ entry_product_id}}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+              <div class="col-sm-9">
+                <div class="well well-sm" style="height:300px;overflow:auto" id="product-well">
+                  {% if admin_products %}
+                    {% for key, admin_product in admin_products %}
+                      <div class="checkbox">
+                        <label for="admin_product{{ admin_product['product_id']}}">
+                          <input type="checkbox" name="product_ids[]" value="{{ admin_product['product_id']}}" id="admin_product{{ admin_product['product_id']}}" {% if product_ids and admin_product['product_id'] in product_ids %}{{ 'checked' }}{%endif %} />
+                          {{ admin_product['name']}}
+                        </label>
+                      </div>
+                    {% endfor %}
+                  {% else %}
+                  {{ text_no_product_assign}}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6 text-left" id="ajax_paginatin">{{ pagination}}</div>
+              <div class="col-sm-6 text-right" id="ajax_results">{{ results}}</div>
+            </div>
+          </div>
+
+          <!-- tab location -->
+          <div class="tab-pane" id="tab-location">
+
+          </div>
+
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="view/javascript/summernote/summernote.js"></script>
+<link href="view/javascript/summernote/summernote.css" rel="stylesheet" />
+<script type="text/javascript" src="view/javascript/summernote/opencart.js"></script>
+<script type="text/javascript">
+
+$('#tab-dashboard').load("index.php?route=customerpartner/dashboard&user_token={{ user_token}}&customer_id={{ customer_id}}",function(){
+      $('.remove-me').remove();
+    });
+
+$('#input-shortprofile, #input-companydescription').summernote({height: 300});
+
+// Product
+$('input[name=\'product\']').autocomplete({
+  'source': function(request, response) {
+    $.ajax({
+      url: 'index.php?route=customerpartner/product/autocomplete&user_token={{ user_token}}&filter_name=' +  encodeURIComponent(request)+'&filter_for_seller=1',
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['product_id']
+          }
+        }));
+      }
+    });
+  },
+  'select': function(item) {
+    $('input[name=\'product\']').val('');
+
+    $('#product-product' + item['value']).remove();
+
+    $('#product-product').append('<div id="product-id' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="product_ids[]" value="' + item['value'] + '" /></div>');
+  }
+});
+
+$('#product-product').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+});
+
+
+$('#transaction').delegate('.pagination a', 'click', function(e) {
+  $('#transaction').load(this.href);
+
+  return false;
+});
+
+$('#transaction').load('index.php?route=customerpartner/partner/transaction&user_token={{ user_token}}&customer_id={{ customer_id}}');
+
+$('#button-transaction').on('click', function() {
+  $.ajax({
+    url: 'index.php?route=customerpartner/partner/transaction&user_token={{ user_token}}&customer_id={{ customer_id}}',
+    type: 'post',
+    dataType: 'html',
+    data: 'description=' + encodeURIComponent($('#tab-transaction input[name=\'description\']').val()) + '&amount=' + encodeURIComponent($('#tab-transaction input[name=\'amount\']').val()),
+    beforeSend: function() {
+      $('#button-transaction').button('loading');
+    },
+    complete: function() {
+      $('#button-transaction').button('reset');
+    },
+    success: function(html) {
+      $('#tab-transaction .alert').remove();
+
+      $('#transaction').html(html);
+
+      $('#tab-transaction input[name=\'amount\']').val('');
+      $('#tab-transaction input[name=\'description\']').val('');
+    }
+  });
+});
+
+$('#input-country').on('change',function(){
+  newSrc = "../image/flags/"+this.value+".png";
+  $('#country').attr('src',newSrc.toLowerCase());
+})
+
+localocation = false;
+$('a[href=\'#tab-location\']').on('click',function(){
+  if(!localocation){
+    $(this).append(' <i class="fa fa-spinner fa-spin remove-me"></i>');
+
+     $.ajax({
+      url: '{{ loadLocation|replace({'amp;' : '' }) }}',
+      dataType: 'html',
+      success: function(response) {
+        $('#tab-location').html(response);
+        $('.remove-me').remove();
+      }
+    });
+    localocation = true;
+  }
+})
+
+//--></script>
+<link href="view/javascript/color-picker/css/bootstrap-colorpicker.min.css" rel="stylesheet">
+<script src="view/javascript/color-picker/js/bootstrap-colorpicker.min.js"></script>
+<script type="text/javascript">
+$(function(){
+    $('.colorpicker').colorpicker();
+});
+</script>
+
+<script type="text/javascript">
+
+  function ajax_pagination(url) {
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      success: function(response) {
+        $('#product-well').html('');
+
+        var html = '';
+
+        if (response['admin_products']) {
+          response['admin_products'].forEach(function(admin_product) {
+
+            html += '<div class="checkbox">';
+            html += '<label for="admin_product'+admin_product['product_id']+'">';
+            html += '<input type="checkbox" name="product_ids[]" value="'+admin_product['product_id']+'" id="admin_product'+admin_product['product_id']+'"/>';
+            html += admin_product['name'];
+            html += '</label>';
+            html += '</div>';
+          });
+        } else {
+          html += '{{ text_no_product_assign }}';
+        }
+
+        $('#product-well').html(html);
+
+        $('#ajax_paginatin').html(response['pagination']);
+
+        $('#ajax_results').html(response['results']);
+      }
+    });
+  }
+
+  $('body').on('click','.pagination li a',function(event){
+
+    event.preventDefault();
+
+    var url = $(this).attr('href').replace("/update", "/pagination");
+
+    var filter_name = $('input[name=\'filter_name\']').val();
+
+  	if (filter_name) {
+  		url += '&filter_name=' + encodeURIComponent(filter_name);
+  	}
+
+    ajax_pagination(url);
+
+  });
+
+  function filter() {
+  	url = 'index.php?route=customerpartner/partner/pagination&user_token={{ user_token }}&customer_id={{ customer_id }}';
+
+  	var filter_name = $('input[name=\'filter_name\']').val();
+
+  	if (filter_name) {
+  		url += '&filter_name=' + encodeURIComponent(filter_name);
+  	}
+    ajax_pagination(url);
+  }
+</script>
+{{ footer}}

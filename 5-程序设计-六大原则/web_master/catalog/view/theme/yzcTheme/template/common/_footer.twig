@@ -1,0 +1,155 @@
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-3">
+        <img src="{{ base }}/image/catalog/Logo/logo_colors.png" style="max-width: 202px;">
+        <p class="mt-4 powered">Powered By <br/>
+          B2B.GIGACLOUDLOGISTICS © 2020</p>
+      </div>
+      <div class="col-sm-3">
+        <h5>Quick link</h5>
+        <ul class="list-unstyled">
+          {% if logged and isBuyer %}
+            <li><a href="{{ my_sellers_url }}">{{ text_my_sellers }}</a></li>
+          {% endif %}
+          <li><a href="{{ information }}">Help Center</a></li>
+          {% if logged %}
+            {#已登录#}
+            <li><a class="highlight" href="index.php?route=account/ticket/lists">Leave a Message</a></li>
+          {% else %}
+            {#未登录#}
+            <li><a class="highlight" href="index.php?route=information/contact">Contact Us</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <h5>Country Market</h5>
+        <ul class="list-unstyled footer-country">
+          <li><img src="{{ base }}/image/HDFlags/US.png" width="24px" height="16ps"><span>USA, $</span></li>
+          <li><img src="{{ base }}/image/HDFlags/GB.png" width="24px" height="16ps"><span>GBR, ￡</span></li>
+          <li><img src="{{ base }}/image/HDFlags/DE.png" width="24px" height="16ps"><span>DEU, €</span></li>
+          <li><img src="{{ base }}/image/HDFlags/JP.png" width="24px" height="16ps"><span>JPN, ￥</span></li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <ul class="list-unstyled location">
+          <li><i class="giga icon-location-grey"></i><span>{{ store_info.address }}</span></li>
+          <li><i class="giga icon-phone-grey"></i><span>+1626-912-8886</span></li>
+          <li><i class="giga icon-email-grey"></i><span>{{ store_info.email }}</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  {{ notification_window }}
+  {{ message_window }}
+</footer>
+
+{% if isShowSideToolbar %}
+  <style>
+    #side-toolbar{
+      position: fixed;
+      right: 0;
+      bottom: 60px;
+      display: block;
+    }
+    #back-to-top {
+      height: 45px;
+      width: 45px;
+      border-radius: 4px;
+      background-color: #000000;
+      opacity: 0.2;
+      color: #FFF;
+      text-align: center;
+      vertical-align: bottom;
+      margin-bottom: 30px;
+    }
+    #back-to-top > span {
+      display: block;
+      font-size: 18px;
+    }
+    #back-to-top:hover {
+      cursor: pointer;
+      opacity: 0.5;
+    }
+  </style>
+  {#TOP按钮，首页、频道页#}
+  <div id="side-toolbar" style="z-index: 10">
+    <div id="back-to-top">
+      <i class="giga mb--10">&#xe61e;</i>
+      <span>top</span>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      $('#side-toolbar').hide();
+      var bigScreen = true; // 小于1200px不显示
+      $(window).scroll(function () {
+        $(window).resize(function () {
+          var clientWidth = $(document).width();
+          if (clientWidth < 1200) {
+            bigScreen = false;
+            $("#side-toolbar").hide();
+          } else {
+            bigScreen = true;
+          }
+        });
+        var scrollTop = $(window).scrollTop();
+        var windowHeight = $(window).height() / 2; // 浏览器半屏高度
+        if (bigScreen) {
+          if (scrollTop > windowHeight) { // 滚动距离顶部小于浏览器半屏时隐藏
+            $('#side-toolbar').fadeIn(500);
+          } else {
+            $("#side-toolbar").fadeOut(300);
+          }
+        } else {
+          $("#side-toolbar").fadeOut(300);
+        }
+      });
+      $("#back-to-top").click(function () {
+        $('body,html').animate({
+            scrollTop: 0
+          },
+          500);
+        return false;
+      });
+    });
+  </script>
+{% endif %}
+
+{% for script in scripts %}
+  <script src="{{ script }}" type="text/javascript"></script>
+{% endfor %}
+<script type="text/javascript">
+  $("table input[type='checkbox']").change(function () {
+    let bottom_detail = $(".bottom-action-detail");
+    let show_text = bottom_detail.data('title') || 'Remove Selected';
+    var num = $("input[name^='selected']:checked").length;
+    var msg = "";
+    if (num > 0) {
+      msg = show_text.concat(" (", num, ")");
+    }
+    $(".bottom-action-detail").text(msg);
+  });
+  if (typeof layer !== 'undefined') {
+    layer.config({
+      extend: 'yzc/style.css'
+    })
+  }
+  // wangjinxin
+  $("body").delegate(".flag-hover", 'click', function () {
+    let value = $(this).find('span').data("href");
+    if (!value) return;
+    let a = $('<a></a>');
+    a.attr('href', value);
+    a.attr('style', 'display:none');
+    a.attr('target', '_blank');
+    $('body').append(a);
+    a[0].click();
+  });
+</script>
+{{ widget('ThirdPart\\CnzzAnalysisWidget') }}
+{{ widget('ThirdPart\\SevenMoorWidget') }}
+{{ this.endBody() }}
+</body>
+</html>

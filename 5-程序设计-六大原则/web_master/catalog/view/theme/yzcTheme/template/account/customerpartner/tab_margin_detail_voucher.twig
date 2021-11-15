@@ -1,0 +1,119 @@
+<div class="row">
+<div class="col-sm-12">
+  <div class="label_blue"><h3>{{ label_order_details }}</h3></div>
+  <div style="margin: 10px auto;overflow: hidden">
+    <div class="col-sm-3 details">
+      <p class="giga icon-summary-quote"></p>
+      <p class="title">{{ label_order_id }}</p>
+      <p class="txt"><a href="{{ order_id_link }}">{{ order_id }}</a>
+      </p>
+    </div>
+    <div class="col-sm-3 details">
+      <p class="giga icon-summary-status"></p>
+      <p class="title">{{ label_order_status }}</p>
+      <p class="txt">{{ order_status_name }}</p>
+    </div>
+    <div class="col-sm-3 details">
+      <p class="giga icon-summary-day"></p>
+      <p class="title">{{ label_order_date }}</p>
+      <p class="txt">{{ date_added }}</p>
+    </div>
+    <div class="col-sm-3 details" style="border: none">
+      <p class="giga icon-summary-po-id"></p>
+      <p class="title">{{ label_order_buyer }}</p>
+      <p class="txt">
+         <span class="user_portrait" data-user_customer_id="{{ buyer_id }}" >
+        {{ nickname }}
+         </span>
+        {% if order_id %}
+          <span>
+                <img data-toggle="tooltip" style="padding-left: 1px"
+                     src="{{ is_home_pickup ? asset('image/icons/HomePickup/home_pickup-15x15.png') : asset('image/icons/HomePickup/drop_shipping-15x15.png') }}"
+                     data-original-title="{{ is_home_pickup?tip_home_pickup_logo:tip_drop_shipping_logo }}">
+              </span>
+        {% endif %}
+      </p>
+    </div>
+  </div>
+  <div class="well" style="background-color: #ffffff">
+    <div class="row" >
+      <div style="margin: 0 10px 10px 15px;">
+        </div>
+      </div>
+    </div>
+{#    <div style="font-size: 20px;font-weight: bolder;margin-top: 5px"><i class="fa fa-list"></i> {{ label_item_list }}#}
+{#    </div>#}
+    <table class="table table-hover" style="margin-top: 30px">
+      <thead>
+      <tr class="text-center" >
+        <td>{{ column_number_seq }}</td>
+        <td>{{ column_item_code }}</td>
+        <td>{{ column_mpn }}</td>
+        <td style="width: 35%">{{ column_product_name }}</td>
+        <td>{{ column_quantity }}</td>
+        <td style="min-width: 90px">{{ column_unit_price }}</td>
+        <td>{{ column_total_price }}</td>
+        <td>{{ column_status }}</td>
+      </tr>
+      </thead>
+      <tbody>
+      {% if products %}
+        {% set seq = 1 %}
+        {% for product in products %}
+          <tr class="text-center">
+            <td>{{ seq }}</td>
+            {% if product.tag %}
+              <td style="min-width: 120px">
+                {% if product.margin_sku %}
+                  <a href="{{ product['margin_link'] }}">{{ product['margin_sku'] }}</a>
+                {% else %}
+                  <a href="{{ product['product_url'] }}">{{ product['sku'] }}</a>
+                {% endif %}
+                {% for tagDetail in product.tag %}
+                  {{ tagDetail }}
+                {% endfor %}
+              </td>
+            {% else %}
+              {% if product.margin_sku %}
+                <td><a href="{{ product['margin_link'] }}">{{ product['margin_sku'] }}</a></td>
+              {% else %}
+                <td><a href="{{ product['product_url'] }}">{{ product['sku'] }}</a></td>
+              {% endif %}
+            {% endif %}
+            {% if product.margin_mpn %}
+              <td>{{ product['margin_mpn'] }}</td>
+            {% else %}
+              <td>{{ product['mpn'] }}</td>
+            {% endif %}
+            <td class="text-left"><a href="{{ product['product_url'] }}">{{ product['sku'] }}
+{#                <i class="fa fa-check-circle" style="color: darkorange">{{ label_margin }}</i>#}
+                <br>{{ product['name'] }}</a></td>
+            <td>{{ product['quantity'] }}</td>
+            <td>{{ product['price'] }}</td>
+            <td>{{ product['total'] }}</td>
+            {% for key, order_status in order_statuses %}
+              {% if product['order_product_status'] in order_status %}
+                <td class="{{ product['order_product_status']==13?'charge-bake':'' }}">{{ order_status['name'] }}</td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+          {% set seq = seq + 1 %}
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="12" class="text-center">{{ text_no_results }} </td>
+        </tr>
+      {% endif %}
+      </tbody>
+      <tfoot>
+      {% for total in totals %}
+        <tr>
+          <td class="text-right" colspan="7"><b>{{ total.title }}</b></td>{#{{ 6 + (isAmerican or isEurope ? 1 :0) }}#}
+          <td class="text-center{{ total.title == 'Total Price'?' total-price':'' }}">{{ total.text }}</td>
+        </tr>
+      {% endfor %}
+      </tfoot>
+    </table>
+  </div>
+</div>
+</div>

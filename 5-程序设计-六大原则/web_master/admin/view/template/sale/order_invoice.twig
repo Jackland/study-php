@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html dir="{{ direction }}" lang="{{ lang }}">
+<head>
+<meta charset="UTF-8" />
+<title>OrderInfo</title>
+{#<base href="{{ base }}" />#}
+<link href="view/javascript/bootstrap/css/bootstrap.css" rel="stylesheet" media="all" />
+<script type="text/javascript" src="view/javascript/jquery/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="view/javascript/bootstrap/js/bootstrap.min.js"></script>
+<link href="view/javascript/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
+<link type="text/css" href="view/stylesheet/stylesheet.css" rel="stylesheet" media="all" />
+  <style media="print">
+    @page {
+      size: auto;
+      margin: 0mm;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  {% for order in orders %}
+  <div style="page-break-after: always;">
+    <h1>Order ID#{{ order.order_id }}</h1>
+    <table class="table">
+      <tbody>
+        <tr>
+          <td style="width: 50%;">
+            <b>Buyer Number: </b> {{ order.user_number }}<br />
+           </td>
+          <td style="width: 50%;">
+            <b>Creation Time: </b> {{ order.date_added }}<br />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="table">
+      <thead>
+      <tr>
+        <td colspan="2">{{ text_order_detail }}</td>
+      </tr>
+      </thead>
+      <thead>
+        <tr>
+          <td><b>Item Code</b></td>
+          <td><b>{{ column_product }}</b></td>
+          {#<td><b>{{ column_model }}</b></td>#}
+          <td class="text-right"><b>{{ column_quantity }}</b></td>
+          <td class="text-right"><b>{{ column_price }}</b></td>
+          <td class="text-right"><b>{{ column_total }}</b></td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in order.product %}
+        <tr>
+          <td>{{ product.sku }}</td>
+          <td>{{ product.name }}</td>
+          <td class="text-right">{{ product.quantity }}</td>
+          <td class="text-right">{{ product.price }}</td>
+          <td class="text-right">{{ product.total }}</td>
+        </tr>
+        {% endfor %}
+        {% for voucher in order.voucher %}
+        <tr>
+          <td>{{ voucher.description }}</td>
+          <td></td>
+          <td class="text-right">1</td>
+          <td class="text-right">{{ voucher.amount }}</td>
+          <td class="text-right">{{ voucher.amount }}</td>
+        </tr>
+        {% endfor %}
+        {% for total in order.total %}
+        <tr>
+          <td class="text-right" colspan="4"><b>{{ total.title }}</b></td>
+          <td class="text-right">{{ total.text }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if order.comment %}
+    <table class="table">
+      <thead>
+        <tr>
+          <td><b>{{ text_comment }}</b></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ order.comment }}</td>
+        </tr>
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+</body>
+</html>

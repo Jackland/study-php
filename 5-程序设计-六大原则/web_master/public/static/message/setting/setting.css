@@ -1,0 +1,113 @@
+.set-save {
+  text-align: center;
+  margin: 10px;
+}
+
+.set-sub{
+  margin-left: 20px;
+  font-size: 16px;
+}
+.set-sub span {
+  color: #c8c6c1;
+}
+
+.set-item {
+  margin: 20px;
+}
+
+.set-item input {
+  margin-right: 8px;
+}
+
+.set-item-list {
+  margin: 20px;
+}
+
+.set-item-list input:first-child {
+  margin-left: 24px;
+}
+
+.set-item-list input {
+  margin-left: 50px;
+}
+.set-item label{
+  margin-right: 70px;
+}
+.my-box{
+  padding: 20px 10px;
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: #ddd 0 0 6px;
+  position: relative;
+  z-index: 1;
+}
+.my-box2{
+  padding-left: 10px;
+  padding-right: 10px;
+}
+table tr td:first-child{
+  padding: 10px 8px !important;
+}
+.my-title{
+  border-bottom: 1px solid #EEEEEE;
+  font-weight: bold;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  font-size: 24px;
+  font-family: "Roboto", Helvetica, Arial, serif;
+  color: #183464;
+}
+.menu-title{
+  font-family: 'Roboto Bold', 'Roboto';
+  font-weight: 700;
+  font-style: normal;
+  font-size: 26px;
+  color: #183464;
+  margin-bottom: 30px;
+}
+.light-gray-color{
+  color: #aaa;
+}
+.my-recommend-title{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
+.my-recommend-checkbox{
+  padding-left: 14px;
+}
+.recommend-seller{
+  margin-top: 40px;
+}
+.v-text-bottom{
+  vertical-align: text-bottom !important;
+}
+
+/* 优化重写样式部分 */
+.card-btn {
+  margin: 0px 5px;
+  padding: 10px;
+}
+
+/* 蓝色背景标题部分 */
+#setting-content .title-tip-container{
+  background: rgba(40, 97, 206, 0.1);
+  border-radius: 4px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 49px;
+  padding: 0px 16px;
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.oris-input {
+  box-shadow: initial !important;
+}
+
+#page-setting label {
+  font-weight: 400;
+}

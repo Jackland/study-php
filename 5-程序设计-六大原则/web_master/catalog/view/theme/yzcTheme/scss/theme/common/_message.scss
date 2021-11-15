@@ -1,0 +1,88 @@
+@charset "UTF-8";
+
+//
+// @copyright        2019 opencart.cn - All Rights Reserved
+// @link             http://www.guangdawangluo.com
+// @author           Sam Chen <sam.chen@opencart.cn>
+// @created          2019-11-08 11:04:57
+// @modified         2019-11-08 11:08:47
+//
+
+.conversational-message-wrapper {
+  font-size: 12px;
+  max-height: 500px;
+  overflow-y: scroll;
+
+  .message-item {
+    display: block;
+    margin-bottom: 20px;
+    overflow: hidden;
+
+    &.incoming {
+      .right {
+        .content {
+          background-color: #fff5ef;
+          border: 1px solid #fa6400;
+        }
+      }
+    }
+
+    &.outgoing {
+      overflow: hidden;
+      clear: both;
+
+      & > div {
+        float: right;
+      }
+
+      .right {
+        margin-left: 0;
+        margin-right: 10px;
+
+        .info {
+          span {
+            text-align: right;
+          }
+        }
+
+        .content {
+          background-color: #fbfbfb;
+          border: 1px solid #dfdfdf;
+        }
+      }
+    }
+
+    .left {
+      float: left;
+
+      img.avatar {
+        height: 40px;
+        width: 40px;
+        border-radius: 20px;
+      }
+    }
+
+    .right {
+      max-width: 400px;
+      margin-left: 50px;
+
+      .info {
+        display: flex;
+        margin-bottom: 4px;
+
+        span {
+          flex: 1;
+        }
+
+        i {
+          font-size: 12px;
+        }
+      }
+
+      .content {
+        padding: 20px;
+        border-radius: 6px;
+      }
+    }
+  }
+}

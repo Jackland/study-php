@@ -1,0 +1,336 @@
+{% trans_default_category 'catalog/view/customerpartner/seller_store/home/index' %}
+{# @file 推荐产品 #}
+
+{{ css([
+  'static/customerpartner/seller_store/home/components/modules/product_recommend.css'
+]) }}
+
+<script type="text/x-template" id="product-recommend-module">
+  <div class="recommend-module-container" v-loading="loading">
+    {# 首次进入显示骨架图 #}
+    <div v-if="isInit"> 
+      <div class="recommend-module">
+        <img class="w1200" src="{{ asset('static/customerpartner/seller_store/home/images/blanks/product-recommend.png') }}">
+      </div>
+    </div>
+    {# 编辑后内容显示模块 #}
+    <div v-else>
+      <div class="recommend-module">
+        <div class="common-title" v-if="data.title_show">${data.title_value}</div>
+        <div class="w1200 module-flex">
+          <div class="rec-item m20-b" v-for="(product,index) of products" :key="index">
+            <div class="rec-image" :class="{'unaval160-image': !product.available}">
+              <img :src="product.image">
+            </div>
+            <div class="rec-content">
+              <div>Item Code:&nbsp;${product.sku}<span v-html="product.tags"></span></div>
+              <div class="line26">
+                <span class="module-amount" v-html="product.price"></span>
+                <span class="module-grey p2-l">/Unit</span>
+              </div>
+              <div>Qty Available:&nbsp;${product.qty}</div>
+              <div class="rec-mark">${data.angle_tip_value}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# 编辑弹窗部分 #}
+    <div v-if="showEdit">
+      <el-dialog class="recommend-modal ele ele-modal module-modal" :class="{'active-modal': showEdit}" title="{{__('产品推荐设置')}}" :visible="showEdit"  :close-on-click-modal="false"
+        @close="closeEdit" append-to-body destory-on-close modal-append-to-body="false" width="800px"> 
+        <div class="content-container">
+          <div class="recommend-modal-tip module-modal-tip">
+            <ul>
+              <li>
+                {{__('本模块适用于畅销品推荐、新品推荐等，最多可选择:num个产品。', {num: "<strong>9</strong>"})}}
+              </li>
+          </div>
+
+          <div class="recommend-edit-container module-edit-container">
+            <el-tabs v-model="activeTab" class="ele ele-tabs">
+              <el-tab-pane label="{{__('内容设置')}}" name="tab1">
+                <div v-if="products.length <= 0" class="recommend-table-body nodata-container">
+                  <div>
+                    <div class="nodata-title">{{__('暂未添加产品')}}</div>
+                    <div class="ele ele-btn btn-container">
+                      <el-button class="outline add-product-btn" @click="handleAddProduct"
+                        :disabled="products.length >= 9"><i class="giga icon-iconfonticon02-copy btn-icon"></i>{{__('添加')}}</el-button>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="products.length > 0" class="recommend-table-body scrollable-container module-form-body" id="recommend-list-container">
+                  <div class="products-container">
+                    <div v-for="(product, index) in products" class="product-item-container" :key="index">
+                      <div class="content">
+                        <div class="product-img-container">
+                          <img class="product-img" :src="product.image">
+                        </div>
+                        <div class="product-info">
+                          <div class="product-info__title" :title="product.name">${product.name}</div>
+                          <div class="product-info__code">${product.sku} / ${product.mpn}<span v-html="product.tags"></span></div>
+                          <div class="product-info__footer">
+                            <span class="product-info__footer-price"><span v-html="product.price"></span></span>
+                            <span class="product-info__footer-qty">Qty Available: ${product.qty}</span>
+                          </div>
+                        </div>
+                        <div class="product-oper">
+                          <i class="giga icon-xiangshangjiantou-01 ele ele-action-icon" :class="{'is-disabled': index <= 0}" @click="upProduct(index)"></i>
+                          <i class="giga icon-xiangxiajiantou-01 ele ele-action-icon" :class="{'is-disabled': index >= products.length - 1}" @click="downProduct(index)"></i>
+                          <i class="giga icon-co_lajitong ele ele-action-icon" @click="delProduct(index)"></i>
+                        </div>
+                      </div>
+                      <div class="split-line"></div>
+                    </div>
+                  </div>
+                  <div class="products-footer ele ele-btn">
+                    <div class="product-add-tip">{{__('还可添加:num个产品', {num:"<span class=\"strong-tip\">${ 9 - products.length }</span>"})}}</div>
+                    <el-button class="outline add-product-btn" @click="handleAddProduct"
+                      :disabled="products.length >= 9"><i class="giga icon-iconfonticon02-copy btn-icon"></i>{{__('添加')}}</el-button>
+                  </div>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="{{__('显示设置')}}" name="tab2">
+                <div class="recommend-table-body">
+                  <div class="ele ele-form setting-container">
+                    <el-form :model="settingForm" ref="recommend-form" class="recommend-form" label-width="145px">
+                      <el-form-item label="{{__('显示标题')}}" class="radio-form-item">
+                        <el-radio-group v-model="settingForm.showTitle" class="ele ele-radio-group">
+                          <el-radio :label="1">{{__('显示')}}</el-radio>
+                          <el-radio :label="0">{{__('不显示')}}</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+                      <el-form-item label="{{__('标题名称')}}" class="radio-form-item" v-if="settingForm.showTitle">
+                        <el-radio-group v-model="settingForm.title" class="ele ele-radio-group">
+                          <el-radio v-for="(v,k) in options.module_product_recommend_title" :label="k">${v}</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+                      <el-form-item label="{{__('角标内容')}}" class="radio-form-item">
+                        <el-radio-group v-model="settingForm.corner" class="ele ele-radio-group">
+                          <el-radio v-for="(v,k) in options.module_product_recommend_angle_tip" :label="k">${v}</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+                    </el-form>
+                  </div>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+        </div>
+        <template slot="footer">
+          <div class="ele ele-btn ele-btn-group">
+            <el-button class="oper-btn" @click="closeEdit">{{__('取消')}}</el-button>
+            <el-button class="oper-btn" type="primary" @click="saveEdit" :loading="btnLoading">{{__('保存')}}</el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </div>
+    <product-select-dialog :showModal="showProductDialog" :type="searchType" 
+      @close="handleCloseProductDialog" @choose="chooseProduct" :beforeChoose="beforeChooseProduct"></product-select-dialog>
+  </div>
+</script>
+<script>
+const PRODUCT_RECOMMEND_TRANSLATE = {
+  PRODUCT_SELECT: "{{__('请选择产品')}}",
+  PRODUCT_EXIST: "{{__('您已选择该产品')}}"
+}
+</script>
+<script>
+  Vue.component('product-recommend', {
+    template: '#product-recommend-module',
+    delimiters: ['${', '}'],
+    props: {
+      data: {
+        type: Object,
+        default: () => ({})
+      },
+    },
+    data() {
+      return {
+        showEdit: false, //是否显示弹窗
+        activeTab: 'tab1', 
+        loading: false, //加载动画
+        btnLoading: false,
+        axios: null,
+        products: [], //已选的推荐产品
+        // 产品选择框部分
+        showProductDialog: false, //是否显示产品选择弹窗
+        searchType: MODULE_TYPE.PRODUCT_RECOMMEND, //产品搜索类型
+        // 显示设置
+        settingForm: {
+          showTitle: 1,
+          title: '',
+          corner: '',
+        }
+      }
+    },
+    watch: {
+      showEdit: {
+        immediate: true,
+        handler: function(res) {
+          this.$nextTick(function() {
+            this.$nextTick(function() {
+              this.initDefault(this.data)
+              let height = $(".active-modal.module-modal .el-dialog__body").height() - $(".active-modal .module-modal-tip").height();
+              $(".active-modal .module-edit-container").height(height);
+            })
+          })
+        }
+      },
+    },
+    computed: {
+      isInit() {
+        return jQuery.isEmptyObject(this.data)
+      },
+      options() {
+        return store.state.options;
+      }
+    },
+    created() {
+      this.axios = axios.create({});
+    },
+    methods: {
+      /**
+      * 编辑时初始化默认值
+      */
+      initDefault(_data) {
+        let data = _.cloneDeep(_data);
+        let that = this;
+        that.products = [];
+        if (data && data.products) {
+          that.products = _.cloneDeep(data.products);
+          that.settingForm = {
+            showTitle: data.title_show,
+            title: data.title_key,
+            corner: data.angle_tip_key,
+          }
+        } else {
+          that.settingForm = {
+            showTitle: 1,
+            title: '1',
+            corner: '1',
+          }
+        }
+      },
+
+      /**
+      * 编辑操作
+      */
+      handleEdit() {
+        this.showEdit = true;
+      },
+
+      closeEdit() {
+        this.clearModal();
+        this.showEdit = false;
+      },
+
+      //清空弹窗
+      clearModal() {
+        this.products = [];
+        this.$refs['recommend-form'].resetFields();
+      },
+
+      //提交前有效性验证
+      validateForm(data) {
+        if(data.data.products.length > 0) {
+          return true;
+        } else {
+          this.$message({...ALERT_OPTION, message: PRODUCT_RECOMMEND_TRANSLATE.PRODUCT_SELECT});
+          this.activeTab = 'tab1';
+          return false;
+        }
+      },
+
+      //保存弹窗按钮
+      saveEdit() {
+        let data = { 
+          type: MODULE_TYPE.PRODUCT_RECOMMEND,
+          data: {
+            products:[]
+          }
+        }
+        data.data = {
+          products: this.products,
+          title_show: this.settingForm.showTitle,
+          title_key: this.settingForm.title,
+          angle_tip_key: this.settingForm.corner,
+        }
+        data.data.products = this.products;
+        if (this.validateForm(data)) {
+          let that = this;
+          that.btnLoading = true;
+          that.axios.post(API.MODULE_SAVE, data).then(res => {
+            if(res.data.code == 200) {
+              that.closeEdit();
+              that.$emit("set-module", _.cloneDeep(res.data.data));
+            } else {
+              that.$message({...ALERT_OPTION, message: res.data.msg});
+            }
+            that.btnLoading = false;
+          }).catch(err => {
+            that.$message.error(err);
+            that.btnLoading = false;
+          })
+        }
+      },
+
+      //弹窗页面自有方法部分 start----
+
+      //添加产品操作
+      handleAddProduct() {
+        this.showProductDialog = true;
+      },
+
+      //关闭弹窗操作
+      handleCloseProductDialog() {
+        this.showProductDialog = false;
+      },
+      
+      //产品选择验证回调
+      beforeChooseProduct(product) {
+        for(let item of this.products) {
+          if(item.id == product.id) {
+            this.$message({...ALERT_OPTION, message: PRODUCT_RECOMMEND_TRANSLATE.PRODUCT_EXIST });
+            return false;
+          }
+        }
+        return true;
+      },
+
+      //产品选择操作
+      chooseProduct(product) {
+        this.products.push(product);
+        this.$nextTick(function(){
+          //滚动到底部
+          let element = document.getElementById('recommend-list-container');
+          element.scrollTop = element.scrollHeight - element.clientHeight;
+        })
+      },
+
+      //小图标操作部分
+      upProduct(index) {
+        if (index > 0) {
+          let temp = this.products[index];
+          this.products[index] = this.products[index-1];
+          this.products[index-1] = temp;
+        }
+        this.$forceUpdate();
+      },
+
+      downProduct(index) {
+        if (index < this.products.length - 1) {
+          let temp = this.products[index];
+          this.products[index] = this.products[index+1];
+          this.products[index+1] = temp;
+        }
+        this.$forceUpdate();
+      },
+
+      delProduct(index) {
+        this.products.splice(index, 1);
+      },
+    }
+  })
+</script>

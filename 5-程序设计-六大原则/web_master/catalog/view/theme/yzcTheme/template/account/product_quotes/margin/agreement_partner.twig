@@ -1,0 +1,54 @@
+{{ cssOrigin(['catalog/view/theme/yzcTheme/stylesheet/account/accountManage.css']) }}
+<div class="oris-row max-1080">
+   <div class="module-row">
+    <div class="module-title">
+      <span class="Y-axis"></span>Partner
+    </div>
+    <div class="summary-list">
+      <div class="summary-details  ">
+        <span class="title">{{ __('Name') }}:</span>
+        <span class="txt">
+          <span class="name-color">{{ partner_detail.nickname }}</span>&nbsp;&nbsp;{{ partner_detail.user_number }}
+          <span class="account-type {% if partner_detail.buyer_account_type == 2 %} atype-ds{% elseif partner_detail.buyer_account_type == 1 %} atype-wc{% endif %}">
+            {{ partner_detail.buyer_account_name }}
+          </span>
+        </span>
+      </div>
+      <div class="summary-details">
+        <span class="title">{{ __('Reason') }}:</span>
+        <span class="txt white-preW break-word">{{ partner_detail.reason }}</span>
+      </div>
+      <div class="log-list m30-t">
+        <div class="change-record">
+          <div class="basic-msg flex-layout">
+            <span class="mark-icon icon-checked"></span>
+            <div class="">
+              <span class="title">{{ __('Seller Result') }}:</span>
+              <span class="txt text-bold">{{ partner_detail.seller_approval_status_show }}</span>{#根据状态不同颜色#}
+            </div>
+          </div>
+          <div class="record-detail" style="
+            {% if partner_detail.check_result > 0 %}border-left-color: #375ACD;{% endif %}
+            {% if partner_detail.program_code == 'v2' %}border-left: 0 solid #ccc;{% endif %}
+            " >
+            {% if partner_detail.seller_check_reason %}
+              <div>
+                <span class="title">{{ __('Message') }}:</span>
+                <span class="txt break-word">{{ partner_detail.seller_check_reason }}</span>{#为空则消息全部不显示#}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        {% if partner_detail.program_code != 'v2' %}
+        <div class="change-record">
+          <div class="basic-msg flex-layout">
+            <span class="mark-icon {% if partner_detail.check_result > 0  %}icon-checked{% endif %}"></span>
+            <div><span class="title">Marketplace Result:</span>
+              <span class="txt">{{ partner_detail.check_result_show }}</span></div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

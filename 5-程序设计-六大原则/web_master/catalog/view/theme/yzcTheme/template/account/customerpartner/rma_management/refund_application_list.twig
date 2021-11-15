@@ -1,0 +1,361 @@
+<div id="box-shadow" style="overflow: hidden">
+  <div class="col-sm-12" style="margin:0 -15px;padding: 0">
+    <div class="panel panel-default" style="margin-bottom: 0;border: none;box-shadow: none">
+      <div class="panel-body">
+        <form id="rma-refund-application-form" onkeydown="keydown2()">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" for="input-rmaId">{{ entry_rma_id }}</label>
+              <input
+                type="text"
+                name="filter_rma_id"
+                placeholder="{{ entry_rma_id }}"
+                id="input-rmaId"
+                class="form-control"/>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" for="input-nick-name">{{ entry_nick_name }}</label>
+              <input name="filter_nick_name" id="input-nick-name" class="form-control"/>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" for="input-order-id">{{ entry_order_id }}</label>
+              <input name="filter_order_id" id="input-order-id" class="form-control"/>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" for="input-refund-status">Processed Result</label>
+              <select name="filter_refund_status" id="input-refund-status" class="form-control">
+                <option value="">--Select--</option>
+                <option value="0">Hasn't Replied</option>
+                <option value="1">Agree</option>
+                <option value="2">Refuse</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" for="input-status">{{ entry_status }}</label>
+              <select name="filter_status" id="input-status" class="form-control">
+                <option value="0">--Select--</option>
+                <option value="1">Applied</option>
+                <option value="3">Pending</option>
+                <option value="2">Processed</option>
+                <option value="4">Canceled</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group text-right" style="margin-top: 25px">
+              <button
+                type="button"
+                id="rma-refund-application-filter"
+                class="btn btn-primary btn1"
+                data-loading-text="Loading...">
+                Filter
+              </button>
+              <a class="btn btn-default btn1" id="rma-refund-application-refresh" data-toggle="tooltip"
+                 data-original-title="Reset"> <i class="fa fa-refresh"></i> </a>
+              <button type="button"
+                id="rma-refund-application-download"
+                class="btn btn-default"
+                data-toggle="tooltip"
+                title="download"
+                data-original-title="download">
+                <i class="fa fa-download"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="col-sm-12" style="padding: 0">
+      <div class="panel panel-default" style="border: none;margin-bottom: 0;box-shadow: none">
+        {#        <div class="panel-heading">#}
+        {#          <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_list }}</h3>#}
+        {#        </div>#}
+        <div class="panel-body">
+          <table id="rma_refund_application"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  let rma_refund_application_table = $('#rma_refund_application');
+  let rma_refund_application_form = $('#rma-refund-application-form');
+  let url = 'index.php?route=account/customerpartner/rma_management/rma_manage/getRmaManagementList';
+
+  function resolveRmaManagementParam(params) {
+    let data = {};
+    let newParams = rma_refund_application_form.serializeArray();
+    data['sort'] = params['sort'];
+    data['order'] = params['order'];
+    data['page'] = (params['offset'] / params['limit'] + 1);
+    data['per_page'] = params['limit'];
+    newParams.forEach(function (val, key) {
+      data[val['name']] = val['value'];
+    });
+    data['filter_apply_for_refound'] = 1;
+    return data;
+  }
+
+  $(function () {
+    $('.date').datetimepicker({
+      pickDate: true,
+      pickTime: true,
+      format: 'YYYY-MM-DD HH'
+    });
+    rma_refund_application_table.bootstrapTable({
+      classes: "table table-hover",
+      url: url,
+      queryParams: resolveRmaManagementParam,
+      sidePagination: "server",
+      pagination: true,
+      pageNumber: 1,
+      pageSize: 15,
+      pageList: [10, 15, 50, 100],
+      detailView: true,
+      detailViewIcon: false,
+      detailViewByClick: false,
+      detailFormatter: function (index, row) {
+        let str = {};
+        let refund = row['refund'];
+        let refundInfo = [];
+        if (row['refundMpn'] && row['refundSku']) {
+          refundInfo.push(row['refundMpn'] + '(' + row['refundSku'] + ')');
+        }
+        if (refund['refund_quantity']) {
+          refundInfo.push(refund['refund_quantity']);
+        } else if (row['refund_quantity']) {
+          refundInfo.push(refund['refund_quantity'])
+        }
+        row['processed_date'] && refundInfo.push(row['processed_date']);
+        if (refundInfo.length > 0) {
+          str['Refund Info'] = refundInfo.join(' || ');
+        }
+        str['Reason'] = refund['reason'];
+        // images
+        let images = refund['files'];
+        if (images.length > 0) {
+          let temp = '';
+          temp += '<div class="image_list" style="display:inline">';
+          for (let i = 0; i < images.length; i++) {
+            temp += '<a href="' + images[i] + '">'
+              + '<img  style="height: 50px" src="' + images[i] + '"/></a>';
+          }
+          temp += '</div>';
+          str['Images'] = temp;
+        }
+        // comments
+        if (refund['comments']) str["Buyer's Refund Comments"] = refund['comments'];
+        if (refund['seller_refund_comments']) str['Comments'] = refund['seller_refund_comments'];
+        let ret = '';
+        for (let i in str) {
+          if (str[i] !== null && str[i] !== '' && str[i] !== undefined) {
+            ret += '<p><b>' + i + ': </b>' + str[i] + '</p>';
+          }
+        }
+        return ret;
+      },
+      columns: [
+        {
+          field: 'id',
+          title: 'No.',
+          formatter: function (value, row, index) {
+            return index + 1;
+          },
+          align: 'center'
+        },
+        {
+          field: 'nickName',
+          title: 'Name',
+          align: 'center',
+          formatter: function (value, row, index) {
+            // let html = row.nickName;
+            let html = '<span class="user_portrait" data-user_customer_id="' + row.buyer_id + '">' + row.nickName + '</span>';
+            if (row.is_home_pickup) {
+              img_url = img_home_pickup;
+              tip_content = tip_home_pickup_logo;
+            } else {
+              img_url = img_drop_shipping;
+              tip_content = tip_drop_shipping_logo;
+            }
+            html += '<span class="img_logo"><img data-toggle="tooltip" style="padding-left: 1px" src="' + img_url + '" data-original-title="' + tip_content + '"></span>';
+            return html + row.ex_vat;
+          }
+        },
+        {
+          field: 'rma_order_id',
+          title: 'RMA ID',
+          align: 'center',
+          formatter: function (value, row, index) {
+            let rma_name = '';
+            rma_name += row['rma_order_id'];
+            if (row['marginFlag']) {
+              rma_name += row['margin_agreement_link'] ;
+            }
+            if (row['futuresFlag']) {
+              rma_name += row['futures_agreement_link'] ;
+            }
+            if (parseInt(row['name']) === 4) {
+              return rma_name;
+            }
+            let str = '';
+            str += '<a target="_blank" href="'
+              + 'index.php?route=account/customerpartner/rma_management/rmaInfo&rmaId='
+              + row['id']
+              + '">';
+            str += rma_name;
+            str += '</a>';
+            return str;
+          }
+        },
+        {
+          field: 'create_time',
+          title: 'RMA Date',
+          align: 'center'
+        },
+        {
+          title: 'Applied Refund</br>Amount',
+          align: 'center',
+          formatter: function (value, row, index) {
+            return row['refund']['apply_amounts'];
+          }
+        },
+        {
+          field: 'order_id',
+          title: 'Order ID',
+          align: 'center',
+          formatter: function (value, row, index) {
+            let str = '';
+            str += '<a target="_blank" href="index.php?route=account/customerpartner/orderinfo&order_id=' + row['order_id'];
+            str += '">' + row['order_id'] + '</a>';
+            if(row['delivery_type']==2){
+                str+='<i class="giga icon-cwf" style="color: #1f5268;font-size:15px;" data-toggle="tooltip" data-original-title="{{ cwf }}"></i>'
+            }
+            return str;
+          }
+        },
+        {
+          title: "Seller's Refund</br>Amount",
+          align: 'center',
+          formatter: function (value, row, index) {
+            return row['refund']['actual_amounts'];
+          }
+        },
+        {
+          title: 'Processed Result',
+          align: 'center',
+          formatter: function (value, row, index) {
+            let refund_status = parseInt(row['refund']['refund_status']);
+            let str = '';
+            switch (refund_status) {
+              case 0: {
+                str = 'Hasn\'t Replied';
+                break;
+              }
+              case 1: {
+                str = '<a style="color: green">Agree</a>';
+                break;
+              }
+              case 2: {
+                str = '<a style="color: red">Refuse</a>';
+                break;
+              }
+            }
+            return str;
+          }
+        },
+        {
+          title: 'RMA Status',
+          formatter: function (value, row, index) {
+            const Mappings = {
+              Applied: 1,
+              Processed: 2,
+              Pending: 3,
+              Canceled: 4
+            };
+            let str = 'UNKNOWN';
+            for (let i in Mappings) {
+              if (Mappings[i] === parseInt(row['name'])) {
+                str = i;
+              }
+            }
+            return str;
+          }
+        },
+        {
+          title: 'Details',
+          align: 'center',
+          formatter: function (value, row, index) {
+            let str = '<button type="button" data-show="0" data-index="' + index +
+              '" class="resolve_button btn btn-danger">' +
+              '<i class="giga icon-action-stretch" aria-hidden="true"></i>' +
+              '</button>';
+            return str;
+          }
+        }
+      ],
+      formatNoMatches: function () {
+        return 'No records.';
+      },
+      onLoadSuccess: function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        rma_refund_application_table.find('.resolve_button').on('click', function () {
+          let item = $(this);
+          let show = parseInt(item.data('show'));
+          rma_refund_application_table.bootstrapTable('toggleDetailView', $(this).data('index'));
+          if (show === 0) {
+            item.html('<i class="giga icon-arrow-compress" aria-hidden="true"></i>');
+            // 灯箱效果
+            $('.image_list').each(function () {
+              $(this).magnificPopup({
+                delegate: 'a',
+                type: 'image',
+                gallery: {
+                  enabled: true
+                },
+              });
+            });
+            item.data('show', 1);
+          } else {
+            item.html('<i class="giga icon-action-stretch" aria-hidden="true"></i>');
+            item.data('show', 0);
+          }
+        })
+      }
+    });
+  });
+
+  $('#rma-refund-application-download').on('click', function () {
+    let form = $('#rma-refund-application-form');
+    let rUrl = 'index.php?route=account/customerpartner/rma_management/rma_manage/downloadRefund&filter_apply_for_refound=1';
+    let params = form.serializeArray();
+    for (let val of params) {
+      if (val['value'] !== null) {
+        rUrl += '&' + val['name'] + '=' + val['value'];
+      }
+    }
+    location.href = rUrl;
+    return false;
+  });
+  $('#rma-refund-application-refresh').on('click', function () {
+    $('#tab-refund-application').load('index.php?route=account/customerpartner/rma_management/rma_manage/getRefundInfo');
+  });
+  $('#rma-refund-application-filter').on('click', function () {
+    rma_refund_application_table.bootstrapTable('refreshOptions', {pageNumber: 1})
+  })
+
+  function keydown2 (){
+    if(event.keyCode==13){
+      $("#rma-refund-application-filter").trigger("click");
+    }
+  }
+</script>

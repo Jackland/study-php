@@ -1,0 +1,79 @@
+<table class='panel-title pop_hover' style='font-size: 12px'>
+  <tbody>
+  {% if need_return_deposit %}
+    <tr>
+      <td style='text-align: left'><p>Unit Price After Discount</p></td>
+      <td style='text-align: right'><p>
+          {% if isEurope %}
+            <span>
+              <img
+                data-toggle='tooltip'
+                title=''
+                style='width: 21.81px'
+                src='/image/product/vat.png'
+                data-original-title='Service Fee'>
+            </span>
+          {% endif %}
+          {{ (price + amount_price_per)|formatPrice(currency) }}
+        </p>
+      </td>
+    </tr>
+    {% if deposit_per and deposit_per > 0 %}
+      <tr>
+        <td style='text-align: left'><p>Deposit Per Unit</p></td>
+        <td style='text-align: right'><p>{{ deposit_per|formatPrice(currency) }}</p></td>
+      </tr>
+    {% endif %}
+  {% else %}
+    <tr>
+      <td style='text-align: left'><p>Unit Price After Discount</p></td>
+      <td style='text-align: right'>
+        <p>
+          {% if isEurope %}
+            <span>
+              <img
+                data-toggle='tooltip'
+                title=''
+                style='width: 21.81px'
+                src='/image/product/vat.png'
+                data-original-title='Service Fee'>
+            </span>
+          {% endif %}
+          {{ (price + amount_price_per)|formatPrice(currency) }}
+        </p>
+      </td>
+    </tr>
+  {% endif %}
+  {% if discount and discount != 0 %}
+    <tr>
+      <td style='text-align: left'><p>Discount</p></td>
+      <td style='text-align: right'><p>{{ discount|formatPrice(currency) }}</p></td>
+    </tr>
+  {% endif %}
+  {% if service_fee_per and service_fee_per > 0 %}
+    <tr>
+      <td style='text-align: left'><p>Service Fee After Discount</p></td>
+      <td style='text-align: right'><p>{{ (service_fee_per + amount_service_fee_per)|formatPrice(currency) }}</p></td>
+    </tr>
+  {% endif %}
+  {% set freight_fee_per = freight_per+package_fee %}
+  {% if freight_fee_per and freight_fee_per > 0 %}
+    <tr>
+      <td style='text-align: left'><p>Fulfillment Per Unit</p></td>
+      <td style='text-align: right'><p>{{ freight_fee_per|formatPrice(currency) }}</p></td>
+    </tr>
+  {% endif %}
+  {% if campaign_amount_show and campaign_amount_show == 1 %}
+    <tr>
+      <td style='text-align: left'><p>Promotion Discount</p></td>
+      <td style='text-align: right'><p>-{{ soa_campaign_amount|formatPrice(currency) }}</p></td>
+    </tr>
+  {% endif %}
+  {% if coupon_amount_show and coupon_amount_show == 1 %}
+    <tr>
+      <td style='text-align: left'><p>GIGA Coupon</p></td>
+      <td style='text-align: right'><p>-{{ soa_coupon_amount|formatPrice(currency) }}</p></td>
+    </tr>
+  {% endif %}
+  </tbody>
+</table>

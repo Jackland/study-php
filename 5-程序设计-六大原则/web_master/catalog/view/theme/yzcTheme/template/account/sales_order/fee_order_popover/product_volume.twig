@@ -1,0 +1,5 @@
+<div class="product-volume">
+  {% for size in detail.size_info %}
+    <div class="nowrap">{{ size.length|round(2) }}" * {{ size.width|round(2) }}" * {{ size.height|round(2) }}"{% if detail.is_combo == 1%} x {{ size.qty }} {% endif %} </div>
+  {% endfor %}
+</div>

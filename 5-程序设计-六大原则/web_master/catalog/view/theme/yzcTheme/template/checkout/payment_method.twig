@@ -1,0 +1,273 @@
+<div id="paymentApp">
+  {% if error_warning %}
+    <div class="alert alert-warning alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+    </div>
+  {% endif %}
+  {% if payment_methods %}
+    <p>{{ text_payment_method }}</p>
+      <div class="form-wrapper">
+        {% for payment_method in payment_methods %}
+          <div class="mb-2 row payment-way" style="height: 63px;">
+            {% if payment_method.code == 'umf_pay' %}
+            <div class="col-md-5">
+              <label class="radio-inline mr-2">
+                <input type="radio" style="margin-top: 3px;" name="payment_method" value="{{ payment_method.code }}"
+                            v-model="payment_method" :disabled="useBalanceToZero==1"/>
+                <span>
+                {{ payment_method.title }}
+                {% if payment_method.terms %}
+                  ({{ payment_method.terms }})
+                {% endif %}
+                </span>
+              </label>
+              <div>
+                ICBC and CMB are recommended
+              </div>
+            </div>
+            <div class="col-md-7">
+              <img src="{{ text_path_icbc }}" style="width:237px;height: 50px">
+              <img src="{{ text_path_china_merchants_bank }}" style="width:237px;height: 50px">
+            </div>
+            {% elseif  payment_method.code == 'line_of_credit' %}
+            <div class="col-md-5">
+              <label class="radio-inline mr-2">
+                <input type="radio" style="margin-top: 3px;"
+                                                                        name="payment_method"
+                                                                        value="{{ payment_method.code }}"
+                                                                        v-model="payment_method"/>
+                <span>
+                {{ payment_method.title }}
+                (Balance: {{ balance }})
+                {% if payment_method.terms %}
+                  ({{ payment_method.terms }})
+                {% endif %}
+                </span>
+              </label>
+            </div>
+            {% elseif  payment_method.code == 'cybersource_sop' %}
+            <div class="col-md-5">
+              <label  class="radio-inline mr-2">
+                <input type="radio" style="margin-top: 3px;" name="payment_method" value="{{ payment_method.code }}"
+                            v-model="payment_method" :disabled="useBalanceToZero==1"/>
+                <span>
+                {{ payment_method.title }}
+                {% if payment_method.terms %}
+                  ({{ payment_method.terms }})
+                {% endif %}
+                </span>
+              </label>
+              <div>
+                Accepted card types : VISA, MasterCard, American Express, Discover
+              </div>
+            </div>
+            <div class="col-md-6">
+              <img src="{{ text_path_visa }}" style="width:102px;height: 63px">&nbsp;&nbsp;
+              <img src="{{ text_path_master_card }}" style="width:102px;height: 63px">&nbsp;&nbsp;
+              <img src="{{ text_path_american_express }}" style="width:102px;height: 63px">&nbsp;&nbsp;
+              <img src="{{ text_path_discover }}" style="width:102px;height: 63px">
+            </div>
+            {% elseif  payment_method.code == 'wechat_pay' %}
+            <div class="col-md-5">
+              <label class="radio-inline mr-2"><input type="radio" style="margin-top: 3px;" name="payment_method" value="{{ payment_method.code }}"
+                            v-model="payment_method" :disabled="useBalanceToZero==1"/>
+                <span>
+                {{ payment_method.title }}
+                {% if payment_method.terms %}
+                  ({{ payment_method.terms }})
+                {% endif %}
+                </span>
+              </label>
+            </div>
+            <div class="col-md-7">
+              <img src="{{ text_path_wechat }}" style="height:60px;">
+            </div>
+              <div id="wechatInfo" style="z-index: 10;" v-show="payment_method=='wechat_pay'" class="col-sm-12">
+                <div class="col-sm-12">
+                  <div class="form-group required" style="display: flex">
+                    <label class="col-sm-2 control-label">FULL Name</label>
+                    <div class="col-sm-4">
+                      <input v-model="wechatName.mask" type="text" class="form-control" placeholder="Full name"
+                             @input="change($event,'wechatName')"/>
+                      <input v-model="wechatName.value" type="hidden"/>
+                    </div>
+                    <div class="colsm-6 wechatError" v-html="error.wechatName"></div>
+                  </div>
+                  <div class="form-group required" style="display: flex">
+                    <label class="col-sm-2 control-label">Chinese Resident Identity Card Number</label>
+                    <div class="col-sm-4">
+                      <input v-model="wechatIdCard.mask" @input="change($event,'wechatIdCard')" type="text"
+                             class="form-control" placeholder="Chinese resident identity card number"/>
+                      <input v-model="wechatIdCard.value" type="hidden"/>
+                    </div>
+                    <div class="colsm-6 wechatError" v-html="error.wechatIdCard"></div>
+                  </div>
+                  <div class="form-group required" style="display: flex">
+                    <label class="col-sm-2 control-label">Phone</label>
+                    <div class="col-sm-4">
+                      <input v-model="wechatPhone.mask" @input="change($event,'wechatPhone')" type="text"
+                             class="form-control" placeholder="Phone number"/>
+                      <input v-model="wechatPhone.value" type="hidden"/>
+                    </div>
+                    <div class="colsm-6 wechatError" v-html="error.wechatPhone"></div>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+            <div class="col-md-5">
+              <label class="radio-inline mr-2">
+                <input type="radio" style="margin-top: 3px;" name="payment_method" value="{{ payment_method.code }}"
+                            v-model="payment_method"
+                />
+                <span>
+                {{ payment_method.title }}
+                {% if payment_method.terms %}
+                  ({{ payment_method.terms }})
+                {% endif %}
+                </span>
+              </label>
+            </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <div class="form-group mt-3">
+          <div class="row">
+            <div class="col-md-5">
+              <label for="">{{ text_comments }}</label>
+              <textarea name="comment" rows="8" class="form-control" placeholder="Enter comments here">{{ comment }}</textarea>
+            </div>
+          </div>
+        </div>
+        {% if text_agree %}
+          <div class="text-center mt-5">
+            {{ text_agree }}
+            {% if agree %}
+              <input type="checkbox" name="agree" value="1" checked="checked"/>
+            {% else %}
+              <input type="checkbox" name="agree" value="1"/>
+            {% endif %}
+            &nbsp;
+            <input type="button" value="{{ button_continue }}" id="button-payment-method"
+                   data-loading-text="{{ text_loading }}" class="btn btn-primary"/>
+          </div>
+        {% else %}
+          <div class="text-center mt-5">
+            <input type="button" value="{{ button_continue }}" id="button-payment-method"
+                   data-loading-text="{{ text_loading }}" class="btn btn-primary"/>
+          </div>
+        {% endif %}
+      </div>
+  {% endif %}
+</div>
+<style>
+  .wechatError {
+    font-weight: bold;
+    color: #ff0000;
+    font-size: 14px;
+  }
+</style>
+<script>
+    var paymentApp = new Vue({
+        el: '#paymentApp',
+        delimiters: ['${', '}'],
+        data() {
+            return {
+                useBalanceToZero: '{{ useBalanceToZero }}',
+                payment_method: '{{ code }}',
+                wechatName: {
+                    mask: '',
+                    value: '',
+                },
+                wechatPhone: {
+                    mask: '',
+                    value: '',
+                },
+                wechatIdCard: {
+                    mask: '',
+                    value: '',
+                },
+                wechatSessionInfo:{{ wechatInfo|json_encode|raw }},
+                payInfo: {
+                    qrcodeUrl: '',
+                    total_yzc: '',
+                    currency_yzc: '',
+                    rate_yzc: '',
+                    total_cny: '',
+                },
+                error: '',
+            }
+        },
+        created() {
+            var vue = this;
+            if (vue.wechatSessionInfo) {
+                vue.wechatName['value'] = vue.wechatSessionInfo['wechatName'];
+                vue.wechatPhone['value'] = vue.wechatSessionInfo['wechatPhone'];
+                vue.wechatIdCard['value'] = vue.wechatSessionInfo['wechatIdCard'];
+                //微信个人信息  后4位换成*
+                vue.wechatName['mask'] = vue.wechatSessionInfo['wechatName'].replace(/(.{1}).*/, '$1***');
+                vue.wechatPhone['mask'] = vue.wechatSessionInfo['wechatPhone'].replace(/.{4}$/, '****');
+                vue.wechatIdCard['mask'] = vue.wechatSessionInfo['wechatIdCard'].replace(/.{4}$/, '****');
+            }
+        },
+        methods: {
+            change($event, key) {
+                var vue = this;
+                //带*号的编辑时要清空
+                if (vue[key]['mask'] && vue[key]['mask'].includes('*')) {
+                    vue[key]['mask'] = $event.data;
+                }
+                vue[key]['value'] = vue[key]['mask'];
+            },
+            validate() {
+                var vue = this;
+                vue.error = {};
+                if (!vue.wechatName.value) {
+                    vue.error['wechatName'] = 'Name can not be empty.';
+                }
+                if (!vue.wechatIdCard.value) {
+                    vue.error['wechatIdCard'] = 'Chinese Resident Identity Card Number can not be empty.';
+                }
+                if (!vue.wechatPhone.value) {
+                    vue.error['wechatPhone'] = 'Phone can not be empty.';
+                }
+                return $.isEmptyObject(vue.error)
+            },
+            createWechatPayment() {
+                if (!this.validate()) {
+                    return false
+                }
+                var vue = this;
+                var isSuccess = false;
+                var data = {
+                    orderCreated: false,
+                    wechatName: vue.wechatName.value,
+                    wechatPhone: vue.wechatPhone.value,
+                    wechatIdCard: vue.wechatIdCard.value,
+                };
+                $.ajax({
+                    url: 'index.php?route=extension/payment/wechat_pay/createPayment',
+                    method: 'post',
+                    data: data,
+                    async: false,
+                    dataType: 'json',
+                    complete: function () {
+                        $('#button-payment-method').button('reset');
+                    },
+                    success: function (json) {
+                        isSuccess = json['success'];
+                        if (json['success']) {
+                            // vue.payInfo = json['payInfo'];
+                        } else {
+                            //错误信息放在中间的框框内
+                            vue.error['wechatIdCard'] = '&nbsp;&nbsp;&nbsp;' + json['msg'];
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        vue.error = 'Sorry, the system is busy now, please try again later.';
+                        console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                });
+                return isSuccess;
+            }
+        }
+    });
+</script>

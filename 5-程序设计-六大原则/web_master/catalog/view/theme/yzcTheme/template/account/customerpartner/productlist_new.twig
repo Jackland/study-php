@@ -1,0 +1,30 @@
+{{ header }}
+{{ separate_column_left }}
+
+<div class="container-fluid" id="content" style="margin-left: 15%">
+  {{ breadcrumbs }}
+  <div style="margin-bottom: 20px">
+    <span class="content-heading">{{ heading_title_productlist }}</span>
+    <div class="pull-right">
+      <a href="{{ url('pro/product') }}" data-toggle="tooltip" title="{{ button_insert }}"
+         class="btn btn-primary"><i class="fa fa-plus"></i>
+        NEW PRODUCT
+      </a>
+    </div>
+  </div>
+  {{ navTab }}
+  <div class="panel">
+    <div class="panel-body">
+      {{ searchForm }}
+    </div>
+    <div class="panel-body">
+      <a onclick="func_download_template();" class="btn btn-default pull-right" data-toggle="tooltip" data-original-title="Download Template" style="margin-left: 5px"><i class="fa fa-download"></i> Download Template</a>
+      <a onclick="func_import_csv_file(this);" class="btn btn-default pull-right" data-toggle="tooltip" data-original-title="Import Excel File" style="margin-left: 5px"><i class="giga icon-action-upload" style="font-size: 12px;"></i> Import Excel File</a>
+    </div>
+    <div class="panel-body">
+      {{ gridView }}
+    </div>
+  </div>
+</div>
+
+{{ footer }}

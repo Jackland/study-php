@@ -1,0 +1,280 @@
+{{ header }}{{ separate_column_left }}
+
+<style>
+    .submit-ticket-right {
+      cursor: pointer;
+      position: absolute;
+      right: 16px;
+      top: 45px;
+      line-height: 25px !important;
+      border-radius: 4px !important;
+    }
+
+    .ticket-lists-left{
+        min-height: 100px;
+    }
+    .ticket-lists-right{
+        min-height: 100px;
+        padding-right: 0px;
+        border-left: 1px solid #dddddd;
+    }
+
+    .ticket-lists-left ul{
+        padding: 0px;
+    }
+
+
+    .ticket-lists-left ul li {
+        font-size: 12px;
+        /*height: 30px;*/
+        line-height: 30px;
+    }
+    .li-active {
+        /*background: #f5f5f5;*/
+    }
+    .li-active a{
+        color:#FF5722;
+    }
+    .ticket-lists-right-form{
+        min-width: 270px; margin-bottom: 20px;
+    }
+    .hot-color{
+        color:#FF5722
+    }
+    ul span.count{
+      padding: 3px 7px;
+      color: #fff;
+      background: #fa6400;
+      font-size: 12px;
+      font-style: normal;
+      border-radius: 8px;
+      color: #fff;
+      position: absolute;
+      top: -10px;
+      right: -5px;
+      z-index: 9;
+      display: inline-block;
+      min-width: 10px;
+      line-height: 1;
+      vertical-align: middle;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .my-box{
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 3px;
+      box-shadow: #ddd 0 0 6px;
+      position: relative;
+      z-index: 1;
+    }
+    .row .form-group input:not([type=checkbox]):not([type=radio]), .row .form-group select {
+      height: 40px !important;
+      border-radius: 4px !important;
+      background-color: #f3f5f7;
+    }
+
+    .my-title{
+      font-family: 'Roboto Bold', 'Roboto';
+      font-weight: 700;
+      font-style: normal;
+      font-size: 26px;
+      color: #183464;
+      margin-bottom: 30px;
+    }
+    .nav-tabs > li.active > a{
+      border: unset !important;
+    }
+    .nav-tabs > li {
+       box-shadow: unset !important;
+    }
+    .nav-tabs > li > a{
+      border: unset !important;
+    }
+</style>
+{% for style in styles %}
+  <link href="{{ style }}" type="text/css" rel="stylesheet"/>
+{% endfor %}
+
+{{ ticketBuyer }}
+<div class="container-fluid" id="content" style="margin-left: 235px">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+
+    {% if rma_edit_error %}
+        <div class="alert alert-warning alert-dismissible"><i class="fa fa-check-circle"></i> {{ error }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    {% endif %}
+
+
+    <div class="row">
+        {% set class = 'col-sm-12' %}
+        {% if separate_view == 0 %}
+          {% set table_div_class = 'overflow: hidden;' %}
+        {% endif %}
+        <div id="content" class="{{ class }}">{{ content_top }}
+          <div id="table_content" style="{{ table_div_class }}">
+            <div class="my-title">
+              {{ text_tickets }}
+            </div>
+            <div class="container-fluid " style="padding: 0px;">
+              <div class="btn btn-submit submit-ticket-right" style="margin-top: 35px;font-size: 14px;width: auto;">Submit a Request</div>
+              {# Tabs #}
+              <ul class="nav nav-tabs ticket-tabs" style="margin-left: 5px">
+
+                <li id="rma_li" class="submit_ticket_for_count_1" {% if(isParter==true or type == 1 or not type) %} active {% endif %}  value="1" submit_ticket_for="1">
+                  <a href="#tab-rma" data-toggle="tab">
+                    RMA Management
+                    {% if ticket_for_noread['1'].total %}
+                      <span class="count">{{ ticket_for_noread['1'].total}}</span>
+                    {% endif %}
+                  </a>
+                </li>
+
+                <li id="other_li" class="submit_ticket_for_count_9 " {% if type == 9 %} active {% endif %} value="9" submit_ticket_for="9">
+                  <a href="#tab-warehouse-services" data-toggle="tab">Warehouse services
+                    {% if ticket_for_noread['9'].total %}
+                      <span class="count">{{ ticket_for_noread['9'].total}}</span>
+                    {% endif %}
+                  </a>
+                </li>
+
+                <li id="other_li" class="submit_ticket_for_count_14" {% if type == 14 %} active {% endif %} value="14" submit_ticket_for="14">
+                  <a href="#tab-questions-dimensions" data-toggle="tab">Questions on product dimensions
+                    {% if ticket_for_noread['14'].total %}
+                      <span class="count">{{ ticket_for_noread['14'].total}}</span>
+                    {% endif %}
+                  </a>
+                </li>
+
+                <li id="other_li" class="submit_ticket_for_count_3" {% if type == 3 %} active {% endif %} value="3" submit_ticket_for="3">
+                  <a href="#tab-others" data-toggle="tab">Others
+                    {% if ticket_for_noread['3'].total %}
+                      <span class="count">{{ ticket_for_noread['3'].total}}</span>
+                    {% endif %}
+                  </a>
+                </li>
+              </ul>
+              <div class="panel my-box" style="padding: 10px;position: relative;border: unset">
+                <div class="tab-content">
+                  <div class="tab-pane {% if(isParter==true) and type == 1 %} active {% endif %}" id="tab-rma">
+                    <fieldset>
+                      <div id="show-lists-rma"></div>
+                    </fieldset>
+                  </div>
+
+                    <div class="tab-pane {% if type == 9 %} active {% endif %}" id="tab-warehouse-services">
+                      <fieldset>
+                        <div id="show-lists-warehouses"></div>
+                      </fieldset>
+                    </div>
+                    <div class="tab-pane {% if type == 14 %} active {% endif %}" id="tab-questions-dimensions">
+                      <fieldset>
+                        <div id="show-lists-questions-dimensions"></div>
+                      </fieldset>
+                    </div>
+                    <div class="tab-pane {% if type == 3 %} active {% endif %}" id="tab-others">
+                        <fieldset>
+                            <div id="show-lists-others"></div>
+                        </fieldset>
+                    </div>
+                </div>
+                <content_bottom></content_bottom>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="ticket_page_is_need_reload" value="1">
+<input type="hidden" id="ticket_page_is_need_clear_type" value="1">
+
+{{ footer }}
+<script>
+    var txtPleaseSelect = "{{ __('请选择', {}, 'common') }}";
+    $(function () {
+        block.unBlockUI();
+
+        $('#show-lists-rma').load('index.php?route=account/ticket/showListsRma&submit_ticket_for=1', setActiveTab);
+        //$('#show-lists-sales-order').load('index.php?route=account/ticket/showListsSalesOrder&submit_ticket_for=2');
+        $('#show-lists-warehouses').load('index.php?route=account/ticket/showListsOthers&submit_ticket_for=9', setActiveTab);
+        $('#show-lists-questions-dimensions').load('index.php?route=account/ticket/showListsOthers&submit_ticket_for=14', setActiveTab);
+        $('#show-lists-others').load('index.php?route=account/ticket/showListsOthers&submit_ticket_for=3', setActiveTab);
+    });
+    var callbackCount = 0;
+    function setActiveTab() {
+      callbackCount ++;
+      if(callbackCount >= 4) {
+        let activeTab = "#tab-rma";
+        switch ("{{ type }}") {
+          case "1":
+            activeTab = '#tab-rma'
+            break;
+          case "9":
+            activeTab = '#tab-warehouse-services'
+            break;
+          case "14":
+            activeTab = '#tab-questions-dimensions'
+            break;
+          case "3":
+            activeTab = '#tab-others'
+            break;
+          default: 
+            break;
+        }
+        $(`.ticket-tabs a[href="${activeTab}"]`).tab('show')
+      }
+    }
+
+    function hideReset_() {
+      $('#submit_ticket_for').val(0);
+      $('#ticket_type').html(`<option value="0">--${txtPleaseSelect}--</option>`);
+      $('#ticket_type').val(0);
+      $("#tipInterceptSalesOrder").hide();
+      $('div[group="parent-rma"]').hide();
+      $('div[group="parent-sales-order"]').hide();
+      $('div[group="parent-sales-item-code"]').hide();
+      $('div[group="parent-tracking_number"]').hide();
+      $('div[group="parent-item-code"]').hide();
+      $('#ticket_group_description').hide();
+      $('.ticket_group_attachments').hide();
+      $(".ticket_group_attachments").find(".ticket-upload-file").html('');
+      $(".ticket_group_attachments").find("textarea").val('');
+      $('#myModalTicketFooter').hide();
+    }
+
+    function clearTicketInputs_(){
+      $('#submit_ticket_for').val(0);
+      $('#ticket_type').html(`<option value="0">--${txtPleaseSelect}--</option>`);
+      $('#ticket_type').val(0);
+      $("#tipInterceptSalesOrder").hide();
+      $('#rma_id').val("");
+      $('#sales_order_id').val("");
+      $('#sales_item_code').html("");
+      $('#tracking_number').val("");
+      $('#seller_item_code').val("");
+      $('#processing_method').val(0);
+      $('#ticket_description').val("");
+      $('#ticket_description_tips').html("0/1000");
+      $(".ticket_group_attachments").find(".ticket-upload-file").html('');
+      $(".ticket_group_attachments").find("textarea").val('');
+
+    }
+    {% if is_others %}
+      $("#myModalTicket").modal({backdrop: 'static', keyboard: false});
+      hideReset_();
+      clearTicketInputs_();
+      $('#myModalTicket').modal('show');
+      setTimeout(function () {
+        $('#submit_ticket_for').val(3).trigger('change')
+      },500);
+      setTimeout(function () {
+        $('#ticket_type').val(8).trigger('change')
+      },500);
+    {% endif %}
+</script>

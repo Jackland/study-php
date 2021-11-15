@@ -1,0 +1,412 @@
+@charset "UTF-8";
+
+//
+// @copyright        2019 opencart.cn - All Rights Reserved
+// @link             http://www.guangdawangluo.com
+// @author           Sam Chen <sam.chen@opencart.cn>
+// @created          2019-11-01 10:58:06
+// @modified         2019-11-13 10:15:10
+//
+
+// Seller Portal 全局
+
+.page-seller-portal {
+  h1 {
+    margin: 0 0 30px;
+    font-size: 24px;
+    font-weight: 700;
+    color: $brand-primary;
+  }
+
+  .btn-title-action {
+    position: absolute;
+    top: 0;
+    right: 10px;
+  }
+
+  // Button
+  .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+    // font-weight: normal;
+    box-shadow: 0px 2px 2px 0 #eee;
+
+    i {
+      font-size: 12px;
+    }
+
+    &.btn-primary {
+      color: #fff;
+      background-color: $color_blue;
+      border-color: darken($color_blue, 10%);
+
+      &:hover {
+        background-color: darken($color_blue, 10%);
+      }
+    }
+
+    &.btn-default {
+      color: $color_blue;
+      border-color: #e3e3e3;
+      background-color: #fbfbfb;
+
+      &:hover {
+        color: #e3e3e3;
+        background-color: $color_blue;
+        border-color: $color_blue;
+      }
+    }
+
+    &.btn-info {
+      color: #333;
+      border-color: #c1c3c5;
+      background-color: #f3f5f7;
+
+      &:hover {
+        color: #e3e3e3;
+        background-color: $color_blue;
+        border-color: $color_blue;
+      }
+    }
+  }
+
+  // i
+  i {
+    &.small {
+      font-size: 10px;
+    }
+  }
+
+  // 主选项卡样式
+  .nav-tabs {
+    &.main {
+      padding-left: 6px;
+      position: relative;
+      border: none;
+
+      & > li {
+        margin-bottom: -4px;
+
+        & > a {
+          // margin-right: 0;
+          background-color: #fff;
+          color: $brand-primary;
+          border-radius: 4px;
+
+          &:hover {
+            color: #fff;
+            border-color: $color_orange;
+            background-color: $color_orange;
+
+            span {
+              &.number {
+                color: $color_orange;
+                background-color: #fff;
+                border: 1px solid #fff;
+              }
+            }
+          }
+
+          span {
+            &.number {
+              padding: 0 6px;
+              border: 1px solid #677999;
+              font-size: 10px;
+              border-radius: 8px;
+            }
+          }
+        }
+
+        &.active {
+          & > a {
+            color: #fff;
+            background-color: $color_orange;
+            border-color: $color_orange;
+
+            span {
+              &.number {
+                color: $color_orange;
+                background-color: #fff;
+                border: 1px solid #fff;
+              }
+            }
+          }
+        }
+
+        &.tips {
+          position: absolute;
+          right: 0;
+          bottom: 10px;
+
+          a {
+            color: #677999;
+            font-size: 12px;
+
+            i {
+              font-size: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    &.main {
+      overflow: hidden;
+      border-radius: 4px;
+      border: 1px solid #c4cad5;
+      box-shadow: 0px 4px 10px 2px #c4cad5;
+
+      h2 {
+        margin: 20px 0;
+        font-size: 18px;
+        font-weight: 400;
+        color: $brand-primary;
+      }
+
+      .section-title {
+        overflow: hidden;
+        position: relative;
+
+        .btn-right {
+          position: absolute;
+          top: 14px;
+          right: 0;
+        }
+      }
+    }
+  }
+
+  .filter-wrapper {
+    // label {
+    //   color: #bfbfbf;
+    // }
+  }
+
+  .info-wrapper {
+    .row {
+      & > div {
+        text-align: center;
+        border-right: 1px solid #eee;
+
+        &:last-of-type {
+          border-right: none;
+        }
+
+        span {
+          display: block;
+
+          &.title {
+            color: #c9c9c9;
+          }
+
+          i {
+            font-size: 22px;
+            color: $brand-secondary;
+
+            &.small {
+              font-size: 10px;
+            }
+          }
+        }
+      }
+
+
+    }
+  }
+
+  table.table.main {
+    thead {
+      tr {
+        th {
+          a.sort {
+            i {
+              color: #bfbfbf;
+            }
+          }
+        }
+      }
+    }
+
+    tbody {
+      border-bottom: 1px solid #eee;
+
+      tr {
+        &.active {
+          & > td {
+            background-color: #edfadf;
+          }
+        }
+      }
+    }
+
+    font-size: 12px;
+
+    .text-highlight {
+      color: #677899;
+      font-weight: 700;
+    }
+
+    .action-group {
+      text-align: right;
+      position: relative;
+
+      .tool-more-wrapper {
+        &:hover {
+          &:before {
+            display: block;
+          }
+          .tool-more {
+            display: block;
+          }
+        }
+      }
+
+      > div, > a {
+        padding: 6px;
+        width: 24px;
+        height: 24px;
+        color: #242424;
+        cursor: pointer;
+        margin-right: 6px;
+        line-height: 13px;
+        border-radius: 4px;
+        position: relative;
+        display: inline-block;
+        background-color: #f3f5f7;
+
+        &:hover {
+          background: #333;
+          color: #fff;
+        }
+
+        &:before {
+          content: '';
+          top: -6px;
+          left: -6px;
+          width: 36px;
+          height: 36px;
+          display: none;
+          position: absolute;
+          border: 1px solid #ddd;
+          border-radius: 4px 4px 0 4px;
+          box-shadow: 0 3px 9px rgba(0,0,0,0.12);
+        }
+
+        &:last-of-type {
+          margin-right: 0;
+        }
+
+        i {
+          font-size: 12px;
+        }
+      }
+
+      .tool-more {
+        top: 100%;
+        z-index: 9;
+        right: -6px;
+        display: none;
+        cursor: auto;
+        width: 130px;
+        color: #242424;
+        padding: 0 7px;
+        margin-top: 4px;
+        background: #fff;
+        position: absolute;
+        border: 1px solid #ddd;
+        border-radius: 3px 0 3px 3px;
+        box-shadow: 0 3px 9px rgba(0, 0, 0, 0.12);
+
+        &:before {
+          content: '';
+          right: 0;
+          top: -2px;
+          width: 34px;
+          z-index: 99;
+          height: 3px;
+          background: #fff;
+          position: absolute;
+        }
+
+        > div {
+          display: flex;
+          margin: 7px 0;
+          align-items: center;
+          border-radius: 5px 5px 0 5px;
+          justify-content: space-between;
+
+          .icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            background: #eee;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 4px;
+            &:hover {
+              background: #333;
+              color: #fff;
+            }
+          }
+
+          &.cancel-btn {
+            color: #fa6400;
+
+            .icon {
+              color: #fff;
+              background: #fa6400;
+
+              &:hover {
+                background: darken(#fa6400, 10%);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .no-wrap {
+      white-space:nowrap;
+    }
+  }
+
+  // 固定尾列
+  .table-responsive {
+    &>.fixed-column {
+      right: 0;
+      top: 0;
+      background: #fff;
+      position: absolute;
+      display: inline-block;
+      width: auto;
+      box-shadow: -2px 0px 2px 0px #eee;
+      th, td {
+        text-align: center!important;
+      }
+    }
+  }
+
+  .paginator {
+    margin-top: 30px;
+    font-size: 12px;
+    text-align: right;
+
+    select.limit {
+      border: none;
+      background-color: transparent;
+    }
+
+    i {
+      padding: 0 10px;
+      font-size: 12px;
+      color: #000;
+    }
+  }
+
+  .text-price {
+    text-transform: uppercase;
+    color: #4f658b;
+  }
+}

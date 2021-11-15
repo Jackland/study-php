@@ -1,0 +1,519 @@
+{% trans_default_category 'catalog/view/customerpartner/warehouse/receipt_import' %}
+<link href="/catalog/view/theme/yzcTheme/stylesheet/customerpartner/warehouse/import_receipt_temp.css" rel="stylesheet" type="text/css" />
+{{ css(['/css/admin/app.css','css/common/common.css']) }}
+
+
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content modal-content-radius">
+        <div class="modal-header modal-header-radius">
+            <button type="button" class="close close-import" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">{{ __('入库单导入') }}</h4>
+        </div>
+        <div class="modal-body">
+            <div>
+                <div class="import-basic-info">
+                    <div class="import-sub-title">
+                        <span class="red-circle"></span>
+                        <span>{{ __('填写基础信息') }}</span>
+                    </div>
+                    <div class="import-sub-info">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label required" for="importShipping">{{ __('运输方式') }}</label>
+                                    <select name="importShipping" class="form-control check-required" id="importShipping" data-errormsg="{{ __('运输方式不能为空') }}">
+                                        <option value="*">--- {{ __('请选择', {}, 'common') }} ---</option>
+                                        {% for shipping in shippingList  %}
+                                            <option value="{{ loop.index }}">{{ shipping }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="error-tip"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label required" for="importContainerSize">{{ __('集装箱尺寸') }}</label>
+                                    <select name="importContainerSize" class="form-control check-required" id="importContainerSize" data-errormsg="{{ __('集装箱尺寸不能为空') }}">
+                                        <option value="*">--- {{ __('请选择', {}, 'common') }} ---</option>
+                                        {% for containerSize in containerSizeList %}
+                                            <option value="{{ containerSize }}">{{ containerSize }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="error-tip"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+{#                            运输选择“委托海运操作”和“客户自发”显示“起运港”;'b2bLocal'显示“起运城市”#}
+                            <div class="col-sm-6 import-departure" >
+                                <div class="form-group">
+                                    <label class="control-label required" for="importDeparture">{{ __('起运港') }}</label>
+                                    <select name="importDeparture" class="form-control check-required" id="importDeparture" data-errormsg="{{ __('起运港不能为空') }}">
+                                        <option value="*">--- {{ __('请选择', {}, 'common') }} ---</option>
+                                        {% for departure in departureList %}
+                                            <option value="{{ departure }}">{{ departure }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="error-tip"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 import-city">
+                              <div class="form-group">
+                                <label class="control-label required" for="importCity">{{ __('起运城市') }}</label>
+                                <input type="text" name="importCity" id="importCity" class="form-control check-required"  data-errormsg="{{ __('起运城市不能为空') }}">
+                                <div class="error-tip"></div>
+                              </div>
+                            </div>
+
+{#                          运输选择“委托海运操作”和“客户自发”显示“期望船期”;'b2bLocal'显示“期望发货时间”#}
+                            <div class="col-sm-6 shipping-way-con">
+                                <div class="form-group">
+                                    <label class="control-label required" for="importShippingDate">{{ __('期望船期') }}</label>
+                                    <select name="importShippingDate" class="form-control check-required" id="importShippingDate" data-errormsg="{{ __('期望船期不能为空') }}">
+                                        <option value="*">--- {{ __('请选择', {}, 'common') }} ---</option>
+                                        {% for shippingDate in shippingDateList %}
+                                            <option value="{{ shippingDate.start }}~{{ shippingDate.end }}">{{ shippingDate.start }}~{{ shippingDate.end }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="error-tip"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 consigned-shipping-way-con">
+                                <div class="form-group">
+                                    <label class="control-label required" for="importConsignedShippingDate">{{ __('期望船期') }}</label>
+                                    <select name="importConsignedShippingDate" class="form-control check-required" id="importConsignedShippingDate" data-errormsg="{{ __('期望船期不能为空') }}">
+                                        <option value="*">--- {{ __('请选择', {}, 'common') }} ---</option>
+                                        {% for shippingDate in selfShippingDateList %}
+                                            <option value="{{ shippingDate.start }}~{{ shippingDate.end }}">{{ shippingDate.start }}~{{ shippingDate.end }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="error-tip"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 expected-output-good-date">
+                                <div class="form-group">
+                                    <label class="control-label required" for="importDeliveryDate">{{ __('期望发货时间') }}</label>
+                                    <select name="importDeliveryDate" class="form-control check-required" id="importDeliveryDate" data-errormsg="{{ __('期望发货时间不能为空') }}">
+                                        <option value="*">--- {{ __('请选择', {}, 'common') }} ---</option>
+                                        {% for importDeliveryDate in deliverDateList %}
+                                            <option value="{{ importDeliveryDate.start }}~{{ importDeliveryDate.end }}">{{ importDeliveryDate.start }}~{{ importDeliveryDate.end }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="error-tip"></div>
+                                </div>
+                            </div>
+{#                            <div class="col-sm-6 expected-arrival-date-con">#}
+{#                              <div class="form-group">#}
+{#                                <label class="control-label required" for="importExpectedArrivalDate">{{ __('预计到库时间') }}</label>#}
+{#                                <select name="importExpectedArrivalDate" class="form-control check-required" id="importExpectedArrivalDate" data-errormsg="{{ __('预计到库时间不能为空') }}">#}
+{#                                  <option value="*">--- {{ __('请选择', {}, 'common') }} ---</option>#}
+{#                                  {% for expectedArrivalDate in expectedArrivalDateList %}#}
+{#                                    <option value="{{ expectedArrivalDate.start }}~{{ expectedArrivalDate.end }}">{{ expectedArrivalDate.start }}~{{ expectedArrivalDate.end }}</option>#}
+{#                                  {% endfor %}#}
+{#                                </select>#}
+{#                                <div class="error-tip"></div>#}
+{#                              </div>#}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="import-default">
+                  <div class="import-sub-title">
+                    <span class="black-circle"></span>
+                  </div>
+                </div>
+                <div class="import-template">
+                    <div class="import-sub-title">
+                        <span class="red-circle"></span>
+                        <span>{{ __('下载入库单模板') }}</span>
+                    </div>
+                    <div class="import-sub-info">
+                        <div class="row template-con">
+                            <div class="col-sm-12">
+                                <button class="oris-button" id="downloadTemplate">{{ __('下载模板') }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="import-file">
+                    <div class="import-sub-title">
+                        <span class="red-circle"></span>
+                        <span>{{ __('选择入库单文件并上传') }}</span>
+                    </div>
+                    <div class="import-sub-info">
+                        <div class="row import-con">
+                            <div class="col-sm-12">
+                                <button id="buttonReceiptUpload" class="oris-button">{{ __('点击上传') }}</button>
+                                <input class="file-add-button" type="file" id="uploadReceiptFile" name="uploadReceiptFile">
+                                <div class="file-add-con">
+                                    <div class="file-add-con-inner">
+                                        <span class="file-document"></span>
+                                        <i class="giga icon-lajitong file-del" aria-hidden="true" id="delBtn"></i>
+                                        <i class="giga icon-duigou file-success" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="import-shipping-order-book">
+                  <div class="import-sub-title">
+                    <span class="red-circle"></span>
+                    <span>{{ __('填写托书') }}</span>
+                  </div>
+                  <div class="import-sub-info">
+                    <div class="row template-con">
+                      <div class="col-sm-12">
+                        <button class="oris-button" id="FillShippingOrderBook" >{{ __('填写托书') }}</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="confirm-import-file">
+                    <div class="import-sub-title">
+                        <span class="red-circle"></span>
+                        <span>{{ __('确认上传数据') }}</span>
+                    </div>
+                    <div class="import-sub-info no-border">
+                        <div class="row confirm-tip-con ">
+                            <div class="col-sm-12">
+                                <span>{{ __('点击<strong>提交</strong>确认提交申请，点击<strong>保存</strong>仅保存入库单，点击<strong>取消</strong>则取消操作') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer text-center footer-btns-con footer-distance" style="display: none">
+                <button class="oris-button oris-button-default close-import" id="importCancel">{{ __('取消') }}</button>
+                <button class="oris-button" id="importSave">{{ __('保存') }}</button>
+                <button class="oris-button" id="importSubmit">{{ __('提交') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "yzcTheme/template/customerpartner/warehouse/common/shipping_order_book_modal.twig"%}
+<script>
+    //模板下载
+    $("#downloadTemplate").on("click", function () {
+      if ($("#importShipping").val() != "*") {
+        window.location.href = '{{ url('customerpartner/warehouse/receipt/downloadTemplateFile') }}';
+      }
+    });
+    //委托海运--填写托书
+    var clickEvent =1;
+    var operate = 'import';
+    var bookData; //存放托书
+    $('#FillShippingOrderBook').on('click', function () {
+      var size = $("#importContainerSize").val();
+      var port = $("#importDeparture").val();
+      $("#bookForm").find('input[name=size]').val(size);
+      $("#bookForm").find('input[name=port]').val(port);
+      $("#orderBookModal").modal('show');
+      shippingOrderBook.saveNotSubmit(operate);
+      if (clickEvent){
+        shippingOrderBook.bindClick();
+        shippingOrderBook.bindChange();
+        shippingOrderBook.initialize();
+      }
+    });
+    // 文件上传
+    $('#buttonReceiptUpload').on("click",function () {
+        if($("#uploadReceiptFile")){
+            $("#uploadReceiptFile").click();
+        }
+    });
+    //运输方式（ 委托海运操作、客户自发 （起运港，期望船期）、B2BLocal（起运城市，期望发货时间）       原来：自发-展示预期倒库时间，非自发-展示期望船期）
+    $("body").on("change","#importShipping",function () {
+      $(".import-departure").hide();//起运港
+      $(".import-city").hide();//起运城市
+      $(".shipping-way-con").hide();//期望船期
+      $(".consigned-shipping-way-con").hide();//委托海运期望船期
+      $(".expected-output-good-date").hide();//期望发货时间
+
+
+      $(".import-departure select").val("*");
+      $(".import-city input").val("");
+      $(".shipping-way-con select").val("*");
+      $(".consigned-shipping-way-con select").val("*");
+      $(".expected-output-good-date select").val("*");
+
+      $(".check-required").removeClass("error-border").next().html("");
+
+      if($(this).val()=="*"){
+        $(".import-template").hide();
+        $(".import-shipping-order-book").hide();
+        $(".import-file").hide();
+        $(".confirm-import-file").hide();
+        $(".import-default").show();
+        $(".footer-distance").hide();
+      }else{
+        $(".import-template").show();
+        $(".import-file").show();
+        $(".confirm-import-file").show();
+        $(".import-default").hide();
+        $(".footer-distance").show();
+        if ($(this).val() == 1) {//委托海运
+          $(".import-shipping-order-book").show();//填写托书显示
+          $(".import-departure").show();
+          $(".shipping-way-con").show();
+          $(".consigned-shipping-way-con").hide();
+          $(".import-city").hide();
+          $(".expected-output-good-date").hide();
+        } else if ($(this).val() == 2) {//客户自发
+          $(".shipping-way-con").hide();
+          $(".consigned-shipping-way-con").show();
+          $(".import-shipping-order-book").hide();//填写托书隐藏
+          $(".import-departure").show();
+          $(".import-city").hide();
+          $(".expected-output-good-date").hide();
+        }else if($(this).val()==3){
+          $(".import-shipping-order-book").hide();//填写托书隐藏
+          $(".import-city").show();
+          $(".expected-output-good-date").show();
+          $(".import-departure").hide();
+          $(".shipping-way-con").hide();
+          $(".consigned-shipping-way-con").hide();
+        }
+      }
+    });
+
+    var file = null;
+    $("#uploadReceiptFile").change(function () {
+        if ($("#uploadReceiptFile")[0].files.length) {
+            file = $("#uploadReceiptFile")[0].files[0];
+            $(".file-document").append(file.name);
+            $(".file-add-con").show();
+            $('#buttonReceiptUpload').hide();
+
+            // 查看文件格式
+            let dotIndex = file['name'].lastIndexOf(".");
+            let suffix = file['name'].substr(dotIndex + 1);
+            if (suffix != 'xls' && suffix != 'xlsx') {
+              myToast('error','{{ __('上传文件格式只能为xls或者xlsx文件') }}',7000);
+              $('#delBtn').click();
+              return false;
+            }
+
+        } else {
+            $(".document").empty();
+            $(".file-add-con").hide();
+            $('#buttonReceiptUpload').show();
+        }
+    });
+    $('body').on("mouseover",".file-add-con-inner",function () {
+      $(".icon-lajitong").show();
+      $(".icon-duigou").hide();
+    });
+    $('body').on("mouseout",".file-add-con-inner",function () {
+      $(".icon-lajitong").hide();
+      $(".icon-duigou").show();
+    });
+    $("#delBtn").on("click",function (e) {
+      e.stopPropagation();
+      $('#uploadReceiptFile').val('');
+      $(".file-document").empty();
+      file=null;
+      $(".file-add-con").hide();
+      $('#buttonReceiptUpload').show();
+    });
+    $("#importCancel").on("click",function () {
+      $("#importModal").modal('hide');
+    });
+    $("#importSubmit").on("click",function () {
+      let postFlag=false;
+      if($("#importShipping").val()==1){
+         postFlag=checkImportFull(["#importShipping","#importContainerSize","#importDeparture","#importShippingDate"]);
+      } else if ($("#importShipping").val()==2) {
+          postFlag=checkImportFull(["#importShipping","#importContainerSize","#importDeparture","#importConsignedShippingDate"]);
+      }else if($("#importShipping").val()==3){
+         postFlag=checkImportFull(["#importShipping","#importContainerSize","#importCity","#importDeliveryDate"]);
+      }else {
+        checkImportFull(["#importShipping","#importContainerSize",]);
+      }
+      if(postFlag){
+        importReceivingOrder(2);
+      }
+    });
+    $("#importSave").on("click",function () {
+      let postFlag=false;
+      if($("#importShipping").val()==1){
+        postFlag=checkImportFull(["#importShipping","#importContainerSize","#importDeparture","#importShippingDate"]);
+      }else if ($("#importShipping").val()==2) {
+          postFlag=checkImportFull(["#importShipping","#importContainerSize","#importDeparture","#importConsignedShippingDate"]);
+      }else if($("#importShipping").val()==3){
+        postFlag=checkImportFull(["#importShipping","#importContainerSize","#importCity","#importDeliveryDate"]);
+      }else {
+        checkImportFull(["#importShipping","#importContainerSize"]);
+      }
+      if(postFlag){
+        importReceivingOrder(1);
+      }
+    });
+    //关闭导入弹窗
+    $(".close-import").on('click',function () {
+      bookData=''
+    });
+    function checkImportFull(checkList) {
+      let postStatus=true;
+      checkList.forEach((item,i)=>{
+        if($(item).val()=="*"||!$(item).val()){
+          postStatus=false;
+          $(item).addClass("error-border").next().html($(item).attr("data-errormsg"));
+        }else{
+          $(item).removeClass("error-border").next().html("");
+        }
+      });
+      return postStatus
+    }
+
+    function importReceivingOrder(saveOrSubmit) {
+      if(file){
+        //导入时，只有委托海运有托书
+        if (!bookData && $("#importShipping").val() == 1) {
+          layer.msg("{{ __('请填写托书') }}");
+          return;
+        }
+        if(saveOrSubmit==2){
+          layer.confirm('{{ __('你确认提交这个入库单吗？') }}', {
+            title: "{{ __('确认') }}",
+            btnAlign: 'c',
+            skin: 'yzc_layer',
+            offset: '280px',
+            btn: ["{{ __('yes') }}", "{{ __('no') }}"],
+            scrollbar: false
+          }, function (index) {
+            layer.close(index);
+            handelImportWork(saveOrSubmit);
+          }, function (index) {
+            layer.closeAll();
+          });
+        }else if(saveOrSubmit==1){
+          handelImportWork(saveOrSubmit);
+        }
+      }else{
+        myToast('error','{{ __('请选择文件') }}',7000);
+      }
+    }
+    function handelImportWork(saveOrSubmit) {
+      let submitStatus=saveOrSubmit;
+      let postPars = new FormData();
+      postPars.append("shipping_way", $("#importShipping").val());
+      postPars.append("container_size", $("#importContainerSize").val());
+      //port_start起运港、起运城市共同使用
+      if($("#importShipping").val()==1){
+        postPars.append("port_start", $("#importDeparture").val());
+          postPars.append("expected_shipping_date_start", $("#importShippingDate").val().split("~")[0]);
+          postPars.append("expected_shipping_date_end", $("#importShippingDate").val().split("~")[1]);
+      } else if ($("#importShipping").val()==2) {
+          postPars.append("port_start", $("#importDeparture").val());
+          postPars.append("expected_shipping_date_start", $("#importConsignedShippingDate").val().split("~")[0]);
+          postPars.append("expected_shipping_date_end", $("#importConsignedShippingDate").val().split("~")[1]);
+      }else if($("#importShipping").val()==3){
+        postPars.append("port_start", $("#importCity").val().trim());
+        postPars.append("expected_shipping_date_start", $("#importDeliveryDate").val().split("~")[0]);
+        postPars.append("expected_shipping_date_end", $("#importDeliveryDate").val().split("~")[1]);
+      }
+      postPars.append("receiptFile",file);
+      postPars.append("status",submitStatus);
+
+      if ($("#importShipping").val()==1){
+        var bookDataString =JSON.stringify(bookData)
+        postPars.append("bookData",bookDataString);
+      }
+      let loadingIndex=layer.load(1,{shade: [0.3,'#000'],offset: '330px',});
+      $.ajax({
+        url: "/index.php?route=customerpartner/warehouse/receipt/import",
+        data: postPars,
+        type: "Post",
+        dataType: "json",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (data) {
+          if(data.code==0){
+            layer.open({
+              title: "{{ __('注意') }}",
+              content:data.msg,
+              btnAlign: 'c',
+              skin: 'yzc_layer',
+              btn: ["{{ __('ok') }}"],
+              offset: '280px',
+              scrollbar: false
+            }, function (index) {
+              layer.close(index);
+            });
+          }else{
+            layer.open({
+              title: "{{ __('注意') }}",
+              content:data.msg,
+              btnAlign: 'c',
+              skin: 'yzc_layer',
+              btn: ["{{ __('ok') }}"],
+              offset: '280px',
+              scrollbar: false,
+              end:function (index) {
+                $("#importModal").modal('hide');
+                refreshTable();
+              }
+            });
+            bookData='';
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          if(xhr.responseText){
+            myToast('error',xhr.responseText,7000);
+          }else{
+            myToast('error',"{{ __('文件为空，请重新上传！') }}",7000);
+          }
+
+        },
+        complete:function () {
+          layer.close(loadingIndex);
+        }
+      })
+    }
+    function myToast(type,text,timeout) {
+      $.toast({
+        heading: false,
+        text: text,
+        position: 'top-center',
+        showHideTransition: 'fade',
+        icon: type,
+        hideAfter: timeout,
+        allowToastClose: false,
+        loader: false,
+      });
+    }
+    //调用模态框关闭的触发刷新页面
+    function refreshTable(){
+      let url = getUrl("{{ url('customerpartner/warehouse/receipt') }}");
+      window.location = url;
+    }
+    {#$('body').on('hide.bs.modal','#importModal', function () {#}
+    {#  let url = getUrl("{{ url('customerpartner/warehouse/receipt') }}");#}
+    {#  window.location = url;#}
+    {#})#}
+
+    //选择框的change
+    $('body').on("change",".check-required",function () {
+      if($(this).val()&&$(this).val()!="*"){
+        $(this).removeClass("error-border").next().html("");
+      }
+    });
+    $('body').on("input",".check-required",function () {
+      if($(this).val()){
+        $(this).removeClass("error-border").next().html("");
+      }
+    });
+
+    //起运城市输入限制
+    $("#importCity").bind("input propertychange change", function() {
+      var cityDesc = $("#importCity").val();
+      //获取输入内容
+      var calcReturn = toolString.calcStringLength(cityDesc, 50);
+      $("#importCity").val(calcReturn.fullStr)
+    })
+</script>
+<style>
+
+</style>

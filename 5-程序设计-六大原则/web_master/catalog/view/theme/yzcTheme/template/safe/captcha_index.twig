@@ -1,0 +1,93 @@
+{% trans_default_category 'catalog/view/safe/captch_index' %}
+<link rel="stylesheet" href="{{ asset('static/safe/captcha.css') }}">
+
+<div class="captcha-container">
+  <div class="top-logo-container">
+    <img src="/image/catalog/Logo/logo-s.png" alt="">
+  </div>
+  <div class="captcha-main-container">
+    <div class="form-con">
+      <div class="captcha-title">
+        <div class="title-txt">Verification</div>
+        <div class="gap"><span class="gap-line"></span></div>
+      </div>
+      <form id="captcha-form" action="" method="post">
+        <div class="captcha-main">
+          <div class="captcha-main-form">
+            <div class="form-item question">
+              <div class="form-label">Question</div>
+              <div class="form-val">
+                <img id="captcha" src="" alt="{{ asset('static/safe/image/refresh.png') }}"
+                     class="captcha-img refresh_captcha" style="visibility: hidden">
+                <img class="refresh-btn refresh_captcha" src="{{ asset('static/safe/image/refresh.png') }}" alt="">
+              </div>
+            </div>
+            <div class="form-item answer">
+              <div class="form-label">Answer</div>
+              <div class="form-val">
+                <input type="text" name="answer" autocomplete="off" class="captcha-number" placeholder="Type Answer">
+              </div>
+            </div>
+            {% if error %}
+              <div class="form-item verify-result">
+                <span class="error-tip">{{ error[0] }}</span>
+              </div>
+            {% endif %}
+            <div class="form-item verify">
+              <div class="form-label"></div>
+              <div class="form-val">
+                <div class="verify-btn flex-around verify_submit">
+                  <div class="verify-btn-inner flex-around ">
+                    <span class="verify-icon flex-around">
+                      <img class="verify-icon-img" src="{{ asset('static/safe/image/verifyDefault.png') }}" alt="">
+                    </span>
+                    <span class="verify-btn-txt">Verify</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const captcha = {
+    init() {
+      this.changeCaptcha();
+      // 监听点击切换验证码
+      document.querySelectorAll('.refresh_captcha').forEach((el) => {
+        el.addEventListener('click', () => {
+          this.changeCaptcha()
+        })
+      })
+      // 监听提交事件
+      const verifySubmitEl = document.querySelector('.verify_submit');
+      verifySubmitEl.addEventListener('click', () => {
+        document.getElementById('captcha-form').submit();
+      })
+      verifySubmitEl.addEventListener('mouseover', () => {
+        document.querySelector('.verify-icon-img').src = '{{ asset('static/safe/image/verifyActive.png') }}';
+      });
+      verifySubmitEl.addEventListener('mouseout', () => {
+        document.querySelector('.verify-icon-img').src = '{{ asset('static/safe/image/verifyDefault.png') }}';
+      });
+      //错误信息3秒消失
+      const errorTipEl = document.querySelector('.verify-result');
+      if(errorTipEl){
+        setTimeout(()=>{errorTipEl.style.display = 'none'}, 3000 )
+      }
+    },
+    changeCaptcha() {
+      var img = document.getElementById('captcha');
+      img.src = '{{ url('safe/captcha/captcha', {w: 280, h: 70, t: 1}) }}' + (new Date()).getTime();
+      img.style.visibility = 'visible';
+    },
+  }
+
+  window.onload = function () {
+    captcha.init();
+  }
+</script>

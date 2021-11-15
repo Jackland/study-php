@@ -1,0 +1,780 @@
+/*保证金符号*/
+.margin{
+  display: inline-block;
+  text-align: center;
+  line-height: 20px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: #FA6400;
+  color: #fff;
+}
+table tbody tr td {
+  word-wrap: break-word;
+  word-break: break-word ;
+}
+
+#content {
+  /*margin-left: 240px !important;*/
+}
+h1{
+  margin-bottom: 20px!important;
+}
+.breadcrumb {
+  /*margin-left: 30px !important;*/
+  padding-left: 0!important;
+}
+
+#content > .row #content {
+  margin-left: 0 !important;
+}
+
+.form-group {
+  border: none !important;
+}
+
+.form-group label,
+.form-group a,
+.form-group button{
+  text-transform: capitalize ;
+  box-shadow: none;
+}
+
+/*.table > thead > tr > th:first-child,*/
+.table > tbody > tr > th:first-child,
+.table > tfoot > tr > th:first-child,
+/*.table > thead > tr > td:first-child,*/
+.table > tbody > tr > td:first-child,
+.table > tfoot > tr > td:first-child {
+  padding-left: 5px;
+}
+
+#content > .row #content #table-shadow,
+#content #table_content #box-shadow,
+#content > .row #content #box-shadow,
+#content > .row .container-fluid #box-shadow ,
+#box-shadow,
+#content.container-fluid .box-shadow{
+  /*border: 10px solid #eee;*/
+  margin-right: 20px;
+  border-radius: 3px;
+  background-color: #fff;
+  margin-top: 3px;
+  padding: 0 20px;
+  box-shadow: #aaa 0 0 6px;
+}
+
+  .form-group input:not([type=checkbox]):not([type=radio]):not([type=button]), select {
+  height: 40px !important;
+  border-radius: 4px ;
+  background-color: #f3f5f7 !important;
+}
+.right-radius{
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+.left-radius{
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+#content #table_content #box-shadow {
+  /*margin-right: 15%;*/
+}
+
+#content > .row #content h1 .pull-right a {
+  color: #eee;
+  background-color: #478BFF;
+}
+
+#content > .row #content h1 .pull-right a:hover {
+  color: #fff;
+}
+
+#content > .row #content h1 .pull-right{
+   margin-right:20px;
+ }
+
+
+.fa-user-plus:before {
+  font-family: 'giga';
+  content: "\e66e";
+}
+
+#menu li {
+  border: none;
+}
+
+#seller {
+  color: #b3cbdd;
+  margin-left: 4%;
+}
+
+#header-logo::before {
+  height: 0px;
+  margin-bottom: -10px;
+}
+
+.fa-user:before {
+  font-family: 'giga';
+  content: "\e675";
+}
+
+.fa-eye-slash:before {
+  font-family: 'giga';
+  content: "\e637";
+}
+
+#header .nav > li .iconfont {
+  font-size: 22px;
+}
+
+#header .nav > li #avatar {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 1px solid #193465;
+  /* display: none; */
+}
+/*#2247*/
+#header .nav  #menu_ul > li {
+  line-height: 38px;
+}
+
+.table thead > tr > td, .table tbody > tr > td {
+  border: none;
+  border-bottom: 1px #eee solid;
+}
+
+tbody tr .text-left:last-child {
+}
+
+.tab-content tab-content-sty {
+  box-shadow: #aaa 0 0 6px;
+}
+/*table行选中背景色*/
+.table > thead > tr > td.selected,
+.table > tbody > tr > td.selected,
+.table > tfoot > tr > td.selected,
+.table > thead > tr > th.selected,
+.table > tbody > tr > th.selected,
+.table > tfoot > tr > th.selected,
+.table > thead > tr.selected > td,
+.table > tbody > tr.selected > td,
+.table > tfoot > tr.selected > td,
+.table > thead > tr.selected > th,
+.table > tbody > tr.selected > th,
+.table > tfoot > tr.selected > th {
+  background-color: #EDFAE0;
+}
+.no-wrap {
+  white-space: nowrap;
+}
+.table-responsive > .fixed-column {
+  right: 0;
+  top: 0;
+  background: #fff;
+  position: absolute;
+  display: inline-block;
+  width: auto;
+  box-shadow: -2px 0px 2px 0px #eee;
+}
+
+/* product management */
+
+.form-group .btn-group .btn {
+  background-color: #f3f5f7;
+  margin: 30px 0;
+  color: #333;
+  text-align: left;
+}
+
+.form-group .btn-group .dropdown-toggle {
+  background-color: #fff;
+}
+
+.form-group .datetime {
+  /*width: 100%;*/
+}
+#datetimepicker1{
+  position: relative;
+}
+#datetimepicker1 .input-group-addon{
+  background-color: #fff;
+  color: #3975db;
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+}
+#datetimepicker1 .input-group-addon:hover{
+  background-color:#3975db;
+  color: #fff;
+}
+#datetimepicker1 input {
+  background-color: #f3f5f7;
+  height: 45px;
+}
+
+.form-group #input-status {
+  background-color: #f3f5f7;
+
+}
+
+.content-shadow .table-responsive .table-layout {
+  height: 100px;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-button {
+  background: #fff;
+  display: none;
+}
+
+::-webkit-scrollbar-track {
+  display: none;
+}
+
+::-webkit-scrollbar-track-piece {
+  background: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e0e0df;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-corner {
+  background: #fff;
+}
+
+/*   IE美化  */
+html, body {
+  scrollbar-arrow-color: #fff; /**//*三角箭头的颜色*/
+  scrollbar-face-color: #ccc; /**//*立体滚动条的颜色*/
+  scrollbar-3dlight-color: #f1f1f1; /**//*立体滚动条亮边的颜色*/
+  scrollbar-highlight-color: #fff; /**//*滚动条空白部分的颜色*/
+  scrollbar-shadow-color: #fff; /**//*立体滚动条阴影的颜色*/
+  scrollbar-darkshadow-color: #fff; /**//*立体滚动条强阴影的颜色*/
+  scrollbar-track-color: #fff; /**//* 立体滚动条背景颜色*/
+  scrollbar-base-color: #f1f1f1; /**//*滚动条的基本颜色*/
+}
+
+#button-upload, #button-download {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+#button-upload:hover, #button-download:hover {
+  color: #fff;
+  background-color: #3975db;
+
+}
+
+.form-group .control-label {
+  /*color: #b5b5b5;*/
+  font-weight: inherit;
+}
+
+.form-group #input-mpn {
+  background-color: #f3f5f7;
+}
+
+#product-management .table-responsive .table tbody tr .text-center {
+  border-left: #ccc 1px solid;
+  box-shadow: inset 5px 0 5px -5px #ccc;
+  text-align: left;
+  padding-left: 30px;
+}
+
+
+/* order detail */
+#content .well .row .order_details_head .row #detail {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.order_details_head .row #detail i {
+  color: #193465;
+  font-size: 20px;
+  margin: 10px 0;
+}
+
+.order_details_head .row #detail h5 {
+  color: #ccc;
+  font-size: 14px;
+}
+
+.order_details_head .row #detail p {
+  color: #000;
+}
+
+#main-content #content button {
+
+  border-radius: 5px;
+  /*margin-left: 90%;*/
+}
+
+.well .table tfoot tr .total-price {
+  color: #ff0000 !important;
+}
+
+tfoot tr td:nth-child(2) {
+  color: #3975db;
+}
+
+/* profile */
+#tab-profile_details .form-group label {
+  text-transform: uppercase;
+}
+
+
+#tab-profile_details .form-group .input .img-thumbnail {
+  text-align: center;
+  margin: 10px 15px;
+  border: 1px solid #bbb;
+  box-shadow: 0 0 8px #bbb inset;
+  width: 40%;
+  height: 200px;
+}
+
+.form-group .input .note-editor {
+  margin: 10px 15px;
+}
+
+/*products list*/
+.tab-content .tab-pane .well .row .filter,
+#content h1 .pull-right a,
+#product-list .tab-content .tab-pane .well .row .reset:hover {
+  background-color: #3975db;
+  color: #fff;
+}
+#product-list .tab-content .tab-pane .well .row .filter:hover,
+#product-list .tab-content .tab-pane .well .row .svn:hover {
+  background-color: #fff;
+  color: #3975db;
+}
+#product-list .tab-content .tab-pane .well .row .download:hover {
+  background-color: #3975db;
+  color: #fff;
+}
+#product-list .text-left a span i:hover {
+  color: #fff;
+}
+#product-list .text-left:last-child a:hover {
+  background-color: #FA6400;
+}
+#product-list form tbody tr .text-left:last-child {
+  text-align: left;
+ padding-left: 20px;
+}
+
+
+/*marketing settings*/
+#content > .row #content #table-shadow table {
+  margin-top: 10px;
+}
+
+/*Margin Template Setting*/
+#content fieldset legend .pull-right a {
+  border-radius: 5px;
+}
+
+/*Add Margin Template*/
+.container-fluid #box-shadow .panel-body from table {
+  border: none;
+}
+
+.table thead > #none > td,
+.table tbody > #none > td {
+  border: none;
+}
+
+.container-fluid #box-shadow\ \ add_margin form table tbody td input {
+  border-radius: 10px;
+}
+
+/*Add Rebates Template*/
+#rebates_form .container-fluid .panel .panel-body form {
+  margin-left: 3%;
+}
+
+#rebates_form .container-fluid .panel .panel-body form .form-group {
+  border: none;
+}
+
+#rebates_form .container-fluid .panel .panel-body form .form-group label {
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+/*rebates bid*/
+#tab-rebates fieldset #bid-rebates .well .col-sm-4 .form-group input,
+#tab-rebates fieldset #bid-rebates .well .col-sm-4 .form-group select,
+#margin-bid .col-sm-4 .form-group input,
+#margin-bid .col-sm-4 .form-group select {
+  background-color: #eee;
+}
+
+#tab-rebates fieldset #bid-rebates .well .col-sm-4:last-child .form-group a,
+#margin-bid .row .col-sm-4:last-child .form-group a {
+  margin-left: 20px;
+}
+
+#tab-rebates fieldset #bid-rebates .well .col-sm-4:last-child .form-group a:hover {
+  background-color: #fff;
+  color: #478BFF;
+}
+
+#margin-bid .row .col-sm-4 .form-group input {
+  background-color: #eee;
+}
+
+
+/*Product Groups*/
+#product-groups .row .form-group button {
+  text-transform: uppercase;
+}
+
+#product-groups .row .form-group label {
+  color: #ccc;
+}
+
+
+h1 .pull-right a {
+  text-transform: uppercase;
+  border-radius: 5px;
+}
+
+/*orders-history*/
+ .row .form-group .date button {
+  position: absolute;
+  right: 1px;
+  top: 0;
+  height: 40px;
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+  box-shadow: none!important;
+}
+
+#orders-history .well .row .form-group .date input {
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+
+}
+
+#orders-history .well .row .form-group a {
+  margin-right: 15px;
+}
+/*message center*/
+#message .row .form-group label{
+  color: #bbb;
+}
+#message .row .form-group input,
+#message .row .form-group select{
+  height: 45px;
+  border-radius: 8px;
+  background-color: #eee;
+}
+#message .row .form-group span button{
+  position: absolute;
+  bottom: 0;
+  left: 340px;
+  height: 45px;
+  border-bottom-right-radius: 8px;
+  border-top-right-radius: 8px;
+  border: 1px solid  #478BFF;
+  color:  #478BFF;
+}
+#message .row .form-group span button:hover{
+  background-color: #478BFF;
+  color: #fff;
+}
+
+/*分页*/
+.pagination{
+  margin: -10px 15px;
+}
+.page-list b,
+.page-list{
+  color: #333;
+
+}
+.page-list span button{
+  padding: 0;
+}
+.page-info{
+  margin-right: 20px;
+  margin-bottom: 10px;
+  margin-left: 15px;
+}
+.page-list .see button,
+.page-list .btn-group button{
+  border:none;
+  box-shadow: none;
+  color: #333;
+}
+
+.page-list .see:hover .dropdown-menu,
+.page-list .see:focus .dropdown-menu,
+.page-list .btn:hover .dropdown-menu,
+.page-list .btn:focus .dropdown-menu,
+.btn-group:hover .dropdown-menu
+{
+  display: block!important;
+}
+.page-list .dropup .dropdown-menu,
+.page-list .navbar-fixed-bottom .dropdown .dropdown-menu{
+  bottom: 75% !important;
+}
+.page-list .dropdown-menu{
+  min-width: 100px!important;
+}
+.pagination > li > a,
+.pagination > li > span{
+  height: 35px;
+}
+.pagination > li > a:hover,
+.pagination > li:hover,
+.pagination > li > span:hover,
+.btn-default:hover{
+  color: #242424;
+  background-color: #eee;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus,
+.dropdown-item.active,
+.dropdown-item:active,
+.pull-right > .page-list .open ul .active a,
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus{
+  color: #fff;
+  background-color: #000000;
+  opacity: 0.25;
+  border-color: #000;
+}
+
+{
+
+}
+
+.pagination > li > a i{
+  line-height: 20px;
+  font-size: 15px;
+}
+.fixed-table-pagination > .pull-left{
+  float: right!important;
+}
+.fixed-table-pagination > .pull-right > .page-list{
+  color: #242424;
+  font-weight: bold;
+}
+.fixed-table-pagination > .pull-right > .page-list button{
+  border:none;
+  box-shadow: none;
+  color: #242424;
+  font-weight: bold;
+}
+.fixed-table-pagination > .pull-right > .page-list button:hover{
+  background-color: #eee;
+}
+.pull-right > .page-list .open ul .active a{
+
+}
+.fixed-table-pagination > .pull-right > .page-list button:hover,
+.fixed-table-pagination > .pull-right > .page-list button:focus{
+  background-color: #fff;
+}
+
+.form-wrapper .datetimepicker-range {
+  display: flex;
+}
+.form-wrapper .datetimepicker-range .datetimepicker {
+  flex: 1;
+  position: relative;
+}
+.form-wrapper .datetimepicker-range .datetimepicker:first-child input {
+  border-radius: 4px 0 0 4px;
+}
+.form-wrapper .datetimepicker-range .datetimepicker:last-child {
+  margin-left: 4px;
+}
+.form-wrapper .datetimepicker-range .datetimepicker:last-child input {
+  border-radius: 0 4px 4px 0;
+}
+.form-wrapper .datetimepicker-range .datetimepicker input {
+  padding: 12px 13px 0 13px;
+}
+.form-wrapper .datetimepicker-range .datetimepicker span.title {
+  position: absolute;
+  top: 4px;
+  left: 14px;
+  font-size: 10px;
+  color: #b6b7b9;
+}
+.form-wrapper .datetimepicker-range .datetimepicker span.icon {
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+}
+.form-wrapper .datetimepicker-range .datetimepicker span.icon i {
+  font-size: 10px;
+  color: #b6b7b9;
+}
+
+#bid-quotes table tbody .text-center{
+  color: #183464;
+}
+#bid-quotes table tbody > tr :nth-child(6),
+#bid-margin table tbody > tr :nth-child(5),
+#bid-margin table tbody > tr :nth-child(6),
+#bid-margin table tbody > tr :nth-child(7),
+#bid-margin table tbody > tr :nth-child(8),
+#bid-rebates table tbody > tr :nth-child(5),
+#bid-rebates table tbody > tr :nth-child(6),
+#bid-rebates table tbody > tr :nth-child(7){
+  color:  #183464;
+}
+
+/*B2B页面改版二期*/
+.bg-white{
+  background-color: #ffffff;
+}
+.liti{
+  border-radius: 4px;
+  border: 1px solid #c4cad5;
+  box-shadow: 0px 4px 10px 2px #c4cad5;
+}
+.p-2{
+  padding: 20px;
+}
+.text-price, .table tbody > tr > td.text-price, .table tbody > tr > td .text-price{
+  color: #4f658b;
+}
+/*自动填充下拉框 大小写*/
+.form-group .dropdown-menu > li > a{
+  text-transform: none !important;
+}
+/*Seller消息*/
+.conversational-message-wrapper .message-item.outgoing {
+  overflow: hidden;
+  clear: both;
+}
+.conversational-message-wrapper .message-item {
+  display: block;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.conversational-message-wrapper .message-item.outgoing > div {
+  float: right;
+}
+.conversational-message-wrapper .message-item .left {
+  float: left;
+}
+.conversational-message-wrapper .message-item.outgoing .right {
+  margin-left: 0;
+  margin-right: 10px;
+  width: 400px;
+}
+.conversational-message-wrapper .message-item.outgoing > div {
+  float: right;
+}
+.conversational-message-wrapper .message-item .right {
+  max-width: 400px;
+  margin-left: 50px;
+}
+.conversational-message-wrapper .message-item .right .info {
+  display: flex;
+  margin-bottom: 4px;
+}
+.conversational-message-wrapper .message-item.outgoing .right .contents {
+  background-color: #fbfbfb;
+  border: 1px solid #dfdfdf;
+  min-width: 400px;
+}
+.conversational-message-wrapper .message-item .right .contents {
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.conversational-message-wrapper .message-item .left {
+  float: left;
+}
+.conversational-message-wrapper .message-item .right {
+  max-width: 400px;
+  margin-left: 50px;
+}
+.conversational-message-wrapper .message-item .right .info {
+  display: flex;
+  margin-bottom: 4px;
+}
+.conversational-message-wrapper .message-item.incoming .right .contents {
+  background-color: #fff5ef;
+  border: 1px solid #fa6400;
+  min-width: 400px;
+}
+.conversational-message-wrapper .message-item .right .contents {
+  padding: 20px;
+  border-radius: 6px;
+}
+.conversational-message-wrapper .message-item .right .info span {
+  flex: 1;
+}
+/*超链接小图标的字体颜色*/
+i.icon-table-link {
+  color: #8594ad;
+}
+
+/*期货二期样式*/
+#futures-bid .form-wrapper .datetimepicker-range .datetimepicker span.icon i{
+  font-size: 16px;
+}
+#futures-bid .form-wrapper .datetimepicker-range .datetimepicker span.icon{
+  bottom: 12px;
+  right: 5px;
+}
+#futures-bid .form-wrapper .datetimepicker-range .datetimepicker input{
+  padding: 12px 22px 0 13px;
+}
+a.link{
+  color: #3A75DC;
+}
+a.link:hover{
+  text-decoration: underline;
+}
+.fwblod:hover{
+  font-weight: bold;
+}
+.btn-primary.disabled:hover,
+.btn-primary[disabled]:hover,
+.btn-primary.disabled:focus,
+.btn-primary[disabled]:focus{
+  background-color: #3A75DC;
+}
+.pagination li a{
+  cursor: pointer;
+}
+.btn.btn-primary,
+.btn.btn-default{
+  box-shadow: none;
+}
+
+.giga.icon-V10-wenhaotishi{
+  color: #333333;
+  font-weight: normal;
+  margin-left: 2px;
+}
+
+.note-editable .table td {
+  border: 1px solid #ddd;
+}
+.note-toolbar .btn-group .btn {
+  margin: 0;
+}

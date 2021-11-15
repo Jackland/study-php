@@ -1,0 +1,240 @@
+{{ header }}
+{{ separate_column_left }}
+<style>
+  .button-filter {
+    background-color: #0b9bc2;
+    color: white;
+    margin-top: 23px;
+  }
+
+  .button-download {
+    margin-top: 23px;
+  }
+
+  table thead tr {
+    background-color: #f9f9f9;
+  }
+</style>
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<link rel="stylesheet" href="catalog/view/javascript/bootstrap-table/bootstrap-table.min.css">
+<script type="text/javascript" src="catalog/view/javascript/bootstrap-table/bootstrap-table.js"></script>
+<link href="catalog/view/javascript/bootstrap/css/bootstrap-switch.css" rel="stylesheet">
+<script src="catalog/view/javascript/bootstrap/js/bootstrap-switch.min.js"></script>
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid" id="content" style="margin-left: 18%">
+  {% else %}
+  <div class="container">
+    {% endif %}
+    <ul class="breadcrumb">
+      {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+      {% endfor %}
+    </ul>
+    {% if success %}
+      <div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> {{ success }}</div>
+    {% endif %}
+    <div class="row" id="main-content">
+      {{ column_left }}
+      {% if column_left and column_right %}
+        {% set class = 'col-sm-6' %}
+      {% elseif column_left or column_right %}
+        {% set class = 'col-sm-9' %}
+      {% else %}
+        {% set class = 'col-sm-12' %}
+      {% endif %}
+
+      <div id="content" class="{{ class }}">
+        {{ content_top }}
+        <h2>
+          {{ heading_title }}
+          <div class="pull-right">
+            <a data-toggle="tooltip" title="{{ tip_save }}" onclick="save()" class="btn btn-primary"><i class="fa fa-save"></i></a>
+            <a href="{{ url_page_back }}" data-toggle="tooltip" title="{{ tip_back }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+          </div>
+        </h2>
+
+        <div class="panel panel-default">
+          <div class="panel-heading" style="font-size: 15px"><strong><i class="fa fa-pencil"></i></strong> {{ heading_title_add_group }}</div>
+          <div class="panel-body">
+            <form action="" class="form-horizontal">
+              <div class="form-group">
+                <label class="col-md-3 control-label" for="input_is_default"><i style="color: red">*</i>{{ column_is_default }}</label>
+                <div class="col-md-7">
+                  <input type="checkbox" id="input_is_default">
+                  <span style=""></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-3 control-label" for="input_name"><i style="color: red">*</i>{{ column_name }}</label>
+                <div class="col-md-7">
+                  <input type="text" class="form-control" id="input_name" maxlength="50" placeholder="{{ text_name_characters }}"/>
+                  <span style=""></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-3 control-label" for="input_description">{{ column_description }}</label>
+                <div class="col-md-7">
+                  <textarea class="form-control" id="input_description" maxlength="100" rows="5"
+                            placeholder="{{ text_description_characters }}"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-3 control-label"><i style="color: red">*</i>{{ column_buyers }}</label>
+                <div class="col-md-7">
+                  <div class="well" style="background-color: white;padding: 0">
+                    <table id="tb_buyer_lists" class="table table-striped table-hover table-bordered" style=""></table>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        {{ content_bottom }}
+      </div>
+      {{ column_right }}
+    </div>
+  </div>
+
+  {% if separate_view is defined and separate_view %}
+</div>
+{% endif %}
+{{ footer }}
+
+<script>
+
+  let url_save = '{{ url_add }}';
+  let url_get_buyer_list = '{{ url_get_buyer_list }}';
+
+  $(function () {
+
+    $("#input_is_default").bootstrapSwitch({onText:'Yes',offText:'No'});
+
+    init_buyers_list();
+    // $("#input_name").keyup(trim_keyup);
+    // $("#input_description").keyup(trim_keyup);
+  });
+
+  function init_buyers_list() {
+    $("#tb_buyer_lists").bootstrapTable({
+      url: url_get_buyer_list,
+      sidePagination: "true",
+      striped: true, // 是否显示行间隔色
+      search: "true",
+      searchAlign: "left",
+      uniqueId: "buyer_id",
+      idField: "num",
+      pageSize: "10",
+      // showRefresh: true,
+      pagination: false, // 是否分页
+      sortable: true, // 是否启用排序
+      height: 400,
+      selectItemName: 'select_buyers',
+      columns: [
+        {
+          field: '',
+          title: '',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          checkbox: true
+        },
+        {
+          field: 'num',
+          title: 'No.',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+        },
+        {
+          field: 'nickname',
+          title: 'Nick Name',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true,
+          formatter: function (value, row, index) {
+            return row.nickname+'('+row.user_number+')';
+          }
+        },
+        {
+          field: 'add_time',
+          title: 'Added Date',
+          titleTooltip:'{{ tip_update_time }}',
+          halign: 'center',
+          valign: 'center',
+          align: 'center',
+          sortable: true
+        }
+      ],
+      clickToSelect: true,
+      maintainSelected: true,
+    });
+  }
+
+  function save() {
+    let postData = {};
+    postData.is_default = $("#input_is_default").bootstrapSwitch('state') ? 1 : 0;
+    postData.name = $("#input_name").val().trim();
+    postData.description = $("#input_description").val().trim();
+    let input_buyers = $("#tb_buyer_lists").bootstrapTable('getSelections');
+    postData.buyers = [];
+    $.each(input_buyers, function (k, v) {
+      postData.buyers.push(v.buyer_id);
+    });
+    console.log(postData);
+    if (postData.name.length === 0) {
+      layerMsg('{{ error_name_empty }}');
+      return;
+    }
+
+    if (postData.buyers.length === 0) {
+      layerMsg('{{ error_buyers_empty }}');
+      return;
+    }
+
+    ajax(postData, url_save, save_success_callback);
+  }
+
+  function save_success_callback(result, otherParams = null) {
+    layer.closeAll();
+    layerMsg(result.msg, 3000);
+    if (result.error == 0) {
+      window.location.href = '{{ url_page_back }}';
+    }
+  }
+
+  //region common functions
+  function trim_keyup(e) {
+    lucene_objInput = $(this);
+    if (e.keyCode != 38 && e.keyCode != 40 && e.keyCode != 13) {
+      let im = $.trim(lucene_objInput.val());
+      lucene_objInput.val(im);
+    }
+  }
+
+  function layerMsg(message, time = 2000) {
+    layer.msg(message, {time: time, skin: ''});
+  }
+
+  function ajax(data, url, successCallback, otherParams = null, errorCallback = undefined) {
+    $.ajax({
+      url: url,
+      type: 'POST',
+      dataType: 'json',
+      data: data,
+      beforeSend: function () {
+        layer.load();
+      },
+      success: function (json) {
+        successCallback(json, otherParams);
+      },
+      error: function (xhr, ajaxOptions, thrownError,) {
+        if (!errorCallback === undefined) {
+          alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      }
+    })
+  }
+
+  //endregion
+</script>

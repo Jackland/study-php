@@ -1,0 +1,420 @@
+@-webkit-keyframes iui-fadeIn {
+  0% {
+    opacity: 0
+  }
+
+  100% {
+    opacity: 1
+  }
+}
+
+@-moz-keyframes iui-fadeIn {
+  0% {
+    opacity: 0
+  }
+
+  100% {
+    opacity: 1
+  }
+}
+
+@-ms-keyframes iui-fadeIn {
+  0% {
+    opacity: 0
+  }
+
+  100% {
+    opacity: 1
+  }
+}
+
+@-o-keyframes iui-fadeIn {
+  0% {
+    opacity: 0
+  }
+
+  100% {
+    opacity: 1
+  }
+}
+
+@keyframes iui-fadeIn {
+  0% {
+    opacity: 0
+  }
+
+  100% {
+    opacity: 1
+  }
+}
+
+@-webkit-keyframes iui-fadeOut {
+  0% {
+    opacity: 1
+  }
+
+  100% {
+    opacity: 0
+  }
+}
+
+@-moz-keyframes iui-fadeOut {
+  0% {
+    opacity: 1
+  }
+
+  100% {
+    opacity: 0
+  }
+}
+
+@-ms-keyframes iui-fadeOut {
+  0% {
+    opacity: 1
+  }
+
+  100% {
+    opacity: 0
+  }
+}
+
+@-o-keyframes iui-fadeOut {
+  0% {
+    opacity: 1
+  }
+
+  100% {
+    opacity: 0
+  }
+}
+
+@keyframes iui-fadeOut {
+  0% {
+    opacity: 1
+  }
+
+  100% {
+    opacity: 0
+  }
+}
+
+.multselect-multiple,
+.multselect-multiple-label,
+.multselect-single {
+  position: relative
+}
+
+.multselect-multiple-label.active .multselect-main,
+.multselect-multiple.active .multselect-main,
+.multselect-single.active .multselect-main {
+  display: block;
+  -webkit-animation: iui-fadeIn .2s ease-in forwards;
+  -moz-animation: iui-fadeIn .2s ease-in forwards;
+  -ms-animation: iui-fadeIn .2s ease-in forwards;
+  -o-animation: iui-fadeIn .2s ease-in forwards;
+  animation: iui-fadeIn .2s ease-in forwards
+}
+
+.multselect-display,
+.multselect-display-label {
+  position: relative;
+  display: block;
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 1.42857143;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  user-select: none;
+  background-image: none;
+  border: 1px solid #c1c1c1;
+  border-radius: 2px;
+  color: #333;
+  background-color: #fff;
+}
+
+.oris-buyer .multselect-display,
+.oris-buyer .multselect-display-label {
+  border-color: #ccc;
+}
+
+.multselect-display-label:not(.mul-readonly):after,
+.multselect-display:after {
+  font-family: 'giga';
+  content: '\101d6';
+  position: absolute;
+  top: calc(50% - 10px);
+  right: 12px
+}
+
+.multselect-clear-all {
+  background-color: #fff;
+  border: none;
+  font-size: 22px;
+  z-index: 999;
+  color: #999;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  display: none;
+  width: 25px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+}
+
+.multselect-clear-all:focus {
+  outline: 0
+}
+
+.multselect-clear-all:hover {
+  color: #ccc;
+  text-decoration: none;
+}
+
+.multselect-display {
+  white-space: nowrap;
+  padding: 6px 20px 6px 12px
+}
+
+.multselect-multiple:hover .multselect-clear-all,
+.multselect-single:hover .multselect-clear-all {
+  display: block
+}
+
+.multselect-display .multselect-chose-list {
+  display: inline-block;
+  vertical-align: middle;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
+}
+
+.multselect-display .multselect-chose-list span:before {
+  content: ','
+}
+
+.multselect-display .multselect-chose-list span:first-child:before {
+  content: ''
+}
+
+.multselect-display .placeholder {
+  display: none
+}
+
+.multselect-display .placeholder:first-child {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  color: #999;
+  display: block;
+  text-indent: 10px;
+  font-size: 13px;
+  line-height: 32px
+}
+
+.multselect-display input {
+  border: 0;
+  outline: 0
+}
+
+.multselect-display-label {
+  cursor: text;
+  padding: 2px 25px 2px 0;
+  min-height: 40px;
+}
+
+.multselect-multiple-label.active .multselect-display-label {
+  border-color: #375ACD;
+}
+
+.oris-buyer .multselect-multiple-label.active .multselect-display-label {
+  border-color: #333;
+}
+
+.multselect-display-label:not(.mul-readonly):hover {
+  border-color: #666;
+}
+
+.oris-buyer .multselect-display-label:not(.mul-readonly):hover {
+  border-color: #333;
+}
+
+.multselect-display-label .multselect-search {
+  display: inline-block
+}
+
+.multselect-display-label input,
+.multselect-display-label input:focus {
+  border: none;
+  outline: 0;
+  padding: 6px;
+}
+/*input框placeholder*/
+.multselect-display-label input::-moz-placeholder {
+  color: #999999 !important;
+  opacity: 1;
+}
+
+.multselect-display-label input:-ms-input-placeholder {
+  color: #999999 !important;
+}
+
+.multselect-display-label input::-webkit-input-placeholder {
+  color: #999999 !important;
+}
+
+.multselect-display-label .multselect-chose-list {
+  display: inline-block;
+  padding: 0 10px;
+}
+
+.multselect-display-label .multselect-chose-list .placeholder {
+  color: #999;
+  line-height: 34px;
+}
+
+.multselect-display-label .multselect-selected {
+  position: relative;
+  margin: 3px 6px 3px 0;
+  padding: 4px 10px;
+  max-width: 100%;
+  background-repeat: repeat-x;
+  color: #333;
+  display: inline-block;
+  background: #EDEFF3;
+  border-radius: 2px;
+}
+
+.multselect-display-label .multselect-selected .del {
+  -webkit-appearance: none;
+  padding: 0;
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  line-height: 1;
+  color: #999;
+  font-style: normal;
+  padding-left: 10px;
+}
+
+.multselect-display-label .multselect-selected .del:after {
+  font-family: 'giga';
+  content: "\e6f3";
+  font-size: 12px;
+  -webkit-transform: scale(0.8);
+  transform: scale(0.8);
+  display: inline-block;
+}
+
+.multselect-display-label .multselect-selected .del:hover {
+  color: #333;
+}
+
+.multselect-main {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 0;
+  z-index: 1010;
+  width: 100%;
+  color: #333;
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  box-shadow: 0 6px 12px rgb(0 0 0 / 18%);
+  margin-top: -1px;
+  border-top: 0;
+  padding: 4px 0;
+  display: none
+}
+
+.multselect-main ul {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 240px;
+  margin: 0;
+  padding: 0
+}
+
+.multselect-main ul::-webkit-scrollbar {
+  width: 8px;
+}
+
+.multselect-main ul::-webkit-scrollbar-thumb {
+  background: #8A91A6;
+  border-radius: 0;
+}
+
+.multselect-main input {
+  margin-top: 0;
+  display: block;
+  box-sizing: border-box;
+  height: 30px;
+  border: 1px solid #ccc;
+  width: 100%;
+  text-indent: 5px;
+  border-radius: 3px
+}
+
+.multselect-main .multselect-search {
+  display: block;
+  padding: 5px 0
+}
+
+.multselect-group {
+  font-weight: 700
+}
+
+.multselect-group,
+.multselect-option,
+.multselect-noresult {
+  margin: 0;
+  padding: 5px 20px;
+  list-style: none;
+  line-height: 26px;
+  word-wrap: break-word;
+}
+
+.multselect-noresult {
+  color:#999;
+  text-align: center;
+}
+
+.multselect-option {
+  cursor: pointer
+}
+
+.multselect-option:hover {
+  background-color: #F5F6F7;
+  outline: 0
+}
+
+.multselect-option[disabled] {
+  color: #ddd;
+  background-color: #fff;
+  cursor: not-allowed;
+  text-decoration: line-through
+}
+
+.multselect-option.multselect-chose:after {
+  font-family: 'giga';
+  content: "\e6ec";
+  float: right;
+  margin-right: -8px;
+}
+
+.multselectall,
+.multdeselectall {
+  color: #004BD8;
+}
+.mul-readonly:hover {
+  cursor: not-allowed !important;
+}
+
+.mul-readonly .multselect-search {
+  display: none;
+}

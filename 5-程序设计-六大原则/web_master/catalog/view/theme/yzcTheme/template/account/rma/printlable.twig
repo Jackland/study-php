@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html dir="{{ direction }}" lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ heading_title }}</title>
+  <base href="{{ base }}" />
+  <link href="catalog/view/javascript/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" />
+  <link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+  <link href="catalog/view/theme/yzcTheme/stylesheet/fonts.googleapis.com_open+sans.css" rel="stylesheet" type="text/css" />
+  <link href="catalog/view/theme/default/stylesheet/stylesheet.css" rel="stylesheet">
+  <link href="catalog/view/theme/default/stylesheet/rma/rma.css" rel="stylesheet">
+  <style>
+  fieldset {
+    border: 1px dotted;
+    padding: 5%;
+  }
+  @media print{
+    .btn-primary{
+      display: none;
+    }
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      {% set class = 'col-sm-12' %}
+      <div id="content" class="{{ class }}">
+        <br/><br/>
+        <h1>
+          {{ heading_title }}
+          <div class="pull-right">
+            <button type="button" class="btn btn-primary" onclick="printinvoice();"><i class="fa fa-save"></i></button>
+          </div>
+        </h1>
+        <fieldset>
+          <div class="pull-left" style="width:45%; display:inline">
+            <h3>{{ text_from }}</h3>
+            <div>
+              ------------------------------------------------------------------</br>
+              ------------------------------------------------------------------</br>
+              ------------------------------------------------------------------</br>
+              ------------------------------------------------------------------</br>
+            </div>
+          </div>
+
+          <div class="pull-right text-right" style="width:45%; display:inline">
+            <h2>{{ text_shipping_label }}</h2>
+            <div>
+              {% if (label) %}
+                <img src="{{ label }}" />
+              {% endif %}
+            </div>
+          </div>
+          <div class="clearfix"></div>
+          <div class="col-sm-6 pull-left">
+            <h2>{{ text_to }}</h2>
+            <div>
+              <h4>{{ address|nl2br }}</h4>
+            </div>
+          </div>
+        </fieldset>
+
+        <br/><br/>
+
+        <h1>
+          {{ text_auth_label }}
+        </h1>
+        <fieldset>
+        <div class="table-responsive">
+          <h4 class="text-center">
+            <b>{{ text_order_id }}</b> {{ order_id }} &nbsp;&nbsp;&nbsp;
+            <b>{{ text_rma_id }}</b> {{ rma_id }}</h4>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <td>{{ text_product_name }}</td>
+                <td>{{ text_quantity }}</td>
+                <td>{{ text_reason }}</td>
+              </tr>
+            </thead>
+            {% for key,product in prodetails %}
+              <tr>
+                <td>{{ product['name'] }}</td>
+                <td>{{ product['returned'] }}</td>
+                <td>{{ product['reason'] }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+        </fieldset>
+
+        <br/><br/>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+<script>
+function printinvoice(){
+  window.print();
+}
+</script>

@@ -1,0 +1,7 @@
+.sales-order-purchase-management #total-storage-fee-popover-container .popover {
+  max-width: initial !important;
+}
+
+.order-confirm-msg-dialog .layui-layer-content{
+  word-break: break-all;
+}

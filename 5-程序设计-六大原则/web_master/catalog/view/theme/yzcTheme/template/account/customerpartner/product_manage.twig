@@ -1,0 +1,890 @@
+{{ header }}{{ separate_column_left }}
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<link rel="stylesheet" href="catalog/view/javascript/bootstrap-select/css/bootstrap-select.min.css">
+<script type="text/javascript" src="catalog/view/javascript/bootstrap-select/js/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+<style>
+  .content-shadow label{
+    color: #333;
+  }
+  .table-striped tr td,
+  .table-striped th td {
+    width: 10%;
+  }
+  .table-striped tr td:last-child,
+  .table-striped th td:last-child {
+    padding-left: 2%;
+  }
+</style>
+
+<div {% if separate_view is defined and separate_view %} class="container-fluid" id="content" style="margin-left: 235px" {% else %} class="container" {% endif %}>
+
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li>
+        <a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="row">
+    {{ column_left }}
+    {% if column_left and column_right %}
+      {% set class = 'col-sm-6' %}
+      {#{% elseif column_left or column_right %}#}
+      {#{% set class = 'col-sm-9' %}#}
+    {% else %}
+      {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">
+      {{ content_top }}
+      <h1>{{ heading_title_product_manage }}</h1>
+      {#			<button type="button" class="btn btn-primary" id="upload">UPLOAD FILE...</button>#}
+      {#			<legend>#}
+      {#				#}{#<i class="fa fa-list"></i> {{ heading_title_product_manage }}#}
+      {#			</legend>#}
+
+      <div class="content-shadow">
+
+        {% if chkIsPartner %}
+        {# 查询条件 #}
+        <div class="well" style="margin-bottom: -10px">
+          <div class="row">
+            <form id="product_manage_form">
+              <div class="col-sm-4">
+                <div class="form-group">
+                  <label class="control-label" for="input-sku-mpn" style="width: 100%">{{ column_sku_mpn }}
+                    <div id="skuMpnError" style="display: none;float: right">{{ error_sku_mpn }}</div>
+                  </label>
+                  <div>
+                    <input
+                      type="text"
+                      name="filter_sku_mpn"
+                      value="{{ filter_sku_mpn }}"
+                      placeholder="{{ column_sku_mpn }}"
+                      id="input-sku-mpn"
+                      class="form-control"/>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="input-product-type" style="width: 100%">Product Type
+                    <div style="display: none;float: right;">{{ error_sku }}</div>
+                  </label>
+                  <select class="select-load-before form-control"></select>
+                  <select
+                    type="text"
+                    name="filter_product_type"
+                    value="{{ filter_sku }}"
+                    placeholder="Product Type"
+                    multiple
+                    id="input-product-type" class="form-control select-load-after"
+                    style="height: 45px;display: none">
+                    <option
+                      {% if filter_product_type and filter_product_type b-and 1 %}
+                        selected
+                      {% endif %}
+                      value="1">
+                      General
+                    </option>
+                    <option
+                      {% if filter_product_type and filter_product_type b-and 2 %}
+                        selected
+                      {% endif %}
+                      value="2">
+                      Combo
+                    </option>
+                    <option
+                      {% if filter_product_type and filter_product_type b-and 4 %}
+                        selected
+                      {% endif %}
+                      value="4">
+                      LTL
+                    </option>
+                    <option
+                      {% if filter_product_type and filter_product_type b-and 8 %}
+                        selected
+                      {% endif %}
+                      value="8">
+                      Part
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="form-group">
+                  <label class="control-label" for="input-status">{{ column_status }}</label>
+                  <select name="filter_status" class="form-control" id="input-status">
+                    <option value="*">{{ __('请选择', {}, 'common') }}</option>
+                    <option value="-1" {% if filter_status == -1 %} selected {% endif %}>{{ text_status_to_be_available }}
+                    </option>
+                    <option value="1" {% if filter_status == 1 %} selected {% endif %}>{{ text_status_on_shelves }}
+                    </option>
+                    <option value="0" {% if filter_status is not null and filter_status == 0 %} selected {% endif %}>
+                      {{ text_status_off_shelves }}
+                    </option>
+                  </select>
+                </div>
+                <div class="form-group" >
+                  <label class="control-label" for="input-status">Sold Separately</label>
+                  <select name="filter_buyer_flag" class="form-control" >
+                    <option value="*">All</option>
+                    <option
+                      {% if filter_buyer_flag is defined and filter_buyer_flag is not null and filter_buyer_flag == 1 %}
+                        selected
+                      {% endif %}
+                      value="1"
+                    >Yes</option>
+                    <option
+                      {% if filter_buyer_flag is defined and filter_buyer_flag is not null and filter_buyer_flag == 0 %}
+                        selected
+                      {% endif %}
+                      value="0">No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="form-group">
+                  <label class="control-label" for="input-status">Available Quantity</label>
+                  <select name="filter_available_qty" class="form-control" >
+                    <option value="*">All</option>
+                    <option
+                      {% if filter_available_qty is defined and filter_available_qty is not null and filter_available_qty == 1 %}
+                        selected
+                      {% endif %}
+                      value="1" >greater than 0</option>
+                    <option
+                      {% if filter_available_qty is defined and filter_available_qty is not null and filter_available_qty == 0 %}
+                        selected
+                      {% endif %}
+                      value="0">0</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="control-label" style="width: 100%">
+                  </label>
+                  <div style=" overflow: hidden; display: none">
+                    <div class="input-group datetime" >
+                      <div class="form-group col-sm-6" style="float: left;padding: 0">
+                        <div class='input-group date' id='datetimepicker1'>
+                          <input
+                            type='text'
+                            name="filter_effectTimeFrom"
+                            class="form-control"
+                            placeholder="Pick A Date..."
+                            data-date-format="YYYY-MM-DD 00:00:00"
+                            value="{{ filter_effectTimeFrom }}"
+                            style="border-bottom-right-radius: 0!important;border-top-right-radius: 0!important"/>
+                          <span class="input-group-addon">
+														<span class="glyphicon glyphicon-calendar"></span>
+													</span>
+                        </div>
+                      </div>
+                      <div class="form-group col-sm-6" style="float: left;padding: 0">
+                        <div class='input-group date' id='datetimepicker1'>
+                          <input
+                            type='text'
+                            name="filter_effectTimeTo"
+                            class="form-control"
+                            value="{{ filter_effectTimeTo }}"
+                            placeholder="Pick A Date..."
+                            data-date-format="YYYY-MM-DD 23:59:59"
+                            style="border-bottom-right-radius: 0!important;border-top-right-radius: 0!important"/>
+                          <span class="input-group-addon">
+														<span class="glyphicon glyphicon-calendar"></span>
+													</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" onclick="downloadProductInformation();return false;"
+                        class="btn btn-default pull-right" data-toggle="tooltip"
+                        title="{{ text_commodity_statistics }}" style="margin:10px 5px;">
+                  <i class="fa fa-download"></i>
+                </button>
+                <button type="button" onclick="location ='{{ current }}';return false;"
+                        class="btn btn-default pull-right" data-toggle="tooltip"
+                        title="Reset" style="margin:10px 5px;">
+                  <i class="fa fa-refresh"></i>
+                </button>
+                <button type="button" onclick="filter();return false;" class="btn btn-primary pull-right"
+                        style="margin:10px 5px;">{{ button_filter }}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="alert alert-danger" style="display: none">
+          <i class="fa fa-exclamation-circle"></i>
+        </div>
+        {#商品批量修改导入#}
+        {% set import_style='margin-bottom: 20px;height: 50px;' %}
+        {% if showDownloadTip %}
+          {% set import_style='margin-bottom: 20px;height: 70px;border: 1px solid #e3e3e3;' %}
+        {% endif %}
+        <div style="{{ import_style }}">
+          <div>
+            <div class="col-sm-12" style="padding-top: 6px;text-align: right;">
+              <button type="button" id="button-upload"
+                      data-toggle="tooltip" title="{{ help_upload }}"
+                      data-loading-text="{{ text_loading }}" class="btn btn-default">
+                <i class="fa fa-upload"></i>
+                {{ button_upload }}
+              </button>
+              <button type="button" id="button-download" class="btn btn-default"
+                      onclick="window.location.href='{{ downloadTemplateHref }}'" href="{{ downloadTemplateHref }}"
+                      style="cursor: pointer;bottom: 0;left: 150px;margin-left: 10px">
+                <i class="fa fa-download"></i>
+                {{ text_download_template_file }}
+              </button>
+            </div>
+          </div>
+          {% if showDownloadTip %}
+            <div style="display:block;padding: 47px 0 0 15px">
+								<span style="color: red">
+									The template was changed on 2019-08-05.Please download the template file again!
+								</span>
+            </div>
+          {% endif %}
+        </div>
+        {#列表#}
+        <div class="table-responsive">
+          <table class="table table-hover table-striped" style="table-layout:fixed;border-top: none">
+            <thead>
+            <tr>
+              <td class="text-center"> No.</td>
+              <td class="text-center">{{ column_sku }}</td>
+              <td class="text-center">{{ column_mpn }}</td>
+              <td class="text-center">{{ column_day_sell }}</td>
+              <td class="text-center">{{ column_all_sell }}</td>
+              <td class="text-center">
+                {{ column_in_stock_qty }}
+                <span data-toggle="tooltip" title="{{ tip_column_in_stock_qty }}">
+                  <i class="giga icon-V10-wenhaotishi"></i>
+                </span>
+              </td>
+              <td class="text-center">{{ column_quantity }}
+                <span data-toggle="tooltip" title="{{ tip_column_time_limit_stock_qty }}">
+                  <i class="giga icon-V10-wenhaotishi"></i>
+                </span>
+              </td>
+              <td class="text-center">{{ column_status }}</td>
+              <td class="text-center">
+                <span data-toggle="tooltip" title="{{ help_qty_display }}">{{ column_quantity_display }}<i class="giga icon-V10-wenhaotishi"></i></span>
+              </td>
+              <td class="text-left">{{ text_action }}</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% if products %}
+              {% for product in products %}
+                <tr name="row_{{ product['product_id'] }}">
+                  <td class="text-center"><span>{{ product['num'] }}</span></td>
+                  {% if product['tag'] %}
+                    <td class="text-center"
+                        style="min-width: 120px;word-wrap:break-word; word-break:break-all;">{{ product['sku'] }}
+                      {% for tag in product['tag'] %}
+                        <span style="font-weight: bold; color: red;padding-left: 1px;">{{ tag }}</span>
+                      {% endfor %}
+                    </td>
+                  {% else %}
+                    <td class="text-center"
+                        style="word-wrap:break-word; word-break:break-all;">{{ product['sku'] }}</td>
+                  {% endif %}
+                  <td class="text-center" style="word-wrap:break-word; word-break:break-all;">
+                    <span>{{ product['mpn'] }}</span></td>
+                  <!-- N-457 -->
+                  <td class="text-center"  style="word-wrap:break-word; word-break:break-all;">{{ product['day_sell'] }} </td>
+                  <td class="text-center"  style="word-wrap:break-word; word-break:break-all;">{{ product['all_sell'] }}</td>
+                  <td class="text-center">
+                    <span name="instock_qty">
+                      {{ product['instock_qty'] }}
+                      {% if product.lock_qty > 0 %}
+                      [{{ product['lock_qty'] }}]
+                      {% endif %}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <span class="form-display" name="pre_quantity">
+                      {{ product['quantity'] }}
+                      {% if product.time_limit_qty > 0 %}
+                        [{{ product.time_limit_qty }}]
+                      {% endif %}
+                    </span>
+                    <input class="form-edit form-control" value="{{ product['quantity'] }}" style="display: none"
+                           name="quantity" type="number" min="0" step="1"/>
+                  </td>
+                  <td class="text-center">
+                    {% if product['status'] == -1 %}
+                      {{ text_status_to_be_available }}
+                    {% elseif product['status'] == 0 %}
+                      {{ text_status_off_shelves }}
+                    {% else %}
+                      {{ text_status_on_shelves }}
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    <span
+                      class="form-display">{{ product['quantity_display'] == 0 ? text_status_invisible : text_status_visible }}</span>
+                    <select class="form-control form-edit" style="display: none" name="quantity_display">
+                      <option
+                        value="0" {{ product['quantity_display'] == 0?'selected':'' }} >{{ text_status_invisible }}</option>
+                      <option
+                        value="1" {{ product['quantity_display'] == 1?'selected':'' }} >{{ text_status_visible }}</option>
+                    </select>
+                  </td>
+                  <td class="text-left">
+                    <input type="hidden" name="freight_package_fee" value="{{ product['freight_package_fee'] }}">
+                    {% if product.product_type == 0 or  product.product_type ==3 %}
+                    <a onclick="edit('{{ product['product_id'] }}');" data-toggle="tooltip" title="{{ button_edit }}"
+                       class="btn btn-primary btn-form-display"><i class="fa fa-pencil"></i></a>
+                    <a style="display: none" onclick="save('{{ product['product_id'] }}',this);" data-toggle="tooltip"
+                       data-alarm-price="{{ product['alarm_price'] }}"
+                       title="{{ button_save }}" class="btn btn-primary btn-form-edit"><i class="fa fa-save"></i></a>
+                    <a style="display: none" onclick="back('{{ product['product_id'] }}');" data-toggle="tooltip"
+                       title="{{ button_cancel }}" class="btn btn-default btn-form-edit"><i class="fa fa-reply"></i></a>
+                    <a style="background: red;" onclick="refine('{{ product['product_id'] }}');" data-toggle="tooltip"
+                       title="Refined Management"
+                       class="btn btn-default btn-form-reined-edit {{ product['status'] == 1 and product['buyer_flag'] == 1?'':'hidden' }}"><i
+                        style="color: white" class="fa fa-sliders"></i></a>
+                    {% else %}
+                      <a disabled href="javascript:void(0)" data-toggle="tooltip" title="Margin products cannot be edited."
+                         class="btn btn-primary btn-form-display"><i class="fa fa-pencil"></i></a>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td class="text-center" colspan="13">{{ text_no_results }}</td>
+              </tr>
+            {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+        {#分页#}
+        <div class="row">
+          <div class="col-sm-12">
+            <div
+              class="pull-left">{#左侧删除#}
+            </div>
+            <div class="pull-right" style="margin-top: 20px">{{ pagination }}</div>
+          </div>
+          {#<div class="col-sm-6 text-right">#}
+          {#{{ results }}</div>#}
+        </div>
+      </div>
+      {% endif %}
+      {{ content_bottom }}
+    </div>
+    {#{{ column_right }}#}
+  </div>
+</div>
+
+<div class="modal fade" id="myModal-upload-product" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">×</span>
+          <span class="sr-only">Close</span>
+        </button>
+        <h3 class="modal-title">Upload Product Information</h3>
+      </div>
+      <div class="modal-body">
+        <span>Upload File:</span>
+        <button type="button" id="button-upload1" data-loading-text="{{ text_loading }}"
+                class="btn btn-primary btn-submit">
+          <i class="fa fa-upload"></i>
+          Upload
+        </button>
+        <span onclick="downloadTemplate()" style="font-size: 14px;margin-left: 40px">Download Template</span>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="price-change-confirm" tabindex="-1" role="dialog" aria-labelledby="priceChangeLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          &times;
+        </button>
+        <h4 class="modal-title" id="priceChangeLabel">
+          {{ text_price_modal_title }}
+        </h4>
+      </div>
+      <div class="modal-body" id="priceChangeBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{ text_price_modal_no }}
+        </button>
+        <button type="button" class="btn btn-primary btn-submit" data-dismiss="modal" id="price_modal_confirm_btn"
+                onclick="">
+          {{ text_price_modal_yes }}
+        </button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal -->
+</div>
+<style>
+  .form-group .dropdown button {
+    height: 40px;
+    background-color: #F3F5F7;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+  .form-group{
+    padding-top: 0;
+  }
+</style>
+<script>
+  let isJapan = parseInt('{{ isJapan | default(0) }}');
+  let is_non_inner_account= {{ is_non_inner_account }};
+  let errorTip = "";
+  var timer;
+  var txtPleaseSelect = "{{ __('请选择', {}, 'common') }}";
+
+  $(function () {
+    $('#input-product-type').selectpicker({
+      noneSelectedText: `${txtPleaseSelect}.`
+    });
+    $(".select-load-before").hide();
+    $(".select-load-after").show();
+  });
+
+  function confirmUpdateProduct(products) {
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/product_manage/update&user_token={{ user_token }}',
+      type: 'post',
+      dataType: 'json',
+      data: {'products': products},
+      success: function (json) {
+        if (json.success) {
+          let url = "index.php?route=account/customerpartner/product_manage" + filterParam();
+          let m = window.location.href.match(/&page=\d*/);
+          if (m) {
+            url += m[0];
+          }
+          layerMsg("Saved Successfully.").then(function () {
+            layer.closeAll();
+            window.location = url;
+          })
+        } else if (json.error) {
+          layer.msg(json.error);
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.msg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+
+  function validatePriceChangeParam(product) {
+    var quantity_display = product['quantity_display'];
+    var quantity = product['quantity'];
+    let errorTip =  "";
+    //非负整数
+    var posIntReg = /^\d+$/;
+    if (quantity_display !== "0" && quantity_display !== "1") {
+      errorTip = "{{ error_qty_display }}";
+    }
+    if (!quantity || !posIntReg.test(quantity)) {
+      errorTip = "{{ error_qty_positive }}";
+    }
+    return errorTip;
+  }
+
+  function save(id, _this) {
+    $(_this).button('loading');
+    let ids = getSelectIds(id);
+    if (ids) {
+      saveProductById(ids, _this);
+    } else {
+      layerMsg('Please choose data to save!').finally(function () {
+        layer.closeAll();
+        $(_this).button('reset');
+      });
+    }
+  }
+
+  function saveProductById(ids, _this) {
+    let products = [];
+    let updateFlag = true;
+    let isZero = true;
+    $.each($(ids), function (i, id) {
+      let $row = $("[name=row_" + id + "]");
+      let obj = {};
+      let qty_info = $('[name=instock_qty]', $row).html();
+      let instock_qty = parseInt(qty_info[1]);
+      let lock_qty = parseInt(qty_info[2]);
+      obj['product_id'] = id;
+      obj['quantity'] = $('[name=quantity]', $row).val();
+      obj['quantity_display'] = $('[name=quantity_display]', $row).val();
+      obj['instock_qty'] = instock_qty;
+      obj['lock_qty'] = lock_qty;
+      obj['freight_package_fee'] = $('[name=freight_package_fee]', $row).val();
+
+      errorTip = validatePriceChangeParam(obj);
+      if (errorTip) {
+        updateFlag = false;
+        $(_this).button('reset');
+        return false;
+      }
+      products.push(obj);
+    });
+
+    if (!isZero) {
+      $(_this).button('reset');
+      return false;
+    }
+    send_request(updateFlag, products, _this);
+  }
+
+  function send_request(updateFlag, products, _this) {
+    layer.closeAll();
+    layer.load();
+    if (updateFlag) {
+      $.ajax({
+        url: 'index.php?route=account/customerpartner/product_manage/update',
+        type: 'post',
+        dataType: 'json',
+        data: {'products': products},
+        complete: function () {
+          //layer.closeAll();
+        },
+        success: function (json) {
+          if (json.success) {
+            let url = "index.php?route=account/customerpartner/product_manage" + filterParam();
+            let m = window.location.href.match(/&page=\d*/)
+            if (m) {url += m[0];}
+            layer.closeAll();
+            layerMsg("Saved Successfully.")
+              .then(function () {
+                window.location = url;
+              })
+              .finally(function () {
+                layer.closeAll();
+                $(_this).button('reset');
+              })
+          } else if (json.error) {
+            layerMsg(json.error)
+              .finally(function () {
+                layer.closeAll();
+                $(_this).button('reset');
+              });
+          } else if (json.check && json.products) {
+            var myModal = $("#price-change-confirm");
+            myModal.modal();
+            $("#priceChangeBody").html(json.check);
+            $("#price_modal_confirm_btn").on("click", function () {
+              confirmUpdateProduct(json.products);
+            });
+            myModal.on("hidden.bs.modal", function () {
+              $(this).removeData("bs.modal");
+              $("#priceChangeBody").text("");
+              $("#price_modal_confirm_btn").off("click");
+            })
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          layer.msg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      });
+    } else {
+      errorTip && layer.msg(errorTip);
+      layer.closeAll('loading')
+    }
+  }
+
+  function edit(id) {
+    let ids = getSelectIds(id);
+    if (ids) {
+      changeInputSpan(ids, true);
+    } else {
+      layer.msg('Please choose data to edit!')
+    }
+  }
+
+  function getSelectIds(id) {
+    let ids = [];
+    if (id) {
+      ids.push(id)
+    } else {
+      $('input[name*=\'selected\']:checked').each(function (i, e) {
+        ids.push(e.value)
+      })
+    }
+    return ids;
+  }
+
+  function back(id) {
+    let ids = getSelectIds(id);
+    changeInputSpan(ids, false);
+  }
+
+  function changeInputSpan(ids, isEdit) {
+    $.each($(ids), function (i, e) {
+      let $row = $("[name=row_" + e + "]");
+      // input编辑框
+      $(".form-edit", $row).css("display", isEdit ? "block" : "none");
+      $(".btn-form-edit", $row).css("display", isEdit ? "inline-block" : "none");
+      // span展示框
+      $(".form-display", $row).css("display", isEdit ? "none" : "block");
+      $(".btn-form-display", $row).css("display", isEdit ? "none" : "inline-block");
+    })
+  }
+
+  function filter() {
+    if (!validateQueryParam()) {
+      return;
+    }
+    url = 'index.php?route=account/customerpartner/product_manage' + filterParam();
+    location = url;
+  }
+
+  function downloadProductInformation() {
+    if (!validateQueryParam()) {
+      return;
+    }
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/product_manage/checkProductQuantity' + filterParam(),
+      dataType: 'json',
+      success: function (json) {
+        if (json['success']) {
+          url = 'index.php?route=account/customerpartner/product_manage/downloadProductInformation' + filterParam();
+          location = url;
+        } else {
+          layer.msg("{{ error_no_record }}");
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.msg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+
+  function validateQueryParam() {
+    var result = true;
+    var filter_mpn = $('input[name=\'filter_mpn\']').val();
+    var filter_sku = $('input[name=\'filter_sku\']').val();
+    var filter_sku_mpn = $('input[name="filter_sku_mpn"]').val();
+
+    if (filter_mpn && filter_mpn.length > 64) {
+      $('#mpnError').css('display', 'block');
+      $('#mpnError').addClass('text-danger');
+      result = false;
+    } else {
+      $('#mpnError').css('display', 'none');
+    }
+    if (filter_sku && filter_sku.length > 64) {
+      $('#skuError').css('display', 'block');
+      $('#skuError').addClass('text-danger');
+      result = false;
+    } else {
+      $('#skuError').css('display', 'none');
+    }
+    if (filter_sku_mpn && filter_sku_mpn.length > 64) {
+      $('#skuMpnError').css('display', 'block');
+      $('#skuMpnError').addClass('text-danger');
+      result = false;
+    } else {
+      $('#skuMpnError').css('display', 'none');
+    }
+    return result;
+  }
+
+  function filterParam() {
+    let paramsObj = $('#product_manage_form').serializeArray();
+    let paramObject = {};
+    for (let item of paramsObj) {
+      let key = item['name'];
+      let val = item['value'];
+      if (val === '' || val === undefined || val === null || val === '*') {
+        continue;
+      }
+      if (paramObject.hasOwnProperty(key)) {
+        if (typeof paramObject[key] === 'string') {
+          paramObject[key] = [paramObject[key]];
+        }
+        paramObject[key].push(val);
+      } else {
+        paramObject[key] = val;
+      }
+    }
+    return '&' + $.param(paramObject);
+  }
+  $('.row input').keydown(function (e) {
+    if (e.keyCode == 13) {
+      filter();
+    }
+  });
+  //upload
+  $('#button-upload1').on('click', function () {
+    $('#form-upload').remove();
+    $('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;"><input type="file" name="file" /></form>');
+    $('#form-upload input[name=\'file\']').trigger('click');
+    if (typeof timer != 'undefined') {
+      clearInterval(timer);
+    }
+
+    timer = setInterval(function () {
+      if ($('#form-upload input[name=\'file\']').val() != '') {
+        clearInterval(timer);
+        $.ajax({
+          url: 'index.php?route=account/customerpartner/product_manage/addProductsByTemplate',
+          type: 'post',
+          dataType: 'json',
+          data: new FormData($('#form-upload')[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          beforeSend: function () {
+            $('#button-upload').button('loading');
+          },
+          complete: function () {
+            $('#button-upload').button('reset');
+          },
+          success: function (json) {
+            if (json['error']) {
+              layerMsg(json['error']).finally(function () {
+                layer.closeAll();
+                $('#myModal-upload-product').modal('hide');
+              });
+            } else {
+              let url = "index.php?route=account/customerpartner/product_manage"
+              window.location.href = url;
+              if (json['text']) {
+                layerMsg(json['text']).finally(function () {
+                  layer.closeAll();
+                  $('#myModal-upload-product').modal('hide');
+                });
+              }
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            layer.msg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        });
+      }
+    }, 500);
+  });
+
+  $('#button-upload').on('click', function () {
+    $('#form-upload').remove();
+
+    $('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;"><input type="file" name="file" /></form>');
+
+    $('#form-upload input[name=\'file\']').trigger('click');
+
+    if (typeof timer != 'undefined') {
+      clearInterval(timer);
+    }
+
+    timer = setInterval(function () {
+      if ($('#form-upload input[name=\'file\']').val() != '') {
+        clearInterval(timer);
+
+        // Reset everything
+        $('.alert-dismissible').remove();
+
+        $.ajax({
+          url: 'index.php?route=account/customerpartner/product_manage/uploadPriceCsv',
+          type: 'post',
+          dataType: 'json',
+          data: new FormData($('#form-upload')[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          beforeSend: function () {
+            $('#button-upload').button('loading');
+          },
+          complete: function () {
+            $('#button-upload').button('reset');
+          },
+          success: function (json) {
+            if (json['error']) {
+              if (json.hasOwnProperty('price_check_fail')) {
+                layerConfirm(json['error'], {area: '35%'}).then(function () {
+                  layer.closeAll();
+                  layer.load();
+                  $.ajax({
+                    url: 'index.php?route=account/customerpartner/product_manage/uploadPriceCsvSkipCheck',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {file: json['file']},
+                    success: function (res) {
+                      layer.closeAll();
+                      if (res['error']) {
+                        layer.msg(res['error']);
+                        return;
+                      }
+                      if (res['fail_ids']) {
+                        layer.msg(res['fail_ids']);
+                        return;
+                      }
+                      layerMsg('{{ text_success_product_update }}').finally(function () {
+                        window.location.href = 'index.php?route=account/customerpartner/product_manage' + filterParam();
+                      })
+                    }
+                  })
+                }).catch(function () {
+                  layer.msg('File upload canceled. Please edit the file and upload again.');
+                })
+                return;
+              }
+              layer.msg(json['error']);
+              return;
+            }
+            if (json['fail_ids']) {
+              layer.msg(json['fail_ids']);
+              return;
+            }
+            layerMsg(json['success'] ? '{{ error_upload_off_shelf }}' : '{{ text_success_product_update }}')
+              .finally(function () {
+                layer.closeAll();
+                window.location.href = 'index.php?route=account/customerpartner/product_manage' + filterParam();
+              })
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            layer.msg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        });
+      }
+    }, 500);
+  });
+
+  function num(obj, freight) {
+    money(obj);
+    let mod_home_pickup_price = obj.value;
+    if (obj.value - freight <= 0) {
+      mod_home_pickup_price = 0;
+    } else {
+      mod_home_pickup_price = (obj.value - (freight ? freight : 0)).toFixed(isJapan ? 0 : 2);
+    }
+    $(obj).parent().next('.mod_home_pickup_price').text(mod_home_pickup_price);
+  }
+
+  function money(obj) {
+    obj.value = obj.value.replace(/[^\d.]/g, ""); //清除"数字"和"."以外的字符
+    obj.value = obj.value.replace(/^\./g, ""); //验证第一个字符是数字
+    obj.value = obj.value.replace(/\.{2,}/g, "."); //只保留第一个, 清除多余的
+    obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+    if (!isJapan) {
+      obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{1,2}).*$/, '$1$2.$3'); //只能输入两个小数
+    } else {
+      obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{1,2}).*$/, '$1$2'); //只能输入两个小数
+    }
+  }
+
+  function refine(data_id) {
+    window.location.href = '{{ url_delicacy_management }}' + '&product_id=' + data_id;
+  }
+</script>
+{{ footer }}

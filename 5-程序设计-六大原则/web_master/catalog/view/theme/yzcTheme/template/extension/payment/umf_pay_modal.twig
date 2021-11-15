@@ -1,0 +1,122 @@
+<div class="modal fade" id="umfPayModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog">
+    <div id="myForm"  class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Please use Internet Explorer browser to open the payment link</h4>
+      </div>
+      <div class="modal-body" id="myModalBody">
+        <div class="input-group">
+          <input type="text" id="pay_url" class="form-control" readonly style="margin-right: 10px;"
+                 title="use IE browser to open payment link"/>
+          <span class="input-group-btn">
+                        <button class="btn btn-primary" id="copyUrlBtn" data-clipboard-action="copy"
+                                data-clipboard-target="#pay_url"><i class="fa fa-copy"></i></button>
+                    </span>
+        </div>
+        <div class="row" style="margin-top: 18px;">
+          <div style="font-size: medium;" class="col-sm-3">Payment result:</div>
+          <div style="margin-left: -25px;font-size: medium;" class="col-sm-6" id="result"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-submit" id="queryBtn" data-loading-text="{{ text_loading }}" >
+          Query payment status
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+  $(function () {
+    init();
+    initClickEvent();
+  })
+  function init() {
+    let clipboard = new ClipboardJS('#copyUrlBtn');
+    clipboard.on('success', function (e) {
+      console.log(e);
+    });
+  }
+
+  function initClickEvent() {
+    var feeOrderId = {{ fee_order_id }};
+    $('#queryBtn').click(function () {
+      $.ajax({
+        url:'index.php?route=extension/payment/umf_pay/query&order_id={{ order_id }}&fee_order_id='+feeOrderId.toString(),
+        beforeSend: function () {
+          $('#queryBtn').button('loading');
+        },
+        complete: function () {
+          $('#queryBtn').button('reset');
+        },
+        success:function (result) {
+          $('#result').html(result.msg);
+          if(result.status==1){
+            window.location.href='{{ success }}';
+          }
+        }
+      })
+    });
+  }
+
+
+
+  function IEVersion() {
+    var userAgent = navigator.userAgent;
+
+    var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器
+
+    var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器
+
+    var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1;
+    if (isIE) {
+      var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+
+      reIE.test(userAgent);
+      var fIEVersion = parseFloat(RegExp["$1"]);
+      if (fIEVersion == 7) {
+        return 7;
+
+      } else if (fIEVersion == 8) {
+        return 8;
+
+      } else if (fIEVersion == 9) {
+        return 9;
+
+      } else if (fIEVersion == 10) {
+        return 10;
+
+      } else {
+        return 6;//IE版本<=7
+      }
+    } else if (isIE11) {
+      return 11; //IE11
+
+    } else {
+      return -1;//不是ie浏览器
+    }
+  }
+
+  function checkUmfOrderStatus() {
+    var loop = true;
+    var feeOrderId = {{ fee_order_id }};
+    $.ajax({
+      url: 'index.php?route=extension/payment/umf_pay/checkOrder&order_id={{ order_id }}&fee_order_id='+feeOrderId.toString(),
+      dataType: 'json',
+      success: function (json) {
+        if (json['paid']) {
+          loop = false;
+          location.href = json['success'];
+        }
+        if (loop) {
+          setTimeout("checkUmfOrderStatus()", 5000);
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+
+  //--></script>

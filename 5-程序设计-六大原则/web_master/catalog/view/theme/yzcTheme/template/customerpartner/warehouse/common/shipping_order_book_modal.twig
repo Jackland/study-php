@@ -1,0 +1,1168 @@
+{% trans_default_category 'catalog/view/customerpartner/warehouse/receipt' %}
+{{ cssOrigin(['/catalog/view/theme/yzcTheme/stylesheet/customerpartner/warehouse/shipping_order_book_modal.css']) }}
+{# 填写托书#}
+<div class="modal fade oris-modal order-book-modal" id="orderBookModal" tabindex="-1" role="dialog"
+     aria-labelledby="orderBookModal" data-backdrop="static">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close close-modal" aria-label="Close">
+          <i class="giga icon-V10_danchuangguanbi"></i>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">
+          {{ __('填写托书') }}
+        </h4>
+      </div>
+      <div id="orderBody" class="modal-body overflow-auto oris-scrollbar">
+        <form id="bookForm">
+          <div class="oris-row info-module absolute-tip">
+            <div class="create-title m08-b flex-layout">
+              <span class="Y-axis"></span>
+              <span class="text-larger text-bold">{{ __('托运人') }}</span>
+            </div>
+            <div class="oris-row ">
+              <div class="col-sm-6">
+                <label class="oris-label">
+                  <span>{{ __('公司名称') }}</span>
+                  <i class="giga icon-V10-wenhaotishi"
+                     data-toggle="tooltip" title="" data-original-title="{{ __('请填写英文') }}"></i>
+                </label>
+                <input type="text" name="company_name" value="{{ receipt.shippingOrderBook.company_name|escape }}"
+                       placeholder="{{ __('请填写') }}" autocomplete="off"
+                       onkeyup="this.value=this.value.replace( /^\s*/, '');"
+                       class="oris-input required-input" oninput="shippingOrderBook.limitWrite(this)" maxlength="200">
+                <div class="error-prompt text-danger text-less"></div>
+              </div>
+              <div class="col-sm-6">
+                <label class="oris-label">
+                  <span>{{ __('地址') }}</span>
+                  <i class="giga icon-V10-wenhaotishi"
+                     data-toggle="tooltip" title="" data-original-title="{{ __('请填写英文') }}"></i>
+                </label>
+                <input type="text" name="address" value="{{ receipt.shippingOrderBook.address|escape }}"
+                       placeholder="{{ __('请填写') }}" autocomplete="off"
+                       onkeyup="this.value=this.value.replace( /^\s*/, '');"
+                       class="oris-input required-input" oninput="shippingOrderBook.limitWrite(this)" maxlength="500">
+                <div class="error-prompt text-danger text-less"></div>
+              </div>
+            </div>
+            <div class="oris-row m18-t">
+              <div class="col-sm-6">
+                <label class="oris-label"><span>{{ __('联系人') }}</span></label>
+                <input type="text" name="contacts" value="{{ receipt.shippingOrderBook.contacts|escape }}" autocomplete="off"
+                       onkeyup="this.value=this.value.replace( /^\s*/, '');"
+                       placeholder="{{ __('请填写') }}" class="oris-input required-input" maxlength="50">
+                <div class="error-prompt text-danger text-less"></div>
+              </div>
+              <div class="col-sm-6">
+                <label class="oris-label">
+                  <span>{{ __('电话') }}</span>
+                </label>
+                <input type="text" name="contact_number" value="{{ receipt.shippingOrderBook.contact_number|escape }}"
+                       onkeyup="this.value=this.value.replace( /^\s*/, '');"
+                       placeholder="{{ __('请填写') }}" class="oris-input required-input" maxlength="20"
+                       autocomplete="off">
+                <div class="error-prompt text-danger text-less"></div>
+              </div>
+            </div>
+            <div class="oris-row m18-t">
+              <div class="col-sm-6">
+                <label class="oris-label">
+                  <span>{{ __('收货人') }}</span>
+                  <span class="text-weight-normal">{{  __('（非必填）')  }}</span>
+                </label>
+                <div class="pos-rela">
+                  <textarea type="text" class="oris-input limit-textarea oris-scrollbar" id="consignee" name="consignee"
+                            maxlength="200" placeholder="{{ __('示例：姓名&电话&地址') }}"
+                            rows="5">{{ receipt.shippingOrderBook.consignee|escape }}</textarea>
+                  <div class="letter-count"><span class="reason-len link-color">0</span>/200</div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <label class="oris-label">
+                  <span>{{ __('到货受通知人') }}</span>
+                  <span class="text-weight-normal">{{  __('（非必填）')  }}</span>
+                </label>
+                <div class="pos-rela">
+                  <textarea type="text" class="oris-input limit-textarea oris-scrollbar" id="notifyParty" name="notify_party"
+                            maxlength="200" placeholder="{{ __('示例：姓名&电话&地址') }}"
+                            rows="5">{{ receipt.shippingOrderBook.notify_party|escape }}</textarea>
+                  <div class="letter-count"><span class="reason-len link-color">0</span>/200</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="oris-row info-module">
+            <div class="create-title m08-b flex-layout">
+              <span class="Y-axis"></span>
+              <span class="text-larger text-bold">{{ __('Bond') }}</span>
+            </div>
+            <div class="oris-row ">
+              <div class="col-sm-12 flex-layout p12-l">
+                <label class="oris-label mb-0">{{ __('自有Bond') }}:</label>
+                <div class="m08-l flex-layout" id="checkBond">
+                  {% set radioBondNo = false %}
+                  {% if receipt.shippingOrderBook.id  %}
+                    {% set radioBondNo = receipt and receipt.shippingOrderBook and receipt.shippingOrderBook.is_self_bond==0 %}
+                  {% endif %}
+                  <div id="checkBondYes" class="mr-4" data-toggle="popover" data-placement="bottom"
+                       data-content="" data-html="true" data-trigger="click">
+                    <input type="radio" class="oris-radio yes-bond pointer" value="1" name="bond"
+                      {% if not radioBondNo %} checked {% endif %}>
+                    <span class="m08-l">{{ __('是') }}</span>
+                  </div>
+                  <div>
+                    <input type="radio" class="oris-radio no-bond pointer" value="0" name="bond"
+                      {% if radioBondNo %} checked {% endif %}>
+                    <span class="m08-l">{{ __('否') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="bondInfo"
+                 class="m10-t bond-info  {% if radioBondNo %} none {% endif %}">
+              <div class="oris-row">
+                <div class="col-sm-3">
+                  <label class="text-label"><span>{{ __('CIN') }}</span></label>
+                  <input type="text" name="bond_cin" value="{{ receipt.shippingOrderBook.bond_cin|escape }}"
+                         placeholder="{{ __('请填写') }}" autocomplete="off"
+                         onkeyup="this.value=this.value.replace( /^\s*/, '');"
+                         class="oris-input {% if not radioBondNo %} required-input {% endif %}" maxlength="30">
+                  <div class="error-prompt text-danger text-less"></div>
+                </div>
+                <div class="col-sm-3">
+                  <label class="text-label">
+                    <span>{{ __('抬头') }}</span>
+                    <i class="giga icon-V10-wenhaotishi text-size-normal"
+                       data-toggle="tooltip" title="" data-original-title="{{ __('请填写英文') }}"></i>
+                  </label>
+                  <input type="text" name="bond_title" value="{{ receipt.shippingOrderBook.bond_title|escape }}"
+                         placeholder="{{ __('请填写') }}" autocomplete="off"
+                         onkeyup="this.value=this.value.replace( /^\s*/, '');"
+                         class="oris-input {% if not radioBondNo %} required-input {% endif %}"
+                         oninput="shippingOrderBook.limitWrite(this)" maxlength="200">
+                  <div class="error-prompt text-danger text-less"></div>
+                </div>
+                <div class="col-sm-6">
+                  <label class="text-label">
+                    <span>{{ __('地址') }}</span>
+                    <i class="giga icon-V10-wenhaotishi text-size-normal"
+                       data-toggle="tooltip" title="" data-original-title="{{ __('请填写英文') }}"></i>
+                  </label>
+                  <input type="text" name="bond_address" value="{{ receipt.shippingOrderBook.bond_address|escape }}"
+                         placeholder="{{ __('请填写') }}" autocomplete="off"
+                         onkeyup="this.value=this.value.replace( /^\s*/, '');"
+                         class="oris-input {% if not radioBondNo %} required-input {% endif %}"
+                         oninput="shippingOrderBook.limitWrite(this)" maxlength="500">
+                  <div class="error-prompt text-danger text-less days-error-msg"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="oris-row info-module">
+            <div class="create-title m08-b flex-layout">
+              <span class="Y-axis"></span>
+              <span class="text-larger text-bold">{{ __('运输信息') }}</span>
+            </div>
+            <div class="oris-row absolute-tip">
+              <div class="col-sm-6">
+                <label class="oris-label">{{ __('起运港') }}</label>
+                <input type="text" name="port" value="" placeholder="{{ __('请填写') }}" class="oris-input" disabled>
+              </div>
+              <div class="col-sm-6 absolute-tip">
+                <label class="oris-label">
+                  <span>{{ __('箱唛') }}</span>
+                </label>
+                <input type="text" name="marks_numbers" value="{{ receipt.shippingOrderBook.marks_numbers|escape }}"
+                       placeholder="{{ __('请填写') }}" autocomplete="off" onkeyup="this.value=this.value.replace( /^\s*/, '');"
+                       class="oris-input required-input" maxlength="200">
+                <div class="error-prompt text-danger text-less"></div>
+              </div>
+            </div>
+            <div class="oris-row m18-t">
+              <div class="col-sm-6">
+                <label class="oris-label">{{ __('集装箱尺寸') }}</label>
+                <input type="text" name="size" value="" placeholder="{{ __('请填写') }}" class="oris-input" disabled>
+              </div>
+              <div class="col-sm-6">
+                <label class="oris-label">
+                  <span>{{ __('箱量') }}</span>
+                </label>
+                <input type="text" name="container_load" value="{{ receipt.shippingOrderBook.container_load|escape }}"
+                       placeholder="{{ __('请填写') }}" autocomplete="off"
+                       onkeyup="this.value=this.value.replace( /^\s*/, '');" class="oris-input required-input"  maxlength="5"
+                       oninput="this.value=this.value.match(/^([1-9]\d*)?/)?this.value.match(/^([1-9]\d*)?/)[0]:''">
+                <div class="error-prompt text-danger text-less"></div>
+              </div>
+            </div>
+            <div class="oris-row m18-t">
+              <table class="oris-table shipping-list">
+                <thead>
+                <tr>
+                  <th class="oris-w240">
+                    {{ __('品名') }}
+                    <i class="giga icon-V10-wenhaotishi"
+                       data-toggle="tooltip" title="" data-original-title="{{ __('请填写英文') }}"></i>
+                  </th>
+                  <th class="oris-w200">
+                    {{ __('HS编码') }}
+                    <i class="giga icon-V10-wenhaotishi"
+                       data-toggle="tooltip" title="" data-original-title="{{ __('ten_hscode_second') }}"></i>
+                  </th>
+                  <th class="oris-w120">{{ __('件数') }}</th>
+                  <th class="oris-w120">{{ __('重量（千克）') }}</th>
+                  <th class="oris-w120">{{ __('体积（立方米）') }}</th>
+                  <th class="oris-w42">{{ __('操作') }}</th>
+                </tr>
+                </thead>
+                <tbody id="shippingList">
+                {% if not receipt.shippingOrderBook.shipping_list %}
+                  <tr>
+                    <td>
+                      <input type="text" name="description" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input description-name" oninput="shippingOrderBook.limitWrite(this)" maxlength="200"
+                             onkeyup="this.value=this.value.replace( /^\s*/, '');">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="hscode" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input" oninput="this.value=this.value.replace(/[^\d^\.]+/g,'')" maxlength="30">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="qty" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input" oninput="this.value=this.value.replace(/[^\d]/g,'')" maxlength="5">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="weight" value="" placeholder="{{ __('请填写') }}" class="oris-input"
+                             autocomplete="off" onblur="shippingOrderBook.fixedTwo(this)"
+                             oninput="this.value= this.value.match(/\d+(\.\d{0,2})?/) ? this.value.match(/\d+(\.\d{0,2})?/)[0] : ''">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="volume" value="" placeholder="{{ __('请填写') }}" class="oris-input"
+                             autocomplete="off" onblur="shippingOrderBook.fixedTwo(this)"
+                             oninput="this.value= this.value.match(/\d+(\.\d{0,2})?/) ? this.value.match(/\d+(\.\d{0,2})?/)[0] : ''">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <button type="button" class="btn-text delete-btn">
+                        <i class="giga icon-seller_lajitong-01"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input type="text" name="description" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input description-name" oninput="shippingOrderBook.limitWrite(this)" maxlength="200"
+                             onkeyup="this.value=this.value.replace( /^\s*/, '');">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="hscode" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input" oninput="this.value=this.value.replace(/[^\d^\.]+/g,'')" maxlength="30">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="qty" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input" oninput="this.value=this.value.replace(/[^\d]/g,'')" maxlength="5">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="weight" value="" placeholder="{{ __('请填写') }}" class="oris-input"
+                             autocomplete="off" onblur="shippingOrderBook.fixedTwo(this)"
+                             oninput="this.value= this.value.match(/\d+(\.\d{0,2})?/) ? this.value.match(/\d+(\.\d{0,2})?/)[0] : ''">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="volume" value="" placeholder="{{ __('请填写') }}" class="oris-input"
+                             autocomplete="off" onblur="shippingOrderBook.fixedTwo(this)"
+                             oninput="this.value= this.value.match(/\d+(\.\d{0,2})?/) ? this.value.match(/\d+(\.\d{0,2})?/)[0] : ''">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <button type="button" class="btn-text delete-btn">
+                        <i class="giga icon-seller_lajitong-01"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input type="text" name="description" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input description-name" oninput="shippingOrderBook.limitWrite(this)" maxlength="200"
+                             onkeyup="this.value=this.value.replace( /^\s*/, '');">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="hscode" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input" oninput="this.value=this.value.replace(/[^\d^\.]+/g,'')" maxlength="30">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="qty" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input" oninput="this.value=this.value.replace(/[^\d]/g,'')" maxlength="5">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="weight" value="" placeholder="{{ __('请填写') }}" class="oris-input"
+                             autocomplete="off" onblur="shippingOrderBook.fixedTwo(this)"
+                             oninput="this.value= this.value.match(/\d+(\.\d{0,2})?/) ? this.value.match(/\d+(\.\d{0,2})?/)[0] : ''">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="volume" value="" placeholder="{{ __('请填写') }}" class="oris-input"
+                             autocomplete="off" onblur="shippingOrderBook.fixedTwo(this)"
+                             oninput="this.value= this.value.match(/\d+(\.\d{0,2})?/) ? this.value.match(/\d+(\.\d{0,2})?/)[0] : ''">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <button type="button" class="btn-text delete-btn">
+                        <i class="giga icon-seller_lajitong-01"></i>
+                      </button>
+                    </td>
+                  </tr>
+                {% endif %}
+                {% if receipt.shippingOrderBook.shipping_list %}
+                  {% for list in json_decode(receipt.shippingOrderBook.shipping_list) %}
+                    <tr>
+                      <td>
+                        <input type="text" name="description" value="{{ list.description|escape }}" placeholder="{{ __('请填写') }}"
+                               class="oris-input description-name" oninput="shippingOrderBook.limitWrite(this)" maxlength="200"
+                               autocomplete="off" onkeyup="this.value=this.value.replace( /^\s*/, '');">
+                        <div class="error-prompt text-danger text-small text-left"></div>
+                      </td>
+                      <td>
+                        <input type="text" name="hscode" value="{{ list.hscode }}" placeholder="{{ __('请填写') }}"
+                               class="oris-input" oninput="this.value=this.value.replace(/[^\d^\.]+/g,'')"
+                               autocomplete="off" maxlength="30">
+                        <div class="error-prompt text-danger text-small text-left"></div>
+                      </td>
+                      <td>
+                        <input type="text" name="qty" value="{{ list.qty }}" placeholder="{{ __('请填写') }}"
+                               autocomplete="off"
+                               class="oris-input" oninput="this.value=this.value.replace(/[^\d]/g,'')" maxlength="5">
+                        <div class="error-prompt text-danger text-small text-left"></div>
+                      </td>
+                      <td>
+                        <input type="text" name="weight" value="{{ list.weight }}" placeholder="{{ __('请填写') }}"
+                               class="oris-input" autocomplete="off" onblur="shippingOrderBook.fixedTwo(this)"
+                               oninput="this.value= this.value.match(/\d+(\.\d{0,2})?/) ? this.value.match(/\d+(\.\d{0,2})?/)[0] : ''">
+                        <div class="error-prompt text-danger text-small text-left"></div>
+                      </td>
+                      <td>
+                        <input type="text" name="volume" value="{{ list.volume }}" placeholder="{{ __('请填写') }}"
+                               class="oris-input" autocomplete="off" onblur="shippingOrderBook.fixedTwo(this)"
+                               oninput="this.value= this.value.match(/\d+(\.\d{0,2})?/) ? this.value.match(/\d+(\.\d{0,2})?/)[0] : ''">
+                        <div class="error-prompt text-danger text-small text-left"></div>
+                      </td>
+                      <td>
+                        <button type="button" class="btn-text delete-btn">
+                          <i class="giga icon-seller_lajitong-01"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% endif %}
+                </tbody>
+                <tfoot class="{% if receipt.status and receipt.status != 1 %} none {% endif %}">
+                <tr>
+                  <td colspan="6" class="text-right">
+                    <div class="error-prompt text-danger text-left"></div>
+                    <button class="oris-button oris-button-light" id="addBtn" type="button">+ {{ __('添加') }}</button>
+                  </td>
+                </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="oris-row info-module">
+            <div class="create-title m12-b flex-layout">
+              <span class="Y-axis"></span>
+              <span class="text-larger text-bold">{{ __('贸易方式') }}</span>
+            </div>
+            <div class="oris-row ">
+              <div class="col-sm-12 flex-layout">
+                <div class="m08-l flex-layout" id="termsDelivery">
+                  <div class="mr-4">
+                    <input type="radio" class="oris-radio delivery-fob pointer" value="1" name="delivery"
+                      {% if not receipt or (receipt and not receipt.shippingOrderBook.terms_of_delivery) or (receipt and receipt.shippingOrderBook.terms_of_delivery == 1) %} checked {% endif %}>
+                    <span class="m08-l">{{ __('FOB') }}</span>
+                  </div>
+                  <div>
+                    <input type="radio" class="oris-radio delivery-ddp pointer" value="2" name="delivery"
+                      {% if receipt and receipt.shippingOrderBook.terms_of_delivery == 2 %} checked {% endif %}>
+                    <span class="m08-l">{{ __('DDP') }}</span>
+                  </div>
+                </div>
+                <div class="error-prompt text-danger text-less"></div>
+              </div>
+            </div>
+          </div>
+          <div class="oris-row info-module">
+            <div class="create-title m12-b flex-layout">
+              <span class="Y-axis"></span>
+              <span class="text-larger text-bold">{{ __('起运港拖车报关') }}</span>
+            </div>
+            <div class="oris-row ">
+              <div class="col-sm-12 flex-layout p12-l">
+                <label class="oris-label">{{ __('使用拖车') }}:</label>
+                <div class="m08-l flex-layout" id="trailerService">
+                  {% set radiotrailerNo = false %}
+                  {% if receipt.shippingOrderBook.id  %}
+                    {% set radiotrailerNo = receipt and receipt.shippingOrderBook and receipt.shippingOrderBook.is_use_trailer==0 %}
+                  {% endif %}
+                  <div id="trailerYes" class="mr-4" data-toggle="popover" data-placement="bottom"
+                       data-content="" data-html="true" data-trigger="click">
+                    <input type="radio" class="oris-radio yes-trailer pointer" value="1" name="trailerService"
+                      {% if not radiotrailerNo %} checked {% endif %}>
+                    <span class="m08-l">{{ __('是') }}</span>
+                  </div>
+                  <div>
+                    <input type="radio" class="oris-radio no-trailer pointer" value="0" name="trailerService"
+                      {% if radiotrailerNo %} checked {% endif %}>
+                    <span class="m08-l">{{ __('否') }}</span>
+                  </div>
+                </div>
+                <div class="error-prompt text-danger text-less"></div>
+              </div>
+            </div>
+            <div id="trailerInfo" class="m10-t trailer-info {% if radiotrailerNo %} none {% endif %}">
+              <div class="oris-row">
+                <div class="col-sm-6">
+                  <label class="text-label"><span>{{ __('拖车地址') }}</span></label>
+                  <input type="text" name="trailer_address" value="{{ receipt.shippingOrderBook.trailer_address|escape }}"
+                         placeholder="{{ __('请填写') }}" autocomplete="off" maxlength="500"
+                         class="oris-input trailer-input  {% if not radiotrailerNo %} required-input {% endif %}">
+                  <div class="error-prompt text-danger text-less"></div>
+                </div>
+                <div class="col-sm-6">
+                  <label class="text-label"><span>{{ __('拖车联系方式') }}</span></label>
+                  <input type="text" name="trailer_contact" value="{{ receipt.shippingOrderBook.trailer_contact|escape }}"
+                         placeholder="{{ __('请填写') }}" autocomplete="off" maxlength="200"
+                         class="oris-input trailer-input  {% if not radiotrailerNo %} required-input {% endif %}">
+
+                  <div class="error-prompt text-danger text-less"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="oris-row info-module">
+            <div class="create-title m08-b flex-layout">
+              <span class="Y-axis"></span>
+              <span class="text-larger text-bold">{{ __('特殊产品说明') }}</span>
+            </div>
+            <div class="oris-row ">
+              <div class="col-sm-12 flex-layout">
+                <div class="m08-l flex-layout">
+                  <div class="mr-4">
+                    <input type="checkbox" class="oris-checkbox pointer" value="1" name="special">
+                    <span class="m08-l">{{ __('危险品') }}</span>
+                  </div>
+                  <div class="mr-4">
+                    <input type="checkbox" class="oris-checkbox pointer" value="2" name="special">
+                    <span class="m08-l">{{ __('反倾销') }}</span>
+                  </div>
+                  <div>
+                    <input type="checkbox" class="oris-checkbox pointer" value="3" name="special">
+                    <span class="m08-l">{{ __('带电池') }}</span>
+                  </div>
+                </div>
+                <div class="error-prompt text-danger text-less"></div>
+              </div>
+            </div>
+          </div>
+          <div class="oris-row info-module">
+            <div class="create-title m08-b flex-layout">
+              <span class="Y-axis"></span>
+              <span class="text-larger text-bold">{{ __('备注-Remarks') }}</span>
+              <span class="text-weight-normal">{{  __('（非必填）')  }}</span>
+            </div>
+            <div class="oris-row ">
+              <div class="col-sm-12">
+                <div class="pos-rela">
+                  <textarea type="text" class="oris-input limit-textarea oris-scrollbar" id="remarkBook" name="remark" maxlength="200"
+                            placeholder="{{ __('请填写') }}" rows="5">{{ receipt.shippingOrderBook.remark|escape }}</textarea>
+                  <div class="letter-count"><span class="reason-len link-color">0</span>/200</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer text-center">
+        <button type="button" class="oris-button oris-button-default close-modal">{{ __('取消') }}</button>
+        <button type="button" class="oris-button" id="saveModal">{{ __('确认-OK') }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  var shippingOrderBook = {
+    data: {
+      bookData: {
+        // 托运人
+        company_name: '',
+        address: '',
+        contacts: '',
+        contact_number: '',
+        consignee: '',
+        notify_party: '',
+        // 货代
+        is_self_bond: $("input[name=bond]:checked").val(),
+        bond_title: '',
+        bond_address: '',
+        bond_cin: '',
+        // 运输信息
+        marks_numbers: '',
+        container_load: '',
+        shipping_list: [{
+          description: '',
+          hscode: '',
+          qty: '',
+          weight: '',
+          volume: '',
+        }],
+        // 贸易信息
+        terms_of_delivery: $("#orderBookModal input[name=delivery]:checked").val(),
+        // 报关
+        is_use_trailer: $("#orderBookModal input[name=trailerService]:checked").val(),
+        trailer_address: '',
+        trailer_contact: '',
+        special_product_type: '',
+        remark: '',
+      },
+      tipsText: {
+        empty: "{{ __('不能为空.') }}",
+        rule: "{{ __('仅能输入英文、数字、符号和空格') }}",
+        HSCodeRule: "{{ __('请输入10位数字') }}",
+        moreRule: "{{ __('仅能输入不超过x个字符') }}",
+        twoDecimal: "{{ __('请输入0.01到999.99之间的数字') }}",
+        integerRule: "{{ __('请输入1到99999之间的整数') }}",
+        volumeLimit:"{{ __('请输入0.01到100之间的数字') }}",
+        weightLimit:"{{ __('请输入0.01到25000之间的数字') }}",
+        allEmpty: "{{ __('品名不能为空') }}",
+      },
+      saveNotSubmitData: {},
+    },
+    initialize: function () {
+      let receiptObj={{ receipt|js_json }};
+      if (receiptObj && receiptObj.shipping_order_book){
+       this.data.saveNotSubmitData = receiptObj.shipping_order_book;
+       var shipping_list = JSON.parse(receiptObj.shipping_order_book.shipping_list);
+       this.data.saveNotSubmitData.shipping_list = shipping_list;
+     }
+      //编辑时把特殊产品说明选中
+      if (receiptObj && receiptObj.shipping_order_book) {
+        var special_product_type =receiptObj.shipping_order_book.special_product_type;
+        this.data.bookData.special_product_type = special_product_type;
+        $("#orderBookModal input[name=special]").each(function () {
+          var val = $(this).val();
+          if (special_product_type && special_product_type.indexOf(val) > -1) {
+            $(this).attr('checked', true)
+          }
+        })
+      }
+      $(".limit-textarea").each(function () {
+        var val = $(this).val();
+        if (val) {
+          var len = shippingOrderBook.calcStrTrueLen(val);
+          $(this).next('.letter-count').children('.reason-len').html(len);
+        }
+      });
+      if ($("#shippingList").children('tr').length == 1) {
+        $("#shippingList").find('.delete-btn').attr('disabled', true);
+      }
+      $('#orderBookModal .modal-body').animate({scrollTop: 0}, 300);
+    },
+    saveNotSubmit: function (operate) {
+      var saveNotSubmitData = shippingOrderBook.data.saveNotSubmitData;
+      if (operate && JSON.stringify(saveNotSubmitData) == "{}" ){
+        var tr =`<tr>
+                    <td>
+                      <input type="text" name="description" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input description-name" oninput="shippingOrderBook.limitWrite(this)" maxlength="200"
+                             onkeyup="this.value=this.value.replace( /^\\s*/, '');">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="hscode" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input" oninput="this.value=this.value.replace(/[^\\d^\\.]+/g,'')" maxlength="30">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="qty" value="" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input" oninput="this.value=this.value.replace(/[^\\d]/g,'')" maxlength="5">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="weight" value="" placeholder="{{ __('请填写') }}" class="oris-input"
+                             autocomplete="off" onblur="shippingOrderBook.fixedTwo(this)"
+                             oninput="this.value= this.value.match(/\\d+(\\.\\d{0,2})?/) ? this.value.match(/\\d+(\\.\\d{0,2})?/)[0] : ''">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="volume" value="" placeholder="{{ __('请填写') }}" class="oris-input"
+                             autocomplete="off" onblur="shippingOrderBook.fixedTwo(this)"
+                             oninput="this.value= this.value.match(/\\d+(\\.\\d{0,2})?/) ? this.value.match(/\\d+(\\.\\d{0,2})?/)[0] : ''">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <button type="button" class="btn-text delete-btn">
+                        <i class="giga icon-seller_lajitong-01"></i>
+                      </button>
+                    </td>
+                  </tr>
+        `;
+        var list = tr + tr + tr
+        $("#shippingList").html(list)
+        if ($("input[name=bond]:checked").val()==1){
+          $("#bondInfo").removeClass('none')
+          $("#bondInfo").find('.oris-input').addClass('required-input');
+        }else{
+          $("#bondInfo").addClass('none')
+          $("#bondInfo").find('.oris-input').removeClass('required-input');
+        }
+        if ($("input[name=trailerService]:checked").val()==1){
+          $("#trailerInfo").removeClass('none');
+          $("#trailerInfo").find('.oris-input').addClass('required-input');
+        }else{
+          $("#trailerInfo").addClass('none');
+          $("#trailerInfo").find('.oris-input').removeClass('required-input');
+        }
+      }
+      //保存但未提交时，再次打开弹窗删除运输信息空白行
+      $("#shippingList").children('tr').each(function (i) {
+        if ($(this).hasClass('delete-tr')) {
+          $(this).remove();
+          $("#addBtn").removeAttr('disabled');
+        }
+      });
+      $('#orderBookModal .modal-body').animate({scrollTop: 0}, 300);
+      //将保存的data渲染上去
+      if (JSON.stringify(saveNotSubmitData) != "{}") {
+        if (saveNotSubmitData.is_self_bond == 1) {
+          $(".yes-bond").attr('checked',true);
+          $(".no-bond").removeAttr('checked');
+          $("#bondInfo").removeClass('none');
+          $("#bondInfo").find('.oris-input').addClass('required-input');
+        } else {
+          $(".no-bond").attr('checked',true);
+          $(".yes-bond").removeAttr('checked');
+          $("#bondInfo").addClass('none');
+          $("#bondInfo").find('.oris-input').removeClass('required-input');
+        }
+        if (saveNotSubmitData.terms_of_delivery == 1) {
+          $(".delivery-fob").attr('checked',true);
+          $(".delivery-ddp").removeAttr('checked');
+        } else {
+          $(".delivery-ddp").attr('checked',true);
+          $(".delivery-fob").removeAttr('checked');
+        }
+        if (saveNotSubmitData.is_use_trailer == 1) {
+          $(".yes-trailer").attr('checked',true);
+          $(".no-trailer").removeAttr('checked');
+          $("#trailerInfo").removeClass('none');
+          $("#trailerInfo").find('.oris-input').addClass('required-input');
+        } else {
+          $(".no-trailer").attr('checked',true);
+          $(".yes-trailer").removeAttr('checked');
+          $("#trailerInfo").addClass('none');
+          $("#trailerInfo").find('.oris-input').removeClass('required-input');
+        }
+        var special_product_type = saveNotSubmitData.special_product_type
+        $("#orderBookModal input[name=special]").each(function () {
+          var val = $(this).val();
+          if (special_product_type && special_product_type.indexOf(val) > -1) {
+            $(this).attr('checked', true)
+          }else {
+            $(this).removeAttr('checked')
+          }
+        })
+        $("#orderBookModal").find('.required-input,.limit-textarea').each(function () {
+          let name = $(this).attr('name');
+          $(this).val(saveNotSubmitData[name]);
+        });
+        if (saveNotSubmitData.shipping_list) {
+          var shipping_list = '';
+          for (let i = 0; i < saveNotSubmitData.shipping_list.length; i++) {
+            if (saveNotSubmitData.shipping_list.length > 1) {
+              var deleteBtn = `
+                      <button type="button" class="btn-text delete-btn">
+                        <i class="giga icon-seller_lajitong-01"></i>
+                      </button>`
+            } else {
+              var deleteBtn = `
+                      <button type="button" class="btn-text delete-btn" disabled>
+                        <i class="giga icon-seller_lajitong-01"></i>
+                      </button>`
+            }
+            var description = saveNotSubmitData.shipping_list[i].description.replace('>',"&gt;");
+            var description = saveNotSubmitData.shipping_list[i].description.replace('<',"&lt;");
+            var description = saveNotSubmitData.shipping_list[i].description.replace('"',"&quot;");
+            shipping_list += `
+                 <tr>
+                    <td>
+                      <input type="text" name="description" value="${description}"
+                             placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input description-name" oninput="shippingOrderBook.limitWrite(this)" maxlength="200"
+                             onkeyup="this.value=this.value.replace( /^\\s*/, '');">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="hscode" value="${saveNotSubmitData.shipping_list[i].hscode}" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input" oninput="this.value=this.value.replace(/[^\\d^\\.]+/g,'')" maxlength="30">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="qty" value="${saveNotSubmitData.shipping_list[i].qty}" placeholder="{{ __('请填写') }}" autocomplete="off"
+                             class="oris-input" oninput="this.value=this.value.replace(/[^\\d]/g,'')" maxlength="5">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="weight" value="${saveNotSubmitData.shipping_list[i].weight}"
+                             placeholder="{{ __('请填写') }}" class="oris-input" autocomplete="off"
+                             onblur="shippingOrderBook.fixedTwo(this)"
+                             oninput="this.value= this.value.match(/\\d+(\\.\\d{0,2})?/) ? this.value.match(/\\d+(\\.\\d{0,2})?/)[0] : ''">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                      <input type="text" name="volume" value="${saveNotSubmitData.shipping_list[i].volume}"
+                             placeholder="{{ __('请填写') }}" class="oris-input" autocomplete="off"
+                             onblur="shippingOrderBook.fixedTwo(this)"
+                             oninput="this.value= this.value.match(/\\d+(\\.\\d{0,2})?/) ? this.value.match(/\\d+(\\.\\d{0,2})?/)[0] : ''">
+                      <div class="error-prompt text-danger text-small text-left"></div>
+                    </td>
+                    <td>
+                     ${deleteBtn}
+                    </td>
+                  </tr>
+            `
+          }
+          $("#shippingList").html(shipping_list);
+        }
+      }
+      if ($("#shippingList").children('tr').length < 10) {
+        $("#addBtn").removeAttr('disabled');
+      }else{
+        $("#addBtn").attr('disabled',true);
+      }
+    },
+    bindClick: function () {
+      $("#orderBookModal")
+        .on('click', '#addBtn', function () {
+          var $tr = $("#shippingList").children('tr:first-child');
+          $("#shippingList").append($tr.clone());
+          $("#shippingList").children('tr:last-child').find('input').val('');
+          $("#shippingList").children('tr:last-child').find('.error-prompt').html('');
+          $("#shippingList").children('tr').find('.delete-btn').removeAttr('disabled');
+          var len = $("#shippingList").find('tr').length;
+          if (len > 9) {
+            $("#addBtn").attr('disabled', true);
+          }
+        })
+        .on('click', '.delete-btn', function () {
+          var $tr = $(this).closest("tr");
+          $("#addBtn").removeAttr('disabled');
+          $tr.remove();
+          var len = $("#shippingList").find('tr').length;
+          if (len < 2) {
+            $(".delete-btn").attr('disabled', true);
+          }
+        })
+        .on('click', '#saveModal', function () {
+          shippingOrderBook.saveShippingBook();
+        })
+        .on('click', '.close-modal', function () {
+          clickEvent = 0;
+          $("#orderBookModal").modal('hide');
+          $("#bookForm")[0].reset();
+          $("#bookForm").find('input.error-border').removeClass('error-border');
+          $("#bookForm").find('.error-prompt').html('');
+        })
+    },
+    bindChange: function () {
+      $("#orderBookModal")
+        .on('change', 'input[type=radio][name=bond]', function () {
+          if ($(this).val() == 1) {
+            $("#bondInfo").removeClass('none');
+            $("#bondInfo").find('input[type=text]').addClass('required-input');
+            shippingOrderBook.data.bookData.is_self_bond = 1;
+          } else {
+            $("#bondInfo").addClass('none');
+            $("#bondInfo").find('input[type=text]').removeClass('required-input').val('');
+            shippingOrderBook.data.bookData.is_self_bond = 0;
+          }
+        })
+        .on('change', 'input[type=radio][name=delivery]', function () {
+          if ($(this).val() == 1) {
+            shippingOrderBook.data.bookData.terms_of_delivery = 1;
+          } else {
+            shippingOrderBook.data.bookData.terms_of_delivery = 2;
+          }
+        })
+        .on('change', 'input[type=radio][name=trailerService]', function () {
+          if ($(this).val() == 1) {
+            $("#trailerInfo").removeClass('none');
+            $("#trailerInfo").find('input[type=text]').addClass('required-input');
+            shippingOrderBook.data.bookData.is_use_trailer = 1
+          } else {
+            $("#trailerInfo").addClass('none');
+            $("#trailerInfo").find('input[type=text]').removeClass('required-input').val('');
+            shippingOrderBook.data.bookData.is_use_trailer = 0;
+          }
+        })
+        .on('change', 'input[type=checkbox][name=special]', function () {
+          var type = shippingOrderBook.data.bookData.special_product_type;
+          if (typeof (type) == 'string') {
+            type = shippingOrderBook.data.bookData.special_product_type.split(',');
+          }
+          var val = $(this).val();
+          if ($(this).is(':checked')) {
+            type.push(val);
+          } else {
+            $.each(type, function (index, item) {
+              if (item == val) {
+                type.splice(index, 1)
+              }
+            })
+          }
+          shippingOrderBook.data.bookData.special_product_type = type;
+        })
+        .on('input propertychange change', '.limit-textarea,.trailer-input,input.required-input,.description-name', function () {
+          var val = $(this).val();
+          var name = $(this).attr('name');
+          var len = $(this).attr('maxlength')
+          var data = shippingOrderBook.calcStringLength(val, Number(len));
+          $(this).val(data.fullStr);
+          shippingOrderBook.data.bookData[name] = data.fullStr;
+          $(this).next('.letter-count').children('.reason-len').text(data.len);
+        })
+        .on('blur','input.required-input',function () {
+          let val = $(this).val().trim();
+          let errorMsg = $(this).prev('label').children('span').text() + shippingOrderBook.data.tipsText.empty;
+          if (!val) {
+            $(this).addClass('error-border');
+            $(this).next('.error-prompt').html(errorMsg);
+          } else {
+            $(this).removeClass('error-border');
+            $(this).next('.error-prompt').html('');
+          }
+        })
+        .on('blur','#shippingList input.oris-input',function () {
+          shippingOrderBook.shippingListIsInvalid()
+        })
+    },
+    limitWrite: function (that) {
+      that.value = that.value.replace(/[\u4e00-\u9fff\u3040-\u309F\u30A0-\u30FF]/g, '');
+    },
+    fixedTwo: function(that){
+     if ($(that).val()){
+       $(that).val(Number($(that).val()).toFixed(2))
+     }
+    },
+    doValidator: function () {
+      var result = false;
+      let offsetTop = document.getElementById('orderBody').scrollTop;
+      let bodyTop = $(window).scrollTop();
+      result = shippingOrderBook.emptyIsInvalid() || result;
+      result = shippingOrderBook.shippingListIsInvalid() || result;
+      if ($(".required-input.error-border").length > 0){
+        var top = $(".required-input.error-border").first().offset().top + offsetTop - bodyTop - 160;
+      }else{
+        var top = 10000
+      }
+      if ($(".no-val").length > 0){
+        var listTop = $("#shippingList").offset().top + offsetTop - bodyTop-160;
+      }else {
+        var listTop=10000
+      }
+      if (top < listTop){
+        $('#orderBookModal .modal-body').animate({scrollTop: top}, 100);
+      }else if ( top > listTop){
+        $('#orderBookModal .modal-body').animate({scrollTop: listTop}, 100);
+      }
+      return result;
+    },
+    //为空校验
+    emptyIsInvalid: function () {
+      let result = false;
+      $("#orderBookModal").find('.required-input').each(function () {
+        let val = $(this).val().trim();
+        let name = $(this).attr('name');
+        let errorMsg = $(this).prev('label').children('span').text() + shippingOrderBook.data.tipsText.empty;
+        if (!val) {
+          $(this).addClass('error-border');
+          $(this).next('.error-prompt').html(errorMsg);
+          result = true;
+        } else {
+          $(this).removeClass('error-border');
+          $(this).next('.error-prompt').html('');
+          shippingOrderBook.data.bookData[name] = val;
+          result = result || false;
+        }
+      });
+      return result
+    },
+    //运输信息
+    shippingListIsInvalid: function () {
+      let result = false;
+      let check = false;
+      let shipping_list = [];
+      $("#shippingList").children('tr').each(function (i) {
+        var object = {description: '', hscode: '', qty: '', weight: '', volume: '',};
+        $(this).children('td').children('input').each(function (j) {
+          var val = $(this).val();
+          if (!val) {
+            $(this).next('.error-prompt').html("{{ __('请填写') }}");
+            $(this).parent('td').addClass('no-val');
+            check = true;
+          } else {
+            $(this).parent('td').removeClass('no-val');
+            $(this).next('.error-prompt').html('');
+            //品名
+            if ((j + 1) == 1) {
+              object.description = val == '' ? null : val;
+            }
+            //HS编码
+            if ((j + 1) == 2) {
+              if (val.split('.').join('').length != 10) {
+                $(this).next('.error-prompt').html(shippingOrderBook.data.tipsText.HSCodeRule);
+                $(this).parent('td').addClass('no-val');
+                result = true;
+              }
+              object.hscode = val == '' ? null : val;
+            }
+            //件数
+            if ((j + 1) == 3) {
+              if (val < 1 || val > 99999) {
+                $(this).next('.error-prompt').html(shippingOrderBook.data.tipsText.integerRule);
+                result = true;
+              }
+              object.qty = val == '' ? null : val;
+            }
+            //重量
+            if ((j + 1) == 4) {
+              if (val < 0.01 || val > 25000.00) {
+                $(this).next('.error-prompt').html(shippingOrderBook.data.tipsText.weightLimit);
+                result = true;
+              }
+              object.weight = val == '' ? null : val;
+            }
+            //体积
+            if ((j + 1) == 5) {
+              if (val < 0.01 || val > 100.00) {
+                $(this).next('.error-prompt').html(shippingOrderBook.data.tipsText.volumeLimit);
+                result = true;
+              }
+              object.volume = val == '' ? null : val;
+            }
+          }
+        });
+        var obj = [];
+        for (let key in object) {
+          if (object[key]) {
+            obj.push(object[key]);
+          }
+        }
+        if (obj.length == 0) {
+          $(this).children('td').removeClass('no-val');
+          $(this).addClass('delete-tr');
+          $(this).children('td').children('.error-prompt').html('');
+          check=false;
+          result = result || false;
+        } else {
+          $(this).removeClass('delete-tr');
+          if (check) {
+            result = true;
+          }
+          shipping_list.push(object);
+          $("#shippingList").next('tfoot').find('.error-prompt').html('');
+        }
+      });
+      if (shipping_list.length == 0) {
+        $("#shippingList").next('tfoot').find('.error-prompt').html(this.data.tipsText.allEmpty);
+        $("#shippingList").addClass('no-val');
+        result = true
+      }else{
+        $("#shippingList").removeClass('no-val')
+      }
+      this.data.bookData.shipping_list = shipping_list;
+      return result;
+    },
+    //获取临时保存data
+    getSaveNotSubmit: function() {
+      $("#orderBookModal").find('.required-input,.limit-textarea').each(function () {
+        //各个input框
+        let val = $(this).val().trim();
+        let name = $(this).attr('name');
+        shippingOrderBook.data.saveNotSubmitData[name] = val;
+      });
+      //shipping list
+      let shipping_list = [];
+      $("#shippingList").children('tr').each(function (i) {
+        var object = {description: '', hscode: '', qty: '', weight: '', volume: '',};
+        $(this).children('td').children('input').each(function (j) {
+          var val = $(this).val();
+          //品名
+          if ((j + 1) == 1) {
+            object.description = val == '' ? null : val;
+          }
+          //HS编码
+          if ((j + 1) == 2) {
+            object.hscode = val == '' ? null : val;
+          }
+          //件数
+          if ((j + 1) == 3) {
+            object.qty = val == '' ? null : val;
+          }
+          //重量
+          if ((j + 1) == 4) {
+            object.weight = val == '' ? null : val;
+          }
+          //体积
+          if ((j + 1) == 5) {
+            object.volume = val == '' ? null : val;
+          }
+        });
+        var obj = [];
+        for (let key in object) {
+          if (object[key]) {
+            obj.push(object[key]);
+          }
+        }
+        if (obj.length > 0) {
+          shipping_list.push(object);
+        }
+      });
+      this.data.saveNotSubmitData.shipping_list = shipping_list;
+      //单选框，复选框
+      var is_self_bond = $("#orderBookModal input[name=bond]:checked").val();
+      this.data.saveNotSubmitData.is_self_bond = is_self_bond;
+      var terms_of_delivery = $("#orderBookModal input[name=delivery]:checked").val();
+      this.data.saveNotSubmitData.terms_of_delivery = terms_of_delivery;
+      var is_use_trailer = $("#orderBookModal input[name=trailerService]:checked").val();
+      this.data.saveNotSubmitData.is_use_trailer = is_use_trailer;
+      var special_type = []
+      $("#orderBookModal input[name=special]").each(function () {
+        if ($(this).is(':checked'))
+          special_type.push($(this).val());
+      })
+      this.data.saveNotSubmitData.special_product_type = special_type.toString();
+      var saveNotSubmitData = this.data.saveNotSubmitData;
+      return saveNotSubmitData
+    },
+    getSaveData: function(){
+      var special_type = [];
+      $("#orderBookModal input[name=special]").each(function () {
+        if ($(this).is(':checked'))
+          special_type.push($(this).val());
+      });
+      this.data.bookData.special_product_type = special_type.toString();
+      this.data.bookData.is_self_bond =  $("#orderBookModal input[name=bond]:checked").val();
+      this.data.bookData.terms_of_delivery =  $("#orderBookModal input[name=delivery]:checked").val();
+      this.data.bookData.is_use_trailer =  $("#orderBookModal input[name=trailerService]:checked").val();
+      this.data.bookData.consignee =  $("#consignee").val();
+      this.data.bookData.notify_party =  $("#notifyParty").val();
+      this.data.bookData.remark =  $("#remarkBook").val();
+    },
+    //保存托书信息
+    saveShippingBook: function () {
+      var flag = shippingOrderBook.doValidator();
+      if (flag) {
+        bookData = '';
+        return;
+      }
+      shippingOrderBook.getSaveData();
+      var data = this.data.bookData;
+      $.ajax({
+        url: '/index.php?route=customerpartner/warehouse/receipt/checkShippingOrderBook',
+        data: data,
+        method: 'post',
+        cache: false,
+        dataType: 'json',
+        beforeSend: function () {
+          $("#saveModal").attr('disabled', 'disabled')
+        },
+        complete: function () {
+          $("#saveModal").removeAttr('disabled');
+        },
+        success: function (res) {
+          if (res.code == 200) {
+            $("#orderBookModal").modal('hide');
+            clickEvent = 0;
+            shippingOrderBook.getSaveNotSubmit();
+            bookData = data;
+            var saveNotSubmitData = shippingOrderBook.data.saveNotSubmitData;
+            if (JSON.stringify(saveNotSubmitData) != "{}") {
+              bookData = saveNotSubmitData;
+            }
+          } else {
+            bookData = '';
+            $.toast({
+              heading: false,
+              text: res.msg,
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: false,
+              allowToastClose: false,
+              loader: false,
+              hideAfter: 3000,
+
+            });
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      })
+    },
+    calcStringLength(str, maxLength) {
+      str = str.replace(/^\s*/g, ''); // 控制开始不允许输入空格
+      var len = 0;
+      var charCode = -1;
+      var fullStr = '';
+      var lrNoEmpty = str.trim(); // 前后去空格
+      if (!str || !str.length) {
+        return { 'len': len, 'fullStr': fullStr };
+      }
+      for (var i = 0; i < str.length; i++) {
+        charCode = lrNoEmpty.charCodeAt(i);
+        //，￥？！：；（）
+        if (charCode >= 2048 && charCode <= 40869 || charCode==65292 || charCode==65509 || charCode==65281 ||
+          charCode==65311 || charCode==65306 || charCode==65307 || charCode==65288 || charCode==65289 || charCode==183 ) {
+          len += 2;
+        } else if (!isNaN(charCode)) {
+          len++;
+        }
+        if (len <= maxLength) {
+          fullStr += str[i];
+        } else {
+          len = maxLength
+        }
+      }
+      return { 'len': len, 'fullStr': fullStr };
+    },
+    calcStrTrueLen(str) {
+      str = str.replace(/^\s*/g, ''); // 控制开始不允许输入空格
+      var len = 0;
+      var charCode = -1;
+      var lrNoEmpty = str.trim(); // 前后去空格
+      if (!str || !str.length) {
+        return len;
+      }
+      for (var i = 0; i < str.length; i++) {
+        charCode = lrNoEmpty.charCodeAt(i);
+        if (charCode >= 2048 && charCode <= 40869 || charCode==65292 || charCode==65509 || charCode==65281 ||
+          charCode==65311 || charCode==65306 || charCode==65307 || charCode==65288 || charCode==65289 || charCode==183 ) {
+          len += 2;
+        } else if (!isNaN(charCode)) {
+          len++;
+        }
+      }
+      return len;
+    },
+  };
+
+</script>

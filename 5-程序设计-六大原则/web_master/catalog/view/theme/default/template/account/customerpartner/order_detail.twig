@@ -1,0 +1,33 @@
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <td class="left">{% if sort == 'sort_dateadded' %}
+        <a href="{{ sort_dateadded}}" class="{{ order|lower }}" >{{ text_added_date}}</a>
+        {% else %}
+        <a href="{{ sort_dateadded}}">{{ text_added_date}}</a>
+        {% endif %}
+      </td>
+      <td class="center">{{ text_orderstatus}}</td>
+      <td class="center">{{ text_comment}}</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% if orders %}
+    {% for key, value in orders %}
+    <tr>
+    <td class="text-left" >{{ value['date_added']}}</td>
+    {% for key, order_status in order_statuses %}
+      {% if order_status['order_status_id'] == value['order_status_id'] %}
+        <td class="text-left" >{{ order_status['name']}}</td>
+      {% endif %}
+    {% endfor %}
+    <td class="text-left" >{{ value['comment']}}</td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+      <td class="text-center" colspan="10">{{ text_no_results}}</td>
+    </tr>
+    {% endif %}
+  </tbody>
+</table>

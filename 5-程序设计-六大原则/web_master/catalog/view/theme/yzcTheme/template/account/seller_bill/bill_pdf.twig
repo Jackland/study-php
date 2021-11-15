@@ -1,0 +1,60 @@
+
+<!-- seller 账单总单 -->
+<div id="settle_bill" style="padding: 0px 2% 20px 2%;font-family:'Times New Roman',Georgia,Serif;">
+  <h2>{{ logistics_customer_name }} {{ language.text_bill }}</h2>
+  <div id="bill">
+    {{ info.start_bill_overview|replace({'<b>':'','</b>':''})}}
+    <p style="line-height:5px;"></p>
+    <table class="table table-hover ">
+      <tr>
+        <td class="col-sm-3" style="line-height: 16px;"> {{ language.settlement_processed }}</td>
+        <td colspan="3" class="col-sm-3" style="line-height: 16px;">
+          {{ show_default.start_date }} - {{ show_default.end_date }} ({{ show_default.status_info }})
+        </td>
+      </tr>
+
+    </table>
+    {% for type_info in detail %}
+      {% set loop_out= loop.index %}
+      <div style="height: 6px"></div>
+      <table class="table table-hover ">
+        {% for sub_bill_info in type_info['child'] %}
+          {% set sub_bill_title=(loop.index==1 and loop_out==1)?language.current_charges_generated:'' %}
+          {% set sub_bill_type=(loop.index==1)?(language['bill_type'][type_info.code]):'' %}
+          {% set sub_bill_total_style=(loop.last)?'border-bottom: 2px solid #183464;':'' %}
+          <tr>
+            <td class="col-sm-3" style="line-height: 17px;">{{ sub_bill_title }}</td>
+            <td class="col-sm-3" style="line-height: 17px;">{{ sub_bill_type }}</td>
+            <td class="col-sm-3" style="line-height: 17px;">{{ language['bill_type'][sub_bill_info.code] }}</td>
+            <td class="col-sm-3 text-right"
+                style="text-align: right; line-height: 17px;{{ sub_bill_total_style }}">{{ sub_bill_info.value }}</td>
+          </tr>
+        {% endfor %}
+        <tr>
+          <td class="col-sm-3" style="line-height: 17px;"></td>
+          <td class="col-sm-3" style="line-height: 17px;"></td>
+          <td class="col-sm-3" style="line-height: 17px;"></td>
+          <td class="col-sm-3 text-right border-bot-top"
+              style="text-align: right;line-height: 17px;">{{ language.sub_total }} <span>{{ type_info.total }}</span>
+          </td>
+        </tr>
+      </table>
+    {% endfor %}
+    <div style="height: 6px"></div>
+    <table class="table table-hover">
+      <tr>
+        <td class="col-sm-3" ></td>
+        <td class="col-sm-3" style="border-bottom:2px solid #183464;"></td>
+        <td class="col-sm-3" style="border-bottom:2px solid #183464;"></td>
+        <td class="col-sm-3" style="border-bottom:2px solid #183464;"></td>
+      </tr>
+      <tr>
+        <td class="col-sm-3" style="line-height: 16px;">{{ language.settlement_amount }}</td>
+        <td class="col-sm-3" style="line-height: 16px;">{{ language.closing_balance }}</td>
+        <td class="col-sm-3" style="line-height: 16px;">{{ language.total_balance }}</td>
+        <td class="col-sm-3 text-right" style="text-align: right;line-height: 16px;">{{ info.total }}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+{{ footer }}

@@ -1,0 +1,77 @@
+{% trans_default_category 'catalog/view/customerpartner/product/lists_index' %}
+
+{{header}}
+{{ separate_column_left }}
+{{ jsOrigin(['catalog/view/javascript/datetimepicker/bootstrap-datetimepicker.min.js',
+  'catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js',
+  'catalog/view/javascript/layer/layer.js',
+  'catalog/view/javascript/layerOris.js',
+  'catalog/view/javascript/echarts/echarts.min.js',
+  'catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js',
+]) }}
+{{ cssOrigin(['catalog/view/javascript/datetimepicker/css/bootstrap-datetimepicker.min.css',
+    'catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css',
+    'catalog/view/javascript/layer/theme/yzc/layuiOris.css',
+    '/catalog/view/theme/yzcTheme/stylesheet/app.css',
+   'catalog/view/theme/yzcTheme/stylesheet/account/customerpartner/productlist.css'
+]) }}
+{{ css(['css/common/common.css','css/common/common-ext.css','static/seller_product/lists_index.css']) }}
+<div class="container-fluid" id="content" style="margin-left: 235px">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{breadcrumb.href}}">{{breadcrumb.text}} </a></li>
+    {% endfor %}
+  </ul>
+  {{content_top}}
+  <h1 style="margin-bottom: 12px !important;">
+    <span class="content-heading">{{ __('产品列表', {}, 'catalog/document') }}</span>
+  </h1>
+  <div class="nav-oris">
+    <div class="row">
+      <div class="col-md-12">
+        {# 表头tab页 #}
+        <ul class="nav nav-tabs btn-re" role="tablist">
+          <li class="active">
+            <a href="#div-valid" role="tab" data-toggle="tab-ajax" data-url="{{ url('customerpartner/product/lists/valid') }}">{{ __('有效产品') }}</a>
+            </a>
+          </li>
+          <li class="oris-tabs-pane" >
+            <a href="#div-invalid" role="tab" data-toggle="tab-ajax" data-url="{{ url('customerpartner/product/lists/invalid') }}">{{ __('无效产品') }}</a>
+          </li>
+          <li  class="oris-tabs-pane" >
+            <a href="#div-audit" role="tab" data-toggle="tab-ajax" data-url="{{ url('customerpartner/product/lists/audit') }}">{{ __('审核记录') }}</a>
+          </li>
+          <div class="pull-right btn-ab">
+            <a href="{{ url('pro/product') }}" data-toggle="tooltip" title="{{ __('添加产品', {}, 'catalog/document') }}"
+              class="oris-button">
+              <i class="fa fa-plus"></i>&nbsp;{{ __('添加产品', {}, 'catalog/document') }}
+            </a>
+          </div>
+        </ul>
+        <div class="tab-content main product-tab-content pt-16">
+          <div id="div-valid" class="tab-pane"></div>
+          <div id="div-invalid" class="tab-pane"></div>
+          <div id="div-audit" class="tab-pane"></div>
+        </div>
+        {{content_bottom}}
+      </div>
+    </div>
+  </div>
+  <div class="">
+    {% set class = 'col-sm-12' %}
+    <div class="">
+
+    </div>
+  </div>
+</div>
+
+{{footer}}
+<script>
+  var PRECISION = {{ precision|default(2) }};
+
+  function reloadTabs(){
+    $("#valid_pagination").find("li.active a").click();//点击分页
+    $("#invalid_pagination").find("li.active a").click();//点击分页
+    $("#audit_pagination").find("li.active a").click();//点击分页
+  }
+</script>

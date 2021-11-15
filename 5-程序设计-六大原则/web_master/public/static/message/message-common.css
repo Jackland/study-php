@@ -1,0 +1,910 @@
+/* 消息中心公共样式 class msgcent 作为样式前缀限制 */
+@media (min-width: 1200px) {
+  .container {
+    width: 1200px;
+  }
+}
+  
+.msgcent.msg-card {
+  background: #fff;
+  border: 1px solid #DCDCDC;
+  /* border-radius: 2px; */
+  overflow: visible;
+}
+
+.msgcent.msg-page-container {
+  background: #fff;
+}
+
+
+/* 消息中心表单部分----------start------------ */
+.msgcent.msg-form__container {
+  padding: 16px 24px 24px 24px;
+}
+
+.msgcent.msg-form__item {
+  margin-top: 24px;
+}
+
+.msgcent.msg-form__tip {
+  color: #666;
+  font-size: 14px;
+}
+
+.msgcent.msg-form__label {
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.msgcent.msg-form__label-sm {
+  font-size: 14px;
+  color: #333;
+  font-weight: bold;
+}
+
+.msgcent.msg-form__content {
+  margin-top: 8px;
+}
+/* 消息中心表单部分----------end------------ */
+
+/* 收件人样式部分----------start------------ */
+.msgcent.msg-receive__container {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  padding: 2px 6px;
+  min-height: 40px;
+  border: 1px solid #ccc;
+  width: 100%;
+  flex-wrap:wrap;
+  max-height: 160px;
+  overflow-y: auto;
+  border-radius: 2px;
+}
+
+.msgcent.msg-receive__container:hover {
+  border: 1px solid #333;
+}
+
+.msgcent.msg-receive__item,
+.msgcent.msg-receive__item-group
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  background: rgba(55, 90, 205, 0.1);
+  margin: 4px 6px;
+  padding: 2px 8px;
+}
+
+.msgcent.msg-receive__item.disabled {
+  background-color: rgba(40, 97, 206, 0.1);
+  color: #999;
+}
+
+.msgcent.msg-receive__item .msg-receive__groupicon {
+  padding-right: 4px;
+  font-size: 14px;
+}
+
+.msgcent.msg-receive__item i {
+  margin-top: 2px;
+}
+
+.msgcent.msg-receive__item .msg-receive__clear {
+  margin-left: 8px;
+  color: #999;
+}
+
+.msgcent.msg-receive__item .msg-receive__clear:hover {
+  cursor: pointer;
+  color: #333;
+}
+
+.msgcent.msg-receive__placeholder {
+  font-size: 14px;
+  color: #999;
+  margin-left: 4px;
+}
+/* 收件人样式部分----------end------------ */
+
+/* 常用语样式部分----------start------------ */
+.msgcent.msg-words__container {
+  display: flex;
+  align-items: center;  
+  flex-wrap: wrap;
+}
+
+.msgcent.msg-words__item {
+  padding: 6px 12px;
+  background: rgba(55, 90, 205, 0.1);
+  border-radius: 2px;
+  margin-right: 12px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  color: #004BD8;
+}
+
+.msgcent.msg-words__item:hover {
+  padding: 6px 12px;
+  background: #004BD8;
+  border-radius: 2px;
+  margin-right: 12px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* 常用语样式部分----------end------------ */
+
+/* 消息中心特殊按钮部分----------start------------ */
+.msgcent.msg-btn__text {
+  font-size: 14px;
+  color: #004BD8;
+}
+
+.msgcent.msg-btn__text:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+/* 消息中心特殊按钮部分----------end------------ */
+
+/* 消息中心搜索框部分----------start------------ */
+.msgcent.msg-search__row {
+  margin-bottom: 24px;
+}
+
+.msgcent.msg-search__label {
+  font-size: 14px;
+  color: #333;
+  font-weight: 400;
+}
+
+.msgcent.msg-search__btn {
+  margin-right: 10px;
+  height: 40px;
+}
+
+.msgcent.msg-search__btn:focus,
+.msgcent.msg-search__btn:active {
+  background-color: #fff !important;
+  border-color: #c1c1c1 !important;
+  color: #000 !important;
+}
+/* 消息中心搜索框部分----------end------------ */
+
+/* 消息中心表格部分----------start------------ */
+.msgcent.msg-table__container {
+  margin-top: 16px;
+}
+
+.msgcent.msg-table__container .msg-markicon__default {
+  font-size: 18px;
+  color: none;
+}
+
+.msgcent.msg-table__container .msg-markicon__active {
+  font-size: 18px;
+  color: #FFA260;
+}
+
+.msgcent.msg-table__container .msg-markicon__default:hover,
+.msgcent.msg-table__container .msg-markicon__active:hover {
+  cursor: pointer;
+}
+
+.msgcent.msg-table__container .msg-replyicon {
+  color: #0AAD4F;
+  font-size: 14px;
+}
+
+.msgcent.msg-table__container .msg-state__cell {
+  display: flex;
+  align-items: center;
+}
+
+.msgcent.msg-table__container .msg-state__icon {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background-color: #E64545;
+  flex-shrink: 0;
+}
+
+.msgcent.msg-table__container .msg-table__row-replied .msg-state__icon {
+  background-color: #0AAD4F;
+  flex-shrink: 0;
+}
+
+.msgcent.msg-table__container .msg-table__row-unanswered td {
+  font-weight: bold;
+}
+
+/* 消息中心表格部分----------end------------ */
+
+/* 消息中心其他控件部分----------start------------ */
+
+/* 状态标记为编辑框按钮 */
+.msgcent.msg-markas__row {
+  display: flex;
+}
+
+.msgcent.msg-markas__row .oris-button {
+  height: 36px !important;
+  border-radius: 2px;
+  border: 1px solid #c1c1c1;
+  color: #333;
+  background: #fff;
+}
+
+.msgcent.msg-markas__row .oris-button[disabled] {
+  color: #c1c1c1;
+  border: 1px solid #c1c1c1;
+  background: #fafafa;
+  opacity: 1;
+}
+
+.msgcent.msg-markas__row .oris-button[disabled]:hover {
+  cursor: not-allowed;
+}
+
+.msgcent.msg-markas__row .oris-button:not([disabled]):hover {
+  border: 1px solid #2861CE;
+  color: #004BD8;
+  background: #fff;
+}
+
+.msgcent.msg-markas__select {
+  width: 200px;
+  margin-left: 10px;
+}
+
+.msgcent.msg-markas__select button:focus,
+.msgcent.msg-markas__select button:active {
+  border-color: initial !important;
+}
+
+.msgcent.msg-markas__select .disabled .btn-default,
+.msgcent.msg-markas__select .disabled .btn-default:hover {
+  border-color: #c1c1c1;
+  background-color: #fafafa;
+  opacity: 1;
+  color: #c1c1c1 !important;
+}
+
+.msgcent.msg-markas__select .bootstrap-select .dropdown-toggle {
+  height: 36px;
+}
+
+.msgcent.msg-markas__select .bootstrap-select .dropdown-toggle .filter-option-inner {
+  line-height: 36px;
+}
+
+/* 消息中心其他控件部分----------end------------ */
+
+/* 消息中心回复详情部分----------start------------ */
+/* 有两种形式的详情页：1.非对话形式，只有详情内容，2.对话形式 */
+.msgcent.msg-detail__container {
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  min-height: 200px;
+}
+
+.msgcent.msg-detail__header {
+  display: flex;
+  height: 48px;
+  align-items: center;
+  padding:0 24px;
+  border-bottom: 1px solid #dcdcdc;
+  text-align: center;
+  justify-content: space-between;
+}
+
+.msgcent.msg-detail__header__btn-group {
+  display: flex;
+  align-items: center;
+  justify-self: flex-end;
+}
+
+/* 无法回复标签 */
+.msgcent.msg-detail__cantreply {
+  height: 32px;
+  line-height: 32px;
+  padding:0 16px;
+  background-color:#F8F8F8;
+  color: #666;
+}
+
+.msgcent.msg-detail__delbtn {
+  margin-left: 10px;
+  height: 32px;
+  min-width: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.msgcent.msg-detail__delbtn i {
+  font-weight: 600;
+  padding-right: 6px;
+}
+
+.msgcent.msg-detail__delbtn:focus i {
+  color: #666 !important;
+}
+
+.msgcent.msg-detail__delbtn:focus {
+  background-color: #fff !important;
+}
+
+.msgcent.msg-detail__delbtn:hover i {
+  color: #666 !important;
+}
+
+.msgcent.msg-detail__backbtn {
+  justify-self: flex-start;
+}
+
+/* 内容部分 */
+.msgcent.msg-detail__content {
+  padding: 24px;
+}
+
+/* 内容中的标题部分 */
+.msgcent.msg-detail__title {
+  margin-bottom: 16px;
+}
+
+.msgcent.msg-detail__subject {
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+  padding-bottom: 12px;
+}
+
+.msgcent.msg-detail__inforow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.msgcent.msg-detail__sender {
+  font-size: 14px;
+  color: #333;
+}
+
+.msgcent.msg-detail__time {
+  font-size: 14px;
+  color: #999;
+  display: flex;
+  align-items: center;
+}
+
+/* 消息体内容部分 */
+.msgcent.msg-detail__message-content {
+  background: #F8F8F8;
+  border-radius: 2px;
+  padding: 24px;
+  font-size:14px;
+  color: #333;
+  overflow-x: auto;
+  word-break: break-all;
+}
+
+.msgcent.msg-detail__message-content a {
+  color: #004BD8 !important;
+}
+
+.msgcent.msg-detail__message-content a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.msgcent.msg-detail__message-content .attachment {
+  margin-top: 8px;
+}
+
+.msgcent.msg-detaildialog__container {
+  overflow-y: auto;
+  height: 500px;
+  padding: 40px 32px;
+}
+
+.msgcent.msg-detaildialog__item {
+  
+}
+
+.msgcent.msg-detaildialog__logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+  overflow-x: hidden;
+}
+
+.msgcent.msg-detaildialog__logo img {
+  width: 48px;
+}
+
+.msg-detailldialog__label {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+/* 非发件人部分 */
+.msgcent.msg-detaildialog-l {
+  float: left;
+}
+
+.msgcent.msg-detaildialog-r {
+  float: right;
+}
+
+.msg-detaildialog__card {
+  overflow-x: auto;
+  border-radius: 6px;
+  max-width: 630px;
+  min-width: 120px;
+  padding: 12px;
+  word-break:break-all;
+}
+
+.msg-detaildialog__card img {
+  max-width: 548px;
+}
+
+.msg-detaildialog__card a {
+  color: #004BD8;
+}
+
+.msg-detaildialog__card a:hover {
+  text-decoration: underline;
+}
+
+.msg-detaildialog__card p {
+  margin-bottom: 0px;
+}
+
+.msg-detaildialog__card pre{
+  display: block;
+  padding: initial;
+  margin: initial;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: initial;
+  word-break: break-all;
+  word-wrap: break-word;
+  color: #333333;
+  background-color: initial;
+  border: initial;
+  border-radius: 0;
+  font-family: Arial, "Roboto", Helvetica, serif !important
+}
+
+/* 发件人内容 */
+.msg-detaildialog-l .msg-detaildialog__card {
+  background-color: #F4F4F4;
+  margin-left: 16px;
+  overflow-x: auto;
+  align-self: flex-start;
+}
+
+.msg-detaildialog-l .msg-detaildialog__card::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-width: 8px 10px;
+  position: absolute;
+  top: 16px;
+  left: -4px;
+  border-style: solid;
+  border-color: transparent #F4F4F4 transparent transparent;
+}
+
+/* 收件人内容 */
+.msg-detaildialog-r .msg-detaildialog__card {
+  background-color: rgba(55, 90, 205, 0.1);
+  margin-right: 16px;
+  overflow-x: auto;
+  align-self: flex-end;
+}
+
+.msg-detaildialog-r .msg-detaildialog__card::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-width: 8px 10px;
+  position: absolute;
+  top: 16px;
+  right: -4px;
+  border-style: solid;
+  border-color: transparent transparent transparent rgba(55, 90, 205, 0.1);
+}
+
+.msgcent.msg-detaildialog__cardtime {
+  font-size: 12px;
+  color: #999;
+  margin-top: 8px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+}
+
+.msg-detaildialog__sendicon {
+  color: #575D6C;
+  /* padding-left: 12px; */
+  font-size: 18px;
+  /* line-height: 17px; */
+}
+
+.msg-detaildialog__sendicon.disabled {
+  color: #666;
+}
+
+.msg-detaildialog__sendicon.disabled:hover {
+  color: #666 !important;
+}
+
+.msg-detaildialog__sendicon:hover {
+  color: #2861CE;
+  cursor: pointer;
+}
+
+.msg-detaildialog-l .msg-detaildialog__cardtime {
+  text-align: left;
+  margin-left: 20px;
+}
+
+.msg-detaildialog-r .msg-detaildialog__cardtime {
+  text-align: right;
+  margin-right: 20px;
+}
+
+.msgcent.msg-detaildialog__card-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.msgcent.msg-detaildialog-form__container {
+  padding: 16px 32px;
+  border-top: 1px solid #E5E5E5;
+}
+
+.msg-detaildialog-form__operation {
+  position: absolute;
+  right: -36px;
+  bottom: 48px;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  padding: 6px 6px;
+}
+
+.msg-oper-line {
+  height: 1px;
+  width: 16px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #DCDCDC;
+  margin: 4px 0px;
+}
+
+/* 消息中心回复详情部分----------end------------ */
+
+/* 消息中心layer iframe 弹窗样式----------start----------*/
+.msgcent.msg-layer {
+  border-radius: 2px;
+}
+
+.msgcent.msg-layer .layui-layer-content {
+  padding: 0px !important;
+}
+
+.msgcent.msg-layer__content {
+  padding: 24px;
+}
+/* 消息中心layer iframe 弹窗样式----------end----------*/
+
+/* 消息中心留言部分 ----------start--------- */
+.msg-ticket__container {
+  display: flex;
+}
+
+.msg-ticket__item {
+  margin-right: 16px;
+  font-size: 14px;
+  color: #333;
+  padding: 8px 12px;
+  justify-content: center;
+  align-items: center;
+  background-color: #eee;
+}
+
+.msg-ticket__item a {
+  color: #333;
+}
+
+.msg-ticket__item:hover,
+.msg-ticket__item.active {
+  background-color: rgba(40, 97, 206, 0.1);
+  color: #004BD8;
+}
+
+.msg-ticket__item:hover a,
+.msg-ticket__item.active a {
+  color: #004BD8;
+}
+
+.msg-ticket__title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.msg-ticket__title {
+  font-size: 20px;
+  color: #333;
+  font-weight: bold;
+}
+/* 消息中心留言部分 ----------end--------- */
+
+.msg-richtextarea .btn {
+  border: 1px solid #999;
+  color: #333;
+}
+
+.msg-richtextarea .btn:hover {
+  background-color: #ccc
+}
+
+.msg-datepicker-input {
+  border-radius: 0px !important;
+}
+
+/* 通用边界间隔样式 */
+.msgcent .mb-24 {
+  margin-bottom: 24px;
+}
+.msgcent .mb-20 {
+  margin-bottom: 20px;
+}
+
+.msgcent .mb-16 {
+  margin-bottom: 16px;
+}
+
+.msgcent .mb-12 {
+  margin-bottom: 12px;
+}
+
+.msgcent .mt-24 {
+  margin-top: 24px;
+}
+
+.msgcent .mt-16 {
+  margin-top: 16px;
+}
+.msgcent .mt-20 {
+  margin-top: 20px;
+}
+.msgcent .mt-10 {
+  margin-top: 10px;
+}
+
+.msgcent .mt-12 {
+  margin-top: 12px;
+}
+
+.msgcent .mt-8 {
+  margin-top: 8px;
+}
+
+.msgcent .mr-10 {
+  margin-right: 10px;
+}
+
+.msgcent .pt-16 {
+  padding-top: 16px !important;
+}
+
+.msgcent .pl-12 {
+  padding-left: 12px;
+}
+
+.msgcent .pl-24 {
+  padding-left: 24px;
+}
+
+.msgcent .pr-24 {
+  padding-right: 24px !important;
+}
+
+.msgcent .hidden {
+  display: none;
+}
+
+.msgcent .error-input {
+  border: 1px solid #E64545 !important;
+}
+
+.msgcent .error-tip {
+  margin-top: 6px;
+}
+
+/* 列表为空图标样式 */
+.msg-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.msg-empty-container {
+  padding-top: 68px;
+  padding-bottom: 68px;
+}
+
+.msg-empty-icon i{
+  font-size: 80px;
+  color: #f2f2f2;
+}
+
+.msg-empty-icon {
+  text-align: center;
+}
+
+.msg-empty-title {
+  padding-top: 12px;
+  color: #999;
+}
+
+.msg-subject-tdspan {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  word-break: break-all;
+  white-space: normal;
+}
+
+.msg-receive-placeholder {
+  color: #999;
+  padding-left: 8px;
+  font-size: 14px;
+}
+
+.msg-flex {
+  display: flex;
+  align-items: center;
+}
+
+.msg-text-right {
+  text-align: right !important;
+}
+
+.msg-text-center {
+  text-align: center !important;
+}
+
+.msg-text-left {
+  text-align: left !important;
+}
+
+/* 通用宽度设置 */
+.msg-w145 {
+  width: 145px;
+}
+
+.msg-w80 {
+  width: 80px;
+}
+
+.msg-action-col-th {
+  width: 80px;
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+/* 消息表格行高60px */
+.msg-tr-60 {
+  height: 60px;
+}
+
+.submit-ticket-right-btn {
+  border: 1px solid #2861CE !important;
+  color: #004BD8 !important;
+  background-color: #fff !important;
+}
+
+/* 留言页面submit a request按钮  */
+.submit-ticket-right-btn:hover {
+  background-color: #2861CE !important;
+  color: #fff !important;
+}
+
+.attachment-link :hover {
+  text-decoration: underline;
+  color: #004BD8;
+}
+
+/* 消息中心表格行号覆盖 */
+.msgcent .oris-table td {
+  padding: 14px 6px;
+}
+
+
+/* 消息中心通用宽高 */
+.msg-w24 {
+  width: 24px;
+}
+
+.msg-send-btn {
+  height: 40px !important;
+  align-items: center;
+  display: flex;
+  justify-content: center
+}
+
+.msg-clickable:hover {
+  color: #004BD8 !important;
+  cursor: pointer;
+}
+
+.msg-upload-btn:hover {
+  border: 1px solid #2861CE !important;
+  background: rgba(40, 97, 206, 0.1) !important;
+  color: #004BD8 !important;
+}
+
+.msg-flex {
+  display: flex;
+  align-items: center;
+}
+
+.msg-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.msg-icon-chakan {
+  font-size: 22px !important;
+  line-height: 22px !important;
+}
+
+.oris-buyer .msgb-search-row {
+  margin-right: -20px !important;
+}
+
+.msgb-search-row {
+  margin-right: -24px !important;
+}
+
+.msg-icon-button:hover i {
+  color: #666 !important;
+}
+
+.msg-icon-button:focus {
+  background: #fff !important;
+}
+
+.msg-icon-button:focus i {
+  color: #666 !important;
+}
+
+
+/* 消息中心留白区域最小508px */
+.msg-h508 {
+  min-height: 508px !important;
+}

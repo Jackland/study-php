@@ -1,0 +1,238 @@
+{{ header }}
+<script src="catalog/view/javascript/jquery/datetimepicker/moment/moment.min.js" type="text/javascript"></script>
+<script src="catalog/view/javascript/jquery/datetimepicker/moment/moment-with-locales.min.js" type="text/javascript"></script>
+<script src="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" media="screen" />
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+
+
+<div id="page-inventory-items" class="page-seller-portal">
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>{{ text_title_inventory_Batch_management }}</h1>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="tab-content main">
+          <div role="tabpanel" class="tab-pane active" id="tab-1">
+            <div class="bg-white p-2">
+              {#筛选条件#}
+              <div class="filter-wrapper form-wrapper mt-3 mb-3">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="input-type">Type</label>
+                      <select name="filter_type" id="input-type" class="form-control">
+                        <option value="">{{ __('请选择', {}, 'common') }}</option>
+                        <option value="1" {% if filter_type == "1" %}selected{% endif %}>Receiving</option>
+                        <option value="3" {% if filter_type == "3" %}selected{% endif %}>Blocked</option>
+                        <option value="2" {% if filter_type == "2" %}selected{% endif %}>Dispatch</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="">Create Date Range</label>
+                      <div class="datetimepicker-range">
+                        <div class="datetimepicker">
+                          <input type="text" class="form-control datetimefrom" placeholder="Pick a date..." name="filter_createTimeStart" value="" />
+                          <span class="title">From</span>
+                          <span class="icon"><i class="giga icon-date-icon"></i></span>
+                        </div>
+                        <div class="datetimepicker">
+                          <input type="text" class="form-control datetimeto" placeholder="Pick a date..." name="filter_createTimeEnd" value="" />
+                          <span class="title">To</span>
+                          <span class="icon"><i class="giga icon-date-icon"></i></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <div class="text-right mt-3">
+                        <button type="button" onclick="filter(this);" class="btn btn-primary">{{ text_filter}}</button>
+                        <button id="download" onclick="downloadInventoryRecord();"
+                                class="btn btn-default"
+                                data-toggle="tooltip" title="{{ text_download }}">
+                          <i class="fa fa-download"></i>
+                        </button>
+                        <button type="button" onclick="reset(this)" class="btn btn-default" data-toggle="tooltip" title="Reset">Reset</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {#表格#}
+              <table class="table main table-hover">
+                <thead>
+                <tr>
+                  <th class="text-center">#</th>
+                  <th class="text-center">Item Code</th>
+                  <th class="text-center">Creation Time</th>
+                  <th class="text-center">Type</th>
+                  <th class="text-center">Store Name</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="text-center">Reason</th>
+                  <th class="text-center">Order ID</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for record in recordData %}
+                  <tr>
+                    <td class="text-center">{{ loop.index }}</td>
+                    <td class="text-center">{{ record.sku }}</td>
+                    <td class="text-center">{{ record.creationTime }}</td>
+                    <td class="text-center">{{ record.type }}</td>
+                    <td class="text-center">{{ record.screenname }}</td>
+                    <td class="text-right">
+                      {% if  record.type == 'Receiving' %}
+                        <b style="color:red">+{{ record.quantity }}</b>
+                      {% else %}
+                        <b style="color:green">-{{ record.quantity }}</b>
+                      {% endif %}
+                    </td>
+                    <td class="text-center">{{ record.reason }}</td>
+                    <td class="text-left">
+                      {% if record.reason=='Purchase Order'  %}
+                        <a href="index.php?route=account/order/purchaseOrderInfo&order_id={{ record.orderID }}">{{ record.orderID }}&nbsp;<i class="giga icon-table-link small"></i></a>
+                        {% if (record.delivery_type==2) %}
+                          <i class="giga icon-cwf" style="color: #1f5268;font-size: 15px;" data-toggle="tooltip" data-original-title="{{ cwf }}"></i>
+                        {% endif %}
+                      {% elseif record.reason == 'CWF Order' %}
+                        <a href="index.php?route=Account/Sales_Order/CloudWholesaleFulfillment/info&id={{ record.id }}">{{ record.orderID }}&nbsp;<i class="giga icon-table-link small"></i></a>
+                      {% elseif record.reason=='Sales Order' or record.reason=='Sold but not Shipped' or record.reason == 'Blocked(Canceled Sales Order)' or record.reason == 'Blocked(ASR)'or record.reason == 'Blocked(Pending Charges)' %}
+                        {#101592 一件代发 taixing#}
+                        {% if isCollectionFromDomicile %}
+                          <a href="index.php?route=account/customer_order/customerOrderSalesOrderDetails&id={{ record.id }}">{{ record.orderID }}&nbsp;<i class="giga icon-table-link small"></i></a>
+                        {% else %}
+                          <a href="index.php?route=account/sales_order/sales_order_management/customerOrderSalesOrderDetails&id={{ record.id }}">{{ record.orderID }}&nbsp;<i class="giga icon-table-link small"></i></a>
+                        {% endif %}
+                      {% else %}
+                        <a href="index.php?route=account/rma_order_detail&rma_id={{ record.id }}&backUrlKey={{ backUrlKey }}">{{ record.orderID }}&nbsp;<i class="giga icon-table-link small"></i></a>
+                      {% endif %}
+
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+
+              <div class="row">
+                <div class="col-sm-12 text-right">{{ pagination }}</div>
+              </div>
+
+
+              <div class="text-center mt-4">
+                <a href="{{ backUrl }}" class="btn btn-primary">Back</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}
+<script>
+    $('.datetimefrom').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD'
+    });
+
+    $('.datetimeto').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD'
+    });
+
+    $(document).ready(function () {
+        $('.thumbnail').magnificPopup({
+            type: 'image'
+            // delegate: 'a',
+            // gallery: {
+            //     enabled: true
+            // }
+        });
+
+      let filter_createTimeStart = '{{ filter_createTimeStart }}';
+      let filter_createTimeEnd = '{{ filter_createTimeEnd }}';
+      if(filter_createTimeStart){
+        filter_createTimeStart = filter_createTimeStart.substring(0,10);
+        $('input[name=\'filter_createTimeStart\']').val(filter_createTimeStart);
+      }
+      if(filter_createTimeEnd){
+        filter_createTimeEnd = filter_createTimeEnd.substring(0,10);
+        $('input[name=\'filter_createTimeEnd\']').val(filter_createTimeEnd);
+      }
+    });
+
+    function getUrl() {
+        let url = 'index.php?route=account/inventory_management/batchStockBuyer';
+        url += "&backUrlKey=" + '{{ backUrlKey }}';
+        url += "&customer_id=" + '{{ customer_id }}';
+        url += "&item_code=" + '{{ item_code }}';
+        // 类型
+        let filter_type = $('select[name=\'filter_type\']').val();
+        if (filter_type) {
+            url += '&filter_type=' + encodeURIComponent(filter_type);
+        }
+
+        // 创建时间
+        let filter_createTimeStart = $('input[name=\'filter_createTimeStart\']').val();
+        if (filter_createTimeStart) {
+            url += '&filter_createTimeStart=' + encodeURIComponent(filter_createTimeStart + ' 00:00:00');
+        }
+        let filter_createTimeEnd = $('input[name=\'filter_createTimeEnd\']').val();
+        if (filter_createTimeEnd) {
+            url += '&filter_createTimeEnd=' + encodeURIComponent(filter_createTimeEnd + ' 23:59:59');
+        }
+
+        return url;
+    }
+
+    function filter(button) {
+        var url = getUrl();
+        location.href = url;
+        $(button).button('loading');
+    }
+    function reset(button) {
+      block.blockUI();
+      $('select[name=\'filter_type\']').val("");
+      $('input[name=\'filter_createTimeStart\']').val("");
+      $('input[name=\'filter_createTimeEnd\']').val("");
+      filter(button);
+    }
+    function downloadInventoryRecord() {
+      let url = 'index.php?route=account/inventory_management/downloadInventoryRecord';
+      // SKU
+      url += "&backUrlKey=" + '{{ backUrlKey }}';
+      url += "&customer_id=" + '{{ customer_id }}';
+      url += "&item_code=" + '{{ item_code }}';
+      // 类型
+      let filter_type = $('select[name=\'filter_type\']').val();
+      if (filter_type) {
+        url += '&filter_type=' + encodeURIComponent(filter_type);
+      }
+
+      // 创建时间
+      let filter_createTimeStart = $('input[name=\'filter_createTimeStart\']').val();
+      if (filter_createTimeStart) {
+        url += '&filter_createTimeStart=' + encodeURIComponent(filter_createTimeStart);
+      }
+      let filter_createTimeEnd = $('input[name=\'filter_createTimeEnd\']').val();
+      if (filter_createTimeEnd) {
+        url += '&filter_createTimeEnd=' + encodeURIComponent(filter_createTimeEnd);
+      }
+
+      window.location.href = url;
+    }
+</script>

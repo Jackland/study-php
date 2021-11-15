@@ -1,0 +1,216 @@
+{{ header }}
+<style>
+  .wk-seller-thumb {
+    margin-bottom: 20px;
+    box-shadow:0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19) !important
+  }
+
+  .wk-seller-thumb .thumbnail {
+    border: none;
+    border-radius:
+    none;margin: 0;
+  }
+
+  .wk-seller-thumb .wk-caption {
+    background: #0b9bc2;
+    padding: 15px 5px 5px 5px;
+  }
+
+  .wk-seller-thumb{
+    color: white;
+  }
+
+  .wk-caption a{
+    color: #0000EE;
+  }
+
+  .wk-seller-thumb .wk-caption p {
+    margin: 3px 0;
+    color: white;
+  }
+</style>
+<div class="container">
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+    {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class}}">{{ content_top}}
+      <div class="text-center">
+        <h1 class="text-info">{{ sell_header}}</h1>
+        <a href="index.php?route=account/register" type="button" class="btn btn-primary btn-lg">
+          {{ sell_title}}
+        </a>
+      </div>
+      <br/>
+      {% if tabs %}
+      <ul class="nav nav-tabs">
+        {% for key, value in tabs %}
+            <li {% if not key %} class="active" {% endif %}><a href="{{ '#tab-' ~ key}}" data-toggle="tab">{{ value['hrefValue']}}</a></li>
+        {% endfor %}
+      </ul>
+      <div class="tab-content">
+        {% for key, value in tabs %}
+          <div id="{{ 'tab-' ~ key}}" class="tab-pane {% if not key %} active {% endif %}">{{ value['description']}}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <br/>
+      {% if showpartners %}
+      <h3><b>{{ text_long_time_seller}}</b></h3>
+      <div class="row">
+        {% for partner in partners %}
+        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+          <div class="wk-seller-thumb">
+            <div class="thumbnail">
+              <a href="{{ partner['sellerHref']}}">
+                {% if partner['thumb'] %}
+                  <img src="{{ partner['thumb']}}" alt="{{ partner['name']}}"
+                  title="{{ partner['name']}}" class="img-responsive"/>
+                {% else %}
+                  <div style="background-color:{{ partner['backgroundcolor']}}"></div>
+                {% endif %}
+
+              </a>
+            </div>
+            <div class="wk-caption">
+              <a href="{{ partner['sellerHref']}}"><b>{{ partner['name']}}</b></a>
+              {% if partner['country'] %}
+                <p>{{ text_from}}<span data-toggle="tooltip" title="{{ text_from}}"><i class="fa fa-home"></i></span><b>{{ partner['country']}}</b></p>
+              {% endif %}
+              <p>{{ text_total_products}}{{ partner['total_products']}}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if showproducts %}
+      <h3><b>{{ text_latest_product}}</b></h3>
+      <div class="row">
+        <div class="col-sm-3 hidden-xs">
+          <div class="btn-group">
+            <button type="button" id="list-view" class="btn btn-default" data-toggle="tooltip" title="{{ button_list}}"><i class="fa fa-th-list"></i></button>
+            <button type="button" id="grid-view" class="btn btn-default" data-toggle="tooltip" title="{{ button_grid}}"><i class="fa fa-th"></i></button>
+          </div>
+        </div>
+        <div class="col-sm-1 col-sm-offset-2 text-right">
+          <label class="control-label" for="input-sort">{{ text_sort}}</label>
+        </div>
+        <div class="col-sm-3 text-right">
+          <select id="input-sort" class="form-control col-sm-3" onchange="location = this.value;">
+            {% for sorts in sorts %}
+            {% if sorts['value'] == sort ~ '-' ~ order %}
+            <option value="{{ sorts['href']}}" selected="selected">{{ sorts['text']}}</option>
+            {% else %}
+            <option value="{{ sorts['href']}}">{{ sorts['text']}}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-1 text-right">
+          <label class="control-label" for="input-limit">{{ text_limit}}</label>
+        </div>
+        <div class="col-sm-2 text-right">
+          <select id="input-limit" class="form-control" onchange="location = this.value;">
+            {% for limits in limits  %}
+            {% if limits['value'] == limit %}
+            <option value="{{ limits['href']}}" selected="selected">{{ limits['text']}}</option>
+            {% else %}
+            <option value="{{ limits['href']}}">{{ limits['text']}}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <br>
+      <div class="row">
+        {% for product in latest  %}
+        <div class="product-layout product-grid col-lg-3 col-md-3 col-sm-6 col-xs-12">
+          <div class="product-thumb seller-thumb" id="{{ product['product_id']}}">
+            <div class="image"><a href="{{ product['href']}}"><img src="{{ product['thumb']}}" alt="{{ product['name']}}" title="{{ product['name']}}" class="img-responsive" /></a></div>
+            <div style="position: relative;">
+              <div class="caption">
+                <h4><a href="{{ product['href']}}">{{ product['name']}}</a></h4>
+                <p style="height:100px;overflow:hidden;">{{ product['description']}}</p>
+                {% if product['rating'] %}
+                <div class="rating">
+                  {% for i in 1..5 %}
+                  {% if product['rating'] < i %}
+                  <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-2x"></i></span>
+                  {% else %}
+                  <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
+                  {% endif %}
+                  {% endfor %}
+                </div>
+                {% endif %}
+                {% if product['price'] %}
+                <p class="price">
+                  {% if not product['special'] %}
+                  {{ product['price']}}
+                  {% else %}
+                  <span class="price-new">{{ product['special']}}</span> <span class="price-old">{{ product['price']}}</span>
+                  {% endif %}
+                  {% if product['tax'] %}
+                  <span class="price-tax">{{ text_tax}} {{ product['tax']}}</span>
+                  {% endif %}
+                </p>
+                {% endif %}
+              </div>
+              {% if showpartnerdetails is defined and showpartnerdetails %}
+              <div id="wk_seller_info_container" class="wk_seller_info">
+                <div style="padding: 10px;background-color: #f8f8f8;border-top: 8px solid orange;">
+                  <div id="wk_seller_info_profpic">
+                    <img src="{{ product['avatar']}}" width="100%" height="100%" style="vertical-align:baseline;">
+                  </div>
+                  <div id="wk_seller_info_box">
+                    <h4 style="margin-bottom: 15px;margin-top: 0px;font-size: 13px;"><b>{{ text_seller}}</b></h4>
+                    <a href="{{ product['sellerHref']}}"><p style="margin:0; line-height: 15px;"><b>{{ product['seller_name']}}</b></p></a>
+                    {% if product['country'] %}
+                    <p style="max-width:135px;line-height:14px;">{{ text_from }}
+                        <span data-toggle="tooltip" title="{{ text_from}}"><i class="fa fa-home"></i></span>
+                        <b>{{ product['country']}}</b>
+                      </p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              <div class="button-group">
+                <button type="button" onclick="cart.add('{{ product['product_id']}}');"><i class="fa fa-shopping-cart"></i> <span class="hidden-xs hidden-sm hidden-md">{{ button_cart}}</span></button>
+                <button type="button" data-toggle="tooltip" title="{{ button_wishlist}}" onclick="wishlist.add('{{ product['product_id']}}');"><i class="fa fa-heart"></i></button>
+                <button type="button" data-toggle="tooltip" title="{{ button_compare}}" onclick="compare.add('{{ product['product_id']}}');"><i class="fa fa-exchange"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="row">
+        <div class="col-sm-6 text-left">{{ pagination}}</div>
+        <div class="col-sm-6 text-right">{{ results}}</div>
+      </div>
+      {% endif %}
+      {{ content_bottom}}</div>
+    {{ column_right}}</div>
+</div>
+<script>
+var seller_display = function (data){
+  thisid = data.currentTarget.id; //get id of current selector
+  $('#'+ thisid + ' .wk_seller_info').slideDown();
+  $('#'+ thisid).unbind('mouseenter');
+}
+var seller_hide = function (data){
+  thisid = data.currentTarget.id; //get id of current selector
+  $('#'+ thisid + ' .wk_seller_info').slideUp('slow',function(){
+    $('.seller-thumb').bind('mouseenter',seller_display);
+  });
+}
+
+$('.seller-thumb').bind({'mouseenter' : seller_display,'mouseleave':seller_hide });
+
+</script>
+{{ footer}}

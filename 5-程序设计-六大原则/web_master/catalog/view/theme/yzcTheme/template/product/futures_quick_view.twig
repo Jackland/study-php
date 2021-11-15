@@ -1,0 +1,723 @@
+<style>
+    .nav-list{
+    {% if contracts_num>9 %}
+        padding: 0 30px;
+    {% endif %}
+        border-bottom: 1px solid #ddd;
+    }
+    #futures_bid_modal .nav-tabs{
+        border: none;
+    }
+    #futures_bid_modal .nav-tabs > li {
+        margin-bottom: 0;
+        display: inline-block;
+        float: none;
+    }
+
+    #futures_bid_modal .nav-tabs > li.active {
+        border-bottom: 2px solid #3A75DC;
+    }
+
+    #futures_bid_modal .nav-tabs > li > a {
+        border: none;
+        font-size: 16px;
+    }
+
+    #futures_bid_modal .nav-tabs > li > a:hover {
+        background-color: #fff;
+        color: #3A75DC;
+    }
+
+    #futures_bid_modal .nav-tabs > li.active > a,
+    #futures_bid_modal .nav-tabs > li.active > a:hover,
+    #futures_bid_modal .nav-tabs > li.active > a:focus {
+        border: none;
+        color: #3A75DC;
+    }
+    .nav-list .swiper-button-prev,
+    .nav-list .swiper-button-next{
+        width: 30px;
+        background-color: #fff;
+        color: #666;
+        opacity: 1;
+    }
+    .nav-list .swiper-button-prev{
+        left: 0;
+    }
+    .nav-list .swiper-button-next{
+        right: 0;
+    }
+    .input-group{
+        border: 1px solid #aaa;
+        border-radius: 4px;
+    }
+    .input-group-red{
+        border: 1px solid #ff414d;
+    }
+    .input-group input{
+        border-left: 1px solid #aaa;
+        border-right: 1px solid #aaa;;
+    }
+    .application{
+        border-radius: 4px;
+        border: 1px solid #aaa;
+    }
+    #futures_bid_modal .discount-off {
+      display: none;
+      color: #ff6600;
+    }
+    #futures_bid_modal .discount-price {
+      display: none;
+      position: absolute;
+      color: #999;
+      text-decoration: line-through;
+    }
+</style>
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                    aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Future Goods Contract Details (Item Code {{ sku }})</h4>
+    </div>
+    <div class="modal-body">
+        <div class="nav-list swiper-container">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs swiper-wrapper" role="tablist">
+                {% for k,item in contracts %}
+                    <li role="presentation" data-key="{{ k }}" class="swiper-slide {% if item.id==contract_id %} active{% endif %} changeTabs" tab-id="{{item.id}}" ><a
+                                href="#contractId{{ item.id }}" role="tab"
+                                data-toggle="tab"> {{ item.delivery_date|date('Ymd') }}</a></li>
+                {% endfor %}
+            </ul>
+            {% if contracts_num>9 %}
+                <div class="swiper-button-prev"><i class="giga icon-arrow-left"></i></div>
+                <div class="swiper-button-next" style="justify-content: flex-end;"><i class="giga icon-arrow-right-copy"></i></div>
+            {% endif %}
+        </div>
+        <!-- Tab panes -->
+        <div class="tab-content futures-tab-panes">
+            {% for item in contracts %}
+                <div role="tabpane{{ item.id }}" class="tab-pane {% if item.id==contract_id %} active {% endif %}"
+                     id="contractId{{ item.id }}" type-id="{{item.id}}">
+                    <div class="contract-terms" style="overflow:hidden;">
+                       <div style="overflow: hidden;display: flex;align-items: center;">
+                           <div class="col-sm-6 rule flex">
+                               <div class="rule-name ">Delivery Date</div>
+                               <div class="rule-content">{{ item.delivery_date|date('Y-m-d') }}</div>
+                           </div>
+                           <div class="col-sm-6 rule flex" style="align-items: center">
+                               <div class="rule-name ">Total Quantity Available</div>
+                               <div class="rule-content" id="remain_num{{ item.id }}">{{ item.remain_num }}</div>
+                           </div>
+                       </div>
+                        <div class="col-sm-12 rule flex">
+                            <div class="rule-name ">Settlement Method Option</div>
+                            <div class="rule-content">
+                                {% if item.delivery_type==3 %}
+                                    <span style="width: 30%;display: inline-block">
+                                        <input type="radio" name="delivery_type{{ item.id }}"
+                                               onclick="selectDeliverType({{ item.id }})"
+                                               value="1" {% if item.margin_unit_price >= item.last_unit_price %} checked {% endif %}> {{ futures_final_delivery }}
+                                   </span>
+                                    <span>
+                                        <input type="radio" name="delivery_type{{ item.id }}"
+                                               onclick="selectDeliverType({{ item.id }})"
+                                               value="2" {% if item.margin_unit_price < item.last_unit_price %} checked {% endif %}> {{ futures_margin_delivery }}
+                                    </span>
+                                {% elseif item.delivery_type==2 %}
+                                    <input type="radio" name="delivery_type{{ item.id }}" value="2"
+                                           checked> {{ futures_margin_delivery }}
+                                {% else %}
+                                    <input type="radio" name="delivery_type{{ item.id }}" value="1"
+                                           checked> {{ futures_final_delivery }}
+                                {% endif %}
+                                <div class="title"
+                                     id="delivery_type_tip{{ item.id }}">{{ item.delivery_type_tip }}</div>
+                            </div>
+                        </div>
+                      <div>
+                          <div class="col-sm-6 rule flex" style="position: relative;margin-bottom:15px;height: 32px;align-items: center">
+                              <div class="rule-name">Unit Price</div>
+                              <div class="rule-content" id="qh-price{{ item.id }}"
+                                   data-margin_unit_price="{{ item.margin_unit_price }}" data-price="{{ item.price }}"
+                                   data-price_show="{{ item.price_show }}"
+                                   data-last_unit_price="{{ item.last_unit_price }}">
+                                   {#  
+                                    data-old_margin_unit_price_show="{{ item.old_margin_unit_price }}"
+                                    data-old_last_unit_price_show="{{ item.old_last_unit_price }}"
+                                   #}
+
+                                  <input type="hidden" id="input_futures_price{{ item.id }}" value="{{ item.price }}" style="height: 32px;border-radius: 4px;border: 1px solid #aaa;padding: 0 5px"
+                                  onblur="calculateFuturesPrice({{ item.id }})">
+                                  <span class="action-f-discount discount-current-price"></span>
+                                  {# 折扣类型 #}
+                                  {% if discount_info.discount_type> 0 %}
+                                  {# 折后价 #}
+                                  <div class="action-f-discount discount-off"></div>
+                                  {# 原价 #}
+                                  <div class="action-f-discount discount-price">
+                                    <span class="discount-f-info">{{ item.price_show }}</span>
+                                  </div>
+                                  {% endif %}
+                              </div>
+                          </div>
+                          <div class="col-sm-6 rule flex"
+                               style="position: relative;align-items: center">
+                              <div class="rule-name">Ordered Quantity</div>
+                              <div class="rule-content">
+                                  <div class="input-group input-group-qty{{ item.id }} order-quantity-num-style"  style="width: 125px" data-show-tip="false">
+                                      <span class="input-group-addon qty_reduce2"> - </span>
+                                      <input type="text" name="quantity" id="input_futures_qty{{ item.id }}"
+                                             data-id="{{ item.id }}" onblur="calculateFuturesPrice({{ item.id }})"
+                                             class="form-control center" onkeyup="orderQuantityChange(this.value,{{item.id }});"
+                                             onafterpaste="this.value=this.value.replace(/\D/g,'')" onchange=""
+                                             value=" {{ item.min_num }}" data-min_num=" {{ item.min_num }}"
+                                             style="width: 60px;">
+                                      <span class="input-group-addon qty_add2"> + </span>
+                                  </div>
+                              </div>
+                          </div>
+
+                      </div>
+                        <div class="col-sm-12">
+                            <span id="error_futures_qty{{ item.id }}" style="font-size: 12px;color: #FF414D;"></span>
+                            <span id="error_futures_price{{ item.id }}" style="font-size: 12px;color: #FF414D;"></span>
+                        </div>
+
+                        <div class="col-sm-6 rule flex">
+                            <div class="rule-name">Deposit Percentage</div>
+                            <div class="rule-content" {% if item.is_special_payment_ratio %} style="color: #FF414D" {% endif %}
+                                 id="payment_ratio{{ item.id }}"
+                                 data-payment_ratio="{{ item.payment_ratio }}">{{ item.payment_ratio_show }}%
+                                {% if item.is_special_payment_ratio %}
+                                    <div class="title">{{ tip_futures_margin }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-6 rule flex">
+                            <div class="rule-name ">Total Deposit</div>
+                            <div class="rule-content" id="margin_price{{ item.id }}">{{ item.deposit_show }}</div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div style="color: #3A75DC;margin-bottom: 8px"> + Comments</div>
+                            <textarea name="" id="input_futures_message{{ item.id }}" class="application"
+                                      autoHeight="true" style="width: 100%;height: 80px;" maxlength="2000"></textarea>
+                            <div class="text-right"><span class="val">0</span>/2000</div>
+                            <span id="error_futures_message{{ item.id }}"
+                                  style="font-size: 12px;color: #FF414D;position: absolute;bottom: 5px;display: none; ">Message can not more than 2000 characters</span>
+                                  {# #25957 后台协调，前端更改描述即可，去掉error_futures_bid_message变量#}
+                        </div>
+                    </div>
+                    <input type="hidden" name="contract_id{{ item.id }}" id="input_contract_id{{ item.id }}"
+                           value="{{ item.id }}">
+                    <div style="padding: 0 5px;"><input type="checkbox" id="futures_agree_clause{{ item.id }}"
+                                                       onchange="futuresBtnStatus({{ item.id }})">  I have read and agreed to the details of the Future Goods Contract that are listed above.</div>
+                    <input type="hidden" value="0" id="is_bid{{ item.id }}">
+                    <div class="text-center bid-button{{ item.id }}" style="margin-top: 10px">
+                        <button type="button" class="btn btn-primary" id="futures-bid-btn{{ item.id }}" disabled
+                                onclick="submitFuturesBid(this,{{ item.id }})">
+                          Submit
+                        </button>
+                        {% if item.is_bid %}
+                            <button type="button" class="btn btn-default btn-bid" onclick="handleBid({{ item.id }})">
+                                Bid
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-default btn-bid" data-dismiss="modal"
+                                    data-target='.modal-bid' type-bid='0'>{{ futures_bid_cancel }}</button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+<script>
+    var key = $('.nav-list .swiper-slide.active').attr("data-key");
+    if (key>8){
+        key0=key
+    }else{
+        key0=0
+    }
+    var swiper = new Swiper('.nav-list.swiper-container', {
+        slidesPerView: 9,
+        spaceBetween: 0,
+        initialSlide:key0,
+        loop: false,
+        autoplay: false,
+        // autoplayDisableOnInteraction: true,
+        nextButton: '.nav-list .swiper-button-next',
+        prevButton: '.nav-list .swiper-button-prev',
+    });
+</script>
+<script>
+    var symbolLeft = "{{ symbolLeft }}";
+    var symbolRight = "{{ symbolRight }}";
+    
+    //#29414 增加限时限量活动
+    var discount_info =eval({{ discount_info | json_encode }})
+    var selectTabId=$('.futures-tab-panes.tab-content .tab-pane.active').attr('type-id'); //获取当前选中的id
+    getStoreLimitDiscount(selectTabId,1); //1:第一次加载
+    var isDiscount=false; //默认无折扣
+
+    $(".application").bind("input propertychange change", function () {
+        var len = $(this).val().length;
+        $(this).parent().find(".val").text(len)
+    })
+
+
+    $(".qty_reduce2").click(function () {
+        let input = $(this).parent().find("input");
+        let id = $(this).parent().find("input").data('id');
+        if (input.val() <= 1) {
+            input.val(1);
+        } else {
+            input.val(input.val() - 1);
+        }
+        //orderQuantityChange(input.val(),id); // #29414 与活动店铺比较
+        getStoreLimitDiscount(id,0);
+        calculateFuturesPrice(id);
+    });
+    $(".qty_add2").click(function () {
+        let input = $(this).parent().find("input");
+        let id = $(this).parent().find("input").data('id');
+        if (input.val() == "" || input.val() == undefined || input.val() == null) {
+            input.val(0);
+        } else {
+            input.val(parseInt(input.val()) + 1);
+        }
+        getStoreLimitDiscount(id,0);
+        calculateFuturesPrice(id);
+    });
+
+    function futuresBtnStatus(id) {
+        //同意条约
+        if ($('#futures_agree_clause' + id).is(':checked')) {
+            $('#futures-bid-btn' + id).removeAttr("disabled").removeAttr("title");
+        } else {
+            $('#futures-bid-btn' + id).attr("disabled", true).attr('title', '{{ tip_futures_place_bid_btn }}');
+        }
+    }
+
+    function selectDeliverType(id) {
+        let $price = $('#qh-price' + id)
+        let margin_unit_price = $price.data('margin_unit_price')
+        let last_unit_price = $price.data('last_unit_price')
+        let delivery_type = $('input[name=delivery_type' + id + ']:checked').val()
+        //let old_price_show = ''; //#29414
+        let unit_price = 0;
+        let tip = '';
+        let reg = /\d{1,3}(?=(\d{3})+$)/g;// 千分位正则处理
+        let country_id = '{{ country_id }}';
+        if (delivery_type == 1) {
+            unit_price = last_unit_price;
+            tip = '{{ tip_futures_delivery_1 }}';
+        } else {
+            unit_price = margin_unit_price;
+            tip = '{{ tip_futures_delivery_2 }}';
+        }
+        if (107 == country_id) {
+          unit_price = parseInt(unit_price);
+        }
+        $('#qh-price' + id+' .discount-price').children('span').html(symbolLeft +  String(unit_price).replace(reg, '$&,') + symbolRight);
+       // $price.children('input').val(unit_price)
+        $("#input_futures_price"+id).val(unit_price);
+        $('#delivery_type_tip' + id).text(tip);
+        getStoreLimitDiscount(id,0);
+        calculateFuturesPrice(id);
+    }
+    function calculateFuturesPrice(id) {
+        var price = $('#input_futures_price' + id).val();
+        var qty = Number($('#input_futures_qty' + id).val());
+        var payment_ratio = $('#payment_ratio' + id).data('payment_ratio');
+        var country_id = '{{ country_id }}';
+        let validateQty=checkQty(id);
+        let validatePrice=checkPrice(id);
+        if (!validateQty || !validatePrice) {
+          return;
+        }
+        payment_ratio = Number(payment_ratio) / 100;
+        var precision = 2;
+        if (107 == country_id) {
+            precision = 0;
+        }
+        var deposit_per = operation(price, payment_ratio, 'multiply', precision);
+        var deposit = operation(deposit_per, qty, 'multiply', precision);
+        deposit = Number(deposit).toFixed(precision);
+        $('#margin_price' + id).text(symbolLeft + deposit + symbolRight);
+
+    }
+
+    function checkDecimalNumber(value) {
+        //校验货币 两位小数
+        if (!(/^[0-9]+(.[0-9]{1,2})?$/.test(value))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function checkPositiveInteger(value) {
+        //必填正整数校验
+        if (!(/^[1-9]*[1-9][0-9]*$/.test(value)) || value <= 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function handleBid(id) {
+        let $price = $('#qh-price' + id)
+        let unit_price =$price.children('input').val();// #29414 更改 $price.children('input').val()
+        let country_id = '{{ country_id }}';
+        if (107 == country_id) {
+          unit_price = parseInt(unit_price)
+        }
+        $('#input_futures_price'+id).val(unit_price); //bid 原价
+        $('#input_futures_price'+id).attr('type','number');
+        $('#is_bid' + id).val(1);
+        $('.bid-button' + id).children('.btn-bid').replaceWith('<button type="button" class="btn btn-default btn-bid" onclick="cancelBid(' + id + ')" type-bid="0">{{ futures_bid_cancel }}</button>')
+        $("#futures-bid-btn"+id).text("Submit Bid");
+        getStoreLimitDiscount(id,0);  
+        $price.find('.discount-current-price').hide();
+        $price.find(".action-f-discount").hide();  
+    }
+
+    function cancelBid(id) {
+        let $price = $('#qh-price' + id)
+        let price = $('#qh-price' + id).data('price')
+        //let price_show = $('#qh-price' + id).data('price_show')
+        //#29414
+        $('#input_futures_price'+id).attr('type','hidden');
+        $('.bid-button' + id+' .btn-bid').attr('type-bid',1);
+        getStoreLimitDiscount(id,0);
+        $('#is_bid' + id).val(0);
+        $('.bid-button' + id).children('.btn-bid').replaceWith('<button type="button" class="btn btn-default btn-bid" onclick="handleBid(' + id + ')">Bid</button>')
+        calculateFuturesPrice(id)
+        $("#futures-bid-btn"+id).text("Submit");
+       // $(`input[name=delivery_type${id}]:checked`).trigger('click'); //原始bug
+    }
+    //#29414 折扣类型计算
+    $('.changeTabs').click(function(){
+      var currntTabId=$(this).attr('tab-id');
+      getStoreLimitDiscount(currntTabId,0);
+      calculateFuturesPrice(currntTabId);
+    })
+    function getStoreLimitDiscount(id,first){ 
+      var winUrl=window.location.href; //增加日志打印，方便定位线上问题
+      winUrl.indexOf('is_log')>-1? console.log(discount_info):null; 
+      var country_id = '{{ country_id }}';
+      var remain_num = Number($('#remain_num' + id).text());
+      var currentPrice,DeliverType;
+      DeliverType=$('input[name=delivery_type' + id + ']:checked').val()
+      if(DeliverType == 2){ //根据切割方式恢复原价
+        currentPrice=$('#qh-price'+id).attr('data-margin_unit_price'); 
+      }else{
+        currentPrice=$('#qh-price'+id).attr('data-last_unit_price');
+      }
+      var precision = 2;
+      if (107 == country_id) {
+        precision = 0;
+      }
+      var currentQty=$('#input_futures_qty'+id).val();
+      if(discount_info.discount_type == 1){ //全店
+        if(currentQty <=remain_num){ //折扣类型 0：无折扣 1：全店 2：限时 3：1.2同时存在
+          //全店
+          isDiscount=true;
+          $('.input-group.input-group-qty'+id).attr('data-show-tip',true);
+          retureFeatureHtml(id,currentPrice,discount_info.store_discount.discount,precision);
+        }else{
+          //无折扣
+          isDiscount=false;  
+          var isShowTip=isShowTipFn(id);  
+          noFeatureDiscount(id,DeliverType,currentQty,'The purchase quantity exceeds the upper limit of non-promotion inventory',first,isShowTip);
+          $('.input-group.input-group-qty'+id).attr('data-show-tip',false);
+        }
+      }else if(discount_info.discount_type == 2){ //限时
+        if( currentQty >=discount_info.limit_discount.min_buy_num && currentQty<=discount_info.limit_discount.max_qty){
+          //限时
+          isDiscount=true;
+          $('.input-group.input-group-qty'+id).attr('data-show-tip',true);
+          retureFeatureHtml(id,currentPrice,discount_info.limit_discount.discount,precision);
+        }else{
+          //无折扣
+          isDiscount=false;
+          var isShowTip=isShowTipFn(id);   
+          noFeatureDiscount(id,DeliverType,currentQty,'The purchase quantity exceeds the upper limit of inventory that is set for the promotion, and you will no longer enjoy the discount',first,isShowTip,discount_info.limit_discount.max_qty);
+          $('.input-group.input-group-qty'+id).attr('data-show-tip',false);
+        }
+      }else if(discount_info.discount_type == 3){ 
+        if(discount_info.store_discount.discount<discount_info.limit_discount.discount
+          || currentQty <discount_info.limit_discount.min_buy_num){
+            //筛选全店(全店里筛选无折扣)
+            if(currentQty <=remain_num){
+              //全店
+              isDiscount=true;
+              $('.input-group.input-group-qty'+id).attr('data-show-tip',true);
+              retureFeatureHtml(id,currentPrice,discount_info.store_discount.discount,precision);
+            }else{
+              //无折扣
+              isDiscount=false;
+              var isShowTip=isShowTipFn(id);  
+              noFeatureDiscount(id,DeliverType,currentQty,'The purchase quantity exceeds the upper limit of non-promotion inventory',first,isShowTip);
+              $('.input-group.input-group-qty'+id).attr('data-show-tip',false);
+            }
+          }else{
+            //限时(筛选无折扣)
+            if(discount_info.limit_discount.min_buy_num<=currentQty &&currentQty<=discount_info.limit_discount.max_qty){
+                //限时
+                isDiscount=true;
+                $('.input-group.input-group-qty'+id).attr('data-show-tip',true);
+                retureFeatureHtml(id,currentPrice,discount_info.limit_discount.discount,precision);
+            }else{
+              if(currentQty <=remain_num){ //折扣类型发生改变
+                //全店
+                isDiscount=true;                 
+                retureFeatureHtml(id,currentPrice,discount_info.store_discount.discount,precision);
+                $('.input-group.input-group-qty'+id).attr('data-show-tip',true);
+              }else{
+                //无折扣
+                isDiscount=false;
+                var isShowTip=isShowTipFn(id); 
+                noFeatureDiscount(id,DeliverType,currentQty,'The purchase quantity exceeds the upper limit of inventory that is set for the promotion, and you will no longer enjoy the discount',first,isShowTip);
+                $('.input-group.input-group-qty'+id).attr('data-show-tip',false);
+              }   
+            }
+          }
+      }else{ //0
+        //无折扣
+        isDiscount=false;
+        let delivery_type = $('input[name=delivery_type' + id + ']:checked').val()
+        let $price = $('#qh-price' + id)
+        let margin_unit_price = $price.data('margin_unit_price')
+        let last_unit_price = $price.data('last_unit_price')
+        if (delivery_type == 1) {
+            unit_price = last_unit_price;
+            $('#contractId'+id+ ' .action-f-discount').show();
+            $('#contractId'+id+ ' .discount-current-price').html(symbolLeft+unit_price+symbolRight);
+        } else {
+            unit_price = margin_unit_price;
+            $('#contractId'+id+ ' .action-f-discount').show();
+            $('#contractId'+id+ ' .discount-current-price').html(symbolLeft+unit_price+symbolRight);
+        }
+        var typeBid=($('.bid-button'+id+' .btn-bid').attr('type-bid'));  //看bid 状态下的样式显示隐藏
+        if(typeBid&&typeBid == 0){ //0 bid 状态
+            $('#input_futures_price'+id).attr('type','number');
+            $('#contractId'+id+ ' .action-f-discount').hide();
+        }
+      }
+      first == 1 ? calculateFuturesPrice(id) :null;  
+    }
+    function isShowTipFn(id){
+      var lastDiscount=$('.input-group.input-group-qty'+id).attr('data-show-tip');
+      if(lastDiscount =='true'){ //有折扣变成无折扣,提示相关
+        return true;
+      }else{
+        return false;
+      }
+    }
+    function retureFeatureHtml(id,price,disconut,place){
+      var currentPrice;     
+      $('#contractId'+id+ ' .discount-off').html(`${100 - disconut} % OFF</span>`);
+      currentPrice=`${mathematical.MathToPrice(price*(disconut/100),place)}`;
+      $('#contractId'+id+ ' .discount-current-price').html(symbolLeft+currentPrice+symbolRight); //折后价
+      $('#input_futures_price'+id).val(currentPrice);
+     
+      var typeBid=($('.bid-button'+id+' .btn-bid').attr('type-bid'));  //看bid 状态下的样式显示隐藏
+      if(typeBid&&typeBid == 0){ //0 bid 状态
+        $('#input_futures_price'+id).attr('type','number');
+        $('#contractId'+id+ ' .action-f-discount').hide();
+      }else{
+        $('#input_futures_price'+id).attr('type','hidden');
+        $('#contractId'+id+ ' .discount-off').css('display','inline');
+        $('#contractId'+id+ ' .action-f-discount').show();
+      }
+    }
+    function noFeatureDiscount(id,selectDeliverTyp,currentQty,contentTip,first,isShowTip,limitQty){
+      var currentPrice;
+      if(selectDeliverTyp == 2){ //根据切割方式恢复原价
+        currentPrice=$('#qh-price'+id).attr('data-margin_unit_price'); 
+      }else{
+        currentPrice=$('#qh-price'+id).attr('data-last_unit_price');
+      }
+      var typeBid=($('.bid-button'+id+' .btn-bid').attr('type-bid'));  //看bid 状态下的样式显示隐藏
+      if(typeBid&&typeBid == 0){ //0 bid 状态
+        $('#input_futures_price'+id).attr('type','number');
+        $('#contractId'+id+ ' .action-f-discount').hide();
+        $('#contractId'+id+' .discount-off').hide();
+        $('#contractId'+id+' .discount-price').hide();
+      }else{
+        $('#input_futures_price'+id).attr('type','hidden');
+        $('#contractId'+id+ ' .discount-current-price').html(symbolLeft+currentPrice+symbolRight);
+        $('#contractId'+id+' .discount-off').hide();
+        $('#contractId'+id+' .discount-price').hide();
+        $('#contractId'+id+ ' .discount-current-price').show();
+      }
+      //当前价格
+      $('#input_futures_price'+id).val(currentPrice);
+      if(first != 1){
+        if(limitQty && currentQty> limitQty){
+          futuresToolTip(id,currentQty,contentTip,isShowTip,limitQty);
+        }
+        if(!limitQty){
+          futuresToolTip(id,currentQty,contentTip,isShowTip,limitQty);
+        }
+      }
+    }
+    function futuresToolTip(id,currentQty,contentTip,isShowTip){
+      //防止多次弹窗
+      if(isShowTip == true){
+        $('.input-group.input-group-qty'+id).attr('data-show-tip',false);
+        var remain_num = Number($('#remain_num' + id).text());
+        $('.input-group-qty'+id).attr('data-toggle', 'tooltip');
+        $('.input-group-qty'+id).attr('data-placement', 'top');
+        $('.input-group-qty'+id).attr('data-original-title',contentTip);
+        $('.input-group-qty'+id).tooltip('show');
+        setTimeout(function(){
+            $('.input-group-qty'+id).tooltip('destroy');
+        },3000)
+      }
+    }
+    function checkQty(id) {
+        let isValid = true;
+        let input_futures_qty = Number($('#input_futures_qty' + id).val());
+        let remain_num = Number($('#remain_num' + id).text());
+        let min_num = Number($('#input_futures_qty' + id).data('min_num'));
+        if (!input_futures_qty || !checkPositiveInteger(input_futures_qty) || input_futures_qty < min_num || input_futures_qty > remain_num || input_futures_qty > 9999) {
+            isValid = false;
+            $('#error_futures_qty' + id).text('{{ error_futures_bid_qty_not_exceed_total_quantity_available }}').css('display', 'block');
+            $('.input-group-qty'+id).css('border-color','#ff414d');
+        } else {
+            $('#error_futures_qty' + id).css('display', 'none');
+            $(".input-group-qty"+id).css('border-color','#aaa');
+        }
+        return isValid;
+    }
+
+    function checkPrice(id) {
+        let isValid = true;
+        let input_futures_price = Number($('#input_futures_price' + id).val());
+        let product_price = '{{ product_price }}';
+        let country_id = '{{ country_id }}';
+        let $error_price = $('#error_futures_price' + id)
+        let $input_price = $('#input_futures_price' + id)
+
+        if (!input_futures_price || (107 != country_id && !checkDecimalNumber(input_futures_price)) || (107 != country_id && input_futures_price > 10000000)) {
+            isValid = false;
+            $error_price.text('{{ error_futures_bid_price_too_few }}').css('display', 'block');
+        } else if (107 == country_id && !checkPositiveInteger(input_futures_price) || (107 == country_id && input_futures_price > 1000000000)) {
+            isValid = false;
+            $error_price.text('{{ error_futures_bid_price_japan }}').css('display', 'block');
+        } else if (input_futures_price <= 0) {
+            isValid = false;
+            $error_price.text('{{ error_futures_bid_price_too_few }}').css('display', 'block');
+            {#} else if (parseFloat(input_futures_price) > parseFloat(product_price)) {#}
+            {#  isValid = false;#}
+            {#  $error_price.text('{{ error_futures_bid_price_too_much }}').css('display', 'block');#}
+        } else {
+            $error_price.hide();
+            $input_price.css('border-color','#aaa');
+        }
+        if(isValid==false){
+          $input_price.css('border-color','#ff414d');
+        }
+        return isValid;
+    }
+
+    function validateParam(id) {
+        let isValid = true;
+        let input_futures_message = $.trim($('#input_futures_message' + id).val());
+        if (!checkQty(id) || !checkPrice(id)) {
+            isValid = false;
+        }
+        if (input_futures_message.length > 2000) { //#24957  || input_futures_message.length < 1
+            isValid = false;
+            $('#error_futures_message' + id).css('display', 'block');
+        } else {
+            $('#error_futures_message' + id).css('display', 'none');
+        }
+        //同意条约
+        if (!$('#futures_agree_clause' + id).is(':checked')) {
+            isValid = false;
+            $('#error_futures_agree_clause').css('display', 'block');
+        } else {
+            $('#error_futures_agree_clause').css('display', 'none');
+        }
+        return isValid;
+    }
+
+
+    function submitFuturesBid(obj, id) {
+        let submit_btn = $(obj);
+        submit_btn.button('loading');
+        if (validateParam(id)) {
+            let input_futures_qty = Number($('#input_futures_qty' + id).val());
+            let input_futures_price = $('#input_futures_price' + id).val();
+            let input_futures_message = $.trim($('#input_futures_message' + id).val());
+            let input_contract_id = $('#input_contract_id' + id).val();
+            let input_delivery_type = $('input[name=delivery_type' + id + ']:checked').val();
+            let is_bid = $('#is_bid' + id).val();
+            $.ajax({
+                url: "{{ url('account/product_quotes/futures/addAgreement') }}",
+                type: 'post',
+                data: {
+                    contract_id: input_contract_id,
+                    qty: input_futures_qty,
+                    price: input_futures_price,
+                    delivery_type: input_delivery_type,
+                    message: input_futures_message,
+                    is_bid: is_bid,
+                },
+                dataType: 'json',
+                success: function (json) {
+                    if (json['cart_id']) {
+                        location.href = 'index.php?route=checkout/pre_order&future_quick=1&delivery_type=' + {{ delivery_type }} + '&cart_id_str=' + json['cart_id'];
+                    } else if (json['success']) {
+                        $("#futures_bid_modal").modal('hide');
+                        $.toast({
+                          heading: false,
+                          text:  json['success'],
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'success',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    } else if (json['error']) {
+                        showLayerTip('alert', json['error'], {
+                            title: 'Error',
+                            btn: 'OK',
+                            btnAlign:'c',
+                            skin: 'yzc_layer',
+                            icon: 2
+                        });
+                        submit_btn.button('reset');
+                    }
+                }
+            });
+
+        } else {
+            submit_btn.button('reset');
+        }
+    }
+  //#29414 产品详情活动
+  // $('.order-quantity-num-style').hover(function () {
+  //   $(this).tooltip('destroy');
+  // });
+  // $('.order-quantity-num-style').blur(function () {
+  //   $(this).tooltip('destroy');
+  // });
+  function orderQuantityChange(qtyNum,id){ 
+    var checkNum=qtyNum.trim();
+    if(!(/(^[1-9]\d*$)/).test(checkNum)){
+      var i =qtyNum.replace(/\D/g,'');
+      $('input_futures_qty'+id).val(i);
+      return
+    }
+    getStoreLimitDiscount(id,0);    
+    //var typeBid=($('.bid-button'+id+' .btn-bid').attr('type-bid'));
+    //showPriceByBid(typeBid,id);
+  }
+</script>

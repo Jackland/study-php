@@ -1,0 +1,1052 @@
+{# start header column-left #}
+{{ header }}{{ separate_column_left }}
+{# end header column-left #}
+<!-- import CSS -->
+<link rel="stylesheet" href="catalog/view/javascript/product/element-ui.css">
+<script src="catalog/view/javascript/product/vue.min.js"></script>
+<!-- import JavaScript -->
+<script src="catalog/view/javascript/product/element-ui.js"></script>
+<script src="catalog/view/javascript/product/element-ui-en.js"></script>
+<!-- import axios -->
+<script src="catalog/view/javascript/product/axios.min.js"></script>
+<style>
+  [v-cloak] {
+    display: none;
+  }
+
+  .yzc_check .el-checkbox__inner {
+    border: 1px solid #2e80d4;
+    margin-bottom: 1px;
+  }
+</style>
+<div
+  {% if separate_view is defined and separate_view %}
+    class="container-fluid" id="content" style="margin-left: 15%"
+  {% else %}
+    class="container"
+  {% endif %}
+>
+  {% include 'giga/template/_parts/breadcrumb.twig' %}
+  <div class="row" style="margin-right: 30px;margin-left: 0">
+    {% include 'giga/template/_parts/column_place.twig' %}
+    <div class="{{ class }} giga-content">{{ content_top }}
+      {% verbatim %}
+      <div id="app_form" v-cloak>
+        <a target="_blank" style="display:none" ref="redirect_a" :href="target_href"></a>
+        <el-form :model="formModel" :rules="formRules" ref="app_form" label-position="left" @submit.native.prevent>
+          <el-row>
+            <el-col v-if="is_edit == 0" :span="20">
+              <el-form-item label="Item Code/MPN" prop="product_name">
+                <template v-slot:label>
+                  Item Code/MPN &nbsp;
+                </template>
+                <el-col :span="6">
+                  <el-autocomplete
+                    v-model="formModel.product_name"
+                    :fetch-suggestions="queryProduct"
+                    value-key='mpn'
+                    @select="querySelect"
+                    placeholder="Item Code/MPN"
+                    style="width: 100%">
+                    <template v-slot:default="{ item }">
+                      <p v-if=" item.is_edit == 1 " style="color: green">{{ item.sku }}/{{ item.mpn }}</p>
+                      <p v-else>{{ item.sku }}/{{ item.mpn }}</p>
+                    </template>
+                  </el-autocomplete>
+                </el-col>
+                <div
+                  class="el-form-item__error"
+                  slot="error" slot-scope="{ error }"
+                  style="margin-left: 130px;color: red">
+                  {{ error }}
+                </div>
+              </el-form-item>
+            </el-col>
+            <el-col v-if="is_edit==1" :span="20">
+              <div style="width: 100%">&nbsp;</div>
+            </el-col>
+          </el-row>
+          <el-row v-if="product_info.product_id">
+            <div class="panel panel-default">
+              <div class="panel-heading" style="color: #193465;font-weight: bold">Basic Product Information</div>
+              <div class="panel-body">
+                <el-row>
+                  <el-col :span="4"><p class="pull-right" style="font-weight: bold">Item Code / MPN:</p></el-col>
+                  <el-col :span="8"><p class="pull-left">&nbsp;&nbsp;{{ product_info.sku }} / {{ product_info.mpn }}</p>
+                  </el-col>
+                  <el-col :span="10">
+                    <p class="pull-right" style="font-weight: bold">
+                      Future Goods Status:&nbsp;
+                    </p>
+                  </el-col>
+                  <el-col :span="2">
+                    <el-switch
+                      v-model="formModel.status"
+                      active-color="#193465"
+                      inactive-color="#ff4949"
+                      active-value="1"
+                      inactive-value="0">
+                    </el-switch>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="4"><p class="pull-right" style="font-weight: bold">Product Name:</p></el-col>
+                  <el-col :span="12"><p class="pull-left">&nbsp;&nbsp;{{ product_info.name }} </p></el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="4"><p class="pull-right" style="font-weight: bold">Current Product Unit Price:</p>
+                  </el-col>
+                  <el-col :span="12"><p class="pull-left">&nbsp;&nbsp;{{ price_format }} </p></el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="4"><p class="pull-right" style="font-weight: bold">Unit Percentage Fee-Buyer:</p>
+                  </el-col>
+                  <el-col :span="12"><p class="pull-left">
+                      &nbsp;&nbsp;{{ formatPercent(product_info.buyer_futures_ratio) }} </p></el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="4"><p class="pull-right" style="font-weight: bold">Unit Percentage Fee-Seller:</p>
+                  </el-col>
+                  <el-col :span="12">
+                    <p class="pull-left">
+                      &nbsp;&nbsp;{{ formatPercent(product_info.seller_futures_ratio) }}
+                    </p>
+                    &nbsp;(Payment method:
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      content="Click here for details"
+                      placement="top">
+                      <a href="javascript:void" @click="clickPayAmount">Authorized credit;</a>
+                    </el-tooltip>
+                    <template v-if="is_inner == 0">
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Click here for details"
+                        placement="top">
+                        <a href="javascript:void" @click="clickPayMoney">Receivables</a>
+                      </el-tooltip>
+                    </template>
+                    </template>
+                    )
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="4"><p class="pull-right" style="font-weight: bold">Contract End Date:</p></el-col>
+                  <el-col :span="8">
+                    <p class="pull-left">
+                      &nbsp;&nbsp;{{ product_info.settlement_day }} Days
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                       content="If the agreement is rejected, the marketplace will release the deposit within 30 business days based on the agreement terms."
+                        placement="top">
+                        <i class="giga icon-V10-wenhaotishi"></i>
+                      </el-tooltip>
+                    </p>
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+          </el-row>
+          <el-row v-if="product_info.product_id">
+            <div class="panel panel-default">
+              <div class="panel-heading" style="color: #193465;font-weight: bold">Product Arrival Information</div>
+              <div class="panel-body">
+                <el-row>
+                  <el-form-item label="Stock Estimated Arrival Time:">
+                    <p slot="label">Stock Estimated Arrival Time:</p>
+                    <el-col :span="3">
+                      <el-form-item prop="min_day">
+                        <el-input size="medium" v-model="formModel.min_day" style="width: 100%;"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col class="line" :span="1">-</el-col>
+                    <el-col :span="3">
+                      <el-form-item prop="max_day">
+                        <el-input size="medium" v-model="formModel.max_day" style="width: 100%;"></el-input>
+                        <div slot="error"
+                             slot-scope="{ error }"
+                             class="el-form-item__error"
+                             style="width: 200px">{{ error }}</div>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                      <p class="pull-left">
+                        &nbsp;&nbsp;Day(s)
+                        <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="The estimated arrival time will not automatically changes with the actual changing time."
+                          placement="top">
+                          <i class="giga icon-V10-wenhaotishi"></i>
+                        </el-tooltip>
+                      </p>
+                    </el-col>
+                  </el-form-item>
+                </el-row>
+                <el-row>
+                  <el-table
+                    v-if=" receipt_data && receipt_data.length > 0 "
+                    :data="receipt_data"
+                    tooltip-effect="dark"
+                    border
+                    style="width: 100%"
+                    row-class-name="table_row"
+                    @row-click="clickRow"
+                    max-height="350"
+                    empty-text="No Data">
+                    <el-table-column
+                      prop="receive_number"
+                      label="Warehouse stock-in sheet"
+                      align="center">
+                      <template slot-scope="{row}">
+                        <p v-if=" row.is_over_time " style="color: red">{{ row.receive_number }}</p>
+                        <p v-else>{{ row.receive_number }}</p>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="expected_qty"
+                      label="Estimated Quantity"
+                      align="center">
+                    </el-table-column>
+                    <template v-if="is_inner == 1">
+                      <el-table-column
+                        prop="expected_date"
+                        label="Estimated Date of Arrival"
+                        align="center">
+                        <p slot-scope="{row}">
+                          <template v-if=" row.expected_date ">
+                            {{ row.expected_date }}
+                            <el-tooltip
+                              v-if=" row.is_over_time "
+                              class="item"
+                              effect="dark"
+                              :content="'Estimated '+row.expected_date+' has passed.'"
+                              placement="top">
+                              <i class="giga icon-V10-wenhaotishi"></i>
+                            </el-tooltip>
+                          </template>
+                        </p>
+                      </el-table-column>
+                    </template>
+                  </el-table>
+                </el-row>
+              </div>
+            </div>
+          </el-row>
+          <el-row v-if="product_info.product_id">
+            <div class="panel panel-default">
+              <div class="panel-heading" style="color: #193465;font-weight: bold">Future Goods Offerings</div>
+              <div class="panel-body">
+                <el-row :gutter="10">
+                  <el-col :span="4">Minimum Selling Quantity</el-col>
+                  <el-col :span="4">Maximum Selling Quantity</el-col>
+                  <el-col :span="4">
+                    Custom Price({{ price_unit_format }})
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      content="The unit price of the product within future goods offering."
+                      placement="top">
+                      <i class="giga icon-V10-wenhaotishi"></i>
+                    </el-tooltip>
+                  </el-col>
+                  <el-col :span="3">
+                    Deposit
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      content="This price does not include fulfillment fee."
+                      placement="top">
+                      <i class="giga icon-V10-wenhaotishi"></i>
+                    </el-tooltip>
+                  </el-col>
+                  <el-col :span="3">Final Payment Unit Price</el-col>
+                  <el-col :span="3">Agreement Amount</el-col>
+                  <el-col :span="3">Default</el-col>
+                </el-row>
+                <el-row style="margin-top: 18px" :gutter="10" v-for=" (item,index) in formModel.data " :key="index">
+                  <el-col :span="4">
+                    <el-form-item
+                      :prop=" 'data.'+index+'.min' "
+                      :rules="[{validator: validateDataMin}]">
+                      <el-input
+                        :disabled="(index == 0) ? false : true "
+                        style="width: 70%"
+                        :controls="false"
+                        v-model="item.min">
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="4">
+                    <el-form-item
+                      :prop=" 'data.'+index+'.max' "
+                      :rules="[{validator: validateDataMax}]">
+                      <el-input
+                        style="width: 70%"
+                        :controls="false"
+                        v-model="item.max">
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="4">
+                    <el-form-item
+                      :prop=" 'data.'+index+'.price' "
+                      :rules="[{validator: validateDataPrice}]">
+                      <el-input
+                        style="width: 70%"
+                        :controls="false"
+                        v-model="item.price">
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="3">
+                    <div class="el-form-item ">
+                      <div class="el-form-item__content">
+                        <div class="el-input is-disabled" style="width: 80%;">
+                          <template v-if=" !isNull(computeMargin(index)) ">
+                            <el-tooltip
+                              class="item"
+                              effect="dark"
+                              :content=" String(computeMargin(index)) "
+                              placement="top">
+                              <input
+                                readonly
+                                type="text"
+                                :value=" computeMargin(index) "
+                                autocomplete="off"
+                                class="el-input__inner">
+                            </el-tooltip>
+                          </template>
+                          <template v-else>
+                            <input
+                              readonly
+                              type="text"
+                              :value=" computeMargin(index) "
+                              autocomplete="off"
+                              class="el-input__inner">
+                          </template>
+                        </div>
+                      </div>
+                    </div>
+                  </el-col>
+                  <el-col :span="3">
+                    <div class="el-form-item ">
+                      <div class="el-form-item__content">
+                        <div class="el-input is-disabled" style="width: 80%;">
+                          <template v-if=" !isNull(computeBalance(index)) ">
+                            <el-tooltip
+                              class="item"
+                              effect="dark"
+                              :content=" String(computeBalance(index)) "
+                              placement="top">
+                              <input
+                                readonly
+                                type="text"
+                                :value=" computeBalance(index) "
+                                autocomplete="off"
+                                class="el-input__inner">
+                            </el-tooltip>
+                          </template>
+                          <template v-else>
+                            <input
+                              readonly
+                              type="text"
+                              :value=" computeBalance(index) "
+                              autocomplete="off"
+                              class="el-input__inner">
+                          </template>
+                        </div>
+                      </div>
+                    </div>
+                  </el-col>
+                  <el-col :span="3">
+                    <div class="el-form-item ">
+                      <div class="el-form-item__content">
+                        <div class="el-input is-disabled" style="width: 80%;">
+                          <template v-if=" !isNull(computeAgreement(index)) ">
+                            <el-tooltip
+                              class="item"
+                              effect="dark"
+                              :content=" String(computeAgreement(index)) "
+                              placement="top">
+                              <input readonly type="text" :value=" computeAgreement(index) " autocomplete="off"
+                                     class="el-input__inner">
+                            </el-tooltip>
+                          </template>
+                          <template v-else>
+                            <input readonly type="text" :value=" computeAgreement(index) " autocomplete="off"
+                                   class="el-input__inner">
+                          </template>
+
+                        </div>
+                      </div>
+                    </div>
+                  </el-col>
+                  <el-col :span="3">
+                    <el-form-item :prop=" 'data.'+index+'.is_default' ">
+                      <el-radio
+                        style="width: 70%"
+                        :label="1"
+                        @change="radioChange(index)"
+                        v-model="item.is_default">
+                        <p style="display:none"></p>
+                      </el-radio>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+          </el-row>
+          <el-row v-if="product_info.product_id">
+            <div style="text-align: center">
+              <el-tooltip
+                v-if="formModel.is_checked"
+                disabled
+                class="item"
+                effect="dark"
+                placement="top">
+                  <span>
+                  <el-button size="medium" type="primary" @click="submitForm(false)">Save</el-button>
+                  </span>
+              </el-tooltip>
+              <el-tooltip
+                v-else
+                class="item"
+                effect="dark"
+                content="Please tick the box at bottom to agree with the margin agreement."
+                placement="top">
+                  <span>
+                    <el-button size="medium" disabled type="primary">Save</el-button>
+                  </span>
+              </el-tooltip>
+<!--              <el-tooltip-->
+<!--                v-if="formModel.is_checked"-->
+<!--                disabled-->
+<!--                class="item"-->
+<!--                effect="dark"-->
+<!--                placement="top">-->
+<!--                  <span>-->
+<!--                  <el-button size="medium" type="primary" @click="submitForm(true)">Save & New</el-button>-->
+<!--                  </span>-->
+<!--              </el-tooltip>-->
+<!--              <el-tooltip-->
+<!--                v-else-->
+<!--                class="item"-->
+<!--                effect="dark"-->
+<!--                content="Please tick the box at bottom to agree with the margin agreement."-->
+<!--                placement="top">-->
+<!--                  <span>-->
+<!--                    <el-button size="medium" disabled type="primary">Save & New</el-button>-->
+<!--                  </span>-->
+<!--              </el-tooltip>-->
+            </div>
+            <div style="text-align: center;margin-top: 10px">
+              <el-checkbox class="yzc_check" v-model="formModel.is_checked">
+                <p style="margin-left: -20px">I’ve read and agree the terms of this agreements.
+                  <a
+                   target="_blank"
+                   href="index.php?route=information/information&information_id=128">
+                   Margin Account Agreement for Future Goods(For Sellers)
+                   </a>
+                </p>
+              </el-checkbox>
+            </div>
+          </el-row>
+        </el-form>
+      </div>
+      {% endverbatim %}
+    </div>
+  </div>
+</div>
+<script>
+  let isJapan = {{ is_japan }};
+  let isEdit = {{ is_edit }};
+  let isInner = {{ is_inner }};
+  let productId = {{ product_id }};
+  let currency_symbol_left = '{{ currency_symbol_left }}';
+  let currency_symbol_right = '{{ currency_symbol_right }}';
+  let queryProductUrl = '{{ query_product_url }}';
+  let getReceiptUrl = '{{ get_receipt_url }}';
+  let getSettlementDayUrl = '{{ get_settlement_day_url }}';
+  let storeProductUrl = '{{ store_product_url }}';
+  let getFuturesUrl = '{{ get_futures_url }}';
+  let goBackUrl = '{{ go_back_url }}';
+  let getAlarmPriceUrl = '{{ get_alarm_price_url }}';
+  // pay
+  let payAmount = '{{ pay_amount_url }}';
+  let payMoney = '{{ pay_money_url }}';
+  let payOrder = '{{ pay_order_url }}';
+  let alarm_msg = '{{ error_product_price_proportion }}';
+
+  let vm = new Vue({
+    el: "#app_form",
+    data: function () {
+      let _this = this;
+      let app_form = _this.$refs['app_form'];
+      let validateMinDay = function (rule, value, callback) {
+        if (value === null || value === '') {
+          return callback('Min storage required.');
+        }
+        if (!_this.isInt(value)) {
+          return callback('Min storage day must be an integer.');
+        }
+        if (value < 1 || value > 90) {
+          return callback('Min storage day must be in [1,90]');
+        }
+        return callback();
+      };
+      let validateMaxDay = function (rule, value, callback) {
+        let app_form = _this.$refs['app_form'];
+        app_form.validateField(['min_day'], function (msg) {
+          if (msg && msg.length > 0) {
+            return callback('Please input min storage day first.');
+          }
+        });
+        if (value === null || value === '') {
+          return callback('Max storage required.');
+        }
+        if (!_this.isInt(value)) {
+          return callback('Max storage day must be an integer.');
+        }
+        if (value < 1 || value > 90) {
+          return callback('Max storage day must be in [1,90]');
+        }
+        if (parseInt(value) < parseInt(_this.formModel.min_day)) {
+          return callback('Max storage day must be equal to or greater than min storage day.')
+        }
+        return callback();
+      };
+      return {
+        is_edit: isEdit,
+        is_inner: isInner,
+        alarm_price: 0,
+        target_href: '',
+        receipt_data: [],
+        product_info: {
+          product_id: productId,
+          sku: null,
+          mpn: null,
+          price: null,
+          name: null,
+          buyer_futures_ratio: 10,
+          seller_futures_ratio: 10,
+          settlement_day: 30, // 平台清算日
+        },
+        formModel: {
+          product_name: null,
+          status: '1', // 期货模板状态
+          min_day: 1,
+          max_day: 90,
+          data: [
+            {min: 5, max: null, price: null, is_default: 1,},
+            {min: null, max: null, price: null, is_default: 0,},
+            {min: null, max: null, price: null, is_default: 0,},
+          ],
+          is_checked: false,
+        },
+        formRules: {
+          product_name: [{validator: _this.validateProductName, trigger: 'blur'}],
+          min_day: [{validator: validateMinDay}],
+          max_day: [{validator: validateMaxDay}],
+        },
+        axios: null,
+        query_once_flag: false,
+        // loading 实例  防止用户多次点击
+        loading: null
+      };
+    },
+    watch: {
+      'formModel.status': function (newVal, oldVal) {
+        if (parseInt(newVal) === 0) {
+          this.formModel.is_checked = false;
+        }
+      }
+    },
+    computed: {
+      price_format: function () {
+        return this.formatPrice(this.product_info.price);
+      },
+      price_unit_format: function () {
+        return currency_symbol_left + '/unit';
+      }
+    },
+    mounted: function () {
+      let _this = this;
+      _this.axios = axios.create({});
+      if (_this.is_edit === 1) {
+        _this.queryProductFutures();
+      }
+    },
+    methods: {
+      submitForm: function (renew) {
+        let _this = this;
+        if (_this.loading) return;
+        let app_form = _this.$refs['app_form'];
+        let hasError = false;
+        app_form.validateField(['min_day', 'max_day'], function (msg) {
+          if (msg && msg.length > 0) {
+            hasError = true;
+          }
+        });
+        if (!_this.validateRow(0)) hasError = true;
+        if (hasError) {
+          _this.$notify.error({
+            title: 'Error',
+            message: 'Please correct errors first.'
+          });
+          return false;
+        }
+        // submit form
+        let form = _this.formModel;
+        let data = _this.formModel.data;
+        let newData = [data[0]];
+        if (_this.validateRow(1)) {
+          newData.push(data[1]);
+          if (_this.validateRow(2)) newData.push(data[2]);
+        }
+        // alarm_price
+        let needAlarm = false;
+        newData.forEach(function (item) {
+          if (item.price < _this.alarm_price) {
+            needAlarm = true;
+          }
+        })
+        let layer_alarm_confirm = needAlarm && !_this.is_inner ? layerConfirm : layerConfirmResolve;
+        app_form.clearValidate();
+        layer_alarm_confirm(alarm_msg)
+          .then(function () {
+            layer.closeAll();
+            _this.loading = _this.$loading({
+              lock: true,
+              text: 'Loading',
+              spinner: 'el-icon-loading',
+              background: 'rgba(0, 0, 0, 0.7)'
+            });
+            form.data = newData;
+            form.product_id = _this.product_info.product_id;
+            _this.axios.post(storeProductUrl, form)
+              .then(function (res) {
+                _this.loading.close();
+                _this.loading = null;
+                if (res.status === 200) {
+                  let data = res['data'];
+                  if (parseInt(data['code']) === 0) {
+                    _this.$notify.success({
+                      title: 'Success',
+                      message: 'Save Successfully.',
+                      duration: 1000,
+                      onClose: function () {
+                        if (!renew) {
+                          _this.goBack();
+                        } else {
+                          location.href = 'index.php?route=account/customerpartner/futures/create';
+                        }
+                      }
+                    });
+                  } else {
+                    _this.$notify.error({
+                      title: 'Error',
+                      message: 'Save Error.Please Try again.'
+                    });
+                  }
+                }
+              })
+              .catch(function (e) {
+                _this.loading.close();
+                _this.loading = null;
+                console.error(e);
+              });
+          })
+          .catch(function () {
+            layer.closeAll();
+          })
+      },
+      goBack: function () {
+        window.location.href = goBackUrl;
+      },
+      clickPayAmount: function () {
+        let _this = this;
+        this.target_href = payAmount;
+        this.$nextTick(function () {
+          _this.$refs['redirect_a'].click();
+        })
+      },
+      clickPayOrder: function () {
+        let _this = this;
+        this.target_href = payOrder;
+        this.$nextTick(function () {
+          _this.$refs['redirect_a'].click();
+        })
+      },
+      clickPayMoney: function () {
+        let _this = this;
+        this.target_href = payMoney;
+        this.$nextTick(function () {
+          _this.$refs['redirect_a'].click();
+        })
+      },
+      clickRow: function (row, event, column) {
+        let _this = this;
+        let url = 'index.php?route=account/inbound_management&filter_inboundOrderNumber=';
+        this.target_href = url + row['receive_number'];
+        this.$nextTick(function () {
+          _this.$refs['redirect_a'].click();
+        })
+      },
+      radioChange: function (index) {
+        let _this = this;
+        let data = _this.formModel.data;
+        data.forEach(function (value, key) {
+          if (key !== index) {
+            _this.formModel.data[key]['is_default'] = 0;
+          }
+        })
+      },
+      // region autocomplete
+      queryProduct: function (query, cb) {
+        this.axios.post(queryProductUrl, {
+          filter_search: query,
+          page_size: 3,
+        }).then(function (res) {
+          return cb(res['data']['data']);
+        })
+      },
+      queryBlur: function (rule, value, callback) {
+        if (!this.formModel.product_name) return;
+        let _this = this;
+        setTimeout(function () {
+          _this.axios.post(
+            'index.php?route=account/customerpartner/futures/getQueryProduct',
+            {product_name: _this.formModel.product_name}
+          ).then(function (res) {
+            if (res.status !== 200) return;
+            let data = res.data;
+            if (data['code'] === 1) {
+              return new callback(data['msg']);
+            } else {
+              let item = data['data'];
+              _this.product_info.product_id = item['product_id'];
+              _this.product_info.sku = item['sku'];
+              _this.product_info.mpn = item['mpn'];
+              _this.product_info.price = item['price'];
+              _this.product_info.name = item['name'];
+              _this.formModel.product_name = item['sku'] + '/' + item['mpn'];
+              _this.queryProductFutures();
+            }
+          }).catch(function (e) {
+            console.error(e);
+          });
+        }, 250)
+      },
+      querySelect: function (item) {
+        let _this = this;
+        _this.product_info.product_id = item['product_id'];
+        _this.product_info.sku = item['sku'];
+        _this.product_info.mpn = item['mpn'];
+        _this.product_info.price = item['price'];
+        _this.product_info.name = item['name'];
+        _this.formModel.product_name = item['sku'] + '/' + item['mpn'];
+        _this.queryProductFutures();
+      },
+      queryProductFutures: function () {
+        let _this = this;
+        if (_this.query_once_flag) return;
+        _this.query_once_flag = true;
+        axios.all([
+          _this.queryReceiptsOrder(),
+          _this.queryFuturesInfo(),
+          _this.querySettlementDay(),
+          _this.queryAlarmPrice(),
+        ])
+          .then(axios.spread(function (res1, res2, res3, res4) {
+            _this.query_once_flag = false;
+            let hasData = false;
+            if (res2.status === 200) {
+              let data = res2.data;
+              let code = parseInt(data['code']);
+              if (code === 0) {
+                let detail = data['data'] || [];
+                hasData = true;
+                _this.formModel.min_day = detail['min_expected_storage_days'];
+                _this.formModel.max_day = detail['max_expected_storage_days'];
+                _this.formModel.is_checked = parseInt(detail['is_check_agreement']) === 1;
+                _this.formModel.status = String(detail['status']);
+                _this.product_info.sku = detail['sku'];
+                _this.product_info.mpn = detail['mpn'];
+                _this.product_info.price = detail['price'];
+                _this.product_info.name = detail['name'];
+                _this.product_info.buyer_futures_ratio = detail['buyer_payment_ratio'];
+                _this.product_info.seller_futures_ratio = detail['seller_payment_ratio'];
+                let new_data = [];
+                detail['items'].forEach(function (item) {
+                  new_data.push({
+                    max: item['max_num'],
+                    min: item['min_num'],
+                    price: item['exclusive_price'],
+                    is_default: parseInt(item['is_default']),
+                  })
+                });
+                let len = new_data.length;
+                if (len < 3) {
+                  for (let i = 0; i < 3 - len; i++) {
+                    if (i === 0) {
+                      new_data.push(
+                        {
+                          min: new_data[len - 1]['max'] + 1,
+                          max: null,
+                          price: null,
+                          is_default: 0,
+                        }
+                      );
+                    } else {
+                      new_data.push({min: null, max: null, price: null, is_default: 0,});
+                    }
+                  }
+                }
+                _this.formModel.data = new_data;
+              } else {
+                // status: '1', // 期货模板状态
+                //   min_day: 1,
+                //   max_day: 90,
+                //   data: [
+                //   {min: 5, max: null, price: null, is_default: 1,},
+                //   {min: null, max: null, price: null, is_default: 0,},
+                //   {min: null, max: null, price: null, is_default: 0,},
+                // ],
+                //   is_checked: false,
+                _this.formModel.min_day = 1;
+                _this.formModel.max_day = 90;
+                _this.formModel.is_checked = false;
+                _this.formModel.status = '1';
+                _this.formModel.data = [
+                  {min: 5, max: null, price: null, is_default: 1,},
+                  {min: null, max: null, price: null, is_default: 0,},
+                  {min: null, max: null, price: null, is_default: 0,},
+                ];
+              }
+            }
+            if (res1.status === 200) {
+              let data = res1.data;
+              _this.receipt_data = data.data || [];
+              if (!hasData) {
+                _this.formModel.min_day = data['min_day'];
+                _this.formModel.max_day = data['max_day'];
+              }
+            }
+            if (res3.status === 200) {
+              let data = res3.data;
+              _this.product_info.settlement_day = parseInt(data.data);
+            }
+            if (res4.status === 200) {
+              _this.alarm_price = res4.data;
+            }
+          }))
+          .catch(function (e) {
+            console.error(e);
+          })
+      },
+      queryReceiptsOrder: function () {
+        return this.axios.post(getReceiptUrl, {product_id: this.product_info.product_id});
+      },
+      queryFuturesInfo: function () {
+        return this.axios.post(getFuturesUrl, {product_id: this.product_info.product_id});
+      },
+      // 获取结算
+      querySettlementDay: function () {
+        return this.axios.post(getSettlementDayUrl);
+      },
+      queryAlarmPrice: function () {
+        return this.axios.post(getAlarmPriceUrl, {product_id: this.product_info.product_id});
+      },
+      // endregion
+      //计算保证金金额
+      computeMargin: function (index) {
+        let item = this.formModel.data[index];
+        if (!item['min'] || !item['max'] || !item['price']) {
+          return null;
+        }
+        let price = parseFloat(item['price']);
+        let min_margin = this.resolvePrice(
+          parseInt(item['min']) * this.resolvePrice(price * this.product_info.buyer_futures_ratio / 100)
+        );
+        let max_margin = this.resolvePrice(
+          parseInt(item['max']) * this.resolvePrice(price * this.product_info.buyer_futures_ratio / 100)
+        );
+        return min_margin === max_margin ? min_margin : min_margin + ' ~ ' + max_margin;
+      },
+      computeBalance: function (index) {
+        let item = this.formModel.data[index];
+        if (!item['min'] || !item['max'] || !item['price']) {
+          return null;
+        }
+        let price = parseFloat(item['price']);
+        return this.resolvePrice(price - this.resolvePrice(price * this.product_info.buyer_futures_ratio / 100));
+      },
+      computeAgreement: function (index) {
+        let item = this.formModel.data[index];
+        if (!item['min'] || !item['max'] || !item['price']) {
+          return null;
+        }
+        let price = parseFloat(item['price']);
+        let min = this.resolvePrice(parseInt(item['min']) * price);
+        let max = this.resolvePrice(parseInt(item['max']) * price);
+        return min === max ? min : min + ' ~ ' + max;
+      },
+      resolvePrice(price) {
+        price = price || 0;
+        if (isJapan === 1) {
+          return parseInt(this.round(price, 0));
+        } else {
+          return this.round(price, 2).toFixed(2);
+        }
+      },
+      // region validate
+      validateDataMin: function (rule, value, callback) {
+        let _this = this;
+        if (value === null || value === '') {
+          return callback('Min qty required.');
+        }
+        if (!_this.isInt(value)) {
+          return callback('Min qty must be a integer.');
+        }
+        value = parseInt(value);
+        if (value < 5) {
+          return callback('The minimum quantity sold shall not be less than 5.');
+        }
+        return callback();
+      },
+      validateDataMax: function (rule, value, callback) {
+        let _this = this;
+        let app_form = _this.$refs['app_form'];
+        let field_info = rule['field'];
+        let index = parseInt(field_info.split('.')[1]);
+        let data = _this.formModel.data;
+        if (value === null || value === '') {
+          return callback('Max qty required.');
+        }
+        if (!_this.isInt(value)) {
+          return callback('Max qty must be a integer.');
+        }
+        value = parseInt(value);
+        if (value < data[index]['min']) {
+          return callback('The maximum selling quantity cannot be less than the minimum selling quantity.');
+        }
+        if (index !== 0) {
+          _this.validateRow(index - 1);
+        }
+        _this.setDataVal(index + 1, 'min', value + 1);
+        return callback();
+      },
+      validateDataPrice: function (rule, value, callback) {
+        let _this = this;
+        let app_form = _this.$refs['app_form'];
+        let field_info = rule['field'];
+        let index = parseInt(field_info.split('.')[1]);
+        if (value === null || value === '') {
+          return callback('Price required.');
+        }
+        if (isJapan === 1) {
+          if (!_this.isInt(value)) {
+            return callback('Price must be a integer.');
+          }
+        } else {
+          if (!_this.isDouble(value) && !_this.isInt(value)) {
+            return callback('Price number invalid.');
+          }
+        }
+        if (parseFloat(value) > parseFloat(_this.product_info.price || 0)) {
+          return callback('Custom Price can not greater than origin price.');
+        }
+        if (index === 0) {
+          app_form.validateField(['data.0.min', 'data.0.max']);
+        } else {
+          let min_field = 'data.' + index + '.min';
+          let max_field = 'data.' + index + '.max';
+          app_form.validateField([min_field, max_field]);
+          _this.validateRow(index - 1);
+        }
+        return callback();
+      },
+      validateRow: function (index) {
+        let app_form = this.$refs['app_form'];
+        let prev_min = 'data.' + index + '.min';
+        let prev_max = 'data.' + index + '.max';
+        let prev_price = 'data.' + index + '.price';
+        let ret = true;
+        app_form.validateField([prev_min, prev_max, prev_price], function (msg) {
+          if (msg && msg.length > 0) {
+            ret = false;
+          }
+        });
+        return ret;
+      },
+      validateProductName: function () {
+        let _this = this;
+        _this.queryBlur(...arguments);
+      },
+      // endregion
+      formatPrice: function (price) {
+        price = parseFloat(price || 0).toFixed(2);
+        if (isJapan === 1) {
+          price = parseInt(price);
+        }
+        let neg = price < 0;
+        let priceM = Math.abs(price);
+        let str = currency_symbol_left + priceM.toFixed(isJapan ? 0 : 2) + currency_symbol_right
+        return neg ? '-' + str : str;
+      },
+      formatPercent: function (num) {
+        num = parseFloat(num || 0).toFixed(2);
+        if (isJapan === 1) {
+          num = parseInt(num);
+        }
+        return String(num) + '%';
+      },
+      // 校验是否为2位小数
+      isDouble: function (val) {
+        let reg = /((^[1-9][0-9]*)|^0)(\.[0-9]{1,2})$/;
+        return reg.test(String(val));
+      },
+      // 校验是否为整数
+      isInt: function (val, maxlen) {
+        let range = '*';
+        if (maxlen && (parseInt(maxlen) >= 1)) range = '{0,' + (maxlen - 1) + '}';
+        let reg = new RegExp('((^[1-9][0-9]' + range + ')|^0)$');
+        return reg.test(String(val));
+      },
+      setDataVal: function (index, field, val) {
+        if (parseInt(index) > 2) return;
+        if (val === undefined) val = null;
+        this.formModel.data[index][field] = val;
+      },
+      round: function (num, decimal) {
+        if (isNaN(num)) {
+          return 0;
+        }
+        const p1 = Math.pow(10, decimal + 1);
+        const p2 = Math.pow(10, decimal);
+        return Math.round(num * p1 / 10) / p2;
+      },
+      isNull: function (data) {
+        return !data && typeof (data) != 'undefined' && data != 0;
+      }
+    }
+  });
+</script>
+<style>
+  .line {
+    text-align: center;
+  }
+
+  .table_row {
+
+  }
+
+  .table_row:hover {
+    cursor: pointer;
+  }
+</style>
+{{ footer }}

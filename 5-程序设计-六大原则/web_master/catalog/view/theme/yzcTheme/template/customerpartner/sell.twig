@@ -1,0 +1,716 @@
+{{ header }}
+{{ css(['/css/common/common.css']) }}
+<style>
+  /*input[type="checkbox"] {*/
+  /*  display: none;*/
+  /*}*/
+  .btn{
+    font-weight: normal;
+    padding: 8px 15px;
+  }
+  .btn:hover, .btn:focus, .btn.focus{
+    color: unset;
+  }
+  input[type="checkbox"] + span.icon:before{
+    font-family: "giga" !important;
+    font-size: 20px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    content: "\e646";
+    color: #a0a0a0;
+  }
+  input[type="checkbox"]:checked + span.icon:before{
+    font-family: "giga" !important;
+    font-size: 20px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    content: "\e645";
+    color: #3A75DC;
+  }
+  #page-sellers{
+    background: RGB(237,239,243)
+  }
+  #page-sellers .container{
+    background: #ffffff;
+    border: 1px solid #d7d7d7;
+  }
+  #page-sellers .store-row{
+    display: block;
+  }
+  .store .store-image{
+    text-align: center;
+  }
+  .long-content{
+    overflow: hidden;
+    word-break: keep-all;
+    white-space:nowrap; /* 不换行 */
+    text-overflow: ellipsis;
+    width:253px;
+  }
+  /**/
+  .search{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 0 15px;
+  }
+  .select{
+    padding-left: 15px;
+  }
+  .search-input{
+    width: 240px;
+    display: inline-block;
+  }
+  .search-btn{
+    /*background: #ffffff;*/
+    /*color: #3A75DC;*/
+    /*font-weight: bold;*/
+    /*border-radius: 5px;*/
+    /*border-top-left-radius: unset;*/
+    /*border-bottom-left-radius: unset;*/
+    /*border: 1px solid #e3e3e3;*/
+    /*border-left: none;*/
+    /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
+    /*position: absolute;*/
+    background: #ffffff;
+    color: #3A75DC;
+    font-weight: bold;
+    border-radius: 5px;
+    height: 38px;
+    width: 47px;
+    padding: 0;
+    border-top-left-radius: unset;
+    border-bottom-left-radius: unset;
+    border: 1px solid #e3e3e3;
+    border-left: none;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    position: absolute;
+  }
+  .search-btn:hover{
+    background: #225CC1;
+    color: #ffffff;
+    border: 1px solid #225CC1;
+    border-left: none;
+  }
+  .search-title{
+    font-size: 12px;
+    color: #d7d7d7;
+  }
+  .batch-upload{
+    margin-left: 30px;
+    font-weight: bold;
+    background-color: #193465;
+    color: #ffffff!important;
+  }
+  .batch-upload:focus{
+    color: #ffffff;
+  }
+  .batch-upload:hover{
+    background-color: #0F1F3C;
+    color: #ffffff;
+  }
+  .shop {
+    /*height: 130px;*/
+    width: 200px;
+    border-radius: 4px;
+    padding: 5px;
+    color: #666;
+    /*float: left;*/
+  }
+  .shop-top{
+    margin: 0;
+    height: 65px;
+    width: 100%;
+  }
+  .shop-img{
+    height: 55px;
+    width: 55px;
+    margin-right: 10px;
+    display: inline-block;
+    float: left;
+  }
+  .products-img:hover{
+    cursor: pointer;
+  }
+  .shop-img:hover{
+    cursor: pointer;
+  }
+  .shop-info{
+    float: left;
+    display: inline-block;
+  }
+  .shop-info h5,p{
+    margin: 0;
+  }
+  .shop-info p {
+    font-size: 12px;
+  }
+  .kind{
+    margin: 4px 0;
+    width: 125px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .all-sellers{
+    margin-top: 20px;
+    border-top: 1px solid #d7d7d7;
+    /*border-bottom: 1px solid #d7d7d7;*/
+  }
+  .seller{
+    /*height: 160px;*/
+    width: 100%;
+    border-bottom: 1px solid #d7d7d7;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 15px;
+    position: relative;
+  }
+  .seller:hover{
+    box-shadow: 2px 2px 7px #666666;
+  }
+  .seller-check{
+    height: 130px;
+    width: 30px;
+    line-height: 130px;
+    /*text-align: center;*/
+    /*float: left;*/
+    display: inline-block;
+  }
+  .rates{
+    font-size: 12px;
+    margin: 0;
+    color: #666666;
+  }
+  .message-view{
+    /*float: right;*/
+    position: absolute;
+    right: 0;
+  }
+  .message button:hover{
+    color: #FA6400;
+  }
+  .view button:hover{
+    color: #FA6400;
+  }
+  .only-message button:hover{
+    color: #FA6400;
+  }
+  .message i {
+    font-size: 16px;
+    color: #FA6400;
+  }
+  .view i {
+    font-size: 16px;
+    color: #FA6400;
+  }
+  .only-message i {
+    font-size: 16px;
+    color: #FA6400;
+  }
+  .message-view button{
+    background: #ffffff;
+  }
+  .message{
+    height: 45px;
+    line-height: 65px;
+    font-weight: normal;
+  }
+  .only-message{
+    height: 130px;
+    width: 176px;
+    line-height: 130px;
+    font-weight: normal;
+  }
+  .view{
+    height: 65px;
+    line-height: 65px;
+    font-weight: normal;
+  }
+  .item-pds{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .products{
+    /*margin: 0 10px;*/
+    width: 140px;
+    height: 130px;
+    display: inline-block;
+    /*float: left;*/
+  }
+  .products-img{
+    width: 100px;
+    height: 100px;
+    margin: auto;
+  }
+  .products-code{
+    font-size: 12px;
+    text-align: center;
+    color: #666666;
+  }
+  .products-price{
+    font-size: 12px;
+    text-align: center;
+    color: #666666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .empty-tip{
+    display: inline-block;
+    float: left;
+    margin-left: 20px;
+    height: 130px;
+    width: 250px;
+    line-height: 130px;
+  }
+  .footer{
+    width: 1140px;
+    margin: 30px auto 20px auto;
+  }
+  .shop-name{
+    width: 125px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .shop-name a:hover{
+    color: #FA6400;
+    text-decoration: underline;
+  }
+  /*new*/
+  input[type=checkbox] {
+    position: relative;
+    width: 15px;
+    height: 15px;
+    margin: 0 5px;
+    vertical-align: sub;
+  }
+
+  input[type=checkbox]::before {
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    background-color: #fff;
+    border: 2px solid #aaa;
+  }
+
+  input[type=checkbox]:checked::before {
+    border: none;
+    content: '\e62d';
+    background-color: #3a75dc;
+    font-family: "giga";
+    font-size: 12px;
+  }
+  /**/
+  .search-btn:focus{
+    color: #3A75DC;
+  }
+  .search-btn:hover{
+    color: #ffffff;
+  }
+  .breadcrumb-wrapper{
+    border-bottom: none;
+    background-color: RGB(237,239,243);
+  }
+  #search-input:focus{
+    border-color: #3A75DC;
+    box-shadow: none;
+  }
+  #search-input{
+    height: 38px;
+    border-radius: 5px;
+    border-top-right-radius: unset;
+    border-bottom-right-radius: unset;
+    background-color: #f3f5f7;
+  }
+  .shop .store-score .score {
+    background-color: #fff0e6;
+    color: #fa6400;
+    height: 20px;
+    display: inline-block;
+    font-size: 13px;
+    text-align: center;
+    line-height: 22px;
+    padding: 0 8px;
+  }
+  .shop .store-score{
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .pop-down-new .pop-down:before, .pop-down-new .pop-down:after{
+    content: '';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    margin-left: -14px;
+    width: 0;
+    height: 0;
+    border-bottom: 14px solid #fff;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+  }
+
+  .pop-down-new .pop-down:before {
+    top: -14px;
+    border-bottom: 14px solid #cccccc;
+  }
+
+  .pop-down-new .pop-down:after {
+    top: -12px;
+  }
+
+  .pop-down-new .pop-down {
+    position: absolute;
+    min-width: 240px;
+    top: 15px;
+    left: calc(50% - 120px);
+    z-index: 999;
+    display: none;
+    margin-top: 16px;
+    background: #fff;
+    /*margin-left: -150px;*/
+    padding: 6px 4px;
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.2);
+    border: 1px solid #cccccc;
+    font-size: 12px;
+    cursor: default;
+  }
+  .store-score.pop-down-new:hover .pop-down{
+    display: inline-block;
+  }
+  a.link{
+    color: #3A75DC;
+  }
+  a.link:hover{
+    text-decoration: underline;
+  }
+  .index-content{
+    color: #666;
+    margin: 4px 0;
+  }
+  .flex-end{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .flex-page .page-list,.flex-page .page-info{
+    top:0;
+  }
+</style>
+
+<div id="page-sellers">
+  <div class="breadcrumb-wrapper text-center clearfix">
+    <h1>
+      {% if my_seller_flag == 1 %}
+        My Sellers
+      {% else %}
+        All Sellers
+      {% endif %}
+    </h1>
+    {% include 'giga/template/_parts/breadcrumb.twig' %}
+  </div>
+  <div class="container">
+    <div class="search form-group">
+      <label>
+        <input type="checkbox" onclick="changeStatus(this)" style="margin-right: 10px;" id="checkfirst"> Select All
+      </label>
+      <button class="btn batch-upload" id="batch_download">Batch Download</button>
+      <div style="float: right;display: inline-block;right: 45px;position: relative">
+        <input placeholder="Seller Store" class="form-control search-input" id="search-input" type="text" value="{{ store_name }}"><button class="btn search-btn" onclick="getSellerInfo()"><i class="giga icon-search-field" style="font-size: 13px"></i></button>
+      </div>
+    </div>
+    <div class="all-sellers">
+      {#      每行的信息#}
+      {% if partners %}
+        {% for partner in partners %}
+          <div class="seller">
+            <div class="seller-check">
+              <label>
+                <input type="checkbox" id="seller-{{ partner['customer_id'] }}" onclick="changeStatusOne(this)">
+              </label>
+            </div>
+            <div class="shop">
+              <div class="shop-top">
+                <div class="shop-img">
+                  <a href="{{ partner['sellerHref'] }}" target="_blank">
+                    <img src="{{ partner['thumb'] }}" alt="{{ partner['screenname'] }}" title="{{ partner['screenname'] }}" width="100%">
+                  </a>
+                </div>
+                <div class="shop-info">
+                  <h5 class="shop-name" title="{{ partner['screenname'] }}"><a href="{{ partner['sellerHref'] }}" target="_blank">{{ partner['screenname'] }} ></a></h5>
+                  {% if partner['total_products']>0 %}
+                    <p class="kind" title="{{ partner['main_category'] }}">{{ partner['main_category']  }}</p>
+                  {% else %}
+                    <p class="kind" title="Others">Others</p>
+                  {% endif %}
+                  <p class="product-count"><span style="font-weight: bold">{{ partner['total_products'] }}</span> products</p>
+                </div>
+              </div>
+              <div>
+                {#buyer是否登录,且对应的seller是否参与评分#}
+                {% if isLogin and partner['comprehensive']['seller_show']==1 %}
+
+                  {% if partner['new_seller_score'] %}
+                    <div class="store-score pop-down-new" style="cursor: default">
+                      <span class="score">New Seller</span>
+                    </div>
+                  {% else %}
+                    <div class="store-score pop-down-new">
+                      <span class="score">{{ partner['comprehensive']['total'] }}</span>
+                      <div class="pop-down">
+                        <div class="popover-content text-small">
+                          <b>GIGA Index</b>
+                          <div class="index-content">
+                            <span>The GIGA Index serves as a Seller Performance Index automatically calculated by the Giga Cloud MarketPlace with a maximum possible index score of 100.</span><br>
+                            <span>Click [Learn more] to learn how the GIGA Index is calculated.</span>
+                          </div>
+                          <a class="link" href="{{ partner['comprehensive']['url'] }}" target="_blank">Learn More</a>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+
+                {% endif %}
+                {% if partner['store_return_rate_mark']=='N/A' %}
+                  <p class="text-muted rates">Return Rate: N/A
+                    <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip"
+                       title="The volume of total units sold is not enough for judging return rate." style="font-size: 12px"></i></p>
+                {% else %}
+                  <p class="text-muted rates">Return Rate: {{ partner['store_return_rate_mark'] }}</p>
+                {% endif %}
+                <p class="rates">Return Approval Rate:
+                  {% if partner['return_approval_rate'] == 0 %}
+                    N/A <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title="No RMA records." style="font-size: 12px"></i>
+                  {% elseif partner['return_approval_rate'] > 90 %}
+                    High
+                  {% elseif partner['return_approval_rate'] > 60 %}
+                    Moderate
+                  {% else %}
+                    Low
+                  {% endif %}</p>
+                {% if partner['store_response_rate_mark'] %}
+                  <p class="rates">Response Rate: {{ partner['store_response_rate_mark'] }}</p>
+                {% endif %}
+              </div>
+            </div>
+            {#        商品信息#}
+            <div class="item-pds">
+              {% if partner['total_products']>0 %}
+                {% for product in partner['products'] %}
+                  <div class="products" id="{{ product['product_id'] }}">
+                    <div class="products-img">
+                      <img src="{{ product['thumb'] }}" title="{{ product['name'] }}" width="100%" height="100%" style="vertical-align:baseline;" onclick="window.open('{{ product['href'] }}','_blank')">
+                    </div>
+                    <p class="products-code max-line1" title="{{ product['sku'] }}">{{ product['sku'] }}</p>
+                    {% if product['min_price_show'] == product['max_price_show']%}
+                      <p class="products-price" title="{{ product['min_price_show'] }}/Unit">
+                        {{ product['min_price_show'] }}/Unit
+                      </p>
+                    {% else %}
+                      <p class="products-price" title="{{ product['min_price_show'] }}-{{ product['max_price_show'] }}/Unit">
+                        {{ product['min_price_show'] }}-{{ product['max_price_show'] }}/Unit
+                      </p>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              {% else %}
+                {#   The store has no valid products   #}
+                <div class="empty-tip">
+                  The store has no valid products.
+                </div>
+              {% endif %}
+            </div>
+            {#        #}
+            <div class="message-view">
+              {% if partner['total_products'] > 5 %}
+                <div class="message">
+                  <button class="btn btn-message" onclick="window.open('{{ partner['contactSellerLink'] }}','_blank')"><i class="giga icon-xinfeng"></i> Message seller</button>
+                </div>
+                <div class="view">
+                  <button class="btn btn-view" onclick="window.open('{{ partner['sellerProductsHref'] }}','_blank')"><i class="giga icon-chakan1"></i> View more products</button>
+                </div>
+              {% else %}
+                <div class="only-message">
+                  <button class="btn btn-message" onclick="window.open('{{ partner['contactSellerLink'] }}','_blank')"><i class="giga icon-xinfeng"></i> Message seller</button>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p style="padding: 15px 50%;white-space: nowrap">No records.</p>
+      {% endif %}
+      {#      #}
+      {#      每行的信息#}
+    </div>
+  </div>
+
+</div>
+
+<div class="row footer">
+  <div class="col-sm-12 text-right flex-end flex-page">{{ pagination }}</div>
+</div>
+
+<script>
+  let seller_display = function (data) {
+    thisid = data.currentTarget.id; //get id of current selector
+    $('#' + thisid + ' .wk_seller_info').slideDown();
+    $('#' + thisid).unbind('mouseenter');
+  }
+  let seller_hide = function (data) {
+    thisid = data.currentTarget.id; //get id of current selector
+    $('#' + thisid + ' .wk_seller_info').slideUp('slow', function () {
+      $('.seller-thumb').bind('mouseenter', seller_display);
+    });
+  }
+
+  $('.seller-thumb').bind({'mouseenter': seller_display, 'mouseleave': seller_hide});
+
+</script>
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+<script>
+  $(function () {
+    // var fromWhere = document.referrer.split('?')[1].split('=')[1].split('/')[0]
+    // if (fromWhere === 'customerpartner'){
+    //   let searchValue = window.sessionStorage.getItem('searchValue')
+    //   if (searchValue){
+    //     $("#search-input").val(searchValue)
+    //   }
+    // }
+    window.history.pushState({}, 0, '/index.php?route=customerpartner/contacted_seller');
+  })
+</script>
+<script>
+  layer.config({
+    skin: 'yzc_layer',
+    btnAlign: 'c'
+  });
+  let has_record = {% if partners %} {{ partners|length }} {% else %} 0 {% endif %};
+  let list = [];
+  let checkLength = 0;
+
+  function getSellerInfo() {
+    let input = $("#search-input").val();
+    let url  = '/index.php?route=customerpartner/contacted_seller';
+    if (input) {
+      url += `&store_name=${Base64.encode(input)}`
+    }
+    window.location.href = url;
+  }
+
+  let Base64 = {
+    encode(str) {
+      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+          return String.fromCharCode('0x' + p1);
+        }));
+    },
+    decode(str) {
+      return decodeURIComponent(atob(str).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+    }
+  };
+  function changeStatus(obj) {
+    if (has_record == 0){
+      $(obj).prop("checked", false);
+      return 0;
+    }
+    let state = $(obj).prop("checked");
+    if (state) {
+      $('input[type="checkbox"]').each(function () {
+        $(this).prop("checked", true);
+      });
+    } else {
+      $('input[type="checkbox"]').each(function () {
+        $(this).prop("checked", false);
+      });
+      list = [];
+    }
+  }
+  function changeStatusOne(obj) {
+    let state = $(obj).prop("checked");
+    if (state) {
+      $(obj).prop("checked", true);
+
+      let tmp=0;
+      $('input[type="checkbox"]').each((i,item)=>{
+        if ( $(item).prop("checked") && $(item).prop('id') ){
+          tmp++;
+        }
+      });
+      if (tmp == has_record){
+        $('#checkfirst').prop("checked", true);
+      }
+    } else {
+      $(obj).prop("checked", false);
+      $('#checkfirst').prop("checked", false);
+    }
+  }
+
+  $('#batch_download').click(function () {
+    if (has_record == 0){
+      return 0;
+    }
+
+    $('#batch_download').attr('disabled', true);
+    let state = $('input[type="checkbox"]').prop("checked");
+    if (state == false && $('input[type="checkbox"]:checked').length == 0) {
+      layer.alert('Please select at least one seller.', {
+        closeBtn: 0,
+        title: 'Info',
+        btn: ['OK'],
+      });
+      $('#batch_download').attr('disabled', false);
+    } else {
+      list=[];
+      $('input[type="checkbox"]').each((i,item)=>{
+        if ( $(item).prop("checked") && $(item).prop('id') && $(item).attr('id').split('-')[1] ){
+          list.push($(item).attr('id').split('-')[1]);
+        }
+      });
+      let to_url = 'index.php?route=customerpartner/contacted_seller/downloadSellersCsv&user_tOKen={{ user_tOKen }}';
+      layer.confirm('Please confirm the batch download ?', {
+        title: 'Confirm',
+        btn: ['Confirm', 'Cancel']
+      }, function (index) {
+        if (list.length == 0){
+          layer.alert('Please select at least one seller.', {
+            closeBtn: 0,
+            title: 'Info',
+            btn: ['OK'],
+          });
+          return 0;
+        }
+        //do something
+        $('#batch_download').attr('disabled', true);
+
+        let form = $('<form />', {action: to_url, method: "get", style: "display:none;"}).appendTo('body');
+        form.append('<input type="hidden" name="route" value="customerpartner/contacted_seller/downloadSellersCsv" />');
+        form.append('<input type="hidden" name="type" value="0" />');
+        form.append('<input type="hidden" name="sellers_id_str" value="' + list.join(',') + '" />');
+        form.submit();
+
+        setTimeout(function () {
+          $('#batch_download').attr('disabled', false);
+        }, 1000);
+        layer.close(index);
+      });
+      $('#batch_download').attr('disabled', false);
+    }
+
+  });
+
+</script>
+{{ footer }}

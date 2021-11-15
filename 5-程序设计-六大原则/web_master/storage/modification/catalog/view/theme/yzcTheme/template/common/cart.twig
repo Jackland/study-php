@@ -1,0 +1,122 @@
+<style>
+  header #cart .dropdown-menu .quantity-total .quantity{
+    margin-left: 40px;
+  }
+  .vouchers-anum-right{
+    width: 50%;
+    display: inline-block;
+    text-align: right;
+  }
+</style>
+<div id="cart">
+  <a class="cart-text" href='{{ cart }}'  data-cnzz-event="页面头部|Hd_Cart">
+    <span class="icon-sum" id="header-totalNum">{{ countNum }}</span>
+    <img src="image/icons/cart.png">
+    <div class="cart-total">
+      <span>Cart</span>
+{#      {% if logged and is_show_total %}#}
+{#      <br>#}
+{#      <span class="total" id="header-totalMoney">{{ countMoney }}</span>#}
+{#      {% endif %}#}
+    </div>
+  </a>
+  <ul class="dropdown-menu pull-right">
+    {% if products or vouchers %}
+      <li>
+        <table class="table table-striped" style="margin-bottom: -1px;">
+          {% for product in products_mini %}
+            <tr class="no-border">
+              <td class="text-center">
+                {% if product.thumb %}
+                  <a href="{{ product.href }}"><img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-thumbnail" /></a>
+                {% else %}
+                  <a href="{{ product.href }}" target="_blank">{{ product['sku'] }}</a>
+                {% endif %}
+              </td>
+              <td class="text-left">
+                <a href="{{ product.href }}">{{ product.name|length >70 ? product.name|slice(0,70)~ '…' : product.name }}</a>
+                {% if product.option %}
+                  {% for option in product.option %} <br />
+                    - <small>{{ option.name }} {{ option.value }}</small>
+                  {% endfor %}
+                {% endif %}
+                {% if product.recurring %} <br />
+                  - <small>{{ text_recurring }} {{ product.recurring }}</small>
+                {% endif %}
+                <br>
+                Store:&nbsp&nbsp<a href="{{ product.seller_href }}" target="_blank">{{ product['seller_name'] }}</a>
+              </td>
+              <td class="text-center btn-remove">
+                <button type="button" onclick="cart.remove('{{ product.cart_id }}');" title="{{ button_remove }}" class="btn btn-xs"><i class="fa fa-trash" aria-hidden="true"></i></button>
+              </td>
+            </tr>
+            <tr class="bottom-tr">
+              <td colspan="2">
+                <div class="quantity-total">
+                  <div>
+                    Price: <b style="color: #fa6400">&nbsp;{{ product.price }}</b>
+                      {% if product.service_fee_per %}
+                          (<i class="iconfont icon-vat"></i>{{ product.product_price_per }}+{{ product.service_fee_per }})
+                      {% endif %}
+                    {% if product.quoteFlag %}
+                      <b style="text-decoration:line-through;margin-left: 10px">&nbsp;{{ product.origin_price }}</b>&nbsp;<span style="font-style: italic">(Discount: <b style="color: red">{{ product.quote_price_per }}</b>)</span>
+                    {% endif %}
+                    <br>
+                    Freight: <b>&nbsp;{{ product.freight_per }}</b>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="quantity">x{{ product.quantity }}</div>
+              </td>
+            </tr>
+          {% endfor %}
+          {% if products_other_number %}
+            <tr style="border-bottom: 1px solid #ccc;border-top: 1px solid #ccc;background-color: transparent;">
+              <td colspan="3" class="text-center">{{ products_other_number }} more items in cart</td>
+            </tr>
+          {% endif %}
+          {% for voucher in vouchers %}
+            <tr>
+              <td class="text-left">{{ voucher.description }}</td>
+              <td><span class="vouchers-anum-right">x&nbsp;1</span><span class="vouchers-anum-right">{{ voucher.amount }}</span></td>
+              <td class="text-center text-danger">
+                <button type="button" onclick="voucher.remove('{{ voucher.key }}');" title="{{ button_remove }}" class="btn btn-xs">
+                  <i class="fa fa-times"></i>
+                </button>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </li>
+      <li>
+        <div>
+          <table class="table">
+            {% for total in totals %}
+              <tr>
+                <td class="text-right">
+                  {% if isEuropean and (total.title =='Item(s) Subtotal' or total.title == 'Total Item Discount') %}
+                    <i class="iconfont icon-vat"></i>
+                  {% endif %}
+                  <strong>{{ total.title }}:</strong>
+                </td>
+                <td class="text-right">
+                  {% if total.title =='Total' %}
+                    <a style="color: red">{{ total.text }}</a>
+                  {% else %}
+                    {{ total.text }}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </table>
+          <p class="bottom-btn"><a class="btn" href="{{ cart }}">{{ text_cart }}</a><a class="btn" href="{{ checkout }}">{{ text_checkout }}</a></p>
+        </div>
+      </li>
+    {% else %}
+      <li>
+        <p class="text-center">{{ text_empty }}</p>
+      </li>
+    {% endif %}
+  </ul>
+</div>

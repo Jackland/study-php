@@ -1,0 +1,251 @@
+{% set titleStr = 'From Sellers' %}
+{{ this.title(titleStr) }}
+{{ this.params('breadcrumbs', [
+    'home',
+    {
+        text: 'Message Center',
+        href: url('account/message_center/seller'),
+    },
+    {
+        text: titleStr,
+        href: url('account/message_center/seller'),
+    }
+]) }}
+
+{% for style in styles %}
+    <link href="{{ style }}" type="text/css" rel="stylesheet"/>
+{% endfor %}
+{% for script in scripts %}
+    <script type="text/javascript" src="{{ script }}"></script>
+{% endfor %}
+<script type="text/javascript" src="/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+
+{{ css([
+  'css/common/common.css',
+  'static/message/message-common.css',
+  'static/message/buyer-message-common.css',
+  'static/message/setting/suggest.css'
+]) }}
+
+{# 以下引入是日期范围选择器 #}
+{{ js(['js/common/dateRangePicker.js']) }}
+{{ css(['css/common/dateRangePicker.css']) }}
+
+{{ js(['js/common/orisComponents.js']) }}
+
+<style>
+  /*公告滚动的样式*/
+  .display-none {
+    display: none;
+  }
+
+  .notice-header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #boxShow ul, #boxShow ul li {
+      margin: 0;
+      padding: 0
+  }
+
+  .notice {
+      height: 49px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding-left: 12px;
+      padding-right: 12px;
+  }
+
+  .notice i {
+      margin-right: 8px;
+      color: #FF6A00;
+      font-size: 16px;
+  }
+
+  .notice-con {
+      width: 360px;
+      height: 44px;
+      overflow: hidden;
+  }
+
+  .notice-con ul li {
+      list-style: none;
+      line-height: 44px;
+      font-size: 14px;
+      display: inline-block;
+      margin-right: 36px !important;
+      /* text-overflow: ellipsis;
+      overflow: hidden; */
+  }
+</style>
+
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid" id="content" style="margin-left: 235px">
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="container ">
+        {% endif %}
+        <div class="row">{{ column_left }}
+            {% if column_left and column_right %}
+                {% set class = 'col-sm-6' %}
+            {% elseif column_left or column_right %}
+                {% set class = 'col-sm-9' %}
+            {% else %}
+                {% set class = 'col-sm-12' %}
+            {% endif %}
+            {% if separate_view == 0 %}
+                {% set table_div_class = 'overflow: hidden;' %}
+            {% endif %}
+            <div ng-app="app" ng-cloak>
+                <div id="content" class="{{ class }}">{{ content_top }}
+                    {{ message_column }}
+                    <div id="table_content" class="my-box2 msgcent-border msg-h508" style="{{ table_div_class }}">
+                      <div class="nav-oris">
+                        <div class="row">
+                          <div class="col-md-12">
+                            {# 表头tab页 #}
+                            <ul class="oris-tabs msgb msg-card__tab notice-header" role="tablist">
+                              <div>
+                                <li class="oris-tab-pane {% if tab_type != 'sent' %} oris-pane-active {% endif %}" onclick="checkTab('inbox')">
+                                      <a role="tab">
+                                    Inbox
+                                    {% if unread_inbox_num > 0 %}
+                                        <span class="msg-card__tab-notice"></span>
+                                    {% endif %}
+                                  </a>
+                                  
+                                </li>
+                                <li class="oris-tab-pane {% if tab_type == 'sent' %} oris-pane-active {% endif %}"  onclick="checkTab('sent')">
+                                  <a role="tab">
+                                    Sent
+                                  </a>
+                                </li>
+                              </div>
+
+                              {# @TODO 调整滚动信息样式 替换图标 #}
+                              <div class="notice display-none" id="boxShow">
+                                <i class="fa fa-bell"></i>
+                                <div class="notice-con" id="newsTip">
+                                  <ul>
+                                  </ul>
+                                </div>
+                              </div>
+                            </ul>
+                            <div class="tab-content">
+                              {# tab 页内容 #}
+                              <div class="tab-pane active" id="tab-content">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    {{ footer }}
+</div>
+
+<script>
+  var timerIDArr = [];
+  $(document).ready(function() {
+      if ('{{ tab_type }}' == 'sent') {
+          jump2Tab(null, 'sent');
+      } else {
+          jump2Tab(null, 'inbox');
+      }
+
+    // 系统消息滚动信息
+    let tipStrArr = {{ unread_list | json_encode }};
+    if (tipStrArr.length > 1) {
+      $("#boxShow").removeClass('display-none');
+      let noticeHtml = '';
+      tipStrArr.forEach((item, i) => {
+        noticeHtml += '<li>' + item.title + '</li>';
+      });
+      $("#newsTip ul").html(noticeHtml);
+      //let timer = setInterval(`noticeUp('.notice-con ul')`, 3000);
+      //timerIDArr.push(timer);
+      
+      noticeLeft();
+      $('[data-toggle="tooltip"]').tooltip();
+    } else if (tipStrArr.length == 1) {
+      $("#boxShow").removeClass('display-none');
+      let noticeHtml = '';
+      tipStrArr.forEach((item, i) => {
+        noticeHtml += '<li>' + item.title + '</li>';
+      })
+
+      noticeLeft();
+      $("#newsTip ul").html(noticeHtml);
+      if($('.notice-con ul').find(":first").width() > 360) {
+        $('.notice-con ul').append('<li>' + tipStrArr[0].title + '</li>');
+      }
+    } else {
+      //@TODO 修改文案
+      $("#newsTip ul").html('<li>No system message</li>');
+    }
+  })
+
+  function checkTab(type) {
+    window.location = '{{ url('account/message_center/seller') }}&tab_type=' + type;
+  }
+
+  function reloadPage(type, searchParams='') {
+    window.location = `{{ url('account/message_center/seller') }}&refresh=true${searchParams}&tab_type=${type}`;
+  }
+
+  // 方法转跳，bootstrap nav 样式问题
+  // 添加搜索参数，用于页面整体刷新保留搜索参数 #39311
+  function jump2Tab(el, type) {
+    block.blockUI();
+    let tab_type = "inbox";
+    if (type == 'sent') {
+      tab_type = 'sent'
+    }
+    let searchUrl = '';
+    if(window.location.href.indexOf('&refresh=true') >= 0) {
+      searchUrl = window.location.href.split('&refresh=true')[1]
+    }
+    let params = searchUrl.indexOf("tab_type") >= 0 ? searchUrl : `tab_type=${tab_type}${searchUrl}` 
+    $("#tab-content").load(`index.php?route=account/message_center/seller/list`, 
+      params,
+      function() {
+        block.unBlockUI();
+      })
+    if(el)
+      $(".oris-tab-pane").removeClass("oris-pane-active");
+    $(el).addClass("oris-pane-active");
+  }
+
+  function scrollLeft() {
+    var box = $("#newsTip");
+    box[0].scrollLeft ++;
+    var firstWidth = $('.notice-con ul').find(":first").width();
+    if(box[0].scrollLeft > firstWidth + 100) {
+      $('.notice-con ul').find(":first").appendTo('.notice-con ul');
+      box[0].scrollLeft -= firstWidth + 36;
+    }
+  }
+
+  // 向左轮播滚动
+  function noticeLeft() {
+    timerIDArr = setInterval(scrollLeft,40);
+    $('#newsTip').on("mouseover",function () {
+      clearInterval(timerIDArr);
+    }).on("mouseout",function () {
+      timerIDArr = setInterval(scrollLeft,40);
+    })
+  }
+</script>
+

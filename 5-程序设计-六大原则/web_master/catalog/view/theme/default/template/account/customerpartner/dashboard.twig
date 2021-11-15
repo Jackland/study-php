@@ -1,0 +1,146 @@
+<style>
+  .col-lg-4,
+  .col-md-4,
+  .col-sm-4 {
+    display: inline-block;
+    width: 32.79%;
+  }
+
+  .col-lg-6,
+  .col-md-6,
+  .col-sm-6 {
+    display: inline-block;
+    width: 48.79%;
+  }
+
+  .col-sm-8{
+    display: inline-block;
+    width: 66.67%;
+  }
+
+  h2{
+      font-size: 27px;
+      font-weight: normal;
+      padding: 10px;
+      color: black;
+    }
+    .open>.dropdown-menu{
+      display: block;
+      right: 0;
+      left: auto;
+    }
+    .tooltip-inner{
+      background-color: #fff;
+    }
+    .tooltip-inner .table>tbody>tr>td{
+      border-top: 1px solid #ddd;
+    }
+    .tooltip{
+      border-radius: 5px;
+      border: 1px solid grey;
+    }
+    @media only screen and (max-width: 767px) {
+      .wk_lowstock_more {
+        margin: 25px 0px 0px;
+      }
+      .dashboard-block-2 .col-sm-4, .dashboard-block-1 .col-lg-4.col-md-4.col-sm-4 {
+        height: 255px;
+      }
+      .dashboard-block-2 .col-sm-8 {
+        float: right;
+      }
+      .dashboard-block-2 .col-sm-8 {
+        width: 65.67%;
+      }
+      .wk_order_status_box .row .col-sm-6:nth-child(1) {
+        width: 75%
+      }
+      .wk_order_status_box .row .col-sm-6:nth-child(2) {
+        width: 20%;
+      }
+    }
+    @media only screen and (max-width: 480px) {
+      .col-lg-4, .col-md-4, .col-sm-4, .dashboard-block-2 .col-sm-8 {
+        width: 100%;
+      }
+      .wk_order_status_box .col-sm-6 a {
+        font-size: 14px;
+      }
+    }
+</style>
+{{ header }}{{ separate_column_left }}
+{% if separate_view is defined and separate_view %}
+  <div class="container-fluid" id="content" style="margin-left: 18%">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+ {% if error_warning %}
+  <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ error_warning}}</div>
+  {% endif %}
+  {% if success %}
+  <div class="alert alert-success"><i class="fa fa-check-circle"> </i> {{ success}}</div>
+  {% endif %}
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+    {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" style="background-color: #eef4f7;" class="{{ class}}">{{ content_top}}
+    	<h2>{{ heading_title_dashboard }}</h2>
+        {% if isMember %}
+            {% if chkIsPartner %}
+              <div class="row">
+                  <div class="col-lg-4 col-md-4 col-sm-6">{{ order }}</div>
+                  <div class="col-lg-4 col-md-4 col-sm-6">{{ sale }}</div>
+                  <div class="col-lg-4 col-md-4 col-sm-6">{{ customer }}</div>
+              </div>
+              <div class="row" style="margin-top: 10px;">
+                  <div class="col-sm-4">{{ low_stock }}</div>
+                  <div class="col-sm-8">
+                    {{ order_status }}
+                  </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-sx-12">{{ chart }}</div>
+              </div>
+              <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-sx-12">{{ map }}</div>
+              </div>
+              <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-sx-12"> {{ recent }} </div>
+              </div>
+            {% endif %}
+        {% else %}
+      <div class="text-danger">
+        {{ error_warning_authenticate}}
+      </div>
+      {% endif %}
+      {{ content_bottom}}</div>
+    {{ column_right}}</div>
+</div>
+<script type="text/javascript">
+  jQuery(document).ready(function(){
+    $('.low_stock_row').on('mouseenter', function(){
+      var src = $(this).find('img').attr('src');
+      src = src.substr(0,14);
+      src = src + '-active.png';
+      $(this).find('img').attr('src',src);
+    });
+
+    $('.low_stock_row').on('mouseleave', function(){
+      var src = $(this).find('img').attr('src');
+      src = src.substr(0,14);
+      src = src + '.png';
+      $(this).find('img').attr('src',src);
+    });
+  })
+</script>
+{{ footer}}

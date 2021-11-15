@@ -1,0 +1,117 @@
+/* catalog/view/theme/yzcTheme/template/account/safeguard/claim/components/claim_submit_files.twig
+* buyer申请理赔详情提交资料
+*/
+.claim-files-content {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #DCDCDC;
+}
+
+.claim-files-content .reasons-select {
+  width: 560px;
+}
+
+.calc-account {
+  width: 76px;
+  height: 44px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333333;
+  line-height: 44px;
+  display: flex;
+  cursor: pointer;
+  box-shadow: 0px 0px 20px 4px rgba(0, 0, 0, 0.08);
+  border-radius: 22px 0px 0px 22px;
+  padding: 0 12px 0 20px;
+  position: relative;
+  right: -20px;
+  top: -2px;
+  overflow: hidden;
+}
+
+.calc-account i.giga {
+  color: #2861CE;
+  padding-right: 8px;
+}
+
+@-webkit-keyframes calcnimate {
+  to {
+    width: 330px;
+  }
+}
+
+@keyframes calcnimate {
+  to {
+    width: 330px;
+  }
+}
+
+.calc-account:hover {
+  animation-name: calcnimate;
+  animation-duration: .5s;
+  animation-fill-mode: forwards;
+}
+
+.calc-account:hover i.icon-V10_youjiantougengduo {
+  display: none;
+}
+
+.claim-files-content .oris-comments {
+  width: 800px;
+}
+
+.claim-files-content .oris-comments textarea {
+  height: 160px;
+}
+
+.claim-files-content .oris-row [class*=oris-col-]:not(:last-child) {
+  padding-right: 24px;
+}
+
+.claim-files-content .upload-btn {
+  width: 400px;
+  height: 160px;
+  border: 1px solid #C1C1C1;
+  border-radius: 2px;
+  text-align: center;
+}
+
+.claim-files-content .upload-btn i.icon-shangchuanyunduan {
+  font-size: 80px;
+  color: #c0c4cc;
+  position: relative;
+  top: 16px;
+}
+
+.claim-files-content .upload-suggestion {
+  padding: 0 20px;
+}
+
+.claim-files-content .upload-suggestion>div:not(.suggest) {
+  padding: 6px 0;
+}
+
+.claim-files-content .upload-suggestion>div:not(.suggest) .oris-circle {
+  position: relative;
+  top: -2px;
+}
+
+.claim-files-content .upload-suggestion .suggest {
+  color: #7382A5;
+  font-weight: bold;
+}
+
+i.icon-jisuanqi1 {
+  font-size: 24px;
+  font-weight: 200;
+}
+
+.pos-t-4 {
+  position: relative;
+  top: -4px;
+}
+
+.pos-t-6 {
+  position: relative;
+  top: -6px;
+}

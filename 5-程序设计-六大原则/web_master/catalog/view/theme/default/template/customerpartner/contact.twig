@@ -1,0 +1,253 @@
+<script type="text/javascript" src="catalog/view/javascript/summernote/summernote.js"></script>
+<link rel="stylesheet" type="text/css" href="catalog/view/javascript/summernote/summernote.css">
+<form method="POST" id="contactform" enctype="multipart/form-data">
+  <div id="seller-contact">
+    <div class="form-group">
+        {% if checkResult %}
+            <label class="control-label"><span data-toggle="tooltip" title="{{ text_prompt }}">{{ text_est}}<i class="giga icon-V10-wenhaotishi"></i></span> :</label><br/>
+            <div   class="btn btn-primary" onclick="sendContactRequest()">{{text_establish_contact}}</div>
+        {% endif %}
+    </div>
+    <div class="form-group">
+      <label>{{text_from}}</label>
+      <input type="text" disabled="" readonly="" value="{{email_from}}" class="form-control" />
+      <input type ="hidden" name="email_from" value="{{email_from}}" />
+    </div>
+    <div class="form-group hide">
+     <label>{{text_to}}</label>
+     <input type="text" disabled="" readonly="" value="{{customer_id_to}}" class="form-control" />
+     <input type ="hidden" name="customer_id_to" value="{{customer_id_to}}" />
+    </div>
+    <div class="form-group">
+     <label>{{text_subject}}</label>
+     <input type="text"  name="subject"  maxlength="500" value="{% if itemCode %}{{ itemCode }}{% endif %}" class="form-control" />
+   </div>
+      <div class="form-group">
+          <textarea id="summernote" name="message"></textarea>
+      </div>
+  <div class="form-group">
+    <div class="form-group fileDiv" style="display:inline-block">
+      <label class="attach-file pointer" name="upload_files[]">
+        <i class="fa fa-upload" ></i>
+        <input type="file" name='file[]' id="files" style="display:none"  onchange="validate_fileupload(this);"><i class="fa fa-times remove-file pointer"></i>
+      </label>
+   </div>
+    <span id="addFile" class="label-right pointer">+ {{text_attach_another}}</span>
+    </div>
+  </div>
+  <div style="margin-left: 50%;">
+  <div  onclick="sendMail()" class="btn btn-primary">{{text_send}}</div>
+  </div>
+</form>
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#summernote').summernote({
+    height: 300,
+    callbacks: {
+      onImageUpload: function(files, editor, welEditable) {
+        sendFile(this,files[0]);
+      }
+     }
+  });
+});
+
+function sendFile(el,file) {
+    data = new FormData();
+    data.append("file", file);
+    $.ajax({
+        data: data,
+        type: "POST",
+        url: "index.php?route=customerpartner/profile/upload",
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(data) {
+            if(data.error){
+                alert(data.error);
+            }
+            if(data.success){
+                $(el).summernote('editor.insertImage', data.url);
+            }
+        }
+    });
+}
+</script>
+<style type="text/css">
+  .attach-file .fa-upload {
+      margin-top: 36%;
+  }
+  label.attach-file {
+    display: inline-block;
+    width: 65px;
+    height: 65px;
+    border: 1px dashed #DDD;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 50px;
+    overflow: hidden;
+      background-size:cover;
+      background: #F1F1F1 url('') center;
+      cursor: pointer;
+}
+.label-right {
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+    margin: 22px 10px;
+    color: #325896;
+    font-weight: 600;
+}
+.remove-file{
+  margin-left: 10px;
+    position: absolute;
+    display: none;
+}
+</style>
+<script type="text/javascript">
+
+  $('#addFile').unbind('click').bind('click',function(){
+      var maxNum = {{max}};
+      if($('.attach-file').length>=maxNum){
+          alert("{{ error_max_file_num }}" + maxNum);
+          return;
+      }
+      var html='<label class="attach-file pointer attach"  style="margin-left: 5px; margin-right: 5px;"><i class="fa fa-upload"></i><input type="file" name="file[]"  class="files" style="display:none"  onchange="validate_fileupload(this);"><i class="fa fa-times remove-file pointer"></i></label>';
+     $(this).prev().append(html);
+  });
+
+  function validate_fileupload(_this) {
+        if(!validate(_this)){
+             $(_this).parent().replaceWith('<label class="attach-file pointer attach"  style="margin-left: 5px; margin-right: 5px;"><i class="fa fa-upload"></i><input type="file" name="file[]"  class="files" style="display:none"  onchange="validate_fileupload(this);"><i class="fa fa-times remove-file pointer"></i></label>');
+            return false;
+        }else {
+          var getImagePath = URL.createObjectURL(_this.files[0]);
+            var file_extension = _this.value.split('.').pop();
+          $(_this).parent().css('background-image', 'url(' + getImagePath + ')');
+          $(_this).parent().find('.ex').remove();
+          $(_this).parent().append('<span class="ex">' + file_extension + '</span>');
+          return true;
+        }
+  }
+  function validate(_this){
+      if(!_this.value){
+          return false;
+      }
+      var maxSize ={{size}};
+      var allowed_extensions ={{ extension|json_encode() }};
+      if (_this.type != 'file') {
+          alert("{{ error_only_support_file_type }}" + allowed_extensions.join(','));
+          return false;
+      }
+      var fileName = _this.value;
+      var file_extension = fileName.split('.').pop();
+      if (!allowed_extensions.includes(file_extension)) {
+          alert("{{ error_only_support_file_type }}" + allowed_extensions.join(','));
+          return false;
+      }
+
+      if ( _this.files[0].size > maxSize * 1024) {
+          alert("{{ error_max_file_size }}{{ size_mb }}");
+          return false;
+      }
+      return true;
+  }
+
+$(document.body).on('click','.remove-file',function(event){
+  event.preventDefault();
+ $(this).parent().remove();
+  });
+$(document.body).on('mouseenter','.attach-file',function(){
+  $(this).find('.remove-file').css("display","inline-block");
+});
+$(document.body).on('mouseleave','.attach-file',function(){
+  $(this).find('.remove-file').css("display","none");
+});
+function showMsg(isSuccess,msg) {
+    var alertClass = isSuccess? 'alert-success':'alert-danger';
+    $('<div class="alert '+alertClass+'">'+msg+'</div>').prependTo('#seller-contact')
+        .fadeOut(5000,function(){
+            $(this).remove();
+        })
+}
+function initContact() {
+    $('form#contactform input[name="subject"]').val('');
+    $('#summernote').summernote("reset");
+    //移除附件
+    $('.attach-file').remove();
+    $('#addFile').trigger('click');
+}
+function sendMail(subject,message,establishContact = 0) {
+  var formData = new FormData($('form#contactform')[0]);
+  if(subject!=null ){
+      formData.set('subject',subject);
+  }
+  if(message!=null ){
+      formData.set('message',message);
+  }
+  if(!formData.get('message')){
+      formData.set('message',$('.note-editable').html());
+  }
+  formData.append('establishContact',establishContact);
+  var isSuccess = false;
+  //发送站内信
+   $.ajax({
+     url : '{{action}}',
+     data : formData,
+     async:false,
+     cache:false,
+     contentType:false,
+     processData:false,
+     type: "post",
+     dataType: 'json',
+     success : function(json) {
+         console.log('sendMessage success',json)
+      if(json['error']) {
+          if(json['error'].length>0){
+            for(var i = 0 ;i<json['error'].length;i++) {
+                showMsg(false,json['error'][i]);
+            }
+          }else if(json['error_warning']){
+                showMsg(false,json['error_warning']);
+          }
+      } else if(json['success']) {
+          isSuccess = true;
+          showMsg(true,json['success']);
+          initContact();
+      }
+     },
+       error:function (data) {
+           console.log('sendMessage error',data);
+           var errorMsg = 'send message failed';
+           try{
+               var error = data['responseText'].match(/\{"error.*}/ig);
+               error = JSON.parse(error);
+               errorMsg = error['error'][0];
+           }catch (e) {}
+           showMsg(false,errorMsg)
+       }
+   })
+    //发送邮件
+    if(isSuccess){
+        $.ajax({
+            url : '{{mail_action}}',
+            data : formData,
+            // async:false,
+            type: "post",
+            cache:false,
+            contentType:false,
+            dataType: 'json',
+            processData: false,
+            success : function(json) {
+                console.log('sendMail success',json)
+            },
+            error:function (json) {
+                console.log('sendMail error',json)
+            }
+        });
+    }
+}
+
+    function sendContactRequest() {
+        sendMail('Establish Contact','The other party requests to establish contact with you, do you agree?',1)
+    }
+</script>

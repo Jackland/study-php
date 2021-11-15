@@ -1,0 +1,142 @@
+@charset "UTF-8";
+
+//
+// @copyright        2019 opencart.cn - All Rights Reserved
+// @link             http://www.guangdawangluo.com
+// @author           Sam Chen <sam.chen@opencart.cn>
+// @created          2019-11-05 10:49:06
+// @modified         2019-11-11 17:16:13
+//
+
+#page-rma-detail {
+  .info-wrapper {
+    .row {
+      & > div {
+        text-align: center;
+        border-right: 1px solid #eee;
+
+        &:last-of-type {
+          border-right: none;
+        }
+
+        span {
+          display: block;
+
+          &.title {
+            color: #c9c9c9;
+          }
+
+          i {
+            font-size: 22px;
+            color: $brand-secondary;
+          }
+        }
+      }
+
+
+    }
+  }
+
+  .table-refund {
+    tbody {
+      border-bottom: none;
+
+      tr {
+        td {
+          &.borderless {
+            border: none;
+          }
+
+          &.border-bottom {
+            border-bottom: 1px solid #eee;
+          }
+        }
+      }
+    }
+  }
+}
+
+#page-rma-reshipment {
+  #table-reshipment-order {
+    tr.detail {
+      .left {
+        float: left;
+
+        table {
+          td {
+            padding: 2px 8px;
+            border: none;
+          }
+        }
+      }
+
+      .right {
+        float: right;
+        width: 280px;
+      }
+    }
+  }
+}
+
+#page-rma-refund {
+  #table-refund {
+    tr.detail {
+      .left {
+        float: left;
+
+        table {
+          td {
+            padding: 2px 8px;
+            border: none;
+          }
+        }
+      }
+
+      .right {
+        float: right;
+        width: 280px;
+      }
+    }
+  }
+}
+
+#page-rma-form {
+  .info-section {
+    display: flex;
+
+    .info-group {
+      flex: 1;
+      margin-right: 60px;
+      padding: 10px 0;
+      border-top: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-of-type {
+        margin-right: 0;
+      }
+
+      span {
+        font-size: 12px;
+      }
+
+      span.title {
+        margin-right: 50px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #677899;
+      }
+    }
+  }
+
+  .detail-section {
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 10px;
+
+    table {
+      td {
+        border: none;
+      }
+    }
+  }
+}

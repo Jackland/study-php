@@ -1,0 +1,523 @@
+{{ header }}{{ separate_column_left }}
+<!-- import CSS -->
+<div
+  {% if separate_view is defined and separate_view %}
+    class="container-fluid" id="content" style="margin-left: 15%"
+  {% else %}
+    class="container"
+  {% endif %}
+>
+  {% include 'giga/template/_parts/breadcrumb.twig' %}
+  <div class="row" style="margin-right: 30px;margin-left: 0">
+    {% include 'giga/template/_parts/column_place.twig' %}
+    <div class="{{ class }} giga-content">{{ content_top }}
+
+      <h1 style="display: inline-block">{{ text_futures_list }}</h1>
+{#      <a href="{{ futures_create_url }}" target="_blank" class="btn btn-primary pull-right">#}
+{#        <i class="fa fa-plus"></i>#}
+{#        <span style="margin-left: 2px">CREATE NEW FUTURE GOODS OFFERINGS</span>#}
+{#      </a>#}
+      <div class="row col-sm-12" id="box-shadow" style="margin-left: 0;padding: 0;">
+        <div class="panel panel-default" style="margin-bottom: 0">
+          <div class="panel-body">
+            <div class="row">
+              <form action="{{ form_search_url }}" id="this_form">
+                <div class="col-sm-5">
+                  <div class="form-group">
+                    <div class="input-group" style="width: 100%;position: relative">
+                      <input
+                        placeholder="{{ text_sku_mpn }}"
+                        name="filter_sku_mpn"
+                        id="input-filter_sku_mpn"
+                        value="{{ request['filter_sku_mpn'] }}"
+                        class="form-control"/>
+                      <div class="input-group-addon btn btn-default" id="form_button">
+                        <i class="fa fa-search"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                <tr>
+                  <td><input type="checkbox" id="header_checkbox"></td>
+                  <td class="text-center">{{ column_sku_mpn }}</td>
+                  <td class="text-center">{{ column_current_price | format(currency_symbol_left) }}</td>
+                  <td class="text-center">{{ column_expect_day }}</td>
+                  <td class="text-center">
+                    {{ column_settlement_day }}
+                    <span
+                      data-toggle="tooltip"
+                      title="If the agreement is rejected, the marketplace will release the deposit within 30 business days  based on the agreement.">
+                      <i class="giga icon-V10-wenhaotishi"></i>
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    {{ column_modify_time }}
+                  </td>
+                  <td class="text-center">Action</td>
+                </tr>
+                </thead>
+                {% if list %}
+                  {% for li in list %}
+                    {% set class ='' %}
+                    {% if li.status == 0 %}
+                      {% set class='ban_future' %}
+                    {% endif %}
+                    <tr class="{{ class }}">
+                      <td><input type="checkbox" data-check="id" data-id="{{ li.id }}"></td>
+                      <td class="text-center">
+                        <a target="_blank" href="{{ li.product_url }}">{{ li.sku }} / {{ li.mpn }}</a>
+                      </td>
+                      <td class="text-center">{{ li.price_format }}</td>
+                      <td class="text-center">{{ li.day_format }}</td>
+                      <td class="text-center">{{ li.liquidation_day }}</td>
+                      <td class="text-center">{{ li.update_time }}</td>
+                      <td class="text-center">
+                        <a
+                          data-toggle="tooltip"
+                          data-original-title="Edit"
+                          target="_blank"
+                          href="{{ futures_create_url }}&template_id={{ li.id }}"
+                          class="btn btn-default">
+                          <i class="fa fa-pencil"></i>
+                        </a>
+                        {% if li.status == 1 %}
+                          <button
+                            data-toggle="tooltip"
+                            data-original-title="Disable"
+                            class="btn btn-default"
+                            onclick="clickBan({{ li.id }},'{{ li.sku }}')">
+                            <i class="fa fa-ban"></i>
+                          </button>
+                        {% else %}
+                          <button
+                            data-toggle="tooltip"
+                            data-original-title="Enable"
+                            class="btn btn-default"
+                            onclick="clickRecovery({{ li.id }},'{{ li.sku }}')">
+                            <i class="fa fa-play-circle"></i>
+                          </button>
+                        {% endif %}
+                        <button
+                          data-toggle="tooltip"
+                          data-original-title="Delete"
+                          class="btn btn-default"
+                          onclick="clickDelete({{ li.id }},'{{ li.sku }}')">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                        <button
+                          {% if request.is_show is not empty %}
+                            style="display: none"
+                          {% endif %}
+                          id="show_info_btn"
+                          class="btn btn-default"
+                          data-toggle="tooltip"
+                          data-original-title="Expand"
+                          onclick="show_info({{ li.id }},this)">
+                          <i class="fa fa-expand"></i>
+                        </button>
+                        <button
+                          {% if request.is_show is empty %}
+                            style="display: none"
+                          {% endif %}
+                          id="hide_info_btn"
+                          class="btn btn-default"
+                          data-toggle="tooltip"
+                          data-original-title="Compress"
+                          onclick="hide_info({{ li.id }},this)">
+                          <i class="fa fa-compress"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    {% set display ='display: none' %}
+                    {% if request.is_show is not empty %}
+                      {% set display='' %}
+                    {% endif %}
+                    <tr data-id="{{ li.id }}" style="{{ display }}">
+                      <td colspan="7" style="background-color: #eee">
+                        <div class="table-responsive">
+                          <table class="table table-hover open">
+                            <thead>
+                            <tr>
+                              <td class="text-center">{{ column_sell_qty }}</td>
+                              <td class="text-center">{{ column_exclusive_price | format(currency_symbol_left) }}</td>
+                              <td class="text-center">{{ column_margin }}</td>
+                              <td class="text-center">{{ column_balance }}</td>
+                              <td class="text-center">{{ column_agreement }}</td>
+                              <td class="text-center">{{ column_default }}</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in li.items %}
+                              <tr class="openrow">
+                                <td class="text-center">{{ item.sell_qty }}</td>
+                                <td class="text-center">{{ item.price_format }}</td>
+                                <td class="text-center">{{ item.margin_format }}</td>
+                                <td class="text-center">{{ item.balance_format }}</td>
+                                <td class="text-center">{{ item.agree_format }}</td>
+                                <td class="text-center">{{ item.is_default_format }}</td>
+                              </tr>
+                            {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td
+                      class="text-center"
+                      colspan="9"
+                      style="border-bottom: none;font-size: 15px;letter-spacing: 1px;padding-top: 20px">
+                      {{ text_no_results }}
+                    </td>
+                  </tr>
+                {% endif %}
+              </table>
+            </div>
+            {% if list %}
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="pull-left">
+                    {#左侧删除#}
+                    <div class="table-bottom-action">
+                      <div class="bottom-action-left">
+                        <i class="fa fa-right-angle"></i>
+                        <button
+                          type="button"
+                          data-toggle="tooltip"
+                          title="Batch Disable"
+                          onclick="batchBan()"
+                          class="btn btn-danger">
+                          <i class="fa fa-ban"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-toggle="tooltip"
+                          title="Batch Enable"
+                          onclick="batchRecovery()"
+                          class="btn btn-danger">
+                          <i class="fa fa-play-circle"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-toggle="tooltip"
+                          title="Batch Delete"
+                          onclick="batchDelete()"
+                          class="btn btn-danger">
+                          <i class="fa fa-trash-o"></i>
+                        </button>
+                        <span class="bottom-action-detail"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="pull-right">{{ pagination }}</div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <style>
+    #form_button {
+      height: 40px;
+      width: 40px;
+      left: 94%;
+      position: absolute;
+      z-index: 100;
+      padding-top: 12px;
+      box-shadow: none;
+      background-color: #fff;
+      border: 1px solid #ccc;
+    }
+
+    .default_row > td {
+      color: orange !important;
+    }
+
+    .ban_future {
+      background-color: #f1efef;
+    }
+
+    .table-responsive .open {
+      background-color: #eee;
+    }
+
+    .table tbody > .openrow {
+      font-weight: bold;
+    }
+
+    .table tbody > .openrow:hover > td {
+      color: #FA6400;
+    }
+
+    .table tbody > tr:hover > td {
+      background-color: #EDFAE0;
+    }
+
+    .btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {
+      background-color: #478BFF;
+      border: 1px solid #478BFF !important;
+      color: #fff;
+    }
+  </style>
+  <script>
+    let ban_url = '{{ ban_url }}';
+    let recovery_url = '{{ recovery_url }}';
+    let delete_url = '{{ delete_url }}';
+    let $notify = window.ELEMENT.Notification;
+    let $input_filter_sku_mpn = $('#input-filter_sku_mpn');
+
+    function batchBan() {
+      let ids = getCheckIds();
+      if (ids.length === 0) {
+        layer.msg('No offerings selected. Please select the Future Goods offering(s) you want to disable.');
+        return;
+      }
+      layer.confirm(
+        'Select \'OK\' to confirm you would like to disable the selected Future Goods of ' + ids.length + ' products?',
+        {
+          title: 'Message',
+          skin: 'yzc_layer', //样式类名
+          btn: ['OK', 'Cancel'] //按钮
+        }, function () {
+          banFutures(ids);
+        }, function () {
+          layer.close();
+        });
+    }
+
+    function batchRecovery() {
+      let ids = getCheckIds();
+      if (ids.length === 0) {
+        layer.msg('No offerings selected. Please select the Future Goods offering(s) you want to enable.');
+        return;
+      }
+      layer.confirm(
+        'Select \'OK\' to confirm you would like to enable the selected Future Goods of ' + ids.length + ' products?',
+        {
+          title: 'Message',
+          skin: 'yzc_layer', //样式类名
+          btn: ['OK', 'Cancel'] //按钮
+        }, function () {
+          recoveryFutures(ids);
+        }, function () {
+          layer.close();
+        });
+    }
+
+    function batchDelete() {
+      let ids = getCheckIds();
+      if (ids.length === 0) {
+        layer.msg('Please select the Future Goods offerings you want to delete.');
+        return;
+      }
+      layer.confirm(
+        'Select \'OK\' to confirm you would like to delete the selected Future Goods offerings for '
+        + ids.length + ' products?',
+        {
+          title: 'Message',
+          skin: 'yzc_layer', //样式类名
+          btn: ['OK', 'Cancel'] //按钮
+        }, function () {
+          deleteFutures(ids);
+        }, function () {
+          layer.close();
+        });
+    }
+
+    function clickBan(id, sku) {
+      layer.confirm('Select \'OK\' to disable the Future Goods offerings of Item Code ' + sku + '?', {
+        title: 'Message',
+        skin: 'yzc_layer', //样式类名
+        btn: ['OK', 'Cancel'] //按钮
+      }, function () {
+        banFutures(id);
+      }, function () {
+        layer.close();
+      });
+    }
+
+    function clickRecovery(id, sku) {
+      layer.confirm('Select \'OK\' to enable the Future Goods offerings of Item Code ' + sku + '?', {
+        title: 'Message',
+        skin: 'yzc_layer', //样式类名
+        btn: ['OK', 'Cancel'] //按钮
+      }, function () {
+        recoveryFutures(id);
+      }, function () {
+        layer.close();
+      });
+    }
+
+    function clickDelete(id, sku) {
+      layer.confirm(
+        'Select \'OK\' to confirm you would like to delete the Future Goods offerings for Item Code ' + sku + ' ?',
+        {
+          title: 'Message',
+          skin: 'yzc_layer', //样式类名
+          btn: ['OK', 'Cancel'] //按钮
+        }, function () {
+          deleteFutures(id);
+        }, function () {
+          layer.close();
+        });
+    }
+
+    function banFutures(id) {
+      layer.load();
+      $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        data: {id: id},
+        url: ban_url,
+        success: function (res) {
+          layer.closeAll();
+          let code = parseInt(res['code']);
+          if (code === 0) {
+            $notify.success({
+              title: 'Success',
+              message: 'Disabled successfully.',
+            })
+            setTimeout(function () {
+              window.location.reload();
+            }, 1500)
+          } else {
+            $notify.error({
+              title: 'Error',
+              message: 'Disabled failed.',
+            })
+          }
+        },
+        error: function (e) {
+          console.error(e);
+        }
+      });
+    }
+
+    function recoveryFutures(id) {
+      layer.load();
+      $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        data: {id: id},
+        url: recovery_url,
+        success: function (res) {
+          layer.closeAll();
+          let code = parseInt(res['code']);
+          if (code === 0) {
+            $notify.success({
+              title: 'Success',
+              message: 'Enabled successfully.',
+            })
+            setTimeout(function () {
+              window.location.reload();
+            }, 1500)
+          } else {
+            $notify.error({
+              title: 'Error',
+              message: 'Enabled failed.',
+            })
+          }
+        },
+        error: function (e) {
+          console.error(e);
+        }
+      });
+    }
+
+    function deleteFutures(id) {
+      layer.load();
+      $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        data: {id: id},
+        url: delete_url,
+        success: function (res) {
+          layer.closeAll();
+          let code = parseInt(res['code']);
+          if (code === 0) {
+            $notify.success({
+              title: 'Success',
+              message: 'Deleted successfully.',
+            })
+            setTimeout(function () {
+              window.location.reload();
+            }, 1500)
+          } else {
+            $notify.error({
+              title: 'Error',
+              message: 'Deleted failed.',
+            })
+          }
+        },
+        error: function (e) {
+          console.error(e);
+        }
+      });
+    }
+
+    function show_info(id, ele) {
+      ele = $(ele);
+      let row_id = 'tr[data-id=\'' + id + '\']';
+      let row_info = $(row_id);
+      row_info.show();
+      ele.hide();
+      ele.siblings('#hide_info_btn').show();
+    }
+
+    function hide_info(id, ele) {
+      ele = $(ele);
+      let row_id = 'tr[data-id=\'' + id + '\']';
+      let row_info = $(row_id);
+      row_info.hide();
+      ele.hide();
+      ele.siblings('#show_info_btn').show();
+    }
+
+    function getCheckIds() {
+      let ids = [];
+      $('input[data-check="id"]').map(function (key, item) {
+        item = $(item);
+        if (item.prop('checked')) {
+          ids.push(item.attr('data-id'));
+        }
+      });
+      return ids;
+    }
+
+    $(function () {
+      function form_enter() {
+        let url = '{{ form_search_url }}';
+        let filter_sku_mpn = $("input[name='filter_sku_mpn']").val() || '';
+        url += '&filter_sku_mpn=' + filter_sku_mpn;
+        location.href = url;
+      }
+
+      $input_filter_sku_mpn.on('keypress', function (e) {
+        if (e.keyCode == 13) {
+          form_enter();
+        }
+        return false;
+      })
+      $('#form_button').on('click', form_enter)
+      //checkbox
+      $('#header_checkbox').on('change', function () {
+        if ($(this).prop('checked')) {
+          $('input[data-check="id"]').prop('checked', true);
+        } else {
+          $('input[data-check="id"]').prop('checked', false);
+        }
+      })
+
+    })
+  </script>
+{{ footer }}

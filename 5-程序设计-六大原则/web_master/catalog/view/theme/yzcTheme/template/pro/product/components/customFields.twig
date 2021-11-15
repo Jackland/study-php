@@ -1,0 +1,147 @@
+{% trans_default_category 'catalog/view/theme/yzcTheme/template/pro/product/components/customFields' %}
+{{ js(['js/common/toolString.js']) }}
+
+{{css([
+  'css/common/element-common.css',
+  'static/customerpartner/seller_store/home/components/modules/modules_common.css',
+  'css/common/common.css',
+  'static/seller_product/custom-fields.css'
+]) }}
+
+<script type="text/x-template" id="custom-fields">
+  <div class="custom-fields-container">
+    <!-- 自定义字段列表 -->
+    <div v-if="fields.length">
+      <el-form :model="fields" ref="fieldsForm">
+        <el-form-item :label="field.name" :prop="'.' + index + '.value'" :rules="rule" v-for="(field, index) in fields" class="custom-fields-input-row">
+          <el-input :value="field.value" @input="inputField(index, $event)" :disabled="disableBtn"></el-input>
+          <span class="input-row-minus-icon" @click="handleRemoveItem(index)" v-if="!disableBtn">
+            <i class="giga icon-action-remove"></i>
+          </span>
+          <template slot="error">
+            <div class="el-form-item__error">${ field.name + "{{ __('不能为空') }}" }</div>
+          </template>
+          <span class="countdown-container">
+            <span class="text-countdown">
+              ${field.value?toolString.calcStringLength(field.value, 100).len>100?100:toolString.calcStringLength(field.value, 100).len:0}/100
+            </span>
+          </span>
+        </el-form-item>
+      </el-form>
+    </div>
+    <div class="btn-wrapper">
+      <el-button class="addkey-btn" @click="openAddDialog" v-show="!disableBtn" :disabled="fields.length >= 5" type="primary">
+        {{ __('新增自定义维度') }}
+      </el-button>
+      <slot name="btnright"></slot>
+    </div>
+
+
+    <el-dialog class="ele ele-modal" title="{{ __('新增自定义维度') }}" @close="handleDialogCancel" :visible.sync="showDialog" :close-on-click-modal="false" 
+    :close-on-press-escape="false" width="800px">
+      <div class="content-container ele ele-form">
+        <el-form-item label="{{ __('维度名称') }}" class="app_el_item" required>
+          <div class="el-input">
+            <input class="el-input__inner" v-model="form.name" @input="inputFieldName"></input>
+          </div>
+          <template slot="error">
+            <div class="el-form-item__error">${ "{{ __('维度名称不能为空') }}" }</div>
+          </template>
+          <span class="pl-10" style="display: block">{{ __('您还能输入') }} 
+            <span class="warning-color">
+              ${form.name?(50-toolString.calcStringLength(form.name, 50).len<0?0:50-toolString.calcStringLength(form.name, 50).len):50}
+            </span>/50 {{ __('个字符，维度名称不能有中文') }}
+          </span> 
+        </el-form-item>
+      </div>
+      <template slot="footer">
+        <div class="ele ele-btn ele-btn-group">
+          <el-button @click="handleDialogCancel">{{ __('取消') }}</el-button>
+          <el-tooltip class="item" effect="dark" v-if="!form.name.trim()" content="{{ __('请填写所需的字段') }}" placement="top">
+            <div class="disabled-confirm-btn">
+              <el-button type="primary" disabled>
+                  {{ __('确认') }}
+              </el-button>
+            </div>
+          </el-tooltip>
+          <el-button v-else type="primary" @click="handleDialogConfirm">
+            {{ __('确认') }}
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+</script>
+<script>
+var customFieldsCompo = Vue.component('custom-fields', {
+  template: '#custom-fields',
+  delimiters: ['${', '}'],
+  props: {
+    defaultValue: {
+      type: Object,
+      default: () => ([])
+    },
+  },
+  data: function() {
+    return {
+      axios: null,
+      showDialog: false,
+      form: {
+        name: ''
+      },
+      fields: [],
+      rule: [{required: true, trigger:'blur' }],
+      disableBtn: false
+    }
+  },
+  created() {
+    this.axios = axios.create({});
+  },
+  methods: {
+    setDisableBtn(disableBtn) {
+      this.disableBtn = disableBtn;
+    },
+    setDefaultFields(defaultValue) {
+      this.fields = defaultValue;
+      this.$forceUpdate();
+    },
+    // 点击按钮打开弹窗
+    openAddDialog() {
+      this.showDialog = true;
+    },
+    // 弹窗取消
+    handleDialogCancel() {
+      this.form.name = '';
+      this.showDialog = false;
+    },
+    // 弹窗确认
+    handleDialogConfirm() {
+      let name = this.form.name;
+      this.fields.push({name: name, value: ''});
+      this.form.name = '';
+      this.showDialog = false;
+      this.$emit('update', this.fields);
+    },
+    inputFieldName() {
+      if(toolString.calcStrTrueLen(this.form.name) > 50) {
+        this.form.name = toolString.calcStringLength(this.form.name, 50).fullStr;
+      }
+      this.$forceUpdate();
+    },
+    // 输入操作
+    inputField(index, e) {
+      this.fields[index].value = e;
+      if(toolString.calcStrTrueLen(this.fields[index].value) > 100) {
+        this.fields[index].value = toolString.calcStringLength(this.fields[index].value, 100).fullStr;
+      }
+      this.$forceUpdate();
+      this.$emit('update', this.fields);
+    },
+    // 点击删除行项操作
+    handleRemoveItem(key) {
+      Vue.delete(this.fields, key);
+      this.$emit('update', this.fields);
+    }
+  }
+})
+</script>

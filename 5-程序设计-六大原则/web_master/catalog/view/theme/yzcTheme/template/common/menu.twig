@@ -1,0 +1,170 @@
+{% set cnzzEventMap = {
+  'index.php?route=common/home': '页面头部|Hd_Navigationbar_Home',
+  'index.php?route=customerpartner/contacted_seller': '页面头部|Hd_Navigationbar_MySellers',
+  'index.php?route=account/coupon/index': '页面头部|Hd_Navigationbar_CouponCenter',
+  'index.php?route=product/column&name=newArrival': '页面头部|Hd_Navigationbar_NewArrivals',
+} %}
+
+{% if use_buyer_menu %}
+<link rel="stylesheet" type="text/css" href="public/css/layout/menuBuyer.css">
+{% endif %}
+{% if categories %}
+  <div id="menu-wrapper" class="menu-wrapper bordsolid-tb box-bg menu-buyer">
+    <div class="center-module">
+      <nav id="menu" class="navbar">
+        <div class="collapse navbar-collapse navbar-ex1-collapse" style="padding-right: 0;">
+          {% if is_home == 0 %}
+            <ul class="nav navbar-nav menu-top navbar-line">
+              <li class="dropdown category-list categories">
+                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+                  <span class="just-flex"><span class="img-bot"></span>&nbsp;&nbsp;ALL CATEGORIES</span></a>
+                <div class="dropdown-menu">
+                  <div class="dropdown-inner">
+                    <ul class="list-unstyled menu-other">
+                      {% for category in categories.categories %}
+                        <li class="dropdown flex-layout">
+                          <a url="{{ category.href }}" class="menu-firt-category has-children">{{ category.name }}</a>
+                          <i class="giga icon-V10_youjiantougengduo"></i>
+                          {% if category.children %}
+                            <div class="dropdown-menu third-level menu-third">
+                              <div class="dropdown-inner p10-tb">
+                                <ul class="list-unstyled pt-0">
+                                  {% for inner in category.children %}
+                                    <li>
+                                      <a class="link-hover p10-t" href="{{ inner.href }}">{{ inner.name }}</a>
+                                      <div class="third-level1">
+                                        <ul class="list-unstyled">
+                                          {% for v in inner.children %}
+                                            <li> <a class="link-hover" href="{{ v.href }}">{{ v.name }}</a></li>
+                                          {% endfor %}
+                                        </ul>
+                                      </div>
+                                    </li>
+                                  {% endfor %}
+                                </ul>
+                              </div>
+                            </div>
+                          {% endif %}
+                        </li>
+                      {% endfor %}
+                      {% if categories.otherMore %}
+                        <li class="dropdown flex-layout">
+{#                         <img src="image/head.png">#}
+                          <a class="has-children" href="{{ inner.href }}">More Categories</a>
+                          <i class="giga icon-V10_youjiantougengduo"></i>
+                          <div class="dropdown-menu third-level menu-third">
+                            <div class="dropdown-inner p10-tb">
+                              <ul class="list-unstyled pt-0">
+                                {% for category in categories.otherMore %}
+                                  <li>
+                                    <a class="link-hover p10-t" href="{{ category.href }}">{{ category.name }}</a>
+                                    <div class="third-level1">
+                                      <ul class="list-unstyled">
+                                        {% for inner in category.children %}
+                                          <li class="dropdown-li-p"> <a class="link-hover" href="{{ inner.href }}">{{ inner.name }}</a></li>
+                                        {% endfor %}
+                                      </ul>
+                                    </div>
+                                  </li>
+                                {% endfor %}
+                              </ul>
+                            </div>
+                          </div>
+                        </li>
+                      {% endif %}
+                    </ul>
+                  </div>
+                </div>
+              </li>
+              {% for item in menu_top_lists %}
+                <li class="dropdown action-menu-expend">
+                  <a href="{{ item.link }}"
+                     class="dropdown-toggle ptb-border" {% if cnzzEventMap[item.link] %} data-cnzz-event="{{ cnzzEventMap[item.link] }}"  {% endif %}>
+                    {{ item.title }}      
+                    {% if item.isMarketingTime == 1 %}
+                    <img src="{{ asset('image/marketing_time_limit/hot.png') }}" class="limit-hot-icon">
+                    {% endif %}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          {# 如果是首页展示另一套navi#}
+          {% if is_home ==1 %}
+            <ul class="nav navbar-nav menu-top navbar-line">
+
+              <li class="dropdown-first category-list">
+                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+                  <span class="just-flex"><span class="img-bot"></span>&nbsp;&nbsp;ALL CATEGORIES</span></a>
+              </li>
+              {% for item in menu_top_lists %}
+                <li class="dropdown action-menu-expend">
+                  <a href="{{ item.link }}"
+                     class="dropdown-toggle ptb-border" {% if cnzzEventMap[item.link] %} data-cnzz-event="{{ cnzzEventMap[item.link] }}"  {% endif %}>
+                    {{ item.title }}
+                    {% if item.isMarketingTime == 1 %}
+                    <img src="{{ asset('image/marketing_time_limit/hot.png') }}" class="limit-hot-icon">
+                    {% endif %}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    $().ready(function() {
+      initMenuCategory();
+      expandMenuClickRound();
+    });
+    // 扩大点击范围action-menu-expend
+    function expandMenuClickRound() {
+      $('#menu-wrapper').on('click', 'li.action-menu-expend', function(){
+        // 点击触发a标签的链接
+        // var menulink = $(this).find('a').attr('href');
+        // window.location.href = menulink;
+        if ($(this).find('a').length > 0){
+          $(this).find('a')[0].click();
+        }
+      }).on('mouseover mouseout', 'li.action-menu-expend',function(event){
+         if(event.type == "mouseover"){
+          //鼠标悬浮
+          $(this).css({"cursor":"pointer"});
+         }else if(event.type == "mouseout"){
+          //鼠标离开
+          $(this).css({"cursor":"unset"});
+         }
+      });
+    }
+
+    function initMenuCategory() {
+      {# 一级菜单的超链接，允许点击 #}
+      $(".menu-firt-category").click(function(){
+        let url = $(this).attr('url');
+        window.location.href = url;
+      });
+
+      //解决首页缩小浏览器时右侧出现空白
+      var isIndex = '{{ is_home }}'
+      if (isIndex === '1'){
+        $(window).resize(function () {
+          var clientWidth = $(document).width()
+          if (clientWidth < 1320) {
+            $('html').addClass('overflow-auto')
+          } else {
+            $('html').removeClass('overflow-auto')
+          }
+        })
+      }
+    }
+  </script>
+  <style>
+    .overflow-auto{
+      overflow: auto;
+    }
+  </style>
+{% endif %}

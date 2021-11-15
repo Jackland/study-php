@@ -1,0 +1,35 @@
+{{ cssOrigin(['/catalog/view/javascript/layui/css/layui.css']) }}
+{{ css(['css/common/common.css']) }}
+{{ css(['css/buyer/channel/index.css']) }}
+{# 公共组件做特殊化处理 #}
+{# select-new-stores #}
+<div  class="select-new-stores pb-20">
+    <div class="section">
+        <h1></h1>
+    </div>
+  {% from 'yzcTheme/template/extension/module/featured_components/no_records.twig' import no_record %}
+  {{ no_record(storeInfo.data|length) }}
+  {# 固定最小高度 #}
+  {% if storeInfo.data|length ==0 %}
+  <div class="main p10-t">
+  {% else %}
+  <div class="main p10-t min-height332">
+  {% endif %}
+      {% if storeInfo.data %}
+        <div class="center-module p20-t">
+            <div class="heightCoop">
+              
+                <div class="center-module-content">
+                  <div class="channel-module-details">
+                    {# 16460 店铺公共模块 #}
+                    {% for data in storeInfo.data %}
+                      {% include 'yzcTheme/template/extension/module/featured_components/new_sellers.twig' %}
+                    {% endfor %}
+                  </div>
+                </div>              
+            </div>
+        </div>
+        {% endif %}        
+    </div>
+</div>
+{{ footer }}

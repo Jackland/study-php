@@ -1,0 +1,60 @@
+<div class="oris-row max-1080">
+  <div class="module-row">
+    <div class="module-title">
+      <span class="Y-axis"></span>Summary of Margin Orders Deposits
+    </div>
+    <div class="summary-list">
+      <div class="summary-details col-xs-12 ">
+        <span class="title">{{ __('Order Status') }}:</span>
+        <span class="txt text-larger text-bold "
+              style="color: {{ agreement_detail.status_color }}">{{ order_detail.order_status }}</span>
+      </div>
+      <div class="summary-details col-xs-6 col-sm-4">
+        <span class="title">{{ __('Order ID') }}:</span>
+        <span class="txt"><a class="link" target="_blank" href="{{ url('account/customerpartner/orderinfo', {'order_id':order_detail.order_id}) }}">{{ order_detail.order_id }}</a></span>
+      </div>
+      <div class="summary-details col-xs-6 col-sm-4">
+        <span class="title">{{ __('Order Date') }}:</span>
+        <span class="txt">{{ order_detail.date_added }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="module-row">
+    <div class="module-title">
+      <span class="Y-axis"></span>Details of Margin Order Deposits
+    </div>
+    <div class="detail-table">
+      <table class="oris-table border-table no-hover">
+        <thead>
+        <tr>
+          <th class="text-left">{{ __('Item Code of Deposited Product') }}</th>
+          <th class="text-left">{{ __('MPN of Deposited Product') }}</th>
+          <th>{{ __('Deposit Amount') }}</th>
+          <th>{{ __('Deposited Product Quantity') }}</th>
+          <th class="text-right p40-r-i">{{ __('Total Deposited Products') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left" width="30%">
+              <div class="flex-layout">
+                <div class="small-thumbnail">
+                  <img src="{{ product_info.image }}" width="100%">
+                </div>
+                <div class="item-mpn m10-l">
+                 {{ product_info.sku }} {{ product_info.tags|join('') }}
+                </div>
+              </div>
+            </td>
+            <td class="text-left">
+              <div class="max-line1" title="{{ product_info.mpn }}">{{ product_info.mpn }}</div>
+            </td>
+            <td>{{ product_info.deposit_amount|formatPrice(currency) }}</td>
+            <td>{{ product_info.deposit_product_quantity }}</td>
+            <td class="text-right p40-r-i">{{ product_info.total_deposited_products|formatPrice(currency) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

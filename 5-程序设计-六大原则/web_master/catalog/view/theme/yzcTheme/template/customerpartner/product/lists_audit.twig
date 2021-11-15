@@ -1,0 +1,375 @@
+{% trans_default_category 'catalog/view/customerpartner/product/lists_index' %}
+
+<!-- id="div-audit" -->
+<div class="valid-tab-page">
+  <div class="tab-content-sty">
+    <div>
+      <!--子菜单-->
+      <div class="seller-tabs valid-count">
+        <ul class="oris-tabs mymessage-buyer__contact-nav" class="tag-number" >
+          <li class="oris-tab-pane  {% if search.filter_audit_status == null %} oris-pane-active {% endif %}" data-type="*">
+            <a class="noticeTab" data-toggle="tab">{{ __('全部') }}
+              <span class="oris-tab-num">{{ countProcess + countApproved + countNotApproved + countCancel}}</span>
+            </a>
+          </li>
+          <li class="oris-tab-pane {% if search.filter_audit_status=='1' %} oris-pane-active {% endif %}" data-type="1">
+            <a class="noticeTab" data-toggle="tab">
+              {{ __('审核中') }}<span class="oris-tab-num">{{ countProcess }}</span></a>
+          </li>
+          <li class="oris-tab-pane {% if search.filter_audit_status=='2' %} oris-pane-active {% endif %}" data-type="2">
+            <a class="noticeTab" data-toggle="tab">{{ __('审核通过') }}
+              <span class="oris-tab-num">{{ countApproved }}</span>
+            </a>
+          </li>
+          <li class="oris-tab-pane {% if search.filter_audit_status=='3' %} oris-pane-active {% endif %}" data-type="3">
+            <a class="noticeTab" data-toggle="tab">{{ __('审核不通过') }}
+              <span class="oris-tab-num">{{ countNotApproved }}</span>
+            </a>
+          </li>
+          <li class="oris-tab-pane {% if search.filter_audit_status=='4' %} oris-pane-active {% endif %}" data-type="4">
+            <a class="noticeTab">{{ __('已取消') }}</a>
+            <span class="oris-tab-num">{{ countCancel }}</span>
+          </li>
+        </ul>
+      </div>
+      <!--search start-->
+      <div class="seller-myform">
+        <div class="oris-row msgb-search-row">
+          <input type="hidden" name="filter_is_deleted" value="{{ is_deleted }}">
+          <div class="oris-col-3 mymessage-col">
+            <label class="control-label mymessage-label" for="input-sku_mpn_audit">{{ __('Item Code/MPN') }}</label>
+            <input type="text" name="filter_sku_mpn" value="{{ search.filter_sku_mpn }}"
+                       placeholder="{{ __('Item Code/MPN') }}" id="input-sku_mpn_audit" class="oris-input"/>
+          </div>       
+          <div class="oris-col-3 mymessage-col oris-select">
+            <label class="control-label mymessage-label" for="filter_product_status">{{ __('产品状态') }}</label>
+            <select name="filter_product_status" id="filter_product_status" class="selectpicker" >
+              <option value="*">{{ __('请选择', {}, 'common') }}</option>
+              {% for key, value in product_status %}
+                <option value="{{ key }}" {% if search.filter_product_status is not null and search.filter_product_status != '' and search.filter_product_status==key %}selected{% endif %} >{{ value }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {#
+          <div class="oris-col-3 mymessage-col oris-select">
+            <label class="control-label mymessage-label" for="filter_audit_status">{{ __('审核状态') }}</label>
+            <select name="filter_audit_status" id="filter_audit_status" class="selectpicker" >
+              <option value="*">{{ __('请选择', {}, 'common') }}</option>
+                  {% for key, value in product_audit_status %}
+                    <option value="{{ key }}" {% if search.filter_audit_status is not null and search.filter_audit_status != '' and search.filter_audit_status==key %}selected{% endif %} >{{ value }}</option>
+                  {% endfor %}
+            </select>
+          </div>
+          #}
+          <div class="oris-col-3 mymessage-col search-btn m24-t just-flex-important">
+            <button type="button" onclick="filterAudit(this);" class="oris-button oris-button-bigger m06-r" data-loading-text="Loading...">
+              {{ __('查询', {}, 'common') }}
+            </button>
+            <button type="button" onclick="clear_filterAudit(this)" class="oris-button oris-button-bigger oris-button-default m06-r"
+              data-toggle="tooltip" title="{{ __('重置') }}" data-original-title="Reset">
+              {{ __('重置') }}
+            </button>
+            <button onclick="func_downloadAudit(this);" class="oris-button oris-button-default" data-toggle="tooltip"
+              data-original-title="{{ __('下载', {}, 'common') }}" style="margin:0 15px">
+              <i class="giga icon-xiazaixin-01"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!--search end-->
+      <form class="my-form-table"> 
+          <div class="table-responsive">
+            <!--oris-scroll-table-->
+            {% if products %}
+            <table class="oris-table init-table" id="tableListAudit">
+              <thead>
+              <tr>
+{#              <th width="1" style="text-align: center;"><input type="checkbox" id="selectAllAudit" onclick="$('#div-audit').find('input[name*=\'selected\']').prop('checked', this.checked);"/></th>#}
+                <th class="text-left no-wrap">{{ __('Item code') }}</th>
+                <th class="text-left no-wrap">{{ __('MPN') }}</th>
+                <th class="text-left">{{ __('产品标题') }}</th>
+                <th class="text-right no-wrap">{{ __('当前价格') }}<span class="vertical-align" data-toggle="tooltip" title="{{ __('不包含运费') }}"><i class="giga icon-V10-wenhaotishi"></i></span></th>
+                <th class="text-right no-wrap">{{ __('更新价格') }}</th>
+                <th class="text-left no-wrap">{{ __('生效日期') }}<span class="vertical-align" data-toggle="tooltip" title="{{ __('对于产品价格修改，如果调整未触发审核，则生效时间最早为修改时间之后24小时，若触发审核，则生效时间最早为审核通过时间之后24小时。') }}"><i class="giga icon-V10-wenhaotishi"></i></span></th>
+                <th class="text-center no-wrap">{{ __('审核状态') }}</th>
+                <th class="text-center no-wrap">{{ __('产品状态') }}</th>
+                <th class="text-center no-wrap">{{ __('创建时间') }}</th>
+                <th class="text-center no-wrap">{{ __('审核时间') }}</th>
+                <th class="text-center fixed-right">{{ __('操作') }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for product in products %}
+                <tr>
+                  <td class="text-left">
+                    <div class="over-td w120 original-img">
+                      <p title="{{ product['sku'] }}">{{ product['sku'] }}</p>
+                      {% if product.tag %}
+                        {% for tag in product.tag %}
+                          <span style="font-weight: bold; color: red;padding-left: 1px">{{ tag }}</span>
+                        {% endfor %}
+                      {% endif %}
+                      {% if product.is_original_design %}
+                        <div>
+                          <img src="{{ product.originalImage }}">
+                        </div>
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td class="text-left">
+                    <div class="over-td w120">
+                      <p title="{{ product['mpn'] }}">{{ product['mpn'] }}</p>
+                    </div>
+                  </td>
+                  <td class="text-left">
+                    <div class="over-td w240">
+                      <img src="{{ product['thumb'] }}" alt="{{ product['thumb'] }}" class="img-thumbnail col-sm-3"/>&nbsp;
+                      <p class="col-sm-9" title="{{ product['name'] }}">{{ product['name'] }}</p>
+                    </div>
+                  </td>
+                  <td class="text-right no-wrap price-padding">{{ product['show_current_price'] }}</td>
+                  <td class="text-right no-wrap">{{ product['show_audit_price'] }}</td>
+                  <td class="text-left no-wrap">{{ product['price_effect_time'] }}</td>
+                  <td class="text-center no-wrap">
+                    <div class="over-td w264">
+                      {{ product['show_audit_status'] }}&nbsp;({{ product['show_audit_type'] }})
+                    </div>
+                    {% if product['audit_status'] == 3 %}
+                      <div class="over-td w264" style="margin-top: 4px;">
+                        <span style="color: #FA6400;"><i class="giga icon-gantanhaojinggao"></i></span>&nbsp;
+                        <p class="remark" title="{{ product['show_remark'] }}">{{ product['show_remark'] }}</p>
+                      </div>
+                    {% endif %}
+                  </td>
+                  <td class="text-center no-wrap">{{ product['show_product_status'] }}</td>
+                  <td class="text-center no-wrap">{{ product['create_time'] }}</td>
+                  <td class="text-center no-wrap">{{ product['approved_time'] }}</td>
+                  <td class="text-left fixed-right data-loop="{{ loop.index }}">
+                    <div class="audit-display">
+                      {% if product['isShowPreviewButton'] %}
+                      <a href="{{ url('pro/product', {'product_id':product['product_id'], 'audit_id': product['id']}) }}" target="_blank" class="color66-a {% if product['isShowInformationButton'] or product['isShowCancelButton'] %}m12-r{% endif %}">
+                        <span data-toggle="tooltip" title="{{ __('查看', {}, 'common') }}"><i class="giga icon-chakan1"></i></span>
+                      </a>
+                      {% endif %}
+                      {% if product['isShowInformationButton'] %}
+                      <a href="{{ url('pro/product', {'product_id':product['product_id'], 'audit_id':product['id'], 'audit_is_edit':'1'}) }}" target="_blank" class="color66-a {% if product['isShowCancelButton'] %}m12-r{% endif %}">
+                        <span data-toggle="tooltip" title="{{ __('编辑', {}, 'common') }}"><i class="giga icon-seller_bianji-big"></i></span>
+                      </a>
+                      {% endif %}
+                      {% if product['isShowCancelButton'] %}
+                      <a class="color66-a" data-id="{{ product['audit_id'] }}" onclick="cancelAuditDo(this)">
+                        <span data-toggle="tooltip" title="{{ __('取消', {}, 'common') }}"><i class="giga icon-quxiaoshenqing"></i></span>
+                      </a>
+                      {% endif %}
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <table class="oris-table init-table" id="tableListAudit">
+              <thead>
+              <tr>
+{#              <th width="1" style="text-align: center;"><input type="checkbox" id="selectAllAudit" onclick="$('#div-audit').find('input[name*=\'selected\']').prop('checked', this.checked);"/></th>#}
+                <th class="text-left no-wrap">{{ __('Item code') }}</th>
+                <th class="text-left no-wrap">{{ __('MPN') }}</th>
+                <th class="text-left">{{ __('产品标题') }}</th>
+                <th class="text-right no-wrap">{{ __('当前价格') }}<span class="vertical-align" data-toggle="tooltip" title="{{ __('不包含运费') }}"><i class="giga icon-V10-wenhaotishi"></i></span></th>
+                <th class="text-right no-wrap">{{ __('更新价格') }}</th>
+                <th class="text-left no-wrap">{{ __('生效日期') }}<span class="vertical-align" data-toggle="tooltip" title="{{ __('对于产品价格修改，如果调整未触发审核，则生效时间最早为修改时间之后24小时，若触发审核，则生效时间最早为审核通过时间之后24小时。') }}"><i class="giga icon-V10-wenhaotishi"></i></span></th>
+                <th class="text-center no-wrap">{{ __('审核状态') }}</th>
+                <th class="text-center no-wrap">{{ __('产品状态') }}</th>
+                <th class="text-center no-wrap">{{ __('创建时间') }}</th>
+                <th class="text-center no-wrap">{{ __('审核时间') }}</th>
+                <th class="text-center fixed-right">{{ __('操作') }}</th>
+              </tr>
+              </thead>
+            </table>
+            <div class="oris-empty">
+              <div class="oris-empty-container">
+              <div class="oris-empty-icon">
+                  <img src='{{asset("image/icons/empty.png")}}''></img>
+              </div>
+              <div class="oris-empty-title">No Records Found !</div>
+              </div>
+            </div>
+          {% endif %}
+          </div> 
+      </form>
+      {#分页#}
+      {% if products %}
+        <div class="oris-row oris-pagination">
+          <ul id="audit_pagination"></ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<style>
+  .pl-0 {
+    padding-left: 0;
+  }
+
+  .pr-0 {
+    padding-right: 0;
+  }
+</style>
+<script type="text/javascript">
+  // 6446 产品
+  $().ready(function () {
+    $('#filter_audit_status').selectpicker();
+    $('#filter_product_status').selectpicker();
+    initeTabsAuditPage();
+    auditCountFilter();
+    layer.closeAll();
+  });
+
+  function initeTabsAuditPage() {
+    var $tableListAudit = $('#tableListAudit.init-table');
+    var $widthtableListAudit = $tableListAudit.find('th:last-child').width();
+    var $fixedColumntableListAudit = $tableListAudit.clone().insertAfter($tableListAudit).addClass('fixed-column');
+    $fixedColumntableListAudit.find('th:not(:last-child),td:not(:last-child)').remove();
+    $fixedColumntableListAudit.find('tr').each(function (i, elem) {
+      $(this).height($tableListAudit.find('tr:eq(' + i + ')').height());
+      $(this).find('td').width($widthtableListAudit);
+    });
+  }
+
+  function url_filter_audit(url,type) {
+    var filter_sku_mpn = $.trim($("#div-audit").find('input[name=\'filter_sku_mpn\']').val());
+    if (filter_sku_mpn) {
+      url += '&filter_sku_mpn=' + encodeURIComponent(filter_sku_mpn);
+    }
+    var filter_product_status = $("#div-audit").find('select[name=\'filter_product_status\']').val();
+    if (filter_product_status != '*') {
+      url += '&filter_product_status=' + encodeURIComponent(filter_product_status);
+    }
+    var filter_audit_status =type;
+    if (filter_audit_status !='*') {
+      url += '&filter_audit_status=' + encodeURIComponent(filter_audit_status);
+    }
+    
+    return url;
+  }
+
+  function filterAudit(button) {
+    layer.load();
+    let url = "{{ url('customerpartner/product/lists/audit') }}";;
+    url = url_filter_audit(url,{{search.filter_audit_status | js_var}}); 
+    $('#div-audit').load(url);
+    $(button).button('loading');
+  }
+
+  function clear_filterAudit(button){
+    layer.load();
+    let url = "{{ url('customerpartner/product/lists/audit') }}";
+    $('#div-audit').load(url);
+    $(button).button('loading');
+  }
+
+
+  function func_downloadAudit() {
+    let url = "{{ url('customerpartner/product/lists/downloadAudit') }}";
+    url = url_filter_audit(url,{{search.filter_audit_status | js_var}});
+    window.location.href = url;
+  }
+
+
+  function audit_pagination() {
+    if ({{ total }}) {
+      $('#audit_pagination').bootstrapPaginator({
+        /*当前使用的是3版本的bootstrap*/
+        bootstrapMajorVersion: 3,
+        /*配置的字体大小是小号*/
+        size: 'normal',
+        /*当前页*/
+        currentPage: {{ paginator.getPage() }},
+        /*一共多少页*/
+        totalPages: {{ max(paginator.getPageCount(), 1) }},
+        /*页面上最多显示几个含数字的分页按钮*/
+        numberOfPages: 5,
+        total:{{ paginator.getTotalCount() }},
+        rowsOfPage:{{ page_limit|default(10) }},
+        onPageClicked: function (event, originalEvent, type, page) {
+          let url = '{{ paginator.getUrlWithNoPage() }}&page=' + page;
+          layer.load();
+          $('#div-audit').load(url, function () {
+            layer.closeAll();
+          });
+        }
+      });
+    }
+  }
+  audit_pagination();
+
+  // 点击删选条件审核中、审核通过、审核不通过
+  function auditCountFilter() {
+    $('#div-audit div.valid-count .oris-tab-pane').click(function(){
+      $(this).addClass('oris-pane-active').siblings().removeClass('oris-pane-active');
+      var type =$(this).data('type');
+      $("#div-audit").find('input[name=\'filter_sku_mpn\']').val("");
+      $("#div-audit").find('select[name="filter_product_status"]').val("*");
+      let url = "{{ url('customerpartner/product/lists/audit') }}";
+      url = url_filter_audit(url,type);
+      layer.load();
+      $('#div-audit').load(url, function(){
+        layer.closeAll();
+      });
+    })
+  }
+
+  //取消审核
+  function cancelAuditDo(domEle){
+    var options = {
+      title: "{{ __('确认', {}, 'common') }}",
+      content: "{{ __('您确认要取消审核申请吗？') }}",
+      btn: ["{{ __('是', {}, 'common') }}", "{{ __('否', {}, 'common') }}"],
+      params: domEle
+    };
+    layerOris.confirmLayer(options, auditMethods.cancelAudit);
+  }
+  var auditMethods = {
+    cancelAudit: function(index, layero, domEle) {
+      let id = $(domEle).data('id');
+      layer.closeAll();
+      $.ajax({
+        url: "{{ url('customerpartner/product/lists/auditCancel') }}",
+        type: 'POST',
+        data: {"id": id},
+        success: function (data) {
+          if(data.code == 200){
+            var options = {
+              title: "{{ __('注意', {}, 'common') }}",
+              content: data.msg,
+              btn: ["{{ __('好', {}, 'common') }}"]
+            };
+            layerOris.confirmLayer(options, reloadTabs, reloadTabs);
+          } else {
+            var options = {
+              title: "{{ __('注意', {}, 'common') }}",
+              content: data.msg,
+              btn: ["{{ __('好', {}, 'common') }}"]
+            };
+            layerOris.confirmLayer(options, reloadTabs, reloadTabs);
+          }
+        }
+      });
+
+
+    },
+  };
+
+  /**
+   * 表头排序
+   * @param url
+   * @param sort
+   * @param order
+   */
+  function loadSortAudit(url, sort, order) {
+    layer.load();
+    $('#div-audit').load(url + '&sort=' + sort + '&order=' + order);
+  }
+</script>
+
+{{ footer }}

@@ -1,0 +1,29 @@
+{# 运送仓tabs主页，公用Drop Shipping前端js,css资源#}
+<link rel="stylesheet" type="text/css" href="public/static/account/sales_order/cloud_wholesale_fulfillment.css?v={{ app_version }}">
+<div role="tabpanel" class="tab-pane active">
+  <div class="panel-default">
+    <ul class="nav nav-tabs" role="tablist" id="cloudWholesale">
+      <li role="presentation" class="active"><a href="#cloudWhoList" aria-controls="cloudWhoList" role="tab" data-toggle="tab">Sales Order</a></li>
+      <li role="presentation"><a href="#cloudWhoUpload" aria-controls="cloudWhoUpload" role="tab" data-toggle="tab">Upload</a></li>
+      <li role="presentation"><a href="#cloudWhoRecord" aria-controls="cloudWhoRecord" role="tab" data-toggle="tab" onclick="emitCloudHistoryClick()">File Upload History</a></li>
+    </ul>
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane  active" id="cloudWhoList"></div>
+      <div role="tabpanel" class="tab-pane " id="cloudWhoUpload"></div>
+      <div role="tabpanel" class="tab-pane " id="cloudWhoRecord"></div>
+    </div>
+  </div>
+</div>
+<script>
+	$(function(){
+		$('#cloudWhoList').load('index.php?route=account/sales_order/CloudWholesaleFulfillment');
+		$('#cloudWhoUpload').load('index.php?route=account/sales_order/CloudWholesaleFulfillment/uploadPage');
+		$('#cloudWhoRecord').load('index.php?route=account/sales_order/CloudWholesaleFulfillment/recordPage');
+	})
+
+	function emitCloudHistoryClick() {
+	  $('#cloudWhoRecord').load('index.php?route=account/sales_order/CloudWholesaleFulfillment/recordPage');
+	  $('#inputOrderRecordDateFrom').datetimepicker('remove');
+	  $('#inputOrderRecordDateTo').datetimepicker('remove');
+	}
+</script>

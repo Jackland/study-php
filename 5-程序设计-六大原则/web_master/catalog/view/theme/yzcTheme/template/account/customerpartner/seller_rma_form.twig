@@ -1,0 +1,1217 @@
+{{ header }}
+{{ assetBundle('Seller\\VatAsset') }}
+{{ separate_column_left }}
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<link href="catalog/view/theme/yzcTheme/stylesheet/rma/rma.css?v={{ app_version }}" rel="stylesheet">
+<script src="catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="public/js/common/mathematical.js"></script>
+<link href="catalog/view/javascript/jquery/magnific/magnific-popup.css" type="text/css" rel="stylesheet"/>
+{% for style in styles %}
+  <link href="{{ style }}" type="text/css" rel="stylesheet"/>
+{% endfor %}
+{% for script in scripts %}
+  <script type="text/javascript" src="{{ script }}"></script>
+{% endfor %}
+<style>
+  .split-money{
+    color:#fa6400
+  }
+  .thumbnails {
+    overflow: auto;
+    clear: both;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .thumbnails > li {
+    margin-left: 20px;
+  }
+
+  .thumbnails {
+    margin-left: -20px;
+  }
+
+  .thumbnails > img {
+    width: 100%;
+  }
+
+  .image-additional a {
+    margin-bottom: 20px;
+    padding: 5px;
+    display: block;
+    border: 1px solid #ddd;
+  }
+
+  .image-additional {
+    max-width: 78px;
+  }
+
+  .thumbnails .image-additional {
+    float: left;
+    margin-left: 20px;
+  }
+
+  .upload_warp_img_div img {
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: middle;
+  }
+
+  .upload_warp_left img {
+    margin-top: 35px;
+  }
+
+
+  .comments_textarea {
+    resize: none;
+    height: 140px !important;
+  }
+
+  .item_detail {
+    /*color: #3c763d;*/
+    color: #666;
+    background-color: #dff0d8;
+    padding: 10px;
+    border: 1px double #c9d6e2;
+    margin: 5px 0;
+  }
+
+  .thumbnails {
+    overflow: inherit;
+    clear: inherit;
+  }
+
+  .table-hover-my > tbody > tr:hover {
+    background-color: #61B4CF;
+  }
+
+  .sub_title{
+    color: #183464;
+    font-size: 18px;
+    padding-top: 20px;
+  }
+  .detail{
+    overflow: visible;
+    text-align: center;
+    margin: 20px;
+  }
+
+  .detail .col-sm-3 {
+    margin-bottom: 20px;
+  }
+
+  .detail .icon {
+    font-size: 20px;
+    color: #183464;
+  }
+
+  #main-form{
+    margin-top: 30px;
+  }
+ .table thead > tr > th{
+    color: #ccc;
+  }
+  .no-padding{
+    padding: 0;
+  }
+  .flex-layout{
+    display: flex;
+    align-items: center;
+  }
+  .mr-1{
+    margin-right: 10px;
+  }
+  .flex1{
+    flex: 1;
+  }
+  .reshipment-name{
+    width: 145px;
+  }
+  .btn-danger:focus, .btn-danger.focus{
+    background-color: #FA6400;
+    border-color: #FA6400;
+  }
+  .point {
+    background-color: #ffecee;
+    border: 1px solid #ff414d;
+    color: #ff414d;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 5px;
+  }
+</style>
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid giga-content" id="content" style="margin-left: 15%">
+  {% else %}
+  <div class="container">
+    {% endif %}
+    <ul class="breadcrumb">
+      {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+      {% endfor %}
+    </ul>
+    <div class="page-header" style="border: none">
+      <div class="container-fluid">
+        <div class="pull-right">
+          <a href="{{ cancel }}" data-toggle="tooltip" title="BACK" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        </div>
+        <h1>
+          RMA Details of {{ current_rma['rma_order_id'] | default('UNKNOWN') }}
+        </h1>
+      </div>
+    </div>
+    <div id="box-shadow">
+      {% if rma_warning %}
+        <div class="alert alert-danger"><i class="fa fa-times-circle"></i> {{ rma_warning }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+      {% endif %}
+      {% if success %}
+        <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+      {% endif %}
+      <h4 class="sub_title">{{ text_order_detail }}</h4>
+      <div class="detail">
+        <div class="col-sm-3">
+          <p class="icon giga icon-summary-po-id"></p>
+          <p class="title" style="color: #c9c9c9">{{ text_orderid }}</p>
+          {% if order_list %}
+            {% for order in order_list %}
+              <p>
+                {% if order.order_link %}
+                  <a class="a-link" href="{{ order.order_link }}">{{ order.order_id }}</a>
+                {% else %}
+                  {{ order.order_id }}
+                {% endif %}
+                {% if (delivery_type==2) %}
+                  <i class="giga icon-cwf" style="color: #1f5268;font-size: 15px;" data-toggle="tooltip" data-original-title="{{ cwf }}"></i>
+                {% endif %}
+              </p>
+            {% endfor %}
+          {% endif %}
+          {% if marginFlag %}
+            <span class="flag-margin-order" style="font-size: 12px"><span class="giga icon-margin" data-toggle="tooltip" title="Margin"></span></span>
+          {% endif %}
+        </div>
+        {% if marginOrderInfoFlag == false %}
+          <div class="col-sm-3">
+            <p class="icon giga icon-date-icon"></p>
+            <p class="title" style="color: #c9c9c9">Date Added</p>
+            <p>{{ date_added }}</p>
+          </div>
+          {% if payment_method %}
+            <div class="col-sm-3">
+              <p class="icon giga icon-summary-payment"></p>
+              <p class="title" style="color: #c9c9c9">{{ text_payment_method }}</p>
+              <p>{{ payment_method }}</p>
+            </div>
+          {% endif %}
+          {% if shipping_method %}
+            <div class="col-sm-3">
+              <p class="icon giga icon-summary-payment"></p>
+              <p class="title" style="color: #c9c9c9">{{ text_shipping_method }}</p>
+              <p>{{ shipping_method }}</p>
+            </div>
+          {% endif %}
+        {% endif %}
+        {% if buyer_name %}
+          <div class="col-sm-3">
+            <p class="icon giga icon-summary-store"></p>
+            <p class="title" style="color: #c9c9c9">Name </p>
+            <p>
+              <span class="user_portrait" data-user_customer_id="{{ buyer_id }}" >
+              {{ buyer_name }}
+              </span>
+              <span>
+                   <img data-toggle="tooltip" style="padding-left: 1px"
+                       src="{{ is_home_pickup ? asset('image/icons/HomePickup/home_pickup-15x15.png') : asset('image/icons/HomePickup/drop_shipping-15x15.png') }}"
+                        data-original-title="{{ is_home_pickup?tip_home_pickup_logo:tip_drop_shipping_logo }}">
+               </span>
+              {{ ex_vat }}
+            </p>
+          </div>
+          {% if margin_agreement_id %}
+            <div class="col-sm-3">
+              <p class="icon giga"></p>
+              <p class="title" style="color: #c9c9c9">{{ text_margin_id }}</p>
+              <p>
+                {% if margin_link %}
+                  <a href="{{ margin_link }}">{{ margin_agreement_id }}</a>
+                  {% else %}
+                    {{ margin_agreement_id }}
+                {% endif %}
+              </p>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <form class="form-horizontal" id="main-form">
+        {% set colspan = 6 %}
+        {% set i = false %}
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            {#<td width="1" style="text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked); checked" /></td>#}
+            <th class="text-left" style="width: 25%">{{ column_name }}</th>
+            <th class="text-left">{{ column_sku }}</th>
+            <th class="text-left">{{ column_mpn }}</th>
+            {#<td class="text-left">{{ column_model}}</td>#}
+            <th class="text-right">{{ column_quantity }}</th>
+            <th class="text-right" width="12%">Unit Price After Discount</th>
+            {% if isEuropeCountry %}
+              <th class="text-right" width="12%">Service Fee After Discount</th>
+              {% set colspan = colspan+1 %}
+            {% endif %}
+            {#{% if isQuote %}#}
+              {#<th class="text-right">Discounted Item per unit</th>#}
+              {#{% set colspan = colspan+1 %}#}
+              {#{% if isEuropeCountry %}#}
+                {#<th class="text-right">Discounted Amount Service Fee</th>#}
+                {#{% set colspan = colspan+1 %}#}
+              {#{% endif %}#}
+            {#{% endif %}#}
+            <th class="text-right">Fulfillment Per Unit</th>
+
+            {% if  all_campaign_amount > 0 and  all_campaign_amount !='0.00'%}
+            <th class="text-right">Promotion Discount</th>
+              {% set colspan = colspan+1 %}
+            {% endif %}
+            <th class="text-center">{{ column_total }}</th>
+            {#<td class="text-left">{{ column_tracking_no}}</td>#}
+          </tr>
+          </thead>
+          <tbody>
+          {% for product in products %}
+            <tr>
+              {#{% if product['order_product_status'] == marketplace_cancel_order_status or (marketplace_complete_order_status is defined and product['order_product_status'] == marketplace_complete_order_status) %}#}
+              {#<td></td>#}
+              {#{% else %}#}
+              {#<td style="text-align: center;">#}
+              {#<input data-status-id="{{ product['order_product_status']}}" class="selection" type="checkbox" name="selected" value="{{ product['product_id']}}"/>#}
+              {#</td>#}
+              {#{% endif %}#}
+              <!-- file download code added -->
+              <td class="text-left">{{ product['name'] }}
+                {% for option in product['option'] %}
+                  <br/>
+                  {% if option['type'] != 'file' %}
+                    &nbsp;<small> - {{ option['name'] }}: {{ option['value'] }}</small>
+                  {% else %}
+                    &nbsp;<small> - {{ option['name'] }}: <a
+                      href="{{ option['href'] }}">{{ option['value'] }}</a></small>
+                  {% endif %}
+                {% endfor %}
+              </td>
+              {% if product.tag %}
+                <td class="text-left" style="min-width: 138px">{{ product.sku }}
+                  {% for tag in product.tag %}
+                    <span style="font-weight: bold; color: red;padding-left: 1px">{{ tag }}</span>
+                  {% endfor %}
+                </td>
+              {% else %}
+                <td class="text-left">{{ product.sku }}</td>
+              {% endif %}
+              <td class="text-left">{{ product['mpn'] }}</td>
+              {#<td class="text-left">{{ product['model']}}</td>#}
+              <td class="text-right">{{ product['quantity'] }}</td>
+              <td class="text-right">{{ product['price'] }}
+                {% if isQuote %}
+                  <br>
+                  <span style="font-style: italic">(Discount:<span style="color: red">{{product['amount_price_per'] }}</span>)</span>
+                {% endif %}
+              </td>
+              {% if isEuropeCountry %}
+                <td class="text-right">{{ product['service_fee_per'] }}
+                 {% if isQuote %}
+                   <br>
+                   <span style="font-style: italic">(Discount:<span style="color: red">{{product['amount_service_fee_per'] }}</span>)</span>
+                 {% endif %}
+                </td>
+              {% endif %}
+              <td class="text-right">{{ product['freight'] }}
+                {% if product['freight_diff'] %}
+                  <i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" style="cursor: pointer;font-size: 12px" title="{{ product['tips_freight_difference_per'] }}"></i>
+                {% endif %}
+              </td>
+              {% if  all_campaign_amount > 0 and all_campaign_amount !='0.00'%}
+              <td class="text-right">{{ all_campaign_amount_show }} </td>
+              {% endif %}
+              <td class="text-right">{{ product['total']}}</td>
+              {#<td class="text-left">#}
+              {#{% if product['tracking'] %}#}
+              {#{{ product['tracking']}}#}
+              {#{% else %}#}
+              {#<input type="text" class="form-control" name="tracking[{{ product['product_id']}}]" placeholder="{{ column_tracking_no}}" />#}
+              {#{% set i = true %}#}
+              {#{% endif %}#}
+              {#</td>#}
+              <!-- <td class="text-center"><button id="{{ product['product_id'] }}" class="btn btn-danger cancel-button">Cancel</button></td>           -->
+            </tr>
+            {% for voucher in vouchers %}
+              <tr>
+                <td class="text-left">{{ voucher['description'] }}</td>
+                <td class="text-left"></td>
+                <td class="text-right">1</td>
+                <td class="text-right">{{ voucher['amount'] }}</td>
+                <td class="text-center">{{ voucher['amount'] }}</td>
+              </tr>
+            {% endfor %}
+          {% endfor %}
+          </tbody>
+          <tfoot>
+          {% for total in totals %}
+            <tr>
+              <td class="text-right" colspan="{{ colspan }}"><b>{{ total.title }}</b></td>
+              <td class="text-right relative {% if total.title == 'Order Total' and all_coupon_amount > 0 %}  hover-block{% endif %}">{{ total.text }}
+                {% if total.title == 'Order Total' %}
+                  {% if all_coupon_amount > 0 %}
+                    <i class="giga icon-V10_shouyeyouxiadown text-small text-normal-color"></i>
+                    <div class="payment-list text-small text-normal-color">
+                      <span class="price-text">{{ total.buyer_paid_show }}</span> (Buyer paid)
+                      <span class="price-text">+{{ total.giga_coupon_show }}</span> (GIGA Coupon)
+                    </div>
+                  {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+          </tfoot>
+        </table>
+      </form>
+      {% if rmaHistories %}
+        <h4 class="sub_title">{{ text_rma_history }}</h4>
+        <table class="table table-hover-my" id="rmaHistorys">
+          <thead>
+          <tr class="text-center">
+            <th hidden>ID</th>
+            <th class="text-center">Applied Date</th>
+            <th class="text-center">{{ column_rma_id }}</th>
+            <th class="text-center">RMA Type</th>
+            <th class="text-center">{{ column_apply_type }}</th>
+            <th class="text-center">Reason</th>
+            <th class="text-center">RMA Status</th>
+          </tr>
+          </thead>
+          <tbody>
+
+          {% if rmaHistories %}
+            {% for rmaHistory in rmaHistories %}
+              <tr style="cursor: pointer" class="text-center">
+                <td hidden>{{ rmaHistory.id }}</td>
+                <td>{{ rmaHistory.create_time }}</td>
+                <td>{{ rmaHistory.rma_order_id }}
+                  {% if marginFlag %}
+                    <span class="flag-margin-order" style="font-size: 12px"><span
+                        class="giga icon-margin" data-toggle="tooltip" title="Margin"></span></span>
+                  {% endif %}
+                </td>
+                <td>{{ rmaHistory.order_type }}</td>
+                <td>{{ rmaHistory.rma_type }}</td>
+                <td>{{ rmaHistory.reason }}</td>
+                <td>{{ rmaHistory.name }}</td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="3" class="text-center">{{ text_no_results }}</td>
+            </tr>
+          {% endif %}
+          </tbody>
+
+        </table>
+      {% endif %}
+      <div class="panel-body" id="rma-details-panel-body" style="padding: 5px;margin-top: 60px">
+        <div class="form-group">
+          <h4 class="sub_title">Current RMA request
+            {% if marginFlag %}
+              <span class="flag-margin-order" style="font-size: 12px"><span class="giga icon-margin" data-toggle="tooltip" title="Margin"></span></span>
+            {% endif %}
+          </h4>
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th class="text-center">{{ text_rma_id }}</th>
+              <th class="text-center">RMA Type</th>
+              <th class="text-center">{{ text_item_code }}</th>
+              <th class="text-center">{{ text_mpn }}</th>
+              {% if orderType == 1 %}
+                <th class="text-center">{{ text_order_from }}</th>
+              {% endif %}
+              {% if orderType == 1 %}
+                <th class="text-center">{{ text_defective_number }}</th>
+                <th class="text-center">Shipment Status</th>
+              {% else %}
+                <th class="text-center">Return Qty</th>
+              {% endif %}
+              <th class="text-center">{{ text_reason }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for rmaInfo in rmaInfos %}
+              <tr>
+                <td class="text-center">{{ rmaInfo.rma_order_id }}</td>
+                {% if rmaInfo.order_type == 1 %}
+                  <td class="text-center">Sales Order RMA</td>
+                {% else %}
+                  <td class="text-center">Purchase Order RMA</td>
+                {% endif %}
+                <td class="text-center">{{ rmaInfo.sku }}</td>
+                <td class="text-center">{{ rmaInfo.mpn }}</td>
+                {% if rmaInfo.order_type == 1 %}
+                  <td class="text-center">{{ rmaInfo.orders_from }}</td>
+                {% endif %}
+                {% if rmaInfo.order_type == 1 %}
+                  <td class="text-center">{{ rmaInfo.quantity|default(0) }}</td>
+                  {# 注意此处只有销售订单为完成(32)的情况下显示shipped  #}
+                  {% if
+                    trackingNumber is defined and trackingNumber
+                    and rmaInfo.order_status and rmaInfo.order_status == 32
+                  %}
+                    <td class="text-center">Shipped</td>
+                  {% else %}
+                    <td class="text-center">Unshipped</td>
+                  {% endif %}
+                {% else %}
+                  <td class="text-center">{{ rmaInfo.quantity }}</td>
+                {% endif %}
+                <td class="text-center">{{ rmaInfo.reason }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          {% if cwf_order is defined and cwf_order['cwf_status'] == 7 %}
+            <div class="col-sm-12" style="padding: 0">
+              <span class="pull-left" style="font-size: 12px;color: #FA6400;">{{ tip_cwf_notice }}</span>
+            </div>
+          {% endif %}
+        </div>
+        <div id="error_msg_div"></div>
+        {% for rmaInfo in rmaInfos %}
+          <div class="form-group">
+            <label for="comments0">Comments:</label>
+            <textarea class="form-control comments_textarea" id="comments" name="comments"
+                      readonly>{{ rmaComments }}</textarea>
+          </div>
+          <div class="form-group">
+            <label for="attachemnts">Attachments:</label>
+            <div class="bg" style="width: 1050px">
+              <ul class="thumbnails" id="thumbnails_1">
+                {% if rmaAttachments %}
+                  {% for rmaAttachment in rmaAttachments %}
+                    <li class="image-additional" style="height: 90px">
+                      <a href="{{ rmaAttachment.file_path }}" data-toggle="tooltip"
+                         title="View Images" class="thumbnail">
+                        <img style="height: 65px" src="{{ rmaAttachment.file_path }}"/>
+                      </a>
+                    </li>
+                  {% endfor %}
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+          {% if rmaInfo.rma_type !=1 %}
+            <table class="table" style="margin-top: 20px">
+              <tbody>
+              <tr>
+                <td style="width: 180px"><b>Applied for Refund:&nbsp;
+                  {% if current_rma['coupon_amount'] > 0 and  current_rma['coupon_amount'] != '0.00' %}
+                  <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html="true" data-original-title="The coupon used for this item will be returned to the Marketplace."></i>
+                  {% endif %}
+                </b></td>
+                <td class="relative  hover-block">
+                  <span>{{currency}}{{ +current_rma['coupon_amount']+originRmaRefund }}</span>
+                  {# 1452优惠券 产品要求暂时隐藏
+                  <!-- {% if current_rma['coupon_amount'] > 0 and  current_rma['coupon_amount'] != '0.00' %}
+                    <i class="giga icon-V10_shouyeyouxiadown text-small text-normal-color"></i>
+                    <div class="payment-list posi-left text-small text-normal-color">
+                      <span class="price-text">{{ rmaRefund }}</span> (Buyer applied)
+                      <span class="price-text">+{{currency}}{{ current_rma['coupon_amount'] }}</span> (GIGA Coupon)
+                    </div>
+                  {% endif %} -->
+                  #}
+                </td>
+                <td class="text-center" style="width: 200px"><b>Refund Status:</b></td>
+                <td>
+                  {% if status_refund == 0 %}
+                    Pending
+                  {% elseif status_refund == 1 %}
+                    Agree
+                  {% else %}
+                    refuse
+                  {% endif %}
+                </td>
+                <td style="width: 150px"><b>Processed Result:</b></td>
+                <td class="text-center">
+                  {% if status_refund == 0 %}
+                    <a class="btn btn-primary " data-loading-text="..." onclick="agreeRefund()" title="Agree"
+                       data-toggle="tooltip"><i class="fa fa-check"></i></a>
+                    <a data-toggle="tooltip" data-loading-text="..." title="Reject" class="btn btn-primary"
+                       onclick="rejectRefund()"><i class="fa fa-remove"></i></a>
+                  {% elseif status_refund == 1 %}
+                    <a class="btn btn-primary " data-loading-text="..." disabled="true" title="Agree"
+                       data-toggle="tooltip"><i class="fa fa-check"></i></a>
+                  {% elseif status_refund == 2 %}
+                    <a data-toggle="tooltip" data-loading-text="..." title="Reject" class="btn btn-primary"
+                       disabled="true"><i class="fa fa-remove"></i></a>
+                  {% endif %}
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <div id="refund_agree" style="border:1px solid #ddd;border-radius: 4px;display: none">
+              <form id="refund_agree_from" style="padding: 0 10px;margin-top: 10px"
+                    action="index.php?route=account/customerpartner/rma_management/agreeRefund"
+                    enctype="multipart/form-data" method="post">
+                <input name="order_type" id="order_type" value="{{ orderType }}" hidden/>
+                <input type="hidden" name="take_coupon" value="{{ current_rma['coupon_amount'] }}">
+                <div class="item_detail" id="table_details0">
+                  <style>
+                    .rmaFG {
+                      margin-bottom: 0px;
+                    }
+                  </style>
+                  <div class="form-group">
+                    {% if safeguard_bill_list is not empty %}
+                      <p class="prompt-tip point">
+                        <i class="giga icon-tishii-01"></i>
+                        {% for bill in safeguard_bill_list  %}
+                          <span>{{ bill.safeguardConfig.title }}</span>
+                          {{ not loop.last ? ',' }}
+                        {% endfor %}
+                        Protection Service has been purchased for this product in the order. If you want to request an RMA due to problems within the coverage of Protection Service, Seller can reject the request.
+                      </p>
+                    {% endif %}
+                    <table class="table">
+                      <tbody>
+                      <tr>
+{#                        <td width="80px"><span style="color: red">*</span><b>Refund Type:</b></td>
+                        <td width="150px">
+                          <div class="form-group rmaFG">
+                            {% if status_refund == 0 %}
+                              <select id="refundType" name="refundType" class="form-control" required>
+                                <option value="1" selected>Line of credit</option>
+                              </select>
+                            {% else %}
+                              <select id="refundType" name="refundType" class="form-control" disabled=true">
+                                {% if refund_type ==1 %}
+                                  <option value="1" selected>Line of credit</option>
+                                {% elseif refund_type == 2 %}
+                                  <option value="2" selected>Line of credit</option>
+                                {% else %}
+                                  <option value="3" selected>Credit Card</option>
+                                {% endif %}
+                              </select>
+                            {% endif %}
+                          </div>
+                        </td>#}
+                        <td style="width: 100px">
+                          <span style="color: red">*</span><b>Refund:</b>
+                          <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html="true"  data-original-title="The refund returned to you will contain the fulfillment. Please return the fulfillment to this buyer first."></i>
+                        </td>
+                        <td >
+                          <div class="form-group rmaFG" style="display: flex">
+                            {% if status_refund == 0 %}
+                              {% if country !='JPN' %}
+                                <input id="refundMoney" name="refundMoney" class="form-control" required
+                                       oninvalid="setCustomValidity('Refund can not be left blank.');$('#agreeRefundBtn').button('reset')"
+                                       oninput="setCustomValidity('')" type="number" min="0" onblur="fixedTwo(this)"
+                                       onkeyup="this.value= this.value.match(/\d+(\.\d{0,2})?/) ? this.value.match(/\d+(\.\d{0,2})?/)[0] : ''"
+                                       step="0.01" style="width: 125px">
+                              {% else %}
+                                <input id="refundMoney" style="width: auto;" name="refundMoney" type="number"
+                                       class="form-control" required
+                                       oninvalid="setCustomValidity('Refund can not be empty');$('#agreeRefundBtn').button('reset')"
+                                       oninput="setCustomValidity('')"
+                                       onkeyup="this.value= this.value.match(/[0-9]*/) ? this.value.match(/[0-9]*/) : ''"
+                                       step="1" min="0" style="width: 125px">
+                              {% endif %}
+                            {% else %}
+                              <input id="refundMoney" name="refundMoney" class="form-control"
+                                     value="{{ agree_refund_money + current_rma['coupon_amount']}}" readonly style="width: 140px">
+                            {% endif %}
+                            <span style="line-height: 36px;font-size: 18px">({{ currency }})</span>
+                            <span style="line-height: 36px;">{{ tip_rebate_refund }}</span>
+                            {% if  current_rma['coupon_amount'] > 0 %}
+                              {% if status_refund == 0 %}
+                                <span class="split-money line-tips-refund" style="display: none" id="show_refund_money"></span>
+                                <span class="split-money" style="line-height: 40px;display: none">+{{ currency }}{{ current_rma['coupon_amount'] }}(GIGA Coupon)</span>
+                                <span id="refundMoneyError" class="line-tips-refund" style="color: red;"></span>
+                              {% else %}
+                                {% if status_refund == 1 %}
+                                  <span class="myRefund-coupon">
+                                 {{ currency }}{{ agree_refund_money }} +{{ currency }}{{ current_rma['coupon_amount'] }}(GIGA Coupon)
+                                </span>
+                                {% endif %}
+                              {% endif %}
+                            {% endif %}
+                          </div>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                    {% if tipSellerMsg is defined and tipSellerMsg is not empty %}
+                      <b style="color: red">{{ tipSellerMsg }}</b>
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <label for="comments0"><span style="color: red">*</span>Comments:</label>
+                    <input hidden value="{{ rmaId }}" name="rmaId"/>
+                    <textarea
+                      class="form-control comments_textarea checkTrim"
+                      id="refund_agree_comments"
+                      name="refund_agree_comments" required
+                      oninvalid="setCustomValidity('Comments can not be left blank.');$('#agreeRefundBtn').button('reset')"
+                      >{{ seller_refund_comments }}</textarea>
+                  </div>
+                  {% if canEditRmaFlag %}
+                    <input type="submit" value="Submit" class="btn btn-primary btn1" style="margin-left: 90%"
+                           id="agreeRefundBtn">
+                  {% endif %}
+                </div>
+              </form>
+            </div>
+            <div id="refund_reject" style="border:1px solid #ddd;border-radius: 4px;display: none">
+              <form id="refund_reject_from" action="index.php?route=account/customerpartner/rma_management/rejectRefund"
+                    method="post" enctype="multipart/form-data" style="padding: 0 10px;margin-top: 10px">
+
+                <div class="item_detail">
+                  <style>
+                    .rmaFG {
+                      margin-bottom: 0px;
+                    }
+                  </style>
+                  <div class="form-group">
+                    <input hidden value="{{ rmaId }}" name="rmaId"/>
+                    <label for="comments0"><span style="color: red">*</span>Comments:</label>
+                    <textarea
+                      class="form-control comments_textarea checkTrim"
+                      id="refund_reject_comments"
+                      name="refund_reject_comments" required
+                      oninvalid="setCustomValidity('Comments can not be left blank.');$('#rejectRefundBtn').button('reset')"
+                      >{{ seller_refund_comments }}</textarea>
+                  </div>
+                  {% if canEditRmaFlag %}
+                    <input type="submit" value="Submit" class="btn btn-primary btn1" style="margin-left: 90%"
+                           id="rejectRefundBtn">
+                  {% endif %}
+                </div>
+              </form>
+            </div>
+          {% endif %}
+          {% if rmaInfo.rma_type !=2 %}
+            <table class="table">
+              <tbody>
+              <tr>
+                <td style="width: 120px"><b>Reshipment ID:</b></td>
+                <td>{{ rmaReshipmentsArray[0].reorder_id }}</td>
+                <td style="width: 150px"><b>Reshipment Status:</b></td>
+                <td>
+                  {% if  rmaReshipmentsArray[0].order_status == 1 %}
+                    New Order
+                  {% elseif  rmaReshipmentsArray[0].order_status == 2 %}
+                    Being Processed
+                  {% elseif  rmaReshipmentsArray[0].order_status == 4 %}
+                    On Hold
+                  {% elseif  rmaReshipmentsArray[0].order_status == 8 %}
+                    Part Out
+                  {% elseif  rmaReshipmentsArray[0].order_status == 16 %}
+                    Canceled
+                  {% elseif  rmaReshipmentsArray[0].order_status == 32 %}
+                    Completed
+                  {% endif %}
+                </td>
+                {#<td style="width: 130px"><b>Reshipped MPN:</b></td>#}
+                {#<td>{{ rmaReshipments.mpn }}</td>#}
+                <td style="width: 150px"><b>Reshipped Quantity:</b></td>
+                <td>{{ rmaReshipmentsArray[0].qty }}</td>
+                <td style="width: 130px"><b>Processed Result:</b></td>
+                <td class="text-center">
+                  {% if  rmaReshipmentsArray[0].status_reshipment == 0 %}
+                    <a class="btn btn-primary " data-loading-text="..." onclick="agreeReshipment()" title="Agree"
+                       data-toggle="tooltip"><i class="fa fa-check"></i></a>
+                    <a data-toggle="tooltip" data-loading-text="..." title="Reject" class="btn btn-primary"
+                       onclick="rejectReshipment()"><i class="fa fa-remove"></i></a>
+                  {% elseif  rmaReshipmentsArray[0].status_reshipment == 1 %}
+                    <a class="btn btn-primary " data-loading-text="..." disabled="true" title="Agree"
+                       data-toggle="tooltip"><i class="fa fa-check"></i></a>
+                  {% elseif  rmaReshipmentsArray[0].status_reshipment == 2 %}
+                    <a data-toggle="tooltip" data-loading-text="..." title="Reject" class="btn btn-primary"
+                       disabled="true"><i class="fa fa-remove"></i></a>
+                  {% endif %}
+                </td>
+              </tr>
+              </tbody>
+            </table>
+
+            <div id="reshipment_agree" style="border:1px solid #ddd;border-radius: 4px;display: none">
+              <form id="reshipment_agree_from"
+                    action="index.php?route=account/customerpartner/rma_management/agreeReshipment"
+                    enctype="multipart/form-data" method="post" style="padding: 0 10px;margin-top: 10px">
+
+                <div class="item_detail" id="table_details0">
+                  <style>
+                    .rmaFG {
+                      margin-bottom: 0px;
+                    }
+                  </style>
+                  <div class="table" id="reshipmentTable">
+                    <div>
+                    {% for rmaReshipments in rmaReshipmentsArray %}
+                      <div name="reshipment0" class="">
+                        <div class="col-lg-3 col-md-5 no-padding flex-layout">
+                          <div class="mr-1 reshipment-name"><span style="color: red">*</span><b>Reshipment Type:</b></div>
+                          <div class="form-group rmaFG flex1">
+                            <select id="selectReshipmentType0" name="reshipmentType0" class="form-control form-test"
+                                    required
+                                    oninvalid="setCustomValidity('Reshipment Type can not be left blank.');$('#agreeReshipmentBtn').button('reset')"
+                                    oninput="setCustomValidity('')" onchange="checkPart(this)">
+                              <option value="1" {% if rmaReshipments.part_flag == '1' %} selected{% endif %}>New
+                                Product
+                              </option>
+                              <option value="2" {% if rmaReshipments.part_flag == '2' %} selected{% endif %}>Part
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-lg-5 col-md-7 flex-layout">
+                          <div class="mr-1 reshipment-name"><span style="color: red">*</span><b>Reshipped MPN:</b></div>
+                          <div class="form-group rmaFG flex-layout">
+                            <input id="reshipmentMpn0" name="reshipmentMpn0"
+                                   class="form-control reshipmentMpn form-test mr-1" value="{{ rmaReshipments.mpn }}"
+                                   required oninvalid="setCustomValidity('Reshipped MPN can not be left blank.');$('#agreeReshipmentBtn').button('reset')"
+                                   oninput="setCustomValidity('')">
+                            <input id="reshipmentSku0" name="reshipmentSku0" class="form-control form-test"
+                                   value="{{ rmaReshipments.item_code }}" required
+                                   oninvalid="setCustomValidity('Reshipped Item Code can not be left blank.');$('#agreeReshipmentBtn').button('reset')"
+                                   oninput="setCustomValidity('')" readonly>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-12 no-padding flex-layout">
+                          <div class="mr-1 reshipment-name"><span style="color: red">*</span><b>Reshipped Quantity:</b></div>
+                          <div class="form-group rmaFG" style="display: flex">
+                            <input id="rmaQty0" name="rmaQty0" onkeyup="value=value.replace(/\D/g,'')"
+                                   class="form-control form-test" type="number" min="1" value="{{ rmaReshipments.qty }}"
+                                   required
+                                   oninvalid="setCustomValidity('Reshipped Quantity can not be left blank.');$('#agreeReshipmentBtn').button('reset')"
+                                   oninput="setCustomValidity('')">
+                            <button id="addButton0" type="button" onclick="addReshipmentDetail(this);"
+                                    class="btn btn-primary" title="Add" name="addButton" style="margin-left: 5px">
+                              <i class="fa fa-plus-circle"></i></button>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="comments"><span style="color: red">*</span>Comments:</label>
+                    <input hidden value="{{ rmaId }}" name="rmaId"/>
+                    <textarea class="form-control comments_textarea form-test checkTrim" id="agreeReshipmentComments"
+                              name="comments" required
+                              oninvalid="setCustomValidity('Comments can not be left blank.');$('#agreeReshipmentBtn').button('reset')"
+                              >{{ rmaReshipmentsArray[0].seller_reshipment_comments }}</textarea>
+                  </div>
+                  {% if canEditRmaFlag %}
+                    <input type="submit" value="Submit" class="btn btn-primary btn1" style="margin-left: 90%"
+                           id="agreeReshipmentBtn">
+                  {% endif %}
+                  <input hidden name="countArray" id="countArray">
+                </div>
+              </form>
+            </div>
+            <div id="reshipment_reject" style="border:1px solid #ddd;border-radius: 4px;display: none">
+              <form id="reshipment_reject_from"
+                    action="index.php?route=account/customerpartner/rma_management/rejectReshipment" method="post"
+                    enctype="multipart/form-data" style="padding: 0 10px;margin-top: 10px">
+
+                <div class="item_detail" id="reject_reshipment">
+                  <style>
+                    .rmaFG {
+                      margin-bottom: 0px;
+                    }
+                  </style>
+                  <div class="form-group">
+                    <input hidden value="{{ rmaId }}" name="rmaId"/>
+                    <label for="comments"><span style="color: red">*</span>Comments:</label>
+                    <textarea class="form-control comments_textarea checkTrim" id="rejectReshipmentComments"
+                              name="rejectReshipmentComments" required
+                              oninvalid="setCustomValidity('Comments can not be left blank.');$('#rejectReshipmentBtn').button('reset')"
+                              >{{ rmaReshipmentsArray[0].seller_reshipment_comments }}</textarea>
+                  </div>
+                  {% if canEditRmaFlag %}
+                    <input type="submit" value="Submit" id="rejectReshipmentBtn" class="btn btn-primary btn1"
+                           style="margin-left: 90%">
+                  {% endif %}
+                </div>
+              </form>
+            </div>
+          {% endif %}
+        {% endfor %}
+        {{ rma_message }}
+      </div>
+
+    </div>
+    <script>
+        var appFile = new Vue({
+            el: '#appFile',
+            delimiters: ['${', '}$'],
+            data() {
+                return {
+                    imgList: [],
+                    size: 0
+                }
+            },
+            methods: {
+                fileClick() {
+                    document.getElementById('upload_file').click()
+                },
+                fileChange(el) {
+                    if (!el.target.files[0].size) return;
+                    this.fileList(el.target);
+                    //el.target.value = ''
+                },
+                fileList(fileList) {
+                    let files = fileList.files;
+                    for (let i = 0; i < files.length; i++) {
+                        //判断是否为文件夹
+                        if (files[i].type != '') {
+                            this.fileAdd(files[i]);
+                        } else {
+                            //文件夹处理
+                            if (fileList.items == undefined) {
+                                alert("上传文件类型有误！");
+                            } else {
+                                this.folders(fileList.items[i]);
+                            }
+                        }
+                    }
+                },
+                //文件夹处理
+                folders(files) {
+                    let _this = this;
+                    //判断是否为原生file
+                    if (files.kind) {
+                        files = files.webkitGetAsEntry();
+                    }
+                    files.createReader().readEntries(function (file) {
+                        for (let i = 0; i < file.length; i++) {
+                            if (file[i].isFile) {
+                                _this.foldersAdd(file[i]);
+                            } else {
+                                _this.folders(file[i]);
+                            }
+                        }
+                    })
+                },
+                foldersAdd(entry) {
+                    let _this = this;
+                    entry.file(function (file) {
+                        _this.fileAdd(file)
+                    })
+                },
+                fileAdd(file) {
+                    //总大小
+                    this.size = this.size + file.size;
+                    //判断是否为图片文件
+                    if (file.type.indexOf('image') == -1) {
+                        file.src = 'catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/wenjian.png';
+                        this.imgList.push({
+                            file
+                        });
+                    } else {
+                        let reader = new FileReader();
+                        reader.vue = this;
+                        reader.readAsDataURL(file);
+                        reader.onload = function () {
+                            file.src = this.result;
+                            this.vue.imgList.push({
+                                file
+                            });
+                        }
+                    }
+                },
+                fileDel(index) {
+                    this.size = this.size - this.imgList[index].file.size;//总大小
+                    this.imgList.splice(index, 1);
+                },
+                bytesToSize(bytes) {
+                    if (bytes === 0) return '0 B';
+                    let k = 1000, // or 1024
+                        sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+                        i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+                },
+                dragenter(el) {
+                    el.stopPropagation();
+                    el.preventDefault();
+                },
+                dragover(el) {
+                    el.stopPropagation();
+                    el.preventDefault();
+                },
+                drop(el) {
+                    el.stopPropagation();
+                    el.preventDefault();
+                    this.fileList(el.dataTransfer);
+                }
+            }
+        });
+
+        function getCompleteData(id) {
+            var completeData = {
+                'source': function (request, response) {
+                    var reshipmentType = $('#selectReshipmentType' + id).val();
+                    $.ajax({
+                        url: 'index.php?route=account/customerpartner/rma_management/autocomplete&filter_reshipmentMpn=' + encodeURIComponent(request) + '&reshipmentType=' + reshipmentType,
+                        dataType: 'json',
+                        success: function (json) {
+                            response($.map(json, function (item) {
+                                return {
+                                    label: item['mpn'],
+                                    value: item['product_id'],
+                                    item_code: item['sku']
+                                }
+                            }));
+                        }
+                    });
+                },
+                'select': function (item) {
+                    flag = false;
+                    $('input[name=\'reshipmentMpn' + id + '\']').val(item['label']);
+                    $('input[name=\'reshipmentSku' + id + '\']').val(item['item_code']);
+                }
+            };
+            return completeData;
+        }
+
+
+        $('input[name=\'reshipmentMpn0\']').autocomplete(getCompleteData(0));
+
+        function agreeReshipment() {
+            $('#reshipment_agree').css('display', 'block');
+            $('#reshipment_reject').css('display', 'none');
+        }
+
+        function rejectReshipment() {
+            $('#reshipment_agree').css('display', 'none');
+            $('#reshipment_reject').css('display', 'block');
+        }
+
+        function agreeRefund() {
+            $('#refund_agree').css('display', 'block');
+            $('#refund_reject').css('display', 'none');
+        }
+
+        function rejectRefund() {
+            $('#refund_agree').css('display', 'none');
+            $('#refund_reject').css('display', 'block');
+        }
+
+        $(function () {
+            var status_reshipment = {{ rmaReshipmentsArray[0].status_reshipment }};
+            var status_refund = {{ status_refund }};
+            if (status_reshipment == 1) {
+                $('#reshipment_agree').css('display', 'block');
+                $('#agreeReshipmentComments').attr('readonly', 'readonly');
+                $('#reshipmentMpn').attr('disabled', 'true');
+                $('#rmaQty').attr('readonly', 'readonly');
+                $('#agreeReshipmentBtn').hide();
+                $('.form-test').attr('readonly', 'readonly');
+                $('.form-test').attr('disabled', true);
+                $('[name="addButton"]').hide();
+            }
+            if (status_reshipment == 2) {
+                $('#reshipment_reject').css('display', 'block');
+                $('#rejectReshipmentComments').attr('readonly', 'readonly');
+                $('#rejectReshipmentBtn').hide();
+            }
+            if (status_refund == 1) {
+                $('#refund_agree').css('display', 'block');
+                $('#refund_agree_comments').attr('readonly', 'readonly');
+                $('#agreeRefundBtn').hide();
+            }
+            if (status_refund == 2) {
+                $('#refund_reject').css('display', 'block');
+                $('#refund_reject_comments').attr('readonly', 'readonly');
+                $('#rejectRefundBtn').hide();
+            }
+        });
+
+        $(function () {
+            $('.thumbnails').magnificPopup({
+                type: 'image',
+                delegate: 'a',
+                gallery: {
+                    enabled: true
+                }
+            });
+        });
+        $(function () {
+            $(".btn1").click(function () {
+                $(this).button('loading');
+            });
+        });
+        let index = 0;
+        var countArray = [0];
+        $('#countArray').val(countArray);
+
+        function addReshipmentDetail(btn) {
+          $(btn).removeAttr('onclick');
+          $(btn).attr('onclick', 'removeReshipment(this)');
+          $(btn).removeClass('btn-primary');
+          $(btn).addClass('btn-danger');
+          $(btn).find('i').removeClass('fa-plus-circle');
+          $(btn).find('i').addClass('fa-minus-circle');
+          $(btn).attr('title', 'Delete')
+          index++;
+          countArray.push(index);
+          $('#countArray').val(countArray);
+          var html = `
+                     <div name="reshipment${index}" class="">
+                          <div class="col-lg-3 col-md-5 no-padding flex-layout">
+                            <div class="mr-1 reshipment-name"><span style="color: red">*</span><b>Reshipment Type:</b></div>
+                            <div class="form-group rmaFG flex1">
+                              <select id="selectReshipmentType${index}" name="reshipmentType${index}" class="form-control form-test"
+                                      required
+                                      oninvalid="setCustomValidity('Reshipment Type can not be left blank.');$('#agreeReshipmentBtn').button('reset')"
+                                      oninput="setCustomValidity('')" onchange="checkPart(this)">
+                                <option value="1" >New Product </option>
+                                <option value="2" >Part </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-lg-5 col-md-7 flex-layout">
+                            <div class="mr-1 reshipment-name"><span style="color: red">*</span><b>Reshipped MPN:</b></div>
+                            <div class="form-group rmaFG flex-layout">
+                              <input id="reshipmentMpn${index}" name="reshipmentMpn${index}"
+                                     class="form-control reshipmentMpn form-test mr-1"
+                                     required oninvalid="setCustomValidity('Reshipped MPN can not be left blank.');$('#agreeReshipmentBtn').button('reset')"
+                                     oninput="setCustomValidity('')">
+                              <input id="reshipmentSku${index}" name="reshipmentSku${index}" class="form-control form-test"
+                                     required
+                                     oninvalid="setCustomValidity('Reshipped Item Code can not be left blank.');$('#agreeReshipmentBtn').button('reset')"
+                                     oninput="setCustomValidity('')" readonly>
+                            </div>
+                          </div>
+                          <div class="col-lg-4 col-md-12 no-padding flex-layout">
+                            <div class="mr-1 reshipment-name"><span style="color: red">*</span><b>Reshipped Quantity:</b></div>
+                            <div class="form-group rmaFG" style="display: flex">
+                              <input id="rmaQty${index}" name="rmaQty${index}" onkeyup="value=value.replace(/\\D/g,'')"
+                                     class="form-control form-test" type="number" min="1"
+                                     required
+                                     oninvalid="setCustomValidity('Reshipped Quantity can not be left blank.');$('#agreeReshipmentBtn').button('reset')"
+                                     oninput="setCustomValidity('')">
+                              <button id="addButton${index}" type="button" onclick="addReshipmentDetail(this);"
+                                      class="btn btn-primary" title="Add" name="addButton" style="margin-left: 5px">
+                                <i class="fa fa-plus-circle"></i></button>
+                            </div>
+                          </div>
+                        </div>
+        `;
+          $("#reshipmentTable div:first").append(html);
+          var completeData = getCompleteData(index);
+          $('input[name=\'reshipmentMpn' + index + '\']').autocomplete(completeData);
+        }
+
+        function removeReshipment(btn) {
+            var reshipmentName = $(btn).parent().parent().parent().attr('name');
+            var id = reshipmentName.split('reshipment')[1];
+            var removeIndex = countArray.indexOf(eval(id));
+            if (removeIndex > -1) {
+                countArray.splice(removeIndex, 1);
+            }
+            $('#countArray').val(countArray);
+            $(btn).parent().parent().parent().remove();
+        }
+
+        function checkPart(e) {
+            var reshipmentName = $(e).attr('name');
+            var id = reshipmentName.split('reshipmentType')[1];
+            $('#reshipmentMpn' + id).val(null);
+            $('#reshipmentSku' + id).val(null);
+            $('#rmaQty' + id).val(null);
+        }
+
+        $("#rmaHistorys tbody").on("click", "tr", function () {
+            var td = $(this).find("td");
+            var rma_id = td.eq(0).text();
+            location.href = 'index.php?route=account/customerpartner/rma_management/rmaInfo&rmaId=' + rma_id;
+        });
+
+        $('body').on('keyup','.checkTrim',function (event) {
+          $(this)[0].setCustomValidity('');
+          let value=event.currentTarget.value.trim();
+          if(!value){
+            event.currentTarget.value='';
+            $(this)[0].setCustomValidity('Comments can not be left blank.');
+          }
+        });
+
+        $('body').on('input','.checkTrim',function (event) {
+          $(this)[0].setCustomValidity('');
+          let value=event.currentTarget.value.trim();
+          if(!value){
+            event.currentTarget.value='';
+            $(this)[0].setCustomValidity('Comments can not be left blank.');
+          }
+        })
+    </script>
+    <script>
+      $("#refundMoney").bind('input propertychange', function () {
+        $('#refundMoneyError').html('');
+        var input_money = $(this).val();//只保留小数点后两位
+        var country = "{{ country }}"; // 国别，确保日本金额为整数，非日本保留两位小数
+        var myFixedNum = country === 'JPN' ? '0' : '2';
+        input_money= Number(input_money.match(/\d+(\.\d{0,2})?/) ? input_money.match(/\d+(\.\d{0,2})?/)[0] : '');
+        var inputArr = $(this).val().split('.');
+        var inputPerttify = 0;
+        if (country === 'JPN' && inputArr[0]) {
+          inputPerttify = inputArr[0].slice(0,9)
+        } else {
+          if (inputArr.length > 0) {
+            if (inputArr.length === 2) {
+              inputPerttify = inputArr[0].slice(0,9)+'.'+inputArr[1].slice(0,2);
+            } else {
+              inputPerttify = inputArr[0].slice(0,9);
+            }
+          }
+        }
+        input_money = inputPerttify;
+        $(this).val(inputPerttify);
+        var coupon_money = Number("{{ current_rma['coupon_amount'] }}")
+        var currency = "{{ currency }}";
+        if (coupon_money > 0 && coupon_money != '0.00') {
+          input_money = input_money>=coupon_money? mathematical.accSub(input_money,coupon_money, myFixedNum):0;
+          if (input_money == '') {
+            $(".split-money").hide();
+          } else {
+            $(".split-money").show();
+          }
+          $("#show_refund_money").html(currency + input_money);
+        }
+      }).blur(function(){
+        // blur校验refund最小数值
+        var input_money = Number($(this).val());
+        var coupon_money = Number("{{ current_rma['coupon_amount'] }}");
+        if (coupon_money > 0 && coupon_money != '0.00') {
+          if (coupon_money >= input_money) {
+            $('#refundMoneyError').html('The amount entered must be more than the coupon value.').show();
+          }
+        }
+      });
+    </script>
+  </div>
+  <script>
+    function fixedTwo(that){
+      let val = $(that).val();
+      if (val){
+        var len = val.split('.')[1]?val.split('.')[1].length:0;
+        val = val==0?0:Number(val).toFixed(len);
+        $(that).val(val);
+      }
+    }
+  </script>
+{{ footer }}

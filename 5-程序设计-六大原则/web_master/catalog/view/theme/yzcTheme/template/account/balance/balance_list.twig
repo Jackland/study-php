@@ -1,0 +1,263 @@
+{{ header }}
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<style>
+  .tip-num {
+    text-align: center;
+    display: inline-block;
+    height: 20px;
+    width: 40px;
+    border: 1px solid #aaa;
+    border-radius: 20px;
+    font-style: normal;
+  }
+
+  .page-seller-portal .nav-tabs.main > li > a:hover .tip-num {
+    background: #fff !important;
+    color: #3A75DC;
+    border: 1px solid #fff;
+  }
+
+  .page-seller-portal .nav-tabs.main > li.active > a .tip-num {
+    background: #fff !important;
+    color: #3A75DC;
+    border: 1px solid #fff;
+  }
+
+  .balance-header {
+    padding: 10px 5px;
+    display: flex;
+      background-color: #fff;
+  }
+
+  .balance-header > div {
+    margin: 0 5px 0 5px;
+    border-radius: 10px;
+  }
+
+
+  .balanceFont {
+    font-family: "Roboto Bold", "Roboto Regular", Roboto, sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 14px;
+    color: rgb(229, 133, 26);
+  }
+
+  .rePyTextFont {
+    font-family: "Roboto Bold", "Roboto Regular", Roboto, sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+  }
+
+  .rePyValueFont {
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
+    color: rgb(255, 255, 255);
+  }
+
+  #account-balance-text {
+    width: 50%;
+    margin: 10px 35px;
+  }
+
+  #account-balance-value {
+    width: 50%;
+    margin-left: 35px;
+    font-size: 24px;
+  }
+
+  #recharge-button {
+    float: right;
+    margin-right: 30px;
+    width: 140px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .re-py-text {
+    display: block;
+    margin-top: 15px
+  }
+
+  .re-py-value {
+    display: block;
+    /*margin-right: 60px;*/
+    /*margin-top: 15px*/
+  }
+
+  .rePyDiv:hover {
+    -webkit-filter: brightness(1.05);
+  / / 兼容不同浏览器 -o-filter: brightness(1.05);
+    -moz-filter: brightness(1.05);
+    filter: brightness(1.05);
+  / / 设置亮度值，范围：0-1
+  }
+
+  .reDiv {
+      height: 80px;
+      width: 250px;
+      background-color: #8BC7F8;
+      flex: 1
+  }
+
+  .pyDiv {
+      height: 80px;
+      width: 250px;
+      background-color: #9FD9CC;
+      flex: 1
+  }
+
+  .page-seller-portal .nav-tabs.main > li {
+      width: 160px;
+      height: 35px;
+      text-align: center;
+      margin-bottom: 6px;
+  }
+
+  .page-seller-portal .nav-tabs.main > li > a {
+      font-family: 'Roboto Bold', 'Roboto', sans-serif;
+      font-weight: 700;
+      font-style: normal;
+      font-size: 14px;
+      line-height: 40px;
+      padding: 0;
+  }
+
+  .page-seller-portal .nav-tabs.main{
+      padding-left: 2px;
+  }
+
+  .mb-4 {
+      margin-bottom: 35px;
+  }
+
+  .page-seller-portal .nav-tabs.main > li.active > a {
+      color: #fff;
+      background-color: #3A75DC;
+      border-color: #3A75DC;
+  }
+  .box-shadow{
+      box-shadow: 0 0 6px #aaa;
+  }
+  .help{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+  }
+  i.icon-help-inactive{
+    font-size: 14px;
+  }
+  .datetimepicker{
+    padding: 0;
+  }
+  /*.page-seller-portal .nav-tabs.main > li > a:hover{*/
+  /*  background-color: #fff;*/
+  /*  color: #183464;*/
+  /*  border: none;*/
+  /*}*/
+</style>
+
+<div id="page-bid-list-spot-price-bid" class="page-seller-portal">
+  {#菜单#}
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  {#END 菜单#}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>{{ list_heading_title }}</h1>
+        <div class="tab-content main mb-2">
+          <div class="balance-header">
+            <div style="height: 80px;width: 672px; background-color: #FEE6CC; flex: 2.688">
+              <p class="balanceFont" id="account-balance-text">ACCOUNT BALANCE</p>
+              <span class="balanceFont" id="account-balance-value">{{balance}}</span>
+              <a id="recharge-button" type="button" class="btn btn-warning" href="{{ recharge_apply }}">
+                Add Account Funds
+              </a>
+            </div>
+            <div class="rePyDiv reDiv text-center">
+              <span class="re-py-text rePyTextFont">CREDIT HISTORY</span>
+              <span class="re-py-value rePyValueFont" id="headerRevenue">--</span>
+            </div>
+            <div class="rePyDiv pyDiv text-center">
+              <span class="re-py-text rePyTextFont">PAYMENT HISTORY</span>
+              <span class="re-py-value rePyValueFont" id="headerPayment">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <ul class="nav nav-tabs main" role="tablist">
+              <li id="account_balance_li" {% if 0 == tab %} class="active" {% endif %}>
+                <a href="#tab-account_balance" data-toggle="tab">Account Balance</a>
+              </li>
+              {% if innerAutoBuyAttr1 %}
+                <li id="virtual_payment_li" {% if 1 == tab %} class="active" {% endif %}>
+                  <a href="#tab-virtual_payment" data-toggle="tab">Virtual Payment
+                  </a>
+                </li>
+              {% endif %}
+
+              <li id="recharge-li" {% if 2 == tab %} class="active" {% endif %} >
+                <a href="#tab-recharge" data-toggle="tab">Add Account Funds</a>
+              </li>
+            </ul>
+            <a class="help" href="{{ recharge_instructions_url }}"><i class="giga icon-V10-wenhaotishi"></i> {{ title_adding_account_funds }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {#tab页对应内容#}
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="tab-content main box-shadow">
+          <div class="tab-pane {% if 0 == tab %} active {% endif %}" id="tab-account_balance">
+            <fieldset>
+              <div id="bid-account_balance"></div>
+            </fieldset>
+          </div>
+          <div class="tab-pane {% if 1 == tab %} active {% endif %}" id="tab-virtual_payment">
+            <fieldset>
+              <div id="bid-virtual_payment"></div>
+            </fieldset>
+          </div>
+          <div class="tab-pane {% if 2 == tab %} active {% endif %}" id="tab-recharge">
+            <fieldset>
+              <div id="bid-recharge"></div>
+            </fieldset>
+          </div>
+          <div class="tab-pane {% if 2 == tab %} active {% endif %}" id="tab-recharge">
+            <fieldset>
+              <div id="bid-recharge"></div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}
+<script>
+
+  $('#bid-account_balance').load('index.php?route=account/balance/buyer_balance/tab_account_balance');
+  {% if innerAutoBuyAttr1 %}
+  $('#bid-virtual_payment').load('index.php?route=account/balance/buyer_balance/tab_virtual_payment');
+  {% endif %}
+
+  {% if bidRechargeUrl %}
+    $('#bid-recharge').load('{{ bidRechargeUrl }}');
+
+  {% else %}
+    $('#bid-recharge').load('index.php?route=account/balance/recharge/tab_recharge');
+  {% endif %}
+
+</script>

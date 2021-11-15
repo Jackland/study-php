@@ -1,0 +1,30 @@
+{% if logs %}
+    {% for log in logs %}
+        <div>
+            <i class="giga icon-icon-test" style="color: #65B017;font-size: 20px"></i>
+            <span class="datetime">{{ log.create_time }}</span> <span>{{ log.operator_type }}</span>
+        </div>
+        <div class="notes">
+            <table class="table">
+                <tr>
+                    <th width="10%">{{ text_log_table_event }}</th>
+                    <th width="15%">{{ text_log_table_status }}</th>
+                    <th>{{ text_log_table_bid }}</th>
+                    <th>{{ text_log_table_quantity }}</th>
+                    <th width="20%">{{ text_log_table_method }}</th>
+                    <th width="10%">{{ text_log_table_price }}</th>
+                    <th>{{ text_form_deposit_percentage }}</th>
+                </tr>
+                <tr>
+                    <td width="10%">{{ log.type_name }}</td>
+                    <td width="15%">{{ log.status }}</td>
+                    <td>{{ log.is_bid }}</td>
+                    <td>{{ log.min_num }}</td>
+                    <td width="20%">{{ log.delivery_type }}</td>
+                    <td width="10%">{{ log.unit_price }}</td>
+                    <td>{{ log.payment_ratio }}</td>
+                </tr>
+            </table>
+        </div>
+    {% endfor %}
+{% endif %}

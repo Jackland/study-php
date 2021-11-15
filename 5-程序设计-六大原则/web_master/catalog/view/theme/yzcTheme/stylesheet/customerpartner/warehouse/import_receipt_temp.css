@@ -1,0 +1,89 @@
+.control-label.required:before{
+  content: "*";
+  color: #e64545;
+  padding-right: 2px;
+}
+.import-sub-title{
+  display: flex;
+  align-items: center;
+}
+.red-circle{
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #e64545;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.black-circle{
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #999;
+  border-radius: 50%;
+  margin-right: 6px;
+  margin-top: 2px;
+}
+.import-sub-info{
+  padding-left: 18px;
+  border-left: 1px solid #aaa;
+  margin-left: 6px;
+}
+.import-sub-info.no-border{
+  border-left: none;
+}
+.template-con,.import-con,.confirm-tip-con{
+  padding: 20px 0;
+}
+.import-file-con{
+  height: 40px;
+  margin-bottom: 0;
+}
+.file-add-con-inner{
+  display: inline-block;
+  cursor: pointer;
+  padding: 2px 14px;
+}
+.file-add-con-inner:hover{
+  background: #f3f5f7;
+}
+.file-add-con,input.file-add-button{
+  display: none;
+}
+.giga.icon-lajitong{
+  color: #e64545;
+}
+.giga.icon-duigou{
+  color: #65b017;
+}
+.giga.icon-lajitong,.giga.icon-duigou{
+  margin-left: 20px;
+}
+.file-del{
+  display: none;
+}
+.error-border{
+  border:1px solid #e64545;
+}
+.error-tip{
+  font-size: 12px;
+  color: #e64545;
+}
+.import-template,.import-shipping-order-book,.import-file,.confirm-import-file,.import-departure,.import-city,.shipping-way-con,.expected-output-good-date{
+  display: none;
+}
+.them-color{
+  color: #3A75DC;
+}
+.footer-btns-con{
+  margin: 10px 0;
+}
+.modal-header-radius{
+  border-radius: 5px 5px 0 0 !important;
+}
+.modal-content-radius{
+  border:none;
+}
+.footer-distance{
+  padding: 10px 0;
+}

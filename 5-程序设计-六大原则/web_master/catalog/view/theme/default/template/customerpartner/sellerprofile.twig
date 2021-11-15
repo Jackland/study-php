@@ -1,0 +1,131 @@
+{% if showSellerInfo is defined and showSellerInfo %}
+<style>
+  #wk_seller_info_container{
+    width: 100%;
+    margin: 10px 0;
+    /*padding: 20px;*/
+    /*background-color: #eee;*/
+  }
+
+  #wk_seller_info_profpic{
+    margin-right: 20px;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+  }
+
+  #wk_seller_info_box{
+    display: inline-block;
+  }
+
+  #wk_seller_info_rating{
+    position: relative;
+    cursor: pointer;
+  }
+
+  #wk_seller_info_rating > .fa{
+    font-size: 10px;
+  }
+
+  #wk_seller_info_rating > .fa > .fa-stack-1x {
+      color:#3B9911;
+  }
+
+  #wk_seller_info_rating_details{
+    position: absolute;
+    min-width: 250px;
+    height: auto;
+    background: #FFFFFF;
+    top: 23px;
+    padding: 20px;
+    box-shadow: 0 2px 8px 2px #868282;
+    display: none;
+    z-index: 100000;
+  }
+
+  .wk_rating_details_box > .wk_rating_details > .fa{
+    font-size: 10px;
+  }
+
+  .wk_rating_details_box > .wk_rating_details > .fa > .fa-stack-1x {
+      color:#3B9911;
+  }
+
+  .wk_rating_details{
+    padding-left: 5px;
+  }
+
+  @media only screen and (max-width: 700px) {
+
+      #wk_seller_info_rating_details{
+
+          min-width: 200px;
+          /*height: 100px;*/
+      }
+  }
+
+</style>
+
+<div id="wk_seller_info_container">
+  <div style="padding: 10px;background-color: #EFEFEF;border-left: 8px solid;">
+    <div id="wk_seller_info_profpic">
+      <img src="{{ info_image }}" width="100%" height="100%" style="vertical-align:baseline;">
+    </div>
+    <div id="wk_seller_info_box">
+      <h4 style="margin-bottom: 20px;margin-top: 0px;font-size: 13px;"><b>{{ info_heading_text }}</b></h4>
+      <a href="{{ loadProfile }}"><p style="margin:0; line-height: 15px;">{{ info_name }}</p></a>
+
+      {% if informations is defined and informations %}
+        <h4 style="margin-bottom: 0px;margin-top: 5px;font-size: 13px;"><b>{{ text_seller_information }}</b></h4>
+        {% for information in informations %}
+          <div class="text-container">
+            <a href="{{ information['href'] }}" target="_blank">{{ information['title'] }}</a>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <div id="wk_seller_info_rating">
+        {% for i in 1..5 %}
+        {% if info_feedback_total < i %}
+        <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-1x"></i></span>
+        {% else %}
+        <span class="fa fa-stack"><i class="fa fa-star fa-stack-1x"></i><i class="fa fa-star-o fa-stack-1x"></i></span>
+        {% endif %}
+        {% endfor %}
+
+        {% if review_fields is defined and review_fields %}
+        <div id="wk_seller_info_rating_details">
+          <i class="fa fa-caret-up" aria-hidden="true" style="color: #FFFFFF;position: absolute;top: -14px;font-size: 25px;"></i>
+            {% for review_field in review_fields %}
+              <div class="wk_rating_details_box">
+                <div style="display: inline-block;width: 25%;">{{ review_field['field_name'] }}</div>
+                <div class="wk_rating_details" style="display: inline-block;font-size: 10px;">
+                  {% for i in 1..5 %}
+                  {% if review_field['field_value'] < i %}
+                  <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-1x"></i></span>
+                  {% else %}
+                  <span class="fa fa-stack"><i class="fa fa-star fa-stack-1x"></i><i class="fa fa-star-o fa-stack-1x"></i></span>
+                  {% endif %}
+                  {% endfor %}
+                  <span>({{ (review_field['field_value'] ? review_field['field_value'] : 0) ~ '/5' }})</span>
+                </div>
+              </div>
+              {% endfor %}
+              </div>
+              {% endif %}
+      </div>
+      <p style="margin:0;line-height: 15px;">{{ info_product_text }}<span>{{ info_total_products }}</span></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  $("#wk_seller_info_rating, #wk_seller_info_rating_details").on('mouseover', function(){
+      $("#wk_seller_info_rating_details").show();
+  });
+
+  $("#wk_seller_info_rating, #wk_seller_info_rating_details").on('mouseout', function(){
+      $("#wk_seller_info_rating_details").hide();
+  });
+</script>
+{% endif %}

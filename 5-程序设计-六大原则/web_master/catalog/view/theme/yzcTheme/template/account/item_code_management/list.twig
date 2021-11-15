@@ -1,0 +1,110 @@
+{{ header }}
+<div id="page-bid-list-spot-price-bid" class="page-seller-portal">
+  {#菜单#}
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  {#END 菜单#}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>{{ text_item_code_mapping }}</h1>
+        <div class="row">
+          <div class="col-md-12">
+            {#Togglable tabs#}
+            <ul class="nav nav-tabs main" role="tablist">
+              <li id="new_li" class="active"><a href="#tab-new" data-toggle="tab">{{ text_new_mapping }}</a></li>
+              <li id="history_li"><a href="#tab-history" data-toggle="tab">{{ text_mapping_history }}</a></li>
+              <li id="invalid_li"><a href="#tab-invalid" data-toggle="tab">{{ text_invalid_mapping }}</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    {#tab页对应内容#}
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="tab-content main">
+          <div class="tab-pane active" id="tab-new">
+            <fieldset>
+              <div id="mapping-new"></div>
+            </fieldset>
+          </div>
+          <div class="tab-pane" id="tab-history">
+            <fieldset>
+              <div id="mapping-history"></div>
+            </fieldset>
+          </div>
+          <div class="tab-pane" id="tab-invalid">
+            <fieldset>
+              <div id="mapping-invalid"></div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  $('#mapping-new').load('index.php?route=account/item_code_mapping/newList',function(responseTxt,statusTxt,xhr){
+    if(statusTxt=="success"){
+//      $('#scroll_info').show();
+    }
+  });
+  $('#mapping-history').load('index.php?route=account/item_code_mapping/historyList');
+  $('#mapping-invalid').load('index.php?route=account/item_code_mapping/invalidList');
+  $(function () {
+    // var layer = layui.layer;
+  });
+  function filter(obj,type) {
+    layer.load();
+    $(obj).button('loading');
+    if(type == 3){
+        // invalid Mapping
+        var url_load =  getInvalidListUrl() + '&search_flag=1';
+        $('#mapping-invalid').load(url_load,function(responseTxt,statusTxt,xhr){
+          if(statusTxt=="success"){
+            layer.closeAll('loading');
+          }
+        })
+    }else if(type == 1){
+        //
+        var url_load =   getNewListUrl() + '&search_flag=1';
+        $('#mapping-new').load(url_load,function(responseTxt,statusTxt,xhr){
+          if(statusTxt=="success"){
+            layer.closeAll('loading');
+//            $('#scroll_info').show();
+          }
+        })
+
+    }else if(type == 2){
+        var url_load =   getHistoryListUrl() + '&search_flag=1';
+        $('#mapping-history').load(url_load,function(responseTxt,statusTxt,xhr){
+          if(statusTxt=="success"){
+            layer.closeAll('loading');
+          }
+        })
+    }
+
+
+  }
+
+</script>
+<style>
+  .yzc_layer .layui-layer-content{
+    padding: 0 ;
+    text-align: center;
+  }
+  #menu li li a:hover{
+    background-color: #478BFF;
+  }
+</style>
+{#加载layui.js  2019/6/10 add by allen.tai #}
+{#<script type="text/javascript" src="catalog/view/javascript/layui/layui.all.js"></script>#}
+<link href="catalog/view/javascript/select2/css/select2.min.css" rel="stylesheet" />
+<script src="catalog/view/javascript/select2/js/select2.full.js"></script>
+
+{#<link rel="stylesheet" href="catalog/view/javascript/layui/css/layui.css">#}
+{{ footer }}

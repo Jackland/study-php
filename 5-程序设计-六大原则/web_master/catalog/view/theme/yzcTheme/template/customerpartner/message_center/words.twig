@@ -1,0 +1,165 @@
+{% trans_default_category 'catalog/view/customerpartner/message_center/words' %}
+
+{{ this.title('Suggestions on Specific Scenario Corpus') }}
+{{ this.params('breadcrumbs', [
+  'home',
+  'seller_center',
+  {
+    text: 'Message Center',
+    href: 'javascript:void(0)',
+  },
+  'current'
+]) }}
+
+{{ this.params('pageTitle', {
+  show: true,
+  title: 'Suggestions on Specific Scenario Corpus',
+  backUrl: '',
+  buttons: []
+}) }}
+
+{{ css([
+  'css/common/common-ext.css',
+  'static/message/message-common.css',
+  'static/customerpartner/message_center/words.css'
+]) }}
+
+{{ js([
+  'js/common/toolString.js', 
+  'js/common/orisComponents.js'
+]) }}
+
+
+<div id="page-words" class="msgcent msg-page-container">
+  <div class="msgcent msg-form__container">
+    <div class="msgcent msg-form__tip">
+      Welcome to provide suggestions on our Specific Scenario Corpus, and your comments are of value to improve this function. Please fill in the following contents and submit it to the Marketplace for approval. Thank you for your suggestions.
+    </div>
+    <div class="msgcent msg-form__item">
+      <div class="msgcent msg-form__label suggest-content-label">
+        Suggested Content
+      </div>
+      <div class="msgcent msg-form__content">
+        <div class="oris-comments">
+          <textarea rows="4" class="oris-input suggested-content" id="suggested-content" placeholder="Please enter content..."></textarea>
+          <span class="letter-count"><span id="suggested-len" class="link-color">0</span>/500</span>
+        </div>
+      </div>
+    </div>
+    <div class="msgcent msg-form__item" style="margin-top: 10px;">
+      <div class="msgcent msg-form__label choose-type-label">
+        Select applied scenarios
+      </div>
+      <div class="msgcent msg-form__content">
+        {% if types %}
+          {% for type in types %}
+            <span class="type-checkbox-item"><input type="checkbox" name="type" class="oris-checkbox-mini" value="{{ type.id }}"/><span class="type-name">{{ type.en_name }}</span></span>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="btn-container">
+    <button class="oris-button btn-item oris-button-bigger oris-button-default width120" onclick="handleEmpty()">Empty</button>
+    <button class="oris-button btn-item oris-button-bigger width120" onclick="handleSubmit()" id="submit-btn">Submit</button>
+  </div>
+</div>
+<script>
+  //计算word 数量
+  $("#suggested-content").bind('input propertychange change', function () {
+    var val = $("#suggested-content").val();
+    var data = toolString.calcStringLength(val, 500);
+    $("#suggested-content").val(data.fullStr);
+    $("#suggested-len").text(data.len)
+  });
+
+  function handleEmpty() {
+    $('.oris-checkbox').removeAttr('checked');
+    $("#suggested-content").val('');
+    window.location.reload();
+  }
+  var submitLimit = false;
+  function handleSubmit() {
+    if (submitLimit === true) {
+      return ;
+    }
+
+    let content = $("#suggested-content").val();
+    if (content.trim() === '') {
+      $.toast({
+        heading: false,
+        text: 'Please fill in all required fields.',
+        position: 'top-center',
+        showHideTransition: 'fade',
+        icon: 'error',
+        hideAfter: 3000,
+        allowToastClose: false,
+        loader: false,
+      });
+      return;
+    }
+
+    let types = [];
+    $("input[name='type']:checked").each(function () {
+      types.push($(this).val());
+    });
+    if (types.length === 0) {
+      $.toast({
+        heading: false,
+        text: 'Please fill in all required fields.',
+        position: 'top-center',
+        showHideTransition: 'fade',
+        icon: 'error',
+        hideAfter: 3000,
+        allowToastClose: false,
+        loader: false,
+      });
+      return;
+    }
+
+    submitLimit = true;
+    block.blockUI();
+    $("#submit-btn").prop('disabled', true);
+    $.ajax({
+      url: "{{ url('customerpartner/message_center/extension/saveSuggest') }}",
+      type: 'post',
+      data: {types: types, content: content},
+      dataType: 'json',
+      success: function (json) {
+        submitLimit = false
+        if (json.code == 200) {
+          $.toast({
+            heading: false,
+            text: 'Submitted successfully. Thank you for your suggestions.',
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 2000,
+            allowToastClose: false,
+            loader: false,
+            afterHidden: function () {
+              handleEmpty();
+            }
+          });
+        } else {
+          $.toast({
+            heading: false,
+            text: 'Submitted Failed! ',
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+          });
+          $("#submit-btn").prop('disabled', false);
+        }
+        block.unBlockUI();
+      },
+      error: function() {
+        block.unBlockUI();
+        $("#submit-btn").prop('disabled', false);
+      }
+    });
+  }
+</script>

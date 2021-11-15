@@ -1,0 +1,181 @@
+{% trans_default_category 'catalog/view/customerpartner/account/file_manage/index' %}
+<script type="text/x-template" id="img-table">
+    <div>
+        <div class="text-tip-box">
+            <p>
+                <label for="selectAll" class="label-checked">
+                    <input type="checkbox" @click.stop="pageSelectAllRow(event.target)" id="selectAll">
+                    <span v-if="selectData.length === 0">{{ __("全选") }}</span>
+                    <span v-else>{{ __("已选中:num个文件", {num: "${ selectData.length }"}) }}</span>
+                </label>
+            </p>
+        </div>
+        <div class="scroll-box img-height">
+            <div id="flexBox">
+                <div class="image-table-box">
+                    <div class="image-item" v-for="(item, index) in tableData" :key="item.id" :title="item.name">
+                        <label class="label-checked ban-select pointer" :for="'inp' + item.id">
+                            <input :id="'inp' + item.id" class="choose-input" type="checkbox" name="selected[]" :value="JSON.stringify(item)" 
+                                @click.stop="pageSelectOneRow(event.target)" />
+                            <div class="image-frame">
+                                <img class="show-img" :src="item.thumb" alt="">
+                            </div>
+                        </label>
+                        <div class="rename-input image-input" v-show="item.is_rename">
+                            <input class="text-center" type="text" :id="'imgRename' + item.id" :maxLength="item.is_dir ? 50 : 100" 
+                                @keyup.enter="confirmName(index, item.id)" @keyup.esc="cancelName(index)" @click.stop>
+                        </div>
+                        <p :id="'fname' + item.id" class="img-name overflow" v-show="!item.is_rename">${ item.name }</p>
+                    </div>
+                </div>
+                <!-- <p class="loading-tip-text" v-if="loading"><i class="el-icon-loading mr-octal1"></i>{{ __("加载中…") }}</p> -->
+                <!-- <p class="loading-tip-text" v-if="noMore && tableData.length > 0">{{ __("已全部加载") }}</p> -->
+                <div class="oris-empty" v-if="tableData.length <= 0 && noMore">
+                    <div class="oris-empty-container" style="margin-top: 28px">
+                        <div class="oris-empty-icon">
+                            <img src="{{ asset("image/icons/empty.png") }}"></img>
+                        </div>
+                        <p class="none-text-tip">
+                            <span>
+                                ${  !$parent.searchObj.is 
+                                    ? '{{ __("您还没有上传:type，", { type: "' + $parent.fileCHN + '" }) }}' 
+                                    : '{{ __("没有结果")}}' }
+                            </span>
+                            <label class="upload-text" for="uploadFile" v-if="!$parent.searchObj.is">
+                                {{ __("点击上传") }}
+                                <input type="file" id="uploadFile" :accept="acceptType" multiple @change="$parent.handleUpload(event.target)"v>
+                            </label>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page" v-if="tableData.length>0">
+            <el-pagination
+               background
+               @size-change="handleSizeChange"
+               @current-change="handleCurrentChange"
+               :current-page.sync="pageCurrent"
+               :page-sizes="[20, 50, 100, 200, 500]"
+               :page-size="10"
+               layout="prev, pager, next, sizes"
+               :total="total">
+             </el-pagination>
+             <span style="line-height:30px;margin-left:-10px">${tableData.length>0? (pageCurrent-1) * pagesize +1 :0}-${(pageCurrent-1) * pagesize +tableData.length} of ${total}</span>
+         </div>
+    </div>
+</script>
+<script>
+    Vue.component('img-table', {
+        template: '#img-table',
+        delimiters: ['${', '}'],
+        props: {
+            tableData: {
+                type: Array,
+                default: () => ([])
+            },
+            total: {
+                type: Number,
+                default: 1
+            },
+            type: {
+                type: String,
+                default: ''
+            },
+            renameIndex: { // 重命名下标
+                type: Object,
+                default: () => ({ 0: '' })
+            },
+            pageCurrent: {
+                type: Number,
+                default: 1
+            },
+            pagesize:{
+                type: Number,
+                default:10
+            }
+        },
+        data: () => ({
+            acceptType: acceptType,
+            axios: null,
+            loading: false,
+            selectData: [],
+            pageCurrent: 1,
+        }),
+        watch: {
+        },
+        computed: {
+            noMore() {
+                return this.tableData.length >= this.total
+            },
+            disabled() {
+                return this.loading || this.noMore
+            }
+        },
+        created() {
+            this.axios = axios.create({});
+        },
+        methods: {
+            // 执行父级数据加载
+            async loadParent(id, reset) {
+                await this.$parent.scrollLoad(this.type, id, reset);
+                this.$nextTick(() => {
+                    this.loading = false
+                    this.$parent[`${this.type}Condition`].loading = false
+                })
+            },
+            // 触底加载
+            scrollLoad(id = 0, reset = false) {
+                this.loading = true;
+                this.loadParent(undefined, reset);
+            },
+            // 获取多选数据
+            getSelectData() {
+                let select = $(`input[name^='selected']:checked`)
+                this.selectData = []
+                select.map(item => {
+                    this.selectData.push(JSON.parse(select[item].value))
+                })
+                this.$emit('get-select', { selected: this.selectData, type: this.type })
+            },
+            // 修改选中的条数
+            changeSelectNum() {
+                var length = $(`input[name^='selected']:checked`).length;
+                // 判断是否全选中
+                if (length === this.tableData.length) { // 全选
+                    $('#selectAll').prop('checked', true);
+                } else {
+                    $('#selectAll').prop('checked', false);
+                }
+            },
+            // 全选
+            pageSelectAllRow(checkbox) {
+                this.$parent.pageSelectAllRow(checkbox, this.getSelectData, this.changeSelectNum)
+            },
+            // 单选
+            pageSelectOneRow(checkbox) {
+                this.$parent.pageSelectOneRow(checkbox, this.getSelectData, this.changeSelectNum)
+            },
+            // 确认命名
+            async confirmName(index, id) {
+                this.$parent.confirmName(index, `imgRename${id}`)
+            },
+            // 取消命名
+            cancelName(index) {
+                this.$parent.cancelName(index)
+            },
+            handleSizeChange(val){
+                this.$parent.pagesize =val
+                let pageMax = Math.ceil(this.total / val)
+                    if (this.$parent.pageCurrent > pageMax) {
+                    this.$parent.pageCurrent = pageMax
+                }
+                this.$emit('get-file')
+            },
+            handleCurrentChange(val){
+                this.$parent.pageCurrent = val
+                this.$emit('get-file')
+            },
+        }
+    })
+</script>

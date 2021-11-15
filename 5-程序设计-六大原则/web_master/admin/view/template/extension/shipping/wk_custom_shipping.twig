@@ -1,0 +1,154 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-flat" data-toggle="tooltip" title="{{ button_save}}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel}}" data-toggle="tooltip" title="{{ button_cancel}}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title}}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning}}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit}}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action}}" method="post" enctype="multipart/form-data" id="form-flat" class="form-horizontal">
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-title">{{ title}}</label>
+            <div class="col-sm-10">
+              <input type="text" name="shipping_wk_custom_shipping_title" value="{{ shipping_wk_custom_shipping_title}}" placeholder="{{ title}}" id="input-title" class="form-control" />
+              {% if error_title %}
+                <div class="text-danger">{{ error_title}}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-method_title">{{ method_title}}</label>
+            <div class="col-sm-10">
+              <input type="text" name="shipping_wk_custom_shipping_method_title" value="{{ shipping_wk_custom_shipping_method_title}}" placeholder="{{ method_title}}" id="input-method_title" class="form-control" />
+              {% if error_method_name %}
+                <div class="text-danger">{{ error_method_name}}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-method_select">{{ method_select}}</label>
+            <div class="col-sm-10">
+              <select name="shipping_wk_custom_shipping_method" id="input-method_select" class="form-control">
+                 <option value="">Select</option>
+                 <option value="flat" {% if shipping_wk_custom_shipping_method =='flat' %}{{ 'selected' }}{% endif %} >Flat Shipping</option>
+                 <option value="matrix" {% if shipping_wk_custom_shipping_method =='matrix' %}{{ 'selected' }}{% endif %}>Matrix Based Shipping</option>
+                 <option value="both" {% if shipping_wk_custom_shipping_method =='both' %}{{ 'selected' }}{% endif %}>Mix Shipping</option>
+              </select>
+              {% if error_method %}
+                <div class="text-danger">{{ error_method}}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-admin_flatrate">{{ admin_flatrate}}</label>
+            <div class="col-sm-10">
+              <input type="text" name="shipping_wk_custom_shipping_admin_flatrate" value="{{ shipping_wk_custom_shipping_admin_flatrate}}" placeholder="{{ admin_flatrate}}" id="input-admin_flatrate" class="form-control" />
+              {% if error_admin_flatrate %}
+                <div class="text-danger">{{ error_admin_flatrate}}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-texclass">{{ texclass}}</label>
+            <div class="col-sm-10">
+              <select name="shipping_wk_custom_shipping_tax_class_id" id="input-texclass" class="form-control" >
+                <option value="">Select</option>
+                {% for tax_class in tax_classes %}
+                {% if tax_class['tax_class_id'] == shipping_wk_custom_shipping_tax_class_id %}
+                <option value="{{ tax_class['tax_class_id']}}" selected="selected">{{ tax_class['title']}}</option>
+                {% else %}
+                <option value="{{ tax_class['tax_class_id']}}">{{ tax_class['title']}}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_error_msg">{{ error_msg}}</label>
+            <div class="col-sm-10">
+              <textarea name="shipping_wk_custom_shipping_error_msg" id="input-shipping_wk_custom_shipping_error_msg" rows="3" class="form-control">{{ shipping_wk_custom_shipping_error_msg}}</textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_geo_zone_id">{{ entry_geo_zone}}</label>
+            <div class="col-sm-10">
+              <select name="shipping_wk_custom_shipping_geo_zone_id" id="input-shipping_wk_custom_shipping_geo_zone_id" class="form-control">
+                <option value="0">{{ text_all_zones}}</option>
+                {% for geo_zone in geo_zones %}
+                {% if geo_zone['geo_zone_id'] == shipping_wk_custom_shipping_geo_zone_id %}
+                <option value="{{ geo_zone['geo_zone_id']}}" selected="selected">{{ geo_zone['name']}}</option>
+                {% else %}
+                <option value="{{ geo_zone['geo_zone_id']}}">{{ geo_zone['name']}}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_status">{{ entry_status}}</label>
+            <div class="col-sm-10">
+              <select name="shipping_wk_custom_shipping_status" id="input-shipping_wk_custom_shipping_status" class="form-control">
+                {% if shipping_wk_custom_shipping_status %}
+                <option value="1" selected="selected">{{ text_enabled}}</option>
+                <option value="0">{{ text_disabled}}</option>
+                {% else %}
+                <option value="1">{{ text_enabled}}</option>
+                <option value="0" selected="selected">{{ text_disabled}}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_seller_status"><span data-toggle="tooltip" title="{{ entry_seller_status_info }}">{{ entry_seller_status }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+            <div class="col-sm-10">
+              <select name="shipping_wk_custom_shipping_seller_status" id="input-shipping_wk_custom_shipping_seller_status" class="form-control">
+                {% if shipping_wk_custom_shipping_seller_status is defined and shipping_wk_custom_shipping_seller_status %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+                {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_sort_order">{{ entry_sort_order}}</label>
+            <div class="col-sm-10">
+              <input type="text" name="shipping_wk_custom_shipping_sort_order" value="{{ shipping_wk_custom_shipping_sort_order}}" placeholder="{{ entry_sort_order}}" id="input-shipping_wk_custom_shipping_sort_order" class="form-control" />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ footer}}

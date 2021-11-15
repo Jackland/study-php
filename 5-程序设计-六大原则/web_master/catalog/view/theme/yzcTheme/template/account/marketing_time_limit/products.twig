@@ -1,0 +1,7 @@
+{% if products %}
+  {% for product in products %}
+    <div class="hot-product-box-item">
+      {% include 'giga/template/_parts/home.twig' %}
+    </div>
+  {% endfor %}
+{% endif %}

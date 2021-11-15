@@ -1,0 +1,67 @@
+{{ header }}{{ separate_column_left }}
+{% if separate_view is defined and separate_view %}
+  <div class="container-fluid" id="content" style="margin-left: 18%">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  {% if error_warning %}
+  <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ error_warning}}</div>
+  {% endif %}
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+    {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class}}"> {{ content_top}}
+      <h1>
+        {{ heading_title}}
+        <div class="pull-right">
+          <button type="submit" form="form-shipping" data-toggle="tooltip" title="{{ button_save}}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+          <a href="{{ cancel}}" data-toggle="tooltip" title="{{ button_cancel}}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        </div>
+      </h1>
+
+      <fieldset>
+      <legend><i class="fa fa-list"></i> {{ text_mpshipping}}</legend>
+      {% if isMember %}
+        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ text_separator_info}}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <form action="{{ action}}" method="post" enctype="multipart/form-data" id="form-shipping" class="form-horizontal">
+
+          {% if shippingTable %}
+            {% for value in shippingTable %}
+              <div class="form-group">
+                  <label class="col-sm-2 control-label"><span data-toggle="tooltip" title="">{{ (value|replace({'_' : ' '}))|capitalize  }}</span></label>
+
+                  <div class="col-sm-10">
+                    <select name="{{ value}}" class="form-control">
+                        <option value=""></option>
+                        {% for key, field in fields %}
+                          <option value="{{ key}}" {% if field|lower == value|lower %}{{ 'selected' }}{%endif %} >{{ field}}</option>
+                        {% endfor %}
+                        </select>
+                  </div>
+                </div>
+            {% endfor %}
+          {% endif %}
+        </form>
+      {% else %}
+        <div class="text-danger">
+          {{ error_warning_authenticate}}
+        </div>
+      {% endif %}
+    </fieldset>
+
+    {{ content_bottom}}</div>
+    {{ column_right}}</div>
+  </div>
+{{ footer}}

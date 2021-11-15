@@ -1,0 +1,124 @@
+{{ this.title('Account Settings') }}
+{{ this.params('breadcrumbs', [
+  'current'
+]) }}
+{{ this.params('pageTitle', {backUrl: false}) }}
+{{ css(['css/common/common.css','css/admin/app.css']) }}
+<style>
+    label.required::before {
+        content: '*';
+        color: #ff414d;
+    }
+    .change {
+        color: #3A75DC;
+        line-height: 40px;
+        margin-left: 10px;
+
+    }
+
+    .change:hover {
+        cursor: pointer;
+    }
+
+    .check {
+        /*display: none;*/
+        font-size: 12px;
+        color: #ff414d;
+    }
+
+    .modal .header-pop-up {
+        width: 380px;
+    }
+
+    .essentials h5 {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .essentials .header-pop-up-list {
+        padding: 10px 15px;
+    }
+
+    #password_old,#password_new,#password_repeat{
+        text-security:disc;
+        -webkit-text-security:disc;
+        -mox-text-security:disc;
+    }
+    .modal-header{
+        padding: 9px 15px;
+    }
+    #email-modal .footer .btn,
+    #password-modal .footer .btn{
+        height:35px ;
+    }
+
+    #confirm-email-modal .footer .btn,
+    #confirm-pwd-modal .footer .btn{
+        height: 30px;
+        padding: 5px 13px;
+    }
+    .btn.btn-primary{
+        background-color: #3A75DC;
+        color: #fff;
+    }
+    .btn.btn-primary:hover{
+        background-color: #2d57a9;
+    }
+    .btn.btn-default:hover{
+        background-color: #3A75DC;
+        color: #fff;
+    }
+
+
+    .edit .oris-input{
+        width: 300px;
+    }
+    .edit .oris-input[disabled]{
+        background-color: #fafafa;
+    }
+    .edit label{
+      margin-bottom: 10px;
+    }
+    .edit > div{
+        margin-bottom: 24px;
+    }
+</style>
+<div id="box-shadow" style="overflow: hidden;padding: 20px">
+    <form role="form" class="edit">
+      <div>
+        <label class="text-weight-normal" for="userId">User ID Number</label>
+        <div class="input">
+          <input type="text" name="userId" value="{{ user_info.user_number }}"
+                 id="userId" class="oris-input" disabled/>
+        </div>
+      </div>
+      <div>
+        <label class="text-weight-normal required" for="email"> Email Address</label>
+        <div class="input">
+          <input type="text" name="email" value="{{ user_info.email }}" id="email"
+                 class="oris-input" disabled />
+        </div>
+      </div>
+      <div>
+        <label class="text-weight-normal required" for="input-email">Phone</label>
+        <div class="input">
+          <input disabled type="text" name="phone" value="{{ user_info.phone }}" id="phone"
+                 class="oris-input"/>
+          {% if user_info.can_change_phone %}
+          <a class="change change-phone" href="{{ url('account/phone/change') }}">Change</a>
+          {% endif %}
+          <div class="check check-phone" id="check_phone"></div>
+        </div>
+      </div>
+      <div>
+        <label class="text-weight-normal" for="input-country"> Password </label>
+        <div class="input">
+          <input disabled type="text" name="password" value="{{ user_info.password }}" id="password"
+                 class="oris-input"/>
+          {% if user_info.can_change_password %}
+          <a class="change password-change" href="{{ url('account/password/change') }}">Change</a>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+</div>

@@ -1,0 +1,54 @@
+{{ this.title('Purchase Order Management') }}
+{{ this.params('breadcrumbs', [
+  'home',
+  'current'
+]) }}
+{{ css(['css/common/common.css']) }}
+{{ cssOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css']) }}
+{{ jsOrigin(['/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js','catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js']) }}
+
+{# 以下引入是日期范围选择器 #}
+{{ js(['js/common/dateRangePicker.js']) }}
+{{ css(['css/common/dateRangePicker.css']) }}
+
+{# 定义nav导航数组 #}
+{% if is_america ==1 %}
+{% set navDatas = [
+  {'id':'tab_purchase_order','name': 'Product', 'url': purchase_order_url, 'isShow': true,'is_america':is_america},
+  {'id':'tab_fee_order','name':'Charges', 'url': fee_order_url, 'isShow': true,'is_america':is_america},
+  {'id':'tab_purchase_invoice','name':'Invoice', 'url': invoice_url, 'isShow': true,'is_america':is_america}
+  ]
+%}
+{% else %}
+{% set navDatas = [
+  {'id':'tab_purchase_order','name': 'Product', 'url': purchase_order_url, 'isShow': true,'is_america':is_america},
+  {'id':'tab_fee_order','name':'Charges', 'url': fee_order_url, 'isShow': true,'is_america':is_america},
+  ]
+%}
+{% endif %}
+<div class="page-content">
+  {{ this.params('title', this.getTitle()) }}
+  <div class="nav-oris">
+    <div class="oris-row">
+      <ul class="nav nav-tabs main" role="tablist">
+        {% for one in navDatas %}
+          {% if one.isShow %}
+            <li>
+              <a href="#{{one.id}}" role="tab" data-toggle="tab-ajax" data-url="{{ one.url }}" is_america="{{one.is_america}}">
+                {{one.name}}
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    {#tab页对应内容#}
+    <div class="tab-content m10-b">
+      {% for one in navDatas %}
+        {% if one.isShow %}
+          <div class="tab-pane" id="{{one.id}}"></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>

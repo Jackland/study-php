@@ -1,0 +1,455 @@
+<style>
+    .argeement-title-down-icon,.open-protocol{
+        float: right;
+        color: #666666;
+        font-weight: 500;
+    }
+    .product-info-protocol0 {
+        width: 40%;
+        display: none;
+    }
+    .product-info-protocol0 i,
+    .product-info-protocol i{
+        cursor: pointer;
+    }
+    .protocol-list {
+        border: 1px solid #EEEEEE;
+        padding: 7px 0 ;
+        height: 120px;
+        position: relative;
+    }
+    .protocol-list-box{
+        height: 111px;
+        overflow: hidden;
+        position: relative;
+        overflow-x:auto;
+    }
+    .protocol-list-box:hover::-webkit-scrollbar-thumb{
+        background-color:#b8b8b8;
+    }
+    .protocol-title, .product-info-protocol0 {
+        width: 100%;
+        height: 32px;
+        line-height: 32px;
+        background-color: #FFE0CC;
+        padding-right: 14px;
+        color: #fff;
+    }
+    .argeement-title{
+        position: relative;
+        display: inline-block;
+        width: 168px;
+        line-height: 32px;
+        background: #333333;
+        font-size: 14px;
+        font-family: Arial;
+        font-weight: unset;
+        color: #FFFFFF;
+        padding-left: 23px;
+    }
+    .argeement-title:after{
+        position: absolute;
+        content: '';
+        border-left: 20px solid #333;
+        border-bottom: 32px solid #FFE0CC;
+        right: -20px;
+    }
+    .protocol-header{
+        display:flex;
+        justify-content:space-between;
+        line-height: 22px;
+        width: 100%;
+    }
+    .protocol-type{
+        font-size: 12px;
+        font-family: Arial;
+        font-weight: bold;
+        color: #333333;
+        display:inline-block;
+        width:50%
+    }
+    .protocol-border{
+        margin:6px 0 10px 0;
+        height:1px;
+        background-color:#dcdcdc;
+    }
+    .protocol-font{
+        font-size: 12px;
+        font-family: Arial;
+        font-weight: 400;
+        color: #666666;
+        }
+    .protocol-price{
+       font-size: 14px;
+       font-family: Arial;
+       font-weight: bold;
+       color: #666666;
+    }
+     .protocol-prices{
+         font-size: 14px;
+         font-family: Arial;
+         font-weight: bold;
+         color: #666666;
+      }
+    .protocol-price-active{
+        color:#FF6600;
+     }
+    .protocol-time{
+        font-size: 12px;
+        font-family: Arial;
+        font-weight: 400;
+        color: #E2211C;
+        display:inline-block;
+        float:right;
+        margin-top:4px;
+    }
+    .protocl-btn{
+        width: 20px;
+        height: 66px;
+        line-height: 33px;
+        position: absolute;
+        right: 2px;
+        top: 25px;
+    }
+    .protocl-btn button{
+        padding: 0;
+        margin: 0;
+        background: #fff;
+        border: unset;
+    }
+
+    .protocol-wrapper{
+        width: calc(100% - 32px);
+        position: relative;
+        height: 100px;
+        /*column-count: 1;*/
+        white-space: nowrap;
+        padding-left: 0;
+        margin:0 6px;
+    }
+    .protocol-wrapper-slide{
+        display: inline-block;
+        width: calc(25% - 1px);
+        background: #EEEEEE;
+        padding: 6px 10px 10px 10px;
+        margin-right: 4px;
+        cursor: pointer;
+        height: 100%;
+        vertical-align: middle;
+    }
+    .rebate-li{
+        width: calc(12.5% - 0.5px);
+    }
+    .protocol-wrapper-slide:hover{
+        background: #FFf0e6;
+    }
+    .protocol-wrapper-slide-active{
+        background: #FFf0e6;
+    }
+
+    .margin-bottom-10{
+        margin-bottom: 10px;
+    }
+    @media screen and (max-width: 1706px) {
+        .protocol-wrapper-slide{
+            width: calc(34% - 2px);
+            margin-right: 3px;
+            right: 0;
+           }
+        .rebate-li{
+            width: calc(17% - 1px);
+           }
+        .protocl-btn{
+            right: 0;
+           }
+    }
+        .protocol-list-box::-webkit-scrollbar-thumb{
+         height:5px;
+         border-radius: 10px;
+      }
+        /*---鼠标点击滚动条显示样式--*/
+        .protocol-list-box::-webkit-scrollbar-thumb:hover{
+          height:5px;
+          background-color:#b8b8b8;
+          border-radius: 10px;
+      }
+        /*---滚动条大小--*/
+        .protocol-list-box::-webkit-scrollbar{
+           width:0px;
+           height:5px;
+      }
+        .protocol-list-box::-webkit-scrollbar-track { background-color: #eee; } /* 滚动条的滑轨背景颜色 */
+        .protocol-list-box::-webkit-scrollbar-thumb { background-color: #dcdcdc } /* 滑块颜色 */
+</style>
+
+{% if transaction_info.transaction_type %}
+    <div class="margin-bottom-10">
+        <div class="product-info-protocol0">
+            <span class="argeement-title">My Agreement(s)</span>
+            <i class="giga icon-icon-GIS_shouqi--copy open-protocol" data-toggle="tooltip" title="" data-original-title="View"></i>
+        </div>
+        <div class="product-info-protocol">
+            <div class="protocol-title">
+                <span class="argeement-title">My Agreement(s)</span>
+                <i class="giga icon-icon-GIS_shouqi- close-protocol argeement-title-down-icon" data-toggle="tooltip" title="" data-original-title="Hide"></i>
+            </div>
+          {# 协议列表 #}
+          <div class="protocol-list">
+            <div class="protocol-list-box">
+              <ul class="protocol-wrapper" id="wrapperBox">
+                {% for k,v in  transaction_info.transaction_type %}
+                  <li
+                    class="protocol-wrapper-slide handleProductPriceClass  {% if v.agreement_name=='Spot Price' or v.agreement_name=='Rebate' %} rebate-li{% endif %}"
+                    id="transaction_type{{ v.id }}" data-key="{{ k }}"
+                    onclick="handleProductPrice(this)"
+                    data-value="{{ v.id }}_{{ v.type }}"
+                    agreement_code="{{ v.agreement_code }}"
+                    agreement_name="{{ v.agreement_name }}"
+                    deposit_per="{{ v.deposit_per|default(0) }}"
+                  {% if v.type == 4 %}
+                    mean="{{ v.price_show }}_{{ v.price_all_show }}_{{ k }}_{{ v.qty }}"
+                  {% else %}
+                    mean="{{ v.price_show }}_{{ v.price_all_show }}_{{ k }}_{{ v.left_qty }}"
+                  {% endif %}
+                  {% if v.type==3 %}
+                    futures_version="{{ v.version }}"
+                  {% endif %}>
+                    <div class="protocol-type">{{ v.agreement_name }}</div>
+                  {# 倒计时 #}
+                  {% if v.type in [2,3] %}
+                    <div class="protocol-time" style="visibility: hidden">
+                      <i class="giga icon-naozhong" style="font-size: 13px"></i>
+                      <span class="protocol-down-title"></span>
+                      <span
+                        class="protocol-count-down"
+                        style="display: none"
+                        data-expire_time="{{ v.expire_time }}"
+                        data-day="{{ v.day }}">{{ v.left_time_secs }}
+                      </span>
+                    </div>
+                  {% endif %}
+                    <div class="protocol-border"></div>
+                    {% if v.type in [2,3] %} {# 现货-2 期货-3 显示协议价格 #}
+                      <div class="protocol-header">
+                        <div class="protocol-font">Agreed Price</div>
+                        <div class="protocol-prices">{{ v.agree_price_show }}</div>
+                      </div>
+                    {% endif %}
+                    <div class="protocol-header">
+                      {% if v.type in [2,3] %}
+                        <div class="protocol-font">Due Payment </div>
+                      {% endif %}
+                      <div class="protocol-price {% if loop.first %}protocol-price-active {% endif %}">{{ v.price_show }}</div>
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+             {#切换按钮 #}
+           {# {% if count_transaction_type>4 %}
+              <div class="protocl-btn">
+                <button id="turnLeftBtn" class="btn" onclick="handlePrev()">
+                  <i class="giga icon-V10_youjiantougengduo" type="button"></i>
+                </button>
+                <button id="turnRightBtn" class="btn" onclick="handleNext()" disabled>
+                  <i class="giga icon-V10_zuocejiantou" type="button"></i>
+                </button>
+              </div>
+            {% endif %}#}
+          </div>
+
+        </div>
+    </div>
+
+{% endif %}
+
+<input type="hidden" name="transaction_type" id="transaction_type" value="">
+<input type="hidden" name="agreement_code" value="">
+<input type="hidden" name="agreement_name" value="">
+<input type="hidden" name="mean" id="mean" value="">
+<input type="hidden" name="deposit_per" id="deposit_per" value="">
+<input type="hidden" id="futures_version" value="">
+
+<script>
+  var selected_id='{{ transaction_info.first_get.id }}';
+  var key0 = $("#transaction_type" + selected_id).attr("data-key");
+  if (key0 <= 3 || key0 == undefined) {
+    key0 = 0;
+  }
+
+  $(".close-protocol").on('click', function () {
+    $(".product-info-protocol").hide();
+    $(".product-info-protocol0").show();
+  });
+  $(".open-protocol").on('click', function () {
+    $(".product-info-protocol").show();
+    $(".product-info-protocol0").hide();
+  });
+
+
+
+  // 初始化，加载倒计时
+  $(function () {
+     countDown();
+     setInterval(countDown, 1000);
+      setStyleById("#turnRightBtn",true,'#999');
+  });
+  // 倒计时
+  function countDown() {
+    $(".protocol-count-down").each((k, obj) => {
+      let marginDay = $(obj).data('day') || 7;
+      let lastTime = obj.innerHTML;
+      $(obj).text(--lastTime);
+      // 判断时间是否大于当前时间
+      if (lastTime > 0) {
+        let day = lastTime / (60 * 60 * 24);
+        if (day > parseInt(day) && day > 1) {
+          day = parseInt(day) + 1;
+        }
+
+        $(obj).parent('.protocol-time').css({'visibility': 'unset'});
+        // 是否大于一天
+        if (day > 1) {
+          if (day <= 7) {
+            $(obj).prev('.protocol-down-title').text(day + ' days Left');
+            ($(obj).parent().parent('.protocol-wrapper-slide-active').length == 1) && $("#fixed_countdown").find(".value .countdown-time").text(day + ' days Left');
+          } else {
+            $(obj).parent('.protocol-time').css({'visibility': 'hidden'});
+            ($(obj).parent().parent('.protocol-wrapper-slide-active').length == 1) && $("#fixed_countdown").find(".value .countdown-time").text((day > marginDay ? marginDay: day) + ' days Left');
+          }
+        } else {
+          // 减掉一秒,并获取最新的值
+          let timeObj = secToTime(lastTime);
+          $(obj).prev('.protocol-down-title').text(timeObj.time1);
+          if ($(obj).parent().parent('.protocol-wrapper-slide-active').length == 1) {
+            $("#fixed_countdown").find(".value .countdown-time").text(timeObj.time1);
+          }
+        }
+      } else {
+        $(obj).parent('.protocol-time').css({'visibility': 'unset'});
+        $(obj).prev('.protocol-count-down').remove();
+        $(obj).prev('.protocol-down-title').text('00:00:00');
+        if ($(obj).parent().parent('.protocol-wrapper-slide-active').length == 1) {
+          $("#fixed_countdown").find(".value .countdown-time").text('00:00:00');
+        }
+      }
+    })
+  }
+
+  /**
+   * 获取时分秒
+   * @param secs 需要转换的时间秒
+   * @returns {time1: string, time2: string}
+   */
+  function secToTime(secs) {
+    if (secs <= 0) {
+      return "00:00:00";
+    }
+    let second = parseInt(secs);
+    let minute = 0;// 分
+    let hour = 0;// 小时
+    let day = 0;// 天
+    if (second >= 60) {
+      minute = parseInt(second / 60);
+      second = parseInt(second % 60);
+      if (minute >= 60) {
+        hour = parseInt(minute / 60);
+        minute = parseInt(minute % 60);
+        if (hour >= 24) {
+          //大于24小时
+          day = parseInt(hour / 24);
+          hour = parseInt(hour % 24);
+        }
+      }
+    }
+
+    var currentTime = addZero(hour) + ":" + addZero(minute) + ":" + addZero(second);
+    var obj = {
+      time1: currentTime,
+      time2: day + " day " + currentTime,
+    };
+    return obj;
+  }
+
+  // 小于10补0
+  function addZero(i) {
+      return i < 10 ? "0" + i: i + "";
+  }
+
+
+  var count ='{{ count_transaction_type }}' -4;
+  // 左边能够切换的次数
+  var clickLeftCount= count;
+  var clickRightCount = 0;
+
+  // 上一个
+  function handlePrev() {
+      // li的宽度
+      var width = $(".protocol-wrapper-slide")[0].clientWidth+7;
+
+      if(clickLeftCount>0){
+          if(clickLeftCount==1&&count%2==1){
+              clickLeftCount--;
+              clickRightCount++;
+          }else{
+              clickLeftCount-=2;
+              clickRightCount+=2;
+          }
+          $("#wrapperBox").animate({left:-(count-clickLeftCount)*width+'px'});
+          setDisabled();
+      }
+  };
+  //下一个
+  function handleNext() {
+      // li的宽度
+      var width = $(".protocol-wrapper-slide")[0].clientWidth+7;
+
+      if(clickRightCount>0){
+          if(clickRightCount==1&&count%2==1){
+              clickLeftCount++;
+              clickRightCount--;
+          }else{
+              clickLeftCount+=2;
+              clickRightCount-=2;
+          }
+          $("#wrapperBox").animate({left:-(count-clickLeftCount)*width+'px'});
+
+          setDisabled();
+      }
+  };
+
+  // 设置黑灰
+  function setDisabled(){
+      if(clickLeftCount==0){
+          setStyleById("#turnLeftBtn",true,'#999');
+      }else{
+          setStyleById("#turnLeftBtn",false,'#333');
+      }
+
+      if(clickRightCount==0){
+          setStyleById("#turnRightBtn",true,'#999');
+      }else{
+          setStyleById("#turnRightBtn",false,'#333');
+      }
+  }
+
+  // 设置样式
+  function setStyleById(id,flag,color){
+      $(id).attr('disabled',flag);
+      $(id).css('color',color);
+  }
+
+  // 监听点击事件
+  $(".protocol-wrapper-slide").on('click',function () {
+      $(".handleProductPriceClass").removeClass("active");
+      $(".handleCustomerClass").removeClass("active");
+      $(".handleSpotPriceClass").removeClass("active");
+      $(".price .pcs").removeClass("active");
+      $(this).addClass("active");
+
+      $('.protocol-wrapper-slide').removeClass('protocol-wrapper-slide-active');
+      $(this).addClass('protocol-wrapper-slide-active');
+      $('.protocol-price').removeClass('protocol-price-active');
+      $(this).find('.protocol-price').addClass('protocol-price-active');
+  });
+</script>

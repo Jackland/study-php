@@ -1,0 +1,135 @@
+{{ header }}{{ separate_column_left }}
+<style>
+.dropdown-menu {
+  position: absolute !important;
+}
+</style>
+{% if separate_view is defined and separate_view %}
+  <div class="container-fluid" id="content" style="margin-left: 18%">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li>
+        <a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-check-circle"></i> {{ error_warning }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>
+  {% endif %}
+
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+      {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+      {% set class = 'col-sm-9' %}
+    {% else %}
+      {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">{{ content_top }}
+      {% if chkIsPartner %}
+      <h1>{{ text_edit }}
+        <div class="pull-right">
+          {% if marketplace_sellereditreview %}
+            <button type="submit" form="form-review" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+          {% endif %}
+          <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        </div>
+      </h1>
+
+      <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-review" class="form-horizontal">
+        <div class="form-group required">
+          <label class="col-sm-2 control-label" for="input-customer"><span data-toggle="tooltip" title="{{ help_customer }}">{{ entry_customer }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+          <div class="col-sm-10">
+            <input type="text" name="customer" value="{{ customer }}" placeholder="{{ entry_customer }}" id="input-customer" class="form-control" />
+            <input type="hidden" name="customer_id" value="{{ customer_id }}" />
+            {% if error_customer %}
+            <div class="text-danger">{{ error_customer }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group required">
+          <label class="col-sm-2 control-label" for="input-text">{{ entry_text }}</label>
+          <div class="col-sm-10">
+            <textarea name="text" cols="60" rows="8" placeholder="{{ entry_text }}" id="input-text" class="form-control">{{ text }}</textarea>
+            {% if error_text %}
+            <div class="text-danger">{{ error_text }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if review_fields is defined and review_fields %}
+          {% for review_field in review_fields %}
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-{{ review_field['field_name'] }}">{{ review_field['field_name'] }}</label>
+              <div class="col-sm-10">
+                {% for i in 1..5 %}
+                  <label class="radio-inline">
+                    {% if review_attributes[review_field['field_id']] is defined and review_attributes[review_field['field_id']] == i %}
+                    <input type="radio" name="review_attributes[{{ review_field['field_id'] }}]" value="{{ i }}" checked="checked" />
+                    {{ i }}
+                    {% else %}
+                    <input type="radio" name="review_attributes[{{ review_field['field_id'] }}]" value="{{ i }}" />
+                    {{ i }}
+                    {% endif %}
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+        <div class="form-group">
+          <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+          <div class="col-sm-10">
+            <select name="status" id="input-status" class="form-control">
+              {% if status %}
+              <option value="1" selected="selected">{{ text_enabled }}</option>
+              <option value="0">{{ text_disabled }}</option>
+              {% else %}
+              <option value="1">{{ text_enabled }}</option>
+              <option value="0" selected="selected">{{ text_disabled }}</option>
+              {% endif %}
+            </select>
+          </div>
+        </div>
+      </form>
+
+      {% endif %}
+      {{ content_bottom }}</div>
+    {{ column_right }}</div>
+</div>
+<script type="text/javascript"><!--
+{% if customer_id %}
+   var customer_id = {{ customer_id }};
+{% else %}
+   var customer_id = '';
+{% endif %}
+
+$('input[name=\'customer\']').autocomplete({
+  'source': function(request, response) {
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/review/autocomplete&filter_customer=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['customer_id']
+          }
+        }));
+      }
+    });
+  },
+  'select': function(item) {
+
+    $('input[name=\'customer\']').val(item['label']);
+    $('input[name=\'customer_id\']').val(item['value']);
+    customer_id = item['value'];
+  }
+});
+
+//--></script>
+{{ footer }}

@@ -1,0 +1,44 @@
+/* 批次库存查询 */
+.padding19{
+    padding:19px 0;
+}
+
+
+.batch-date-btn{
+    height: 40px;
+}
+
+.display-div{
+    display: flex;
+}
+
+.table > thead > tr > th{
+    border: unset !important;
+
+}
+
+.table thead tr,.table tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+.batch-filter-btn{
+    width: 40px;
+    height: 40px;
+}
+
+.bootstrap-table .fixed-table-pagination>.pagination-detail, .bootstrap-table .fixed-table-pagination>.pagination{
+    margin-bottom: 0 !important;
+}
+
+.overflow-text{
+    width: 200px;
+    display: inline-block;
+    height: unset;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.tooltip-inner{
+    word-break:break-all;
+}

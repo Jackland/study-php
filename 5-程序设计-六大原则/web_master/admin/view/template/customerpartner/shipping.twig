@@ -1,0 +1,286 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <a href="{{ addshipping}}" data-toggle="tooltip" title="{{ button_shipping}}" class="btn btn-primary"><i class="fa fa-plus"></i></a>
+      </div>
+      <h1>{{ heading_title}}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning}}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success}}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-list"></i> {{ heading_title}}</h3>
+      </div>
+
+      <div class="panel-body">
+        <div class="well">
+          <div class="row">
+
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label class="control-label" for="input-name">{{ customer_name}}</label>
+                <div class='input-group'>
+                  <input type="text" name="filter_name" value="{{ filter_name}}" placeholder="{{ customer_name}}" id="input-name" class="form-control" />
+                  <span class="input-group-addon"><span class="fa fa-angle-double-down"></span>
+                    </span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="input-country">{{ shipping_country}}</label>
+                <input type="text" name="filter_country" value="{{ filter_country }}" placeholder="{{ shipping_country}}" id="input-country" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="input-weight_from">{{ weight_from}}</label>
+                <input type='text' name="filter_weight_from" value="{{ filter_weight_from}}" placeholder="{{ weight_from}}" id="input-weight_from" class="form-control date" />
+              </div>
+            </div>
+
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label class="control-label" for="input-zip_to">{{ zip_to}}</label>
+                <input type="text" name="filter_zip_to" value="{{ filter_zip_to}}" placeholder="{{ zip_to}}" id="input-zip_to" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="input-zip_from">{{ zip_from}}</label>
+                <input type="text" name="filter_zip_from" value="{{ filter_zip_from}}" placeholder="{{ zip_from}}" id="input-zip_from" class="form-control" />
+              </div>
+            </div>
+
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label class="control-label" for="input-price">{{ price}}</label>
+                <input type="text" name="filter_price" value="{{ filter_price}}" placeholder="{{ price}}" id="input-price" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="input-weight_to">{{ weight_to}}</label>
+                <input type="text" name="filter_weight_to" value="{{ filter_weight_to}}" placeholder="{{ weight_to}}" id="input-weight_to" class="form-control" />
+              </div>
+              <button type="button" onclick="filter();" class="btn btn-primary pull-right"><i class="fa fa-search"></i> {{ button_filter}}</button>
+              <button type="button" onclick="clearfilter();" class="btn btn-danger pull-right" style="margin-right: 5%;"><i class="fa fa-search"></i> {{ button_clear_filter}}</button>
+            </div>
+          </div>
+        </div>
+
+        <form action="{{ delete}}" method="post" enctype="multipart/form-data" id="form">
+
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                <td width="1" style="text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></td>
+                  <td class="text-left">
+                    {% if sort == 'name' %}
+                    <a href="{{ sort_name}}" class="{{ order|lower }}">{{ customer_name}}</a>
+                    {% else %}
+                    <a href="{{ sort_name}}">{{ customer_name}}</a>
+                    {% endif %}
+                  </td>
+                  <td class="text-left">
+                    {% if sort == 'cs.country_code' %}
+                    <a href="{{ sort_country_code}}" class="{{ order|lower }}">{{ shipping_country}}</a>
+                    {% else %}
+                    <a href="{{ sort_country_code}}">{{ shipping_country}}</a>
+                    {% endif %}
+                  </td>
+                  <td class="text-left">
+                    {% if sort == 'cs.zip_from' %}
+                    <a href="{{ sort_zip_from}}" class="{{ order|lower }}">{{ zip_from}}</a>
+                    {% else %}
+                    <a href="{{ sort_zip_from}}">{{ zip_from}}</a>
+                    {% endif %}
+                  </td>
+                  <td class="text-left">
+                    {% if sort == 'cs.zip_to' %}
+                    <a href="{{ sort_zip_to}}" class="{{ order|lower }}">{{ zip_to}}</a>
+                    {% else %}
+                    <a href="{{ sort_zip_to}}">{{ zip_to}}</a>
+                    {% endif %}
+                  </td>
+                  <td class="text-left">
+                    {% if sort == 'cs.price' %}
+                    <a href="{{ sort_price}}" class="{{ order|lower }}">{{ price}}</a>
+                    {% else %}
+                    <a href="{{ sort_price}}">{{ price}}</a>
+                    {% endif %}
+                  </td>
+                  <td class="text-left">
+                    {% if sort == 'cs.weight_from' %}
+                    <a href="{{ sort_weight_from}}" class="{{ order|lower }}">{{ weight_from}}</a>
+                    {% else %}
+                    <a href="{{ sort_weight_from}}">{{ weight_from}}</a>
+                    {% endif %}
+                  </td>
+                  <td class="text-left">
+                    {% if sort == 'cs.weight_to' %}
+                    <a href="{{ sort_weight_to}}" class="{{ order|lower }}">{{ weight_to}}</a>
+                    {% else %}
+                    <a href="{{ sort_weight_to}}">{{ weight_to}}</a>
+                    {% endif %}
+                  </td>
+                  <td class="text-left">{{ max_days}}</td>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% if result_shipping %}
+                {% for result_shippings in result_shipping %}
+                  <tr>
+                    <td style="text-align: center;">
+                      {% if result_shippings['selected'] %}
+                        <input type="checkbox" name="selected[]" value="{{ result_shippings['id']}}" checked="checked" />
+                      {% else %}
+                        <input type="checkbox" name="selected[]" value="{{ result_shippings['id']}}" />
+                      {% endif %}
+                    </td>
+                      <td class="text-left" >{{ result_shippings['name']}}</td>
+                      <td class="text-left">{{  result_shippings['countey']}}</td>
+                      <td class="text-left" >{{ result_shippings['zip_from']}}</td>
+                      <td class="text-left">{{ result_shippings['zip_to']}}</td>
+                      <td class="text-left">{{  result_shippings['price']}}</td>
+                      <td class="text-left">{{ result_shippings['weight_from']}}</td>
+                      <td class="text-left">{{ result_shippings['weight_to']}}</td>
+                      <td class="text-left">{{ result_shippings['max_days']}}</td>
+                  </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                  <td class="text-center" colspan="12">{{ "no records founds"}}</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </form>
+
+
+        {#分页#}
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="pull-left">
+              {#左侧删除#}
+              <div class="table-bottom-action">
+                <div class="bottom-action-left">
+                  <i class="fa fa-right-angle"></i>
+                  <button type="button" data-toggle="tooltip" title="{{ button_delete}}" class="btn btn-danger" onclick="confirm('{{ text_confirm}}') ? $('#form').submit() : false;"><i class="fa fa-trash-o"></i></button>
+                  <span class="bottom-action-detail"></span>
+                </div>
+              </div>
+            </div>
+            <div class="pull-right">{{ pagination }}</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript"><!--
+
+$('#form input').keydown(function(e) {
+  if (e.keyCode == 13) {
+    filter();
+  }
+});
+
+function filter() {
+
+  url = 'index.php?route=customerpartner/shipping&user_token={{ user_token}}';
+
+  var filter_name = $('input[name=\'filter_name\']').val();
+
+  if (filter_name) {
+    url += '&filter_name=' + encodeURIComponent(filter_name);
+  }
+
+  var filter_country = $('input[name=\'filter_country\']').val();
+
+  if (filter_country) {
+    url += '&filter_country=' + encodeURIComponent(filter_country);
+  }
+
+  var filter_price = $('input[name=\'filter_price\']').val();
+
+  if (filter_price) {
+    url += '&filter_price=' + encodeURIComponent(filter_price);
+  }
+
+  var filter_zip_to = $('input[name=\'filter_zip_to\']').val();
+
+  if (filter_zip_to) {
+    url += '&filter_zip_to=' + encodeURIComponent(filter_zip_to);
+  }
+
+  var filter_zip_from = $('input[name=\'filter_zip_from\']').val();
+
+  if (filter_zip_from) {
+    url += '&filter_zip_from=' + encodeURIComponent(filter_zip_from);
+  }
+
+  var filter_weight_to = $('input[name=\'filter_weight_to\']').val();
+
+  if (filter_weight_to) {
+    url += '&filter_weight_to=' + encodeURIComponent(filter_weight_to);
+  }
+
+  var filter_weight_from = $('input[name=\'filter_weight_from\']').val();
+
+  if (filter_weight_from) {
+    url += '&filter_weight_from=' + encodeURIComponent(filter_weight_from);
+  }
+
+  location = url;
+}
+
+function clearfilter() {
+  url = 'index.php?route=customerpartner/shipping&user_token={{ user_token}}';
+  location = url;
+}
+
+$('input[name=\'filter_name\']').autocomplete({
+  delay: 0,
+  source: function(request, response) {
+
+    $.ajax({
+      url: 'index.php?route=customerpartner/partner/autocomplete&user_token={{ user_token}}&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item.name,
+            value: item.id
+          }
+        }));
+      }
+    });
+  },
+  select: function(item) {
+    $('input[name=\'filter_name\']').val(item.label);
+
+    return false;
+  },
+  focus: function(item) {
+      return false;
+  }
+});
+//--></script>
+{{ footer}}

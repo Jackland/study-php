@@ -1,0 +1,176 @@
+/* 头部信息部分 */
+::-webkit-scrollbar {
+  width: 0;
+}
+
+.receipt-apply-container-fluid {
+  margin-left: 235px;
+  margin-right: 20px;
+  margin-top: 60px;
+}
+
+.receipt-view-outter-container {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.receipt-view-outter-container #main-content {
+  padding-bottom: 156px;
+}
+
+.receipt-apply-container-fluid .pull-right a {
+  color: #eee;
+  background-color: #478bff;
+}
+
+.receipt-apply-container {
+  font-size: 13px;
+  border-radius: 3px;
+  background-color: #fff;
+  padding: 36px 20px 56px 20px;
+  box-shadow: #aaa 0 0 6px;
+}
+
+.receipt-apply-container .form-control {
+  width: 198px;
+  height: 40px;
+}
+
+.receipt-apply-container .red {
+  color: #f00;
+}
+
+.receipt-apply-container .header-info-container {
+  padding-bottom: 12px;
+}
+
+.receipt-apply-container .header-info-row {
+  display: flex;
+  padding-bottom: 36px;
+}
+
+.receipt-apply-container .header-info-item {
+  flex: 1;
+  display: flex;
+}
+
+.receipt-apply-container .header-info-item #portContainer {
+  display: flex;
+}
+
+.receipt-apply-container .header-info-item #cityContainer {
+  display: flex;
+}
+
+.receipt-apply-container .header-info-label {
+  font-weight: bold;
+  /* min-width: 135px; */
+  padding-right: 12px;
+  text-align: right;
+  position: relative;
+  width: 152px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.receipt-apply-container .remark-content {
+  border-radius: 4px;
+  min-height: 56px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 18px 102px 18px 12px;
+  resize:vertical;
+}
+
+.receipt-apply-container .col2 {
+  flex: 2 !important;
+}
+
+.receipt-apply-container .table-split-line {
+  border-top-color: #193465;
+}
+
+.receipt-apply-container .table-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.receipt-apply-container .red-icon::before {
+  content: "*";
+  color: #f56c6c;
+  margin-right: 4px;
+}
+
+.receipt-apply-container .inline-input {
+  width: 142px;
+}
+
+.receipt-apply-container .button-container {
+  text-align: right;
+}
+
+.receipt-apply-container .input-invalid{
+  border-color: #d0321e;
+}
+
+.receipt-apply-container .input-invalid:focus {
+  border-color: #d0321e;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #f0a197;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #f0a197; 
+}
+
+.receipt-apply-container .input-error-msg {
+  position: absolute;
+  color: #d0321e;
+  /* padding-top: 4px; */
+  font-size: 12px;
+  display:none;
+}
+
+.receipt-apply-container .oper-col {
+  text-align: center;
+}
+
+
+.receipt-apply-container .table-container {
+  margin-bottom: 24px;
+}
+
+.receipt-apply-container #table-body .action {
+  box-shadow: initial !important;
+}
+
+.receipt-apply-container .table .oper-col {
+  box-shadow: initial !important;
+}
+
+.receipt-apply-container .hide-ele {
+  display: none !important;
+}
+
+.receipt-apply-container .remark-content-tips {
+  position: absolute;
+  right: 8px;
+  bottom: 40px;
+  font-weight: bold;
+  color: #666;
+}
+
+.receipt-apply-container .itemcode-row .dropdown-menu {
+  max-height: 246px;
+  overflow-y: scroll;
+}
+
+.them-color{
+  color: #3A75DC;
+}
+
+#order-detail-table thead tr th {
+	line-height: 14px !important;
+}
+
+.yzc_layer {
+  width: 480px !important;
+}

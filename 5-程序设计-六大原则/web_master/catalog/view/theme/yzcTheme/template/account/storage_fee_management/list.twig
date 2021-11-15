@@ -1,0 +1,67 @@
+{{ header }}
+
+<div id="page-bid-list-spot-price-bid" class="page-seller-portal">
+  {#菜单#}
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  {#END 菜单#}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>{{ text_storage_fee_management }}</h1>
+        <div class="row">
+          <div class="col-md-12">
+            {#Togglable tabs#}
+            <ul class="nav nav-tabs main" role="tablist">
+              <li id="bill_li" class="active"><a href="#tab-bill" data-toggle="tab">{{ text_bill_to_be_paid }}</a></li>
+              <li id="history_li"><a href="#tab-history" data-toggle="tab">{{ text_payment_history }}</a></li>
+              <span style="float: right;margin-top: 8px;cursor: pointer">
+                <i class="giga icon-V10-wenhaotishi" style="font-size: 14px" aria-hidden="true" onclick="getHelpInfo()"></i>
+                <span style="color: #677999;margin-left: 4px;" onclick="getHelpInfo()"> {{ text_inventory_storage_fees }} </span>
+              </span>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    {#tab页对应内容#}
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="tab-content main">
+          <div class="tab-pane active" id="tab-bill">
+            <fieldset>
+              <div id="mapping-bill"></div>
+            </fieldset>
+          </div>
+          <div class="tab-pane" id="tab-history">
+            <fieldset>
+              <div id="mapping-history"></div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}
+<script>
+  $('#mapping-bill').load('index.php?route=account/storage_fee_management/billList');
+  $('#mapping-history').load('index.php?route=account/storage_fee_management/historyList');
+  $(function () {
+    var layer = layui.layer;
+  });
+  
+  function  getHelpInfo() {
+    var url = '{{ help_info }}';
+    window.open(url,'_blank');
+  }
+
+</script>
+
+{#加载layui.js  2019/6/10 add by allen.tai #}
+<script type="text/javascript" src="catalog/view/javascript/layui/layui.all.js"></script>
+{#<link href="catalog/view/javascript/select2/css/select2.min.css" rel="stylesheet" />#}
+{#<script src="catalog/view/javascript/select2/js/select2.full.js"></script>#}
+
+{#<link rel="stylesheet" href="catalog/view/javascript/layui/css/layui.css">#}

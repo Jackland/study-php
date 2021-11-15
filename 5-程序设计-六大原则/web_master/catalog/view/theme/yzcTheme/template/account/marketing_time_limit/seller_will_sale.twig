@@ -1,0 +1,99 @@
+<!-- 店铺-限时限量活动--即将开始 -->
+{{ this.title('Next Deals') }}
+{{ this.params('breadcrumbs', 'hide') }}
+{{ css(['css/common/common.css','static/account/marketing_time_limit/css/seller_will.css']) }}
+<div class="seller-will-box main-bg pb-20">
+  <div class="center-module">
+    <div class="seller-will-bk">
+      <div class="seller-will-discount-title">UP TO <span class="colorf6">{{ maxDiscountShow }}%</span> OFF</div>
+      <div class="seller-will-time flex-layout">
+        <span class="start-after">Starts in</span>
+        <span class="start-time-box" id="start_hour">{{ willSaleIntervalHour }}</span>h
+        <span class="start-time-box" id="start_minute">{{ willSaleIntervalMinute }}</span>m
+        <span class="start-time-box" id="start_second">{{ willSaleIntervalSecond }}</span>s
+      </div>
+      <div class="view-event-rule">View event rules</div>
+    </div>
+    {% if productList %}
+      <div class="seller-will-content">
+        {% for product in productList %}
+          <div class="seller-will-item">
+            {% include 'giga/template/_parts/home.twig' %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <a class="more-active-to-come" href="{{ url('seller_store/home',{'id': sellerId|default(0)}) }}"  target="_blank">
+      More promotional events&nbsp;
+      <span class="border-radius-circle">
+        <i class="giga icon-V10_youjiantougengduo"></i>
+      </span>
+    </a>
+  </div>
+  <div class="view-event-rule-modal">
+    <div class="view-event-rule-modal-content">
+      <div>{{ rules }}</div>
+      <div class="m30-t">* The Qty mentioned on this page refers to the quantity that can be sold for the promotion,&nbsp;not Available Qty. </div>
+    </div>
+  </div>  
+</div>
+<script>
+  var sellerId = parseInt("{{ sellerId|default(0) }}");
+  var Hour=Number({{willSaleIntervalHour|default(0)}});
+  var Minute =Number({{willSaleIntervalMinute|default(0)}});
+  var Second =Number({{willSaleIntervalSecond|default(0)}});
+  var timeBox,timeNum =0;
+  $(function () {
+    sellerWillSaleClass.btnClickFn();
+    getSellerTimeInterval.sellerTimeInterval();
+  });
+  var sellerWillSaleClass = {
+    btnClickFn: function () {
+      $('.view-event-rule').click(function () {
+        layer.open({
+          type: 1,
+          title: 'View event rules',
+          closeBtn: 1,
+          skin: 'oris-layer', //seller-ing-modal-title
+          shadeClose: true,
+          offset: 'auto',
+          area: ['480px', 'auto'],
+          content: $(".view-event-rule-modal"), 
+        });
+      })
+    }
+  };
+  var getSellerTimeInterval={
+    sellerTimeInterval:function(){
+      timeBox=window.setInterval(function () {
+        sellerSetIntervalFn.getSerterval(Hour,Minute,Second);
+      }, 1000);
+    }
+  }
+  var sellerSetIntervalFn={
+    getSerterval:function(Hour,Minute,Second){     
+      var H=$('#start_hour').html();
+      var M=$('#start_minute').html();
+      var S=$('#start_second').html();
+      if(H== '00' && M== '00' && S=='00'){ //00:00:00:00清掉定时器
+        clearInterval(timeBox);
+        return
+      }
+      var totalTime=Hour*60*60+Minute*60+Second;
+      timeNum++; //计数器
+      residueTime=(totalTime-timeNum);
+      var hour=sellerSetIntervalFn.checkTime(Math.floor((residueTime / 3600)));
+      var minute =sellerSetIntervalFn.checkTime(Math.floor((residueTime - ((hour*3600)))/60));//计算分
+      var second =sellerSetIntervalFn.checkTime(Math.floor(residueTime - ((hour * 3600) + (minute*60))));//计算秒
+      $('#start_hour').html(hour) //时
+      $('#start_minute').html(minute); //分
+      $('#start_second').html(second); //秒  
+    },
+    checkTime(i){
+      if(i<10){
+        i='0'+i
+      }
+      return i;
+    }
+  }
+</script>

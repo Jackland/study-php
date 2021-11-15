@@ -1,0 +1,564 @@
+{{ assetBundle('Seller\\VatAsset') }}
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<style>
+  .rapage .page-info{
+    margin-bottom: 0;
+  }
+  .confirm-delivery[disabled]{
+    background: #fa6400 !important;
+    color: #fff !important;
+    border: 1px solid #fa6400 !important;
+  }
+  .in-block {
+    display: inline-block;
+  }
+  .ml-5 {
+    margin-left: 5px;
+  }
+  .more-drop .dropdown-menu {
+    left: unset;
+    right: 0;
+  }
+  .claim-layer {
+    display: inline-table;
+  }
+  .claim-layer .layui-layer-content {
+    padding: 12px;
+  }
+  .more-drop .dropdown-menu a:hover {
+    cursor: pointer;
+  }
+
+  .related-agreement-table .inline-block {
+    display: inline-block;
+  }
+</style>
+<div>
+    <table class="table related-agreement-table">
+       <thead>
+       <tr>
+           {% if contract_status != 4 %}
+           <th style="padding-left: 5px"><input type="checkbox" class="allcheck"></th>
+           {% endif %}
+           <th>{{ text_agreement_table_id }}</th>
+           <th>{{ text_agreement_table_name }}</th>
+           <th>{{ text_agreement_table_quantity }}</th>
+           <th>{{ text_agreement_table_amount }}</th>
+           <th>{{ text_agreement_table_status }}</th>
+           <th>{{ text_agreement_table_refund_status }}</th>
+           <th>{{ text_agreement_table_refund_time }}</th>
+           <th>{{ text_agreement_table_actions }}</th>
+       </tr>
+       </thead>
+       <tbody>
+       {% if agreements %}
+           {% for agreement in agreements %}
+               <tr>
+                   {% if contract_status != 4 %}
+                   <td>
+                       <input type="checkbox"
+                              data-id="{{ agreement.agreement_id }}"{% if agreement.delivery_status == 1 and agreement.is_agreement_apply == fales and agreement.is_breached == false %} {% else %} disabled style="background:#ccc" {% endif %}>
+                   </td>
+                   {% endif %}
+                   <td><a class="link fwblod" href="{{ agreement.agreement_detail_link }}">{{ agreement.agreement_no }}</a>
+                   </td>
+                   <td style="align-items: center" class="inline-block">
+                       <div class="gray inline-block">{{ agreement.nickname }}<br>({{ agreement.user_number }})</div>
+                       <img data-toggle="tooltip" style="padding-left:5px"
+                            src="{{ agreement.buyer_type ? asset('image/icons/HomePickup/home_pickup-15x15.png') : asset('image/icons/HomePickup/drop_shipping-15x15.png') }}"
+                            data-original-title="{{ agreement.buyer_type ? 'Pick up Buyer' : 'Drop Shipping Buyer' }}">
+                       {{ agreement.ex_vat }}
+                   </td>
+                   <td>{{ agreement.num }}</td>
+                   <td>{{ agreement.seller_available_balance }}</td>
+                   <td>
+                       {% if agreement.delivery_status == 1 %}
+                           {{ text_agreement_delivery_status_incomplete }}
+                       {% elseif agreement.delivery_status == 2 %}
+                           <span style="color:mediumseagreen">
+                             {% if agreement.delivery_status_origin == 9 %}
+                               <span style="color:#AAAAAA">Terminated</span>
+                             {% else %}
+                               {{ text_agreement_delivery_status_complete }}
+                             {% endif %}
+                           </span>
+                       {% elseif agreement.delivery_status == 3 %}
+                           <span class="red">{{ text_agreement_delivery_status_cancel }}</span>
+                       {% endif %}
+                   </td>
+                   <td class="">
+                       {{ agreement.compensate_status }}
+                   </td>
+                   <td>
+                       {% if agreement.return_available_balance_time %}
+                           <div>{{ agreement.return_available_balance_time[0:10] }}</div>
+                           <div class="gray">{{ agreement.return_available_balance_time[10:] }}</div>
+                       {% else %}
+                           --
+                       {% endif %}
+                   <td class="text-left">
+                       <a class="btn " href="{{ agreement.agreement_detail_link }}" target="_blank" data-toggle="tooltip"
+                          title="view">
+                           <i class="giga icon-chakan1"></i>
+                       </a>
+                       {% if agreement.delivery_status == 1 and agreement.is_agreement_apply == fales and agreement.is_breached == false %}
+                          {% if is_delivery_date %}
+                            <a class="btn " href="javascript:void(0)" data-toggle="tooltip"
+                              title="{{ text_agreement_action_complete_delivery }}" onclick="handleDelivery('confirm', '{{ agreement.agreement_id }}', '{{ agreement.agreement_no }}')">
+                               <i class="giga icon-jiaohuo"></i>
+                            </a>
+                          {% else %}
+                            {# 7724期货三期--Start #}
+                            <div class="dropdown in-block ml-5 more-drop">
+                              <a id="btn-group" class="btn btn-primary" data-target="#"
+                                 data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="giga icon-action-more"></i>
+                              </a>
+                              <ul class="dropdown-menu" aria-labelledby="btn-group">
+                                  <li>
+                                    <a class="btn-agree" onclick="handleDelivery('confirm', '{{ agreement.agreement_id }}', '{{ agreement.agreement_no }}')">
+                                       <i class="giga icon-jiaohuo"></i>&nbsp;{{ text_agreement_action_complete_delivery_request }}
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a class="btn-agree" onClick="submitClaimAlert('{{ agreement.agreement_id }}', 'single','{{ agreement.agreement_no }}','{{ agreement.show_delivery_date }}')">
+                                      <i class="giga icon-shiwu-chuizi"></i>&nbsp;Submit Claim
+                                    </a>
+                                </li>
+                              </ul>
+                            </div>
+                            {# 7724期货三期--End #}
+                          {% endif %}
+                       {% endif %}
+                   </td>
+               </tr>
+           {% endfor %}
+       {% else %}
+           <tr>
+               <td class="text-center" colspan="9">
+                   {{ text_no_record_default_notice }}
+               </td>
+           </tr>
+       {% endif %}
+       </tbody>
+    </table>
+    <div class="row">
+        <div class="col-sm-6">
+            {% if total and contract_status != 4 %}
+            <p class="delivery" style="padding: 0 5px">
+                <input class="allcheck" type="checkbox">
+                {% if is_delivery_date %}
+                  <a class="btn confirm-delivery" href="javascript:void(0)" onclick="batchHandleDelivery('confirm')">
+                      {{ text_agreement_action_complete_delivery }}
+                  </a>
+                {% else %}
+                  {# 7724期货三期--Start #}
+                  <a class="btn confirm-delivery" href="javascript:void(0)" onclick="batchHandleDelivery('confirm')">
+                      {{ text_agreement_action_complete_delivery_request }}
+                  </a>
+                  <a class="btn confirm-delivery" href="javascript:void(0)" onclick="batchHandleDelivery('claim')">
+                      Submit Claim
+                  </a>
+                  {# 7724期货三期--End #}
+                {% endif %}
+            </p>
+            {% endif %}
+        </div>
+        <div class="col-sm-6">
+            <div class="row" style="height: 36px;display: flex;align-items: center;justify-content: flex-end">
+                <div class="col-sm-12 text-right rapage" style="display: flex;justify-content: flex-end;align-items: center">
+                    <ul id="agreement_pagination"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'yzcTheme/template/account/product_quotes/futures/appeal.twig' %}
+<script type="text/javascript" src="catalog/view/javascript/layerOris.js?v={{ app_version }}"></script>
+<script>
+    $(document).ready(function () {
+        $(".confirm-delivery").attr("disabled", "disabled");
+        pagination();
+    })
+    function batchHandleDelivery(method) {
+        var ids = [];
+        $('.allcheck').parentsUntil("div").find("tbody td input:checkbox:checked:not(:disabled)").each(function (i, e) {
+            let id = $(e).data('id');
+            ids.push(id);
+        })
+        let num = ids.length;
+        if (num === 0) {
+            return ;
+        }
+        if (method === 'confirm' && !checkFuturesAgreementsNum(ids)) {
+            return;
+        }
+
+        let contract_id = '{{ contract_id }}';
+        let msg = '';
+        let error_msg = '';
+        let is_delivery_date = '{{ is_delivery_date }}';
+        if (!is_delivery_date) {
+            if (method === 'confirm') {
+                msg = '{{ text_agreement_action_batch_complete_delivery_request_notice }}'.replace(/%s/, num.toString());
+                error_msg = '{{ text_agreement_action_batch_complete_delivery_request_error_msg }}'.replace(/%s/, num.toString());
+            }else if (method === 'claim'){
+              return submitClaimAlert(ids, 'batch')
+            } else {
+                return
+            }
+        } else {
+            if (method === 'confirm') {
+                msg = '{{ text_agreement_action_batch_complete_delivery_notice }}'.replace(/%s/, num.toString());
+                error_msg = '{{ text_agreement_action_batch_complete_delivery_error_msg }}'.replace(/%s/, num.toString());
+            } else {
+                return;
+            }
+        }
+
+        layer.confirm(msg, {
+            title: '{{ text_alert_confirm }}',
+            skin: 'yzc_layer',
+            btnAlign: 'c',
+            btn: ['{{ text_alert_yes }}', '{{ text_alert_no }}']
+        }, function (index) {
+            layer.closeAll();
+            parent.layer.load(1);
+            $.ajax({
+                url : '{{ url("account/customerpartner/future/contract/handleDelivery") }}',
+                data: {agreement_ids: ids, contract_id: contract_id, method: method},
+                method: 'post',
+                dataType: 'json',
+                success: function(res) {
+                    layer.closeAll();
+                    layer.closeAll('loading');
+                    if (res.code === 1) {
+                        $('#agreement-stat').load("{{ url('account/customerpartner/future/contract/agreementStat') }}" + "&contract_id=" + '{{ contract_id }}')
+                        $('#agreement-list').load(currentUrl())
+                        let success_msg = '';
+                        let success_num = res.data.success_num;
+                        if (!is_delivery_date) {
+                            if (method === 'confirm') {
+                                success_msg = success_num != num ? '{{ text_agreement_action_batch_complete_delivery_request_success_msg_exist_uncompleted }}'.replace(/%s1/, success_num).replace(/%s2/, (num - success_num).toString()) : '{{ text_agreement_action_batch_complete_delivery_request_success_msg }}'.replace(/%s1/, success_num);
+                            }
+                        } else {
+                            if (method === 'confirm') {
+                                success_msg = success_num != num ? '{{ text_agreement_action_batch_complete_delivery_success_msg_exist_uncompleted }}'.replace(/%s1/, success_num).replace(/%s2/, (num - success_num).toString()) : '{{ text_agreement_action_batch_complete_delivery_success_msg }}'.replace(/%s1/, success_num);
+                            }
+                        }
+                        layer.alert(success_msg, {
+                            title: '{{ text_alert_reminder }}',
+                            skin: 'yzc_layer',
+                            btnAlign: 'c',
+                            btn: '{{ text_alert_ok }}',
+                        })
+                    } else {
+                        if (res.data.error_msg) {
+                            error_msg = res.data.error_msg;
+                        }
+                        layer.alert(error_msg, {
+                            title: '{{ text_alert_reminder }}',
+                            skin: 'yzc_layer',
+                            btnAlign: 'c',
+                            btn: '{{ text_alert_ok }}',
+                        })
+                    }
+                },
+            });
+        });
+    }
+    function pagination() {
+        {% if total_pages %}
+            $('#agreement_pagination').bootstrapPaginator({
+                /*当前使用的是3版本的bootstrap*/
+                bootstrapMajorVersion: 3,
+                /*配置的字体大小是小号*/
+                size: 'normal',
+                /*当前页*/
+                currentPage: {{ page }},
+                /*一共多少页*/
+                totalPages: {{ total_pages }},
+                /*页面上最多显示几个含数字的分页按钮*/
+                numberOfPages: 5,
+                pageRange: [10, 20, 30, 40, 50],
+                rowsOfPage: {{ page_limit }},
+                total: {{ total }},
+                onPageClicked: function (event, originalEvent, type, page) {
+                    let params = {};
+                    params['page'] = page;
+                    if (originalEvent['page_info'] && originalEvent['page_info']['page_limit']) {
+                        params['page_limit'] = originalEvent['page_info']['page_limit'];
+                    }
+                    let delivery_status = Number('{{ delivery_status }}');
+                    if (delivery_status > 0) {
+                        params['delivery_status'] = delivery_status;
+                    }
+                    $('#agreement-list').load('{{ url("account/customerpartner/future/contract/agreements") }}' + '&contract_id=' + '{{ contract_id }}' + '&' + $.param(params))
+                }
+            });
+        {% endif %}
+    }
+    function currentUrl() {
+        let page = Number('{{ page }}');
+        let page_limit = Number('{{ page_limit }}');
+        let delivery_status = Number('{{ delivery_status }}');
+
+        let url = '{{ url("account/customerpartner/future/contract/agreements") }}' + '&contract_id=' + '{{ contract_id }}';
+        if (page > 1) {
+            url += '&page=' + page + '&page_limit=' + page_limit;
+        }
+        if (delivery_status > 0) {
+            url += '&delivery_status=' + delivery_status;
+        }
+
+        return url;
+    }
+
+    function checkFuturesAgreementsNum(ids, no = '') {
+        let amount_flag = 1;
+        $.ajax({
+            url: "{{ url('account/product_quotes/futures/checkFuturesAgreementsNum') }}",
+            type: 'post',
+            async:false,
+            dataType: 'json',
+            data: { agreement_ids: ids },
+            beforeSend: function () {
+                layer.load(1,{shade: [0.3,'#000']});
+            },
+            success: function (json) {
+                layer.closeAll('loading');
+                if(!json.code){
+                    amount_flag = 0;
+                    let msg = '';
+                    if (no === '') {
+                        msg = '{{ text_agreement_batch_delivery_low_stock_quantity }}'
+                    } else {
+                        msg = '{{ text_agreement_delivery_low_stock_quantity }}'.replace(/%s/, no);
+                    }
+
+                    layer.alert(msg, {
+                        title: '{{ text_alert_reminder }}',
+                        skin: 'yzc_layer',
+                        btnAlign: 'c',
+                        btn: '{{ text_alert_ok }}',
+                    })
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                layer.closeAll('loading');
+            }
+        });
+        if(!amount_flag){
+            return false;
+        }
+
+        return true;
+    }
+
+    function handleDelivery(method, id, no) {
+        if (method === 'confirm' && !checkFuturesAgreementsNum([id], no)) {
+            return;
+        }
+
+        let contract_id = '{{ contract_id }}';
+        let msg = '';
+        let success_msg = '';
+        let error_msg = '';
+        let is_delivery_date = '{{ is_delivery_date }}';
+        if (!is_delivery_date) {
+            if (method === 'confirm') {
+                msg = '{{ text_agreement_action_complete_delivery_request_notice }}'.replace(/%s/, no);
+                success_msg = '{{ text_agreement_action_complete_delivery_request_success_msg }}'.replace(/%s/, no);
+                error_msg = '{{ text_agreement_action_complete_delivery_request_error_msg }}'.replace(/%s/, no);
+            } else {
+                return;
+            }
+        } else {
+            if (method === 'confirm') {
+                msg = '{{ text_agreement_action_complete_delivery_notice }}'.replace(/%s/, no);
+                success_msg = '{{ text_agreement_action_complete_delivery_success_msg }}'.replace(/%s/, no);
+                error_msg = '{{ text_agreement_action_complete_delivery_error_msg }}'.replace(/%s/, no);
+            } else {
+                return;
+            }
+        }
+
+        layer.confirm(msg, {
+            title: '{{ text_alert_confirm }}',
+            skin: 'yzc_layer',
+            btnAlign: 'c',
+            btn: ['{{ text_alert_yes }}', '{{ text_alert_no }}']
+        }, function (index) {
+            layer.closeAll();
+            parent.layer.load(1);
+            $.ajax({
+                url : '{{ url("account/customerpartner/future/contract/handleDelivery") }}',
+                data: {agreement_ids: id, contract_id: contract_id, method: method},
+                method: 'post',
+                dataType: 'json',
+                success: function(res) {
+                    layer.closeAll();
+                    if (res.code === 1) {
+                        $('#agreement-stat').load("{{ url('account/customerpartner/future/contract/agreementStat') }}" + "&contract_id=" + '{{ contract_id }}')
+                        $('#agreement-list').load(currentUrl())
+                        layer.alert(success_msg, {
+                            title: '{{ text_alert_reminder }}',
+                            skin: 'yzc_layer',
+                            btnAlign: 'c',
+                            btn: '{{ text_alert_ok }}',
+                        })
+                    } else {
+                        if (res.data.error_msg) {
+                            error_msg = res.data.error_msg;
+                        }
+                        layer.alert(error_msg, {
+                            title: '{{ text_alert_reminder }}',
+                            skin: 'yzc_layer',
+                            btnAlign: 'c',
+                            btn: '{{ text_alert_ok }}',
+                        })
+                    }
+                },
+            });
+        });
+    }
+    function refreshAgreementTab() {
+      $('#associate-contract-pane').load('{{ url("account/customerpartner/future/contract/associate") }}' + '&contract_id=' + '{{ contract_id }}');
+    }
+    // Submit Claim 弹框
+    function submitClaimAlert(id, type, agreeNo, agreeDate) {
+        var $claim = $('#force-claim-layer');
+        // 弹框之前清空弹框内容
+        $claim.find('textarea').val('').next().html('0/2000');;
+        $claim.find('#inputFiles').html('');
+        $claim.find('span.wrong-tips').hide();
+        if (type === 'single') {
+          $claim.find('div.claim-des').html(`By submitting this claim, you are agreeing to processing an Agreement Termination Request for the Future Goods Agreement (ID:${agreeNo}) with delivery date of&nbsp;{{ delivery_date }}, due to inability to deliver on account of force majuere.`)
+        } else {
+          $claim.find('div.claim-des').html(`By submitting this claim, you agree to the processing of an Agreement Termination Request for the ${id.length} Future Goods Agreement with delivery date of&nbsp;{{ delivery_date }}, due to inability to deliver on account of force majuere.`)
+        }
+        fileList = [];
+        var optionsLtl = {
+            skin: 'yzc_layer claim-layer',
+            area: ['600px', '420px'],
+            btn: ['Submit', 'Cancel'],
+            title: 'Submit Force Majuere Claim',
+            content: $('#force-claim-layer'),
+        };
+        layerOris.confirmLayer(optionsLtl, function (index, layero) {
+          // 点击提交
+          // 校验申请原因是否为空
+          var claimReason = $claim.find('textarea').val()
+          if (!claimReason) {
+            return $claim.find('span.wrong-tips').show();
+          }
+          // 校验文件大小
+          if (checkFilesSize(fileList)) {
+            return layerOris.confirmLayer({title: 'Error',content:'File size exceeds limit, please re-upload again.</br>File size limit: Image files less than 20M.', btn:['OK']});
+          }
+          let formData = new FormData();
+          $.each(fileList, function (k, v) {
+            formData.append('files[]', v);
+          });
+          formData.append('agreement_id', id);
+          formData.append('message', claimReason);
+          let loading = layer.load();
+          $.ajax({
+            url: '{{ url('account/product_quotes/futures/doSellerAppeal') }}',
+            type: 'post',
+            dataType: 'json',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res.code == 200) {
+                    layer.close(index);
+                    layer.close(loading);
+                    $.toast({
+                      heading: false,
+                      text: 'The request has been sent to the Marketplace and is now being processed. Please check the status of your request for the latest updates.',
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'success',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                    });
+                } else {
+                    layer.close(index);
+                    layer.close(loading);
+                    $.toast({
+                      heading: false,
+                      text: res.code == 0 ? res.msg : 'The request was unable to be sent. Please try again.',
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false,
+                      afterHidden: function(){
+                        refreshAgreementTab();
+                      }
+                    });
+                }
+            },
+            error: function (err) {
+                layer.closeAll();
+                $.toast({
+                    heading: false,
+                    text: 'Failed. Please contact with our customer service to argue.',
+                    position: 'top-center',
+                    showHideTransition: 'fade',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    allowToastClose: false,
+                    loader: false,
+                    afterHidden: function(){
+                      refreshAgreementTab();
+                    }
+                });
+            },
+          });
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        var i = 0;
+        $(".allcheck").on("click", function () {
+            if (i == 0) {
+                $(this).parentsUntil(".protocol").find("input:checkbox:not(:disabled)").prop("checked", true);
+                i = 1;
+            } else {
+                $(this).parentsUntil(".protocol").find("input:checkbox:not(:disabled)").prop("checked", false);
+                i = 0;
+            }
+            let len2 = $('.table').find("tbody td input:checkbox:checked:not(:disabled)").length;
+            if (len2>0){
+              $(".confirm-delivery").removeAttr("disabled");
+            }else{
+              $(".confirm-delivery").attr("disabled", "disabled");
+            }
+        });
+
+        // 反选
+        $('.table td input:checkbox').on('change', function () {
+            var len1 = $(this).parentsUntil("div").find("tbody td input:checkbox:not(:disabled)").length;
+            var len2 = $(this).parentsUntil("div").find("tbody td input:checkbox:checked:not(:disabled)").length;
+            if (len2 < len1) {
+                $(".allcheck").prop("checked", false);
+                i = 0;
+            } else {
+                $(".allcheck").prop("checked", true);
+                i = 1;
+            }
+            if (len2>0){
+                $(".confirm-delivery").removeAttr("disabled");
+            }else{
+                $(".confirm-delivery").attr("disabled", "disabled");
+            }
+
+        });
+    })
+</script>

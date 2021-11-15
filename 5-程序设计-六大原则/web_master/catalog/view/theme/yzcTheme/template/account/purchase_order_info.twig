@@ -1,0 +1,1152 @@
+{{ header }}
+<style>
+  .drop-hover-title{
+    width: 100%;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+  .border-bottom-gray{
+    border-bottom: 1px solid #eee;
+  }
+  .drop-hover-items>p{
+    margin: 0;
+  }
+  .drop-hover-items-label{
+    display: inline-block;
+    width: 150px;
+  }
+  .drop-hover-items-num{
+    color: #000;
+    font-weight: bolder;
+  }
+  #freight .dropdown-freight{
+    margin-top: 0;
+  }
+  .page-seller-portal tr td .underline-price {
+    text-decoration: line-through;
+    font-size: 0.9em;
+    color: #888;
+  }
+  .page-seller-portal .border-none {
+    border: none;
+  }
+  .page-seller-portal .order-campaign .coupon-account {
+    color: #fa6400;
+  }
+  .page-seller-portal .order-campaign .coupon-des {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .page-seller-portal .order-campaign .gift-line {
+    height: 22px;
+  }
+  .my-discount {
+    font-style: italic;
+  }
+  .my-discount .percent-dis {
+    color: #FF6600;
+    font-weight: bold;
+  }
+</style>
+<div id="page-purchase-order-management-detail" class="page-seller-portal">
+  {#菜单#}
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  {#END 菜单#}
+
+  <div class="container">
+    <div class="row">
+      {% set class = 'col-sm-12' %}
+      <div id="content" class="{{ class }}">
+        <h1>{{ text_order }}</h1>
+
+        {% if success %}
+          <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+        {% endif %}
+        {% if error_warning %}
+          <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+        {% endif %}
+
+        <div class="tab-content main mb-4" style="border: 1px #eee solid;float: left;width: 100%;">
+          <div role="tabpanel" class="tab-pane active" >
+            <div class="bg-white p-2">
+              <div class="info-wrapper mb-4 mt-2">
+                <div class="row">
+                  <div class="col-md-2">
+                    <span><i class="giga icon-summary-po-id"></i></span>
+                    <span class="title">{{ text_order_id }}</span>
+                    <span class="value">
+                      {{ order_id }}
+                      {% if (delivery_type==2) %}
+                        <i class="giga icon-cwf" style="color: #1f5268;font-size: 15px" data-toggle="tooltip" data-original-title="{{ cwf }}"></i>
+                      {% endif %}
+                    </span>
+                  </div>
+                  <div class="col-md-2">
+                    <span><i class="giga icon-summary-status"></i></span>
+                    <span class="title">{{ text_order_status }}</span>
+                    <span class="value">{{ order_status }}</span>
+                  </div>
+                  <div class="col-md-2">
+                    <span><i class="giga icon-summary-day"></i></span>
+                    <span class="title">{{ text_date_added }}</span>
+                    <span class="value">{{ date_added }}</span>
+                  </div>
+                  <div class="col-md-2">
+                    <span><i class="giga icon-summary-sransaction-status"></i></span>
+                    <span class="title">{{ text_transcation_status }}</span>
+                    <span class="value">{{ transaction_status }}</span>
+                  </div>
+                  <div class="col-md-2">
+                    <span><i class="giga icon-summary-payment"></i></span>
+                    <span class="title">{{ text_payment_method }}</span>
+                    <span class="value">{{ payment_method }}</span>
+                  </div>
+                  <div class="col-md-2">
+                    <span><i class="giga icon-summary-balance"></i></span>
+                    <span class="title">Line Of Credit<br>(Use Balance)</span>
+                    <span class="value">{{ balance }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="" style="float: left;width: 100%;margin-bottom: 10px; ">
+{#                <h3>{{ text_item_list }}</h3>#}
+                <table class="table main table-hover" style="margin: 0 auto;">
+                  <thead>
+                  {% set colspan = 8 %}
+                  <tr>
+                    <th class="text-center"> Product Image</th>
+                    <th class="text-center"> Item Code</th>
+                    <th class="text-center"> Store </th>
+                    <th class="text-center"> Qty</th>
+                    <th class="text-center" style="width:12%"> Unit Price After Discount</th>
+                    {% if isEuropean %}
+                      <th class="text-center"style="width:12%"> Service Fee After Discount</th>
+                      {% set colspan=colspan+1 %}
+                    {% endif %}
+                    <th class="text-center" style="width: 8%"> Fulfillment Per Unit
+                      <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" style="cursor: pointer;font-size: 12px"
+                         title="Fulfillment fee includes shipping fee and packing fee."
+                      ></i>
+                    </th>
+                    <th class="text-center"> Total</th>
+                    <th class="text-center"> Sales Order</th>
+                    <th class="text-center"> RMA ID</th>
+                    <th class="text-right"> Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for product in products %}
+                    <tr>
+                      <td class="text-center">
+                        <a href="index.php?route=product/product&product_id={{ product.product_id }}"
+                           style="text-decoration: underline"><img src="{{ product.img }}" style="width: 30px;height: 30px;"></a>
+                      </td>
+                      <td class="text-center">
+                        {% if product.type_id == 3 %}
+                          {% if product.contract_id %}
+                            {{ global_frontend_futures_second_sign | dprintf({'id':product.agreement_id,'s_id':product.agreement_no }) }}
+                          {% else %}
+                            {{ global_frontend_futures_sign | dprintf({'id':product.agreement_id,'s_id':product.agreement_no }) }}
+                          {% endif %}
+                        {% endif %}
+                        {% if product.is_rebate %}
+                          <a target="_blank" href="{{ product.url_rebate }}">
+                            <img data-toggle="tooltip" style="padding-left: 1px;position: relative;top: -2px;" src="{{ rebate_logo }}" data-original-title="{{ product.tip_rebate }}">
+                          </a>
+                        {% endif %}
+                        {% if product.is_margin %}
+                          <a href="{{ product.url_margin }}">
+                            <span class="flag-margin-order"><span class="giga icon-margin" data-toggle="tooltip" title="{{product.tip_margin}}"></span></span>
+                          </a>
+                        {% endif %}
+                        {{ product.sku }}
+                        <a href="index.php?route=product/product&product_id={{ product.product_id }}">
+                        <i class="giga icon-table-link" style="font-size: 16px;"></i>
+                        </a>
+                        <span class="tag_icon">
+                        {% for tagDetail in product.tag %}
+                          {{ tagDetail }}
+                        {% endfor %}
+                        </span>
+
+                      </td>
+                      <td class="text-center">{{ product.customerName }}</td>
+                      <td class="text-center"><span class="text-price">{{ product.quantity }}</span></td>
+                      <td class="text-center">
+                        <div>
+                       {# {% if isEuropean %}
+                          <i class="giga icon-vat"></i>
+                        {% endif %}#}
+                          <span class="text-price">{{ product.price }}</span>
+                        </div>
+                        {% if product.quoteFlag %}
+                          <span style="font-style: italic">(Discount:<span style="color: red">{{ product.discount_price }}</span>)</span>
+                        {% endif %}
+                        {# #29414 限时限量活动#}
+                        {% if product['discountShow'] != '' %}
+                          <span class="my-discount">Discount:<span class="percent-dis"> {{ product['discountShow'] }}% </span>OFF</span>
+                        {% endif %}
+                      </td>
+                      {% if isEuropean %}
+                        <td class="text-center">
+                          <div><span class="text-price">{{ product.service_price }}</span></div>
+                          {% if product.quoteFlag %}
+                            <span style="font-style: italic">(Discount:<span style="color: red">{{ product.discount_service_fee_per }}</span>)</span>
+                          {% endif %}
+                          {# #29414 限时限量活动#}
+                          {% if product['discountShow'] != '' %}
+                            <span class="my-discount">Discount:<span class="percent-dis"> {{ product['discountShow'] }}% </span>OFF</span>
+                          {% endif %}
+                        </td>
+                      {% endif %}
+                      <td class="text-center">
+                        <div id="freight">
+                          <div>{{ product.freight_per }}<span class="caret"></span></div>
+                          <ul class="dropdown-freight" style="width: max-content">
+                            <li style="list-style: none">
+                              <div class="drop-hover-title border-bottom-gray">
+                                {% if isCollectionFromDomicile %}
+                                  Fulfillment for pickup service
+                                {% elseif (delivery_type==2) %}
+                                  Fulfillment for Cloud Wholesale Fulfillment
+                                {% else %}
+                                  Fulfillment for drop shipping service
+                                {% endif %}
+                              </div>
+                              <div class="drop-hover-items">
+                                <p>
+                                  <span class="drop-hover-items-label">{{ base_freight_label }} :</span>
+                                  <span class="drop-hover-items-num">{{ product.freight }}</span>
+                                  {% if delivery_type == 2 and product.freight_difference_per >0 %}
+                                  <span style="color: #FA6400">+ {{ product.freight_difference_per_str }}
+                                    <i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" style="cursor: pointer;font-size: 12px" title="{{ product.tips_freight_difference_per }}"></i>
+                                  </span>
+                                  {% endif %}
+                                </p>
+                                {# 超重附加费 #}
+                                {% if product.overweight_surcharge > 0 %}
+                                  <p style="margin-bottom: 0">
+                                    <span class="drop-hover-items-label">{{ overweight_surcharge_label }} :</span>
+                                    <span class="drop-hover-items-num">{{ product.overweight_surcharge_show }}</span>
+                                  </p>
+                                {% endif %}
+
+                                <p style="margin-bottom: 0">
+                                  <span class="drop-hover-items-label">{{ package_fee_label }} :</span>
+                                  <span class="drop-hover-items-num">{{ product.package_fee }}</span>
+                                </p>
+                              </div>
+
+                            </li>
+{#                            <div style="width: 100%;">#}
+{#                            {% if isCollectionFromDomicile %}#}
+{#                            <p class="span-ul-header">Freight for home pickup service</p>#}
+{#                            {% elseif (delivery_type==2) %}#}
+{#                              <p class="span-ul-header">Cloud Wholesale Fulfillment</p>#}
+{#                            {% else %}#}
+{#                            <p class="span-ul-header">Fulfillment for dropshipping service</p>#}
+{#                            {% endif %}#}
+{#                            </div>#}
+{#                            <p class="span-url-item">#}
+{#                              <span>Shipping Fee </span>#}
+{#                              <span style="color: #183463;">{{ product.freight }}#}
+{#                                {% if delivery_type == 2 and product.freight_difference_per >0 %}#}
+{#                                <span style="color: #FA6400">+ {{ product.freight_difference_per_str }}#}
+{#                                  <i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" style="cursor: pointer;font-size: 12px" title="{{ product.tips_freight_difference_per }}"></i>#}
+{#                                </span>#}
+{#                                {% endif %}#}
+{#                              </span>#}
+{#                            </p>#}
+{#                            <p class="span-url-item">#}
+{#                              <span>Packaging Fee </span>#}
+{#                              <span style="color: #183463;">{{ product.package_fee }}</span>#}
+{#                            </p>#}
+                          </ul>
+                        </div>
+                      </td>
+                      <td class="text-center">
+                          {% if product.discount_total > 0 %}
+                            <span class="text-price">{{ product.final_total }}</span>
+                            <br/>
+                            <span class="text-price underline-price">{{ product.total }}</span>
+                          {% else %}
+                            <span class="text-price">{{ product.total }}</span>
+                          {% endif %}
+                      </td>
+                      <td class="text-center">
+                        {% for k,v in product.order_id_list %}
+                          {#<a href="index.php?route=account/customer_order/customerOrderSalesOrderDetails&id={{ product['oid_list'][k] }}" style="text-decoration: underline">{{ v }}</a><br/>#}
+                          {{ v }}<br/>
+                        {% endfor %}
+                      </td>
+                      <td class="text-center">
+                        {% for k,v in product.rma_id_list %}
+                          <a href="index.php?route=account/rma_order_detail&rma_id={{ product['rid_list'][k] }}"
+                             > {{ v }}</a><br/>
+                        {% endfor %}
+                      </td>
+                      <td class="text-right" style="">
+                        {% if order_buyer_id == customer_id %}
+                          {% if product.reorder %}
+                            <div class="action-group text-right">
+                              {% if product.unsupport_stock %}
+                              <a data-toggle="tooltip" title="This Seller’s products cannot be directly purchased for stock up. You must first upload a sales order and pay for the items, then ship the items immediately." 
+                                 class="btn-action-disabled">
+                                <i class="giga icon-cart-add"></i>
+                              </a>
+                              {% else %}
+                              <a onclick="reorderCartAdd('{{ product.reorder_product_id }}', '{{ product.reorder_quantity }}', '{{ product.reorder_transaction_type }}','{{ delivery_type }}')" data-toggle="tooltip" title="{{ button_reorder }}" class=""><i class="giga icon-cart-add"></i></a>
+                              {% endif %}
+                              {% if order_status_id != 7 %}
+                                {% if product.can_return == 3 %}
+                                  <a href="{{ product.return }}" class="icon"  data-toggle="tooltip" data-original-title="RMA">
+                                    <i class="giga icon-RMA"></i>
+                                  </a>
+                                {% elseif product.can_return == 1 %}
+                                  <a class="icon" data-toggle="tooltip" data-original-title="{{ text_can_return_msg }}" disabled="true" style="cursor: not-allowed;">
+                                    <i class="giga icon-RMA"></i>
+                                  </a>
+                                {% elseif product.can_return == 2 %}
+                                  <a class="icon" data-toggle="tooltip" data-original-title="{{ text_margin_return_msg }}" disabled="true" style="cursor: not-allowed;">
+                                    <i class="giga icon-RMA"></i>
+                                  </a>
+                                {% elseif product.can_return == 4 %}
+                                  <a class="icon" data-toggle="tooltip" data-original-title="{{ text_future_margin_return_msg }}" disabled="true" style="cursor: not-allowed;">
+                                    <i class="giga icon-RMA"></i>
+                                  </a>
+                                {% endif %}
+                                {% if module_marketplace_status is defined and module_marketplace_status %}
+                                    <button class="hide" href="#orderProductStatusModal" data-toggle="modal" id="statusButton" {{ module_marketplace_status }}></button>
+                                {% endif %}
+                              {% endif %}
+{#                              {% if order_status_id != 7 %}#}
+{#                                <div class="tool-more-wrapper">#}
+{#                                  <i class="giga icon-action-more"></i>#}
+{#                                  <div class="tool-more">#}
+{#                                    {% if product.can_return == 3 %}#}
+{#                                      <div class="cancel-btn">#}
+{#                                        <span>RMA</span>#}
+{#                                        <a href="{{ product.return }}" class="icon">#}
+{#                                          <i class="giga icon-RMA"  data-toggle="tooltip" data-original-title="RMA"></i>#}
+{#                                        </a>#}
+{#                                      </div>#}
+{#                                    {% elseif product.can_return == 1 %}#}
+{#                                      <div class="cancel-btn">#}
+{#                                        <span>RMA</span>#}
+{#                                        <a class="icon" data-toggle="tooltip" data-original-title="{{ text_can_return_msg }}" disabled="true" style="cursor: not-allowed;">#}
+{#                                          <i class="giga icon-RMA"></i>#}
+{#                                        </a>#}
+{#                                      </div>#}
+{#                                    {% elseif product.can_return == 2 %}#}
+{#                                      <div class="cancel-btn">#}
+{#                                        <span>RMA</span>#}
+{#                                        <a class="icon" data-toggle="tooltip" data-original-title="{{ text_margin_return_msg }}" disabled="true" style="cursor: not-allowed;">#}
+{#                                          <i class="giga icon-RMA"></i>#}
+{#                                        </a>#}
+{#                                      </div>#}
+{#                                    {% elseif product.can_return == 4 %}#}
+{#                                      <div class="cancel-btn">#}
+{#                                        <span>RMA</span>#}
+{#                                        <a class="icon" data-toggle="tooltip" data-original-title="{{ text_future_margin_return_msg }}" disabled="true" style="cursor: not-allowed;">#}
+{#                                          <i class="giga icon-RMA"></i>#}
+{#                                        </a>#}
+{#                                      </div>#}
+{#                                    {% endif %}#}
+{#                                    {% if module_marketplace_status is defined and module_marketplace_status %}#}
+{#                                      <div>#}
+{#                                        <button class="hide" href="#orderProductStatusModal" data-toggle="modal" id="statusButton"></button>#}
+{#                                      </div>#}
+{#                                    {% endif %}#}
+{#                                    {% if can_review %}#}
+{#                                      <div>#}
+{#                                        <span>Review</span>#}
+{#                                        <a class="icon"#}
+{#                                           onclick="showReview({{ product.order_id }},{{ product.order_product_id }},{{ product.product_id }},{{ product.customer_id }})"#}
+{#                                           title="Review">#}
+{#                                          <i class="giga icon-Action-Review"></i>#}
+{#                                        </a>#}
+{#                                      </div>#}
+{#                                    {% endif %}#}
+{#                                  </div>#}
+{#                                </div>#}
+{#                              {% endif %}#}
+                            </div>
+                          {% endif %}
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  {#Sub-Total#}
+                  <tr>
+                    <td class="text-right" colspan="{{ colspan+1 }}">
+                      {#{% if isEuropean %} <i class="giga icon-vat"></i> {% endif %}#}
+                      Item(s) Subtotal:
+                    </td>
+                    <td class="text-right"><span class="text-price">{{ sub_total }}</span> </td>
+                  </tr>
+                  {#Service fee#}
+                  {% if isEuropean %}
+                    <tr>
+                      <td class="text-right border-none" colspan="{{ colspan+1 }}"> Total Service Fee:</td>
+                      <td class="text-right border-none"><span class="text-price">{{ total_service_fee }}</span> </td>
+                    </tr>
+                  {% endif %}
+                  <tr>
+                    <td class="text-right border-none" colspan="{{ colspan+1 }}"> Total Fulfillment:</td>
+                    <td class="text-right border-none"><span class="text-price">{{ total_freight }}</span> </td>
+                  </tr>
+                  <tr>
+                    <td class="text-right border-none" colspan="{{ colspan+1 }}">Order Total:</td>
+                    <td class="text-right border-none"><span class="text-price">{{ total_price }}</span></td>
+                  </tr>
+                  {# 1452 优惠券 #}
+                  {% if promotion_discount > 0 %}
+                  <tr>
+                    <td class="text-right border-none" colspan="{{ colspan+1 }}"> Promotion Discount:</td>
+                    <td class="text-right border-none"><span class="text-price">{{ promotion_discount_show }}</span> </td>
+                  </tr>
+                  {% endif %}
+                  {% if giga_coupon > 0 %}
+                  <tr>
+                    <td class="text-right border-none" colspan="{{ colspan+1 }}"> GIGA Coupon:</td>
+                    <td class="text-right border-none"><span class="text-price">{{ giga_coupon_show }}</span> </td>
+                  </tr>
+                  {% endif %}
+                  <tr>
+                    <td class="text-right border-none" colspan="{{ colspan+1 }}"> Final Total:</td>
+                    <td class="text-right border-none"><span style="color:#DB0101">{{ final_total_show }}</span> </td>
+                  </tr>
+                  {# 1452 优惠券 End #}
+                  <tr>
+                    <td class="text-right border-none" colspan="{{ colspan+1 }}"> Transaction Fee:</td>
+                    <td class="text-right border-none"><span class="text-price">{{ total_transaction }}</span> </td>
+                  </tr>
+                  {# 1452 优惠券 #}
+                  {% if order_full_delivery_campaigns %}
+                    <tr class="order-campaign">
+                      <td colspan="{{colspan+2}}" class="text-right border-none">
+                        <div class="gift-line">Gift:
+                        {% for key,order_campaign in order_full_delivery_campaigns %}
+                          <span class="text-price coupon-account coupon-des">{{ order_campaign.content }}</span>
+                          {% if order_campaign.is_coupon %}
+                          <span class="coupon-des">coupon&nbsp;</span><img src="image/coupon/coupon.png">
+                          {% endif %}
+                          {% if key < order_full_delivery_campaigns|length-1 %}
+                          </div><div class="gift-line">
+                          {% endif %}
+                        {% endfor %}
+                        </div>
+                      </td>
+                    </tr>
+                  {% endif %}
+                  {# 1452 优惠券 End #}
+                  </tbody>
+                </table>
+
+                {#Comments#}
+                {% if comment is defined %}
+                  <h3 style="margin: 0 auto;margin-top: 10px;margin-bottom: 10px;color: #fa6400" >Comments</h3>
+                  <table class="table main table-hover" style="margin: 0 auto;margin-bottom: 35px">
+                    <tbody>
+                    <tr>
+                      <td class="text-left" style="word-break: break-all;">{{ comment }}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                {% endif %}
+
+                {#Order history#}
+                {% if histories %}
+                  <h3 style="margin: 0 auto;margin-top: 10px;margin-bottom: 10px;" >{{ text_history }}</h3>
+                  <table class="table main table-hover" style="margin: 0 auto;">
+                    <thead>
+                    <tr>
+                      <th class="text-left">{{ column_date_added }}</th>
+                      <th class="text-left">{{ column_status }}</th>
+                      <th class="text-left">{{ column_comment }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% if histories %}
+                      {% for history in histories %}
+                        <tr >
+                          <td class="text-left">{{ history.date_added }}</td>
+                          <td class="text-left">{{ history.status }}</td>
+                          <td class="text-left">{{ history.comment }}</td>
+                        </tr>
+                      {% endfor %}
+                    {% else %}
+                      <tr>
+                        <td colspan="3" class="text-center">{{ text_no_results }}</td>
+                      </tr>
+                    {% endif %}
+                    </tbody>
+                  </table>
+                {% endif %}
+                <!--Margin Details-->
+                {% if restOrderList %}
+                  <h3 style="margin: 0 auto;margin-top: 10px;margin-bottom: 10px;" >{{ margin_detail_title }}</h3>
+                  <table class="table main table-hover" style="margin: 0 auto;">
+                    <thead>
+                    <tr>
+                      <th class="text-center">{{ column_item_code }}</th>
+                      <th class="text-center">{{ column_purchase_order }}</th>
+                      <th class="text-center">User Code</th>
+                      <th class="text-center">{{ column_purchase_date }}</th>
+                      <th class="text-center">{{ column_purchase_qty }}</th>
+                      <th class="text-center">Unit Price After Discount</th>
+                      {% if isEuropean %}
+                        <th class="text-center"style="width:12%"> Service Fee After Discount</th>
+                      {% endif %}
+                      <th class="text-center">Fulfillment Per Unit</th>
+                      <th class="text-center">Total</th>
+                      <th class="text-center"> Sales Order</th>
+                      <th class="text-center">{{ column_rma_id }}</th>
+                      <th class="text-center">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for restOrder in restOrderList %}
+                      <tr class="text-center">
+                        <td>{{ restOrder.sku }}</td>
+                        <td>
+                          {% if restOrder.rest_order_url %}
+                            <a href="{{ restOrder.rest_order_url }}" style="color: blue;font-weight: bold">{{ restOrder.rest_order_id }}&nbsp;<i class="giga icon-table-link"></i></a>
+                          {% else %}
+                            {{ restOrder.rest_order_id }}
+                          {% endif %}
+                        </td>
+                        <td>{{ restOrder.buyer_user_number }}</td>
+                        <td>{{ restOrder.purchase_date }}</td>
+                        <td><span class="text-price">{{ restOrder.quantity }}</span></td>
+                        <td>
+                          {#{% if isEuropean %}
+                            <i class="giga icon-vat"></i>
+                          {% endif %}#}
+                          <span class="text-price">{{ restOrder.unit_price }}</span>
+                        </td>
+                        {% if isEuropean %}
+                        <td><span class="text-price">{{ restOrder.service_fee_per }}</span></td>
+                        {% endif %}
+                        <td><span class="text-price">{{ restOrder.freight }}</span></td>
+                        <td>
+                          {% if restOrder.discount_total > 0 %}
+                            <span class="text-price">{{ restOrder.final_total }}</span>
+                            <br/>
+                            <span class="text-price underline-price">{{ restOrder.total }}</span>
+                          {% else %}
+                            <span class="text-price">{{ restOrder.total }}</span>
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% for k,v in restOrder.order_id_list %}
+                            {#<a href="index.php?route=account/customer_order/customerOrderSalesOrderDetails&id={{ product['oid_list'][k] }}" style="text-decoration: underline">{{ v }}</a><br/>#}
+                            {{ v }}<br/>
+                          {% endfor %}
+                        </td>
+                        <td>
+                          {% for k,v in restOrder.rma_id_list %}
+                            {% if customer_id == restOrder['margin_buyer_id'] %}
+                              <a href="index.php?route=account/rma_order_detail&rma_id={{ restOrder['rid_list'][k] }}"> {{ v }}&nbsp;<i class="giga icon-table-link"></i></a><br/>
+                            {% else %}
+                              {{ v }}
+                            {% endif %}
+                          {% endfor %}
+                        </td>
+                        <td>
+                          {% if restOrder.reorder %}
+                            <div class="action-group"  style="text-align: center">
+                              {% if customer_id == restOrder['margin_buyer_id'] %}
+                                {% if restOrder.unsupport_stock %}
+                                  <a data-toggle="tooltip" title="This Seller’s products cannot be directly purchased for stock up. You must first upload a sales order and pay for the items, then ship the items immediately."
+                                     class="btn-action-disabled">
+                                    <i class="giga icon-cart-add"></i>
+                                  </a>
+                                {% else %}
+                                  <a onclick="reorderCartAdd('{{ restOrder.reorder_product_id }}', '{{ restOrder.reorder_quantity }}', '{{ restOrder.reorder_transaction_type }}','{{ delivery_type }}')" data-toggle="tooltip" title="{{ button_reorder }}" class=""><i class="giga icon-cart-add"></i></a>
+                                {% endif %}
+                                {% if order_status != 'Canceled' %}
+                                  {% if restOrder.can_return == 3 %}
+                                    <a href="{{ restOrder.return }}" class="icon">
+                                      <i class="giga icon-RMA" data-toggle="tooltip"
+                                         data-original-title="RMA"></i>
+                                    </a>
+                                  {% elseif restOrder.can_return == 1 %}
+                                    <a class="icon" data-toggle="tooltip"
+                                       data-original-title="{{ text_can_return_msg }}" disabled="true"
+                                       style="cursor: not-allowed;">
+                                      <i class="giga icon-RMA"></i>
+                                    </a>
+                                  {% elseif restOrder.can_return == 2 %}
+                                    <a class="icon" data-toggle="tooltip"
+                                       data-original-title="{{ text_margin_return_msg }}" disabled="true"
+                                       style="cursor: not-allowed;">
+                                      <i class="giga icon-RMA"></i>
+                                    </a>
+                                  {% endif %}
+                                  {% if module_marketplace_status is defined and module_marketplace_status %}
+                                    <button class="hide" href="#orderProductStatusModal" data-toggle="modal"
+                                            id="statusButton"></button>
+                                  {% endif %}
+                                {% endif %}
+{#                                {% if order_status != 'Canceled' %}#}
+{#                                  <div class="tool-more-wrapper">#}
+{#                                    <i class="giga icon-action-more"></i>#}
+{#                                    <div class="tool-more">#}
+{#                                      {% if restOrder.can_return == 3 %}#}
+{#                                        <div class="cancel-btn">#}
+{#                                          <span>RMA</span>#}
+{#                                          <a href="{{ restOrder.return }}" class="icon">#}
+{#                                            <i class="giga icon-RMA" data-toggle="tooltip" data-original-title="RMA"></i>#}
+{#                                          </a>#}
+{#                                        </div>#}
+{#                                      {% elseif restOrder.can_return == 1 %}#}
+{#                                        <div class="cancel-btn">#}
+{#                                          <span>RMA</span>#}
+{#                                          <a class="icon" data-toggle="tooltip" data-original-title="{{ text_can_return_msg }}" disabled="true" style="cursor: not-allowed;">#}
+{#                                            <i class="giga icon-RMA"></i>#}
+{#                                          </a>#}
+{#                                        </div>#}
+{#                                      {% elseif restOrder.can_return == 2 %}#}
+{#                                        <div class="cancel-btn">#}
+{#                                          <span>RMA</span>#}
+{#                                          <a class="icon" data-toggle="tooltip" data-original-title="{{ text_margin_return_msg }}" disabled="true" style="cursor: not-allowed;">#}
+{#                                            <i class="giga icon-RMA"></i>#}
+{#                                          </a>#}
+{#                                        </div>#}
+{#                                      {% endif %}#}
+{#                                      {% if module_marketplace_status is defined and module_marketplace_status %}#}
+{#                                        <button class="hide" href="#orderProductStatusModal" data-toggle="modal"#}
+{#                                                id="statusButton"></button>#}
+{#                                      {% endif %}#}
+{#                                      {% if can_review %}#}
+{#                                        <div>#}
+{#                                          <span>Review</span>#}
+{#                                          <a class="icon"#}
+{#                                             onclick="showReview({{ restOrder.rest_order_id  }},{{ restOrder.order_product_id }},{{ restOrder.product_id }},{{ restOrder.seller_id }})"#}
+{#                                             title="Review">#}
+{#                                            <i class="giga icon-Action-Review"></i>#}
+{#                                          </a>#}
+{#                                        </div>#}
+{#                                      {% endif %}#}
+{#                                    </div>#}
+{#                                  </div>#}
+{#                                {% endif %}#}
+                              {% endif %}
+                            </div>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                {% endif %}
+
+              </div>
+              <div class="text-center bg-white">
+                <a href="{{ back_url }}" class="btn btn-primary">Back</a>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal-review" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+        <h3 class="modal-title">Review</h3>
+      </div>
+      <div class="modal-body">
+        <div class="tab-pane" id="tab-review">
+          <form class="form-horizontal" id="form-review">
+            <div id="review"></div>
+            <div class="form-group required">
+              <div class="col-sm-12">
+                <label class="control-label" for="input-name">Your Name</label>
+                <input type="text" name="name"  id="input-name" class="form-control" readonly="readonly"/>
+              </div>
+            </div>
+            <div class="form-group required">
+              <div class="col-sm-12">
+                <label class="control-label" for="input-review">Your Review</label>
+                <textarea name="text" rows="5" cols="5" id="input-review" class="form-control" style="resize: none;width:100%;height: 200px "></textarea>
+                <div class="help-block"><span class="text-danger">Note:</span> Please enter plain text without URLs or HTML.</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-12">
+                <label class="control-label" for="input-review">Files</label>
+                <div style="border: 1px solid #ccc">
+                  <div style="display: flex;margin-top: 10px">
+                    <div id="img-container0"  style="width: 80px;height: 80px;margin-left:60px;" name="container">
+                      <a href="" id="thumb-image0" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" id= "img0" alt="" title="" data-placeholder="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" style="width: 70px;height: 70px"/></a>
+                      <input type="file" name="fileImage0" value="" id="imageAdd0" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    </div>
+                    <div id="img-container1"  style="width: 80px;height: 80px;margin-left:10px;" name="container">
+                      <a href="" id="thumb-image1" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" id= "img1" alt="" title="" data-placeholder="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" style="width: 70px;height: 70px"/></a>
+                      <input type="file" name="fileImage1" value="" id="imageAdd1" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    </div>
+                    <div id="img-container2"  style="width: 80px;height: 80px;margin-left:10px;" name="container">
+                      <a href="" id="thumb-image2" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" id= "img2" alt="" title="" data-placeholder="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" style="width: 70px;height: 70px"/></a>
+                      <input type="file" name="fileImage2" value="" id="imageAdd2" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    </div>
+                    <div id="img-container3"  style="width: 80px;height: 80px;margin-left:10px;" name="container">
+                      <a href="" id="thumb-image3" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" id= "img3" alt="" title="" data-placeholder="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" style="width: 70px;height: 70px"/></a>
+                      <input type="file" name="fileImage3" value="" id="imageAdd3" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    </div>
+                    <div id="img-container4"  style="width: 80px;height: 80px;margin-left:10px;" name="container">
+                      <a href="" id="thumb-image4" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" id= "img4" alt="" title="" data-placeholder="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" style="width: 70px;height: 70px"/></a>
+                      <input type="file" name="fileImage4" value="" id="imageAdd4" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    </div>
+                  </div>
+                  <div style="display: flex;margin-top: 10px;margin-bottom: 10px">
+                    <div id="img-container5"  style="width: 80px;height: 80px;margin-left:60px;" name="container">
+                      <a href="" id="thumb-image5" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" id= "img5" alt="" title="" data-placeholder="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" style="width: 70px;height: 70px"/></a>
+                      <input type="file" name="fileImage5" value="" id="imageAdd5" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    </div>
+                    <div id="img-container6"  style="width: 80px;height: 80px;margin-left:10px;" name="container">
+                      <a href="" id="thumb-image6" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" id= "img6" alt="" title="" data-placeholder="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" style="width: 70px;height: 70px"/></a>
+                      <input type="file" name="fileImage6" value="" id="imageAdd6" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    </div>
+                    <div id="img-container7"  style="width: 80px;height: 80px;margin-left:10px;" name="container">
+                      <a href="" id="thumb-image7" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" id= "img7" alt="" title="" data-placeholder="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" style="width: 70px;height: 70px"/></a>
+                      <input type="file" name="fileImage7" value="" id="imageAdd7" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    </div>
+                    <div id="img-container8"  style="width: 80px;height: 80px;margin-left:10px;" name="container">
+                      <a href="" id="thumb-image8" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" id= "img8" alt="" title="" data-placeholder="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" style="width: 70px;height: 70px"/></a>
+                      <input type="file" name="fileImage8" value="" id="imageAdd8" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    </div>
+                    <div id="img-container9"  style="width: 80px;height: 80px;margin-left:10px;" name="container">
+                      <a href="" id="thumb-image9" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" id= "img9" alt="" title="" data-placeholder="catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png" style="width: 70px;height: 70px"/></a>
+                      <input type="file" name="fileImage9" value="" id="imageAdd9" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group required">
+              <div class="col-sm-12">
+                <label class="control-label">Product Rating </label>
+                &nbsp;&nbsp;&nbsp; Bad&nbsp;
+                <input type="radio" name="rating" id="rating1" value="1" />
+                &nbsp;
+                <input type="radio" name="rating" id="rating2" value="2" />
+                &nbsp;
+                <input type="radio" name="rating" id="rating3" value="3" />
+                &nbsp;
+                <input type="radio" name="rating" id="rating4" value="4" />
+                &nbsp;
+                <input type="radio" name="rating" id="rating5" value="5" />
+                &nbsp;Good</div>
+            </div>
+            <div class="form-group required">
+              <div class="col-sm-12">
+                <label class="control-label">Seller Rating</label>
+                &nbsp;&nbsp;&nbsp; Bad&nbsp;
+                <input type="radio" name="seller_rating" id="seller_rating1" value="1" />
+                &nbsp;
+                <input type="radio" name="seller_rating" id="seller_rating2" value="2" />
+                &nbsp;
+                <input type="radio" name="seller_rating" id="seller_rating3" value="3" />
+                &nbsp;
+                <input type="radio" name="seller_rating" id="seller_rating4" value="4" />
+                &nbsp;
+                <input type="radio" name="seller_rating" id="seller_rating5" value="5" />
+                &nbsp;Good</div>
+            </div>
+            <input type="text" name="product_id" id="product_id"style="display: none"></input>
+            <input type="text" name="order_id" id="order_id"style="display: none"></input>
+            <input type="text" name="order_product_id" id="order_product_id"style="display: none"></input>
+            <input type="text" name="review_id" id="review_id"style="display: none"></input>
+            <input type="text" name="seller_id" id="seller_id"style="display: none"></input>
+            <input type="text" name="buyer_review_number" id="buyer_review_number"style="display: none"></input>
+            <input type="text" name="seller_review_number" id="seller_review_number"style="display: none"></input>
+            {{ captcha }}
+            <div class="modal-footer">
+                <button type="button" id="button-review" data-loading-text="{{ text_loading }}" class="btn btn-primary btn-submit"><i class="giga icon-action-send-message "></i> Submit Review</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+<!-- marketplace -->
+{% if module_marketplace_status is defined and module_marketplace_status %}
+  <div id="orderProductStatusModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 class="modal-title">{{ text_tracking }}</h3>
+        </div>
+        <div class="modal-body" id="orderProductStatusModalBody">
+
+        </div>
+        <div class="modal-footer">
+          <button class="btn closebtn" data-dismiss="modal" aria-hidden="true" id="closeButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function getProductOrderStatus (order_id,product_id) {
+      $.ajax({
+        url: 'index.php?route=account/customerpartner/order_detail&order_id='+order_id+'&product_id='+product_id,
+        type: 'get',
+        methodType: 'html',
+        success: function(html) {
+          $('#orderProductStatusModalBody').html(html);
+          $('#statusButton').click();
+        }
+      });
+    }
+  </script>
+{% endif %}
+<!-- marketplace -->
+
+<script>
+  function showImg(e){
+    var newsrc=getObjectURL(e.files[0]);
+    var id = e.id;
+    var pattern = new RegExp("[0-9]+");
+    var imgRow = id.match(pattern);
+    var reader = new FileReader();
+    reader.onload = function(theFile) {
+      var image = new Image();
+      image.onload = function() {
+        $('#img'+imgRow).attr("src",newsrc);
+      };
+      image.src = theFile.target.result;
+    }
+    reader.readAsDataURL(e.files[0]);
+  }
+  function getObjectURL(file) {
+    var url = null ;
+    if (window.createObjectURL!=undefined) {
+      url = window.createObjectURL(file) ;
+    } else if (window.URL!=undefined) {
+      url = window.URL.createObjectURL(file) ;
+    } else if (window.webkitURL!=undefined) {
+      url = window.webkitURL.createObjectURL(file) ;
+    }
+    return url ;
+  }
+  function showReview(orderId,orderProductId,productId,sellerId) {
+    // $('#input-name').val();
+    $.ajax({
+      url : "index.php?route=account/order/reviewInfo",
+      async : true,
+      type : "POST",
+      data : {
+        "orderId" : orderId,
+        "orderProductId" : orderProductId,
+        "productId": productId
+      },
+      success : function(json){
+        if(json['error']){
+          window.location.href=json['url'];
+        }else {
+          //清空
+          $('input[name="name"]').val('');
+          $('textarea[name="text"]').val('');
+          $('input[name="rating"]:checked').prop('checked', false);
+          $('input[name="seller_rating"]:checked').prop('checked', false);
+          $('#product_id').val('');
+          $('#order_id').val('');
+          $('#order_product_id').val('');
+          $('#seller_id').val('');
+          $('#review_id').val('');
+          for (var i = 0; i < 10; i++) {
+            document.querySelector('#imageAdd' + i).value = null;
+            document.querySelector('#img' + i).src = "catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png";
+          }
+          if (json['add']) {
+            $('#input-name').val(json['author']);
+            $('#product_id').val(json['product_id']);
+            $('#order_id').val(json['order_id']);
+            $('#order_product_id').val(json['order_product_id']);
+            $('#seller_id').val(sellerId);
+          } else if (json['edit']) {
+            $('#review_id').val(json['review_id']);
+            $('#input-name').val(json['author']);
+            $('#input-review').val(json['text']);
+            $('#rating' + json['rating']).prop('checked', true);
+            $('#seller_rating' + json['seller_rating']).prop('checked', true);
+            $('#product_id').val(json['product_id']);
+            $('#order_id').val(json['order_id']);
+            $('#order_product_id').val(json['order_product_id']);
+            $('#seller_id').val(sellerId);
+            $('#buyer_review_number').val(json['buyer_review_number']);
+            $('#seller_review_number').val(json['seller_review_number']);
+            for (var i = 0; i < 10; i++) {
+              // document.querySelector('#imageAdd'+i).value = null;
+              if (json['img' + i] != null || json['img' + i] != undefined) {
+                document.querySelector('#img' + i).src = json['img' + i];
+              }
+            }
+          }
+          $('#myModal-review').modal('show');
+        }
+      },
+      error : function() {
+        alert("请求失败");
+      },
+      dataType : "json"
+    });
+    // $('#myModal-review').modal('show');
+  }
+  $('#button-review').on('click', function() {
+    $.ajax({
+      {#url: 'index.php?route=product/product/write&product_id={{ product_id }}',#}
+      url: 'index.php?route=account/order/write',
+      type: 'post',
+      dataType: 'json',
+      data: new FormData($('#form-review')[0]),
+      cache: false,
+      contentType: false,
+      processData: false,
+      beforeSend: function () {
+        $('#button-review').button('loading');
+      },
+      complete: function () {
+        $('#button-review').button('reset');
+      },
+      success: function (json) {
+        $('.alert-dismissible').remove();
+
+        if (json['error']) {
+          $('#review').after('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
+        }
+
+        if (json['success']) {
+          // $('#review').after('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> ' + json['success'] + '</div>');
+
+          $('input[name=\'name\']').val('');
+          $('textarea[name=\'text\']').val('');
+          $('input[name=\'rating\']:checked').prop('checked', false);
+          $('input[name=\'seller_rating\']:checked').prop('checked', false);
+          $('#product_id').val('');
+          $('#order_id').val('');
+          $('#order_product_id').val('');
+          $('#seller_id').val('');
+          $('#review_id').val('');
+          for(var i=0;i<10;i++){
+            document.querySelector('#imageAdd'+i).value = null;
+            document.querySelector('#img'+i).src = "catalog/view/theme/yzcTheme/stylesheet/diyUpload/images/imageUpload.png";
+          }
+          alert(json['success'])
+          $('#myModal-review').modal('hide');
+
+        }
+      }
+    });
+  });
+
+  function reorderCartAdd(product_id, quantity, transaction_type=undefined,delivery_type = undefined){
+    let sendData = {};
+    sendData.product_id = product_id;
+    sendData.quantity = quantity;
+    sendData.route = 'reorder';
+    if (transaction_type != undefined || transaction_type != '' || transaction_type != '0' || transaction_type != 0) {
+      sendData.transaction_type = transaction_type;
+    }
+    if (delivery_type != undefined || delivery_type != '' || delivery_type != '0' || delivery_type != 0) {
+      if(delivery_type == 2) {
+        sendData.freight_radio = 'cwf';
+      }
+    }
+
+    $.ajax({
+      url: 'index.php?route=checkout/cart/add',
+      type: 'post',
+      data: sendData,
+      dataType: 'json',
+      success: function(json) {
+        $('.alert-dismissible, .text-danger').remove();
+        $('.form-group').removeClass('has-error');
+
+        if (json['error']) {
+          // $('#content').before('<div class="alert alert-danger alert-dismissible container"><i class="fa fa-times-circle"></i> Failed <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+          if(json['error']['transaction_type']){
+            layer.alert(json['error']['transaction_type'], {
+              title: 'Message',
+              btn : 'OK',
+              skin: 'yzc_layer' //样式类名
+              ,closeBtn: 0
+            });
+          }
+
+          if (json['error']['recurring']) {
+            layer.alert(json['error']['recurring'], {
+              title: 'Message',
+              btn : 'OK',
+              skin: 'yzc_layer' //样式类名
+              ,closeBtn: 0
+            });
+          }
+          if (json['error']['msg']) {
+            layer.msg(json['error']['msg']);
+          }
+        }
+
+        if (json['success']) {
+          $('#content').before('<div class="alert alert-success alert-dismissible container"><i class="fa fa-check-circle"></i> ' + json['success'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+          $('html, body').animate({scrollTop: 0}, 'slow');
+          $('#cart').load('index.php?route=common/cart/info');
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+          title: 'Message',
+          btn: 'OK',
+          skin: 'yzc_layer' //样式类名
+          , closeBtn: 0
+        });
+      },
+      complete:function(){
+      }
+    });
+  }
+</script>
+<style>
+  .upload_warp_img_div_del {
+    position: absolute;
+    top: 6px;
+    width: 16px;
+    right: 4px;
+  }
+
+  .upload_warp_img_div_top {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.4);
+    line-height: 30px;
+    text-align: left;
+    color: #fff;
+    font-size: 12px;
+    text-indent: 4px;
+  }
+
+  .upload_warp_img_div_text {
+    white-space: nowrap;
+    width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .upload_warp_img_div img {
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: middle;
+  }
+
+  .upload_warp_img_div {
+    position: relative;
+    height: 100px;
+    width: 120px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    /*margin: 0px 10px 10px 0px;*/
+    float: left;
+    line-height: 100px;
+    display: table-cell;
+    text-align: center;
+    background-color: #eee;
+    cursor: pointer;
+  }
+
+  .upload_warp_img {
+    border-top: 1px solid #D2D2D2;
+    padding: 14px 0 0 14px;
+    overflow: hidden
+  }
+
+  .upload_warp_text {
+    text-align: left;
+    margin-bottom: 10px;
+    padding-top: 10px;
+    text-indent: 14px;
+    border-top: 1px solid #ccc;
+    font-size: 14px;
+  }
+
+  .upload_warp_right {
+    float: left;
+    width: 57%;
+    margin-left: 2%;
+    height: 100%;
+    border: 1px dashed #999;
+    border-radius: 4px;
+    line-height: 130px;
+    color: #999;
+  }
+
+  .upload_warp_left img {
+    margin-top: 35px;
+  }
+
+  .upload_warp_left {
+    float: left;
+    width: 15%;
+    height: 100%;
+    border: 1px dashed #999;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .upload_warp {
+    margin: 14px;
+    height: 130px;
+  }
+
+  .upload {
+    border: 1px solid #ccc;
+    background-color: #fff;
+    width: 100%;
+    box-shadow: 0px 1px 0px #ccc;
+    border-radius: 4px;
+  }
+
+  .hello {
+    width: 100%;
+    text-align: center;
+  }
+  .upload_warp_video_div_top {
+    top: 0;
+    width: 100%;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.4);
+    line-height: 30px;
+    text-align: left;
+    color: #fff;
+    font-size: 12px;
+    text-indent: 4px;
+    display: flex;
+  }
+  .flag-margin-order{
+    color: #FF784E;
+    margin-left: 5px;
+  }
+  .tag_icon img{
+    margin-top: -5px;
+  }
+</style>
+
+{{ footer }}

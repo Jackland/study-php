@@ -1,0 +1,69 @@
+.lock-reason{
+  width: 27%;
+}
+.bill-type{
+  width: 20%;
+}
+.bill-id{
+  width: 20%;
+}
+.lock-qty{
+  width: 13%;
+}
+.lock-to-pay{
+  width: 20%;
+}
+.lock-reason span{
+  height: 38px;
+  display: inline-block;
+  line-height: 38px;
+}
+
+
+/*在库天数的浮动框*/
+.giga.icon-sidebar-unfold.download-cart{
+  font-size: 12px;
+}
+.popover {
+  max-width: 400px;
+}
+
+.inner-detail-table .popover.bottom{
+  margin-top: 6px;
+}
+.inner-detail-table .popover{
+  border-radius: 6px;
+  box-shadow: 0px 5px 14px 2px rgba(0, 0, 0, 0.3);
+  border: none;
+}
+.pay-tip:first-child{
+  margin-top: 6px;
+}
+.pay-tip{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.pay-tip .text{
+  width: 120px;
+}
+.pay-tip:last-child{
+  margin-bottom: 0;
+}
+.inner-detail-table .table{
+  margin-bottom: 6px;
+}
+.inner-detail-table .table.feel-tip-table{
+  margin-bottom: 6px;
+}
+.inner-detail-table .table.feel-tip-table > thead > tr > th,.inner-detail-table .table.feel-tip-table > tbody > tr > td{
+  text-align: center;
+  font-size: 12px;
+  font-weight: normal;
+}
+.inner-detail-table .table.feel-tip-table > thead > tr > th{
+  border-bottom-width: 1px;
+  background: #fff;
+}
+/*在库天数的浮动框*/

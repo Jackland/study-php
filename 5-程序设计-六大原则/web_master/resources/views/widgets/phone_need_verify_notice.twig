@@ -1,0 +1,45 @@
+{{ css(['widgets/phoneNeedVerifyNotice.css']) }}
+
+<div class="modal fade verify-phone-modal" id="verifyPhoneModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index: 3000">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content no-shadow">
+      <div class="modal-header">
+        {% if can_close %}
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <i class="giga icon-V10_danchuangguanbi"></i>
+        </button>
+        {% endif %}
+        <h4 class="modal-title text-left">Phone Number Verification</h4>
+      </div>
+      <div class="modal-body">
+        <div class="verify-msg">
+          <div>Dear Marketplace user, due to the business necessity, please first
+            complete the phone number verification.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a type="button" class="oris-button oris-button-bigger" href="{{ url('account/phone/verify') }}">Verify Now</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% apply script %}
+<script>
+  window.hasPhoneVerifyNotice = true;
+  var phoneVerifyNoticeModal = $('#verifyPhoneModal');
+  $(function () {
+    phoneVerifyNoticeModal.modal({
+      backdrop: 'static',
+      keyboard: false,
+      show: true,
+    });
+  })
+  phoneVerifyNoticeModal.on('hidden.bs.modal', function () {
+    $.post({{ url('account/phone/hideNotice')|js_var }}, {}, function () {
+      window.hasPhoneVerifyNotice = false
+    })
+  })
+</script>
+{% endapply %}

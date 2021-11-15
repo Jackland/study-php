@@ -1,0 +1,85 @@
+{{ header }}{{ separate_column_left }}
+{% if separate_view is defined and separate_view %}
+<div id="account-download" class="container" style="margin-left: 15%">
+    {% else %}
+    <div id="account-download" class="container">
+        {% endif %}
+        <div>
+            {% if column_left and column_right %}
+                {% set class = 'col-sm-6' %}
+            {% elseif column_left or column_right %}
+                {% set class = 'col-sm-9' %}
+            {% else %}
+                {% set class = 'col-sm-12' %}
+            {% endif %}
+            <div>
+                <ul class="breadcrumb">
+                    {% for breadcrumb in breadcrumbs %}
+                        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                    {% endfor %}
+                </ul>
+                <div>
+                    <h1>Details
+                        <div class="pull-right">
+                            <div>
+                                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                                    <i class="fa fa-reply"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </h1>
+                </div>
+            </div>
+            <div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-list"></i> Detail List </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <td class="text-center">Create Time</td>
+                                    <td class="text-center">Pre Value</td>
+                                    <td class="text-center">Updated Value</td>
+                                    <td class="text-center">Fluctuate</td>
+                                    <td class="text-center">Operator(IP)</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for currencyHistory in currencyHistorys %}
+                                    <tr>
+                                        <td>{{ currencyHistory.createTime }}</td>
+                                        <td class="text-center">{{ currencyHistory.preValue }}</td>
+                                        <td class="text-center">{{ currencyHistory.newValue }}</td>
+                                          {% if currencyHistory.moreThanZero %}
+                                          <td class="text-center" style="color: red">
+                                          +{{ currencyHistory.fluctuate }}
+                                          </td>
+                                          {% else %}
+                                            <td class="text-center" style="color: green">
+                                            {{ currencyHistory.fluctuate }}
+                                            </td>
+                                          {% endif %}
+                                        <td class="text-center">{{ currencyHistory.operatorId }}({{ currencyHistory.ip }})</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                      {#分页#}
+                      <div class="row">
+                        <div class="col-sm-12">
+                          <div class="pull-left">
+                          </div>
+                          <div class="pull-right">{{ pagination }}</div>
+                        </div>
+                      </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ footer }}

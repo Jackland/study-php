@@ -1,0 +1,84 @@
+{{ assetBundle('Seller\\VatAsset') }}
+{{ this.title('Margin Details') }}
+{{ this.params('breadcrumbs', [
+  'home',
+  {
+    text: 'Complex Transactions List',
+    href: url('account/product_quotes/wk_quote_my&tab=2'),
+  },
+  'current'
+]) }}
+{{ css(['css/common/bid/marginDetail.css']) }}
+<div class="page-content margin-detail">
+    <div class="nav-oris">
+      <div class="oris-row">
+       <div class="title-line">
+         <div class="page-title">{{ this.getTitle() }}</div>
+       </div>
+        <div class="row">
+          <div class="col-md-12">
+            <ul class="nav nav-tabs" role="tablist">
+              <li id="agreement_info_detail_li" class="active">
+                <a href="#tab_agreement_info" data-toggle="tab">Agreement</a>
+              </li>
+              {% if order_id > 0 %}
+                <li id="agreement_deposit_detail_li">
+                  <a href="#tab_bid_agreement_deposit" data-toggle="tab">Deposit</a>
+                </li>
+              {% endif %}
+              {% if applied_performer == 1 %}
+                <li id="agreement_partner_detail_li">
+                  <a href="#tab_bid_agreement_partner" data-toggle="tab">Partner</a>
+                </li>
+              {% endif %}
+              {% if margin_process.process_status >= 2 %}
+                <li id="agreement_settlement_detail_li">
+                  <a href="#tab_margin_settlement" data-toggle="tab">Settlement</a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {#tab页对应内容#}
+      <div class="tab-content main m30-b">
+        <div class="tab-pane active" id="tab_agreement_info">
+          <fieldset>
+            <div id="bid_agreement_detail"><div class="loading-text">Loading...</div></div>
+          </fieldset>
+        </div>
+        <div class="tab-pane" id="tab_bid_agreement_deposit">
+          <fieldset>
+            <div id="bid_agreement_deposit"><div class="loading-text">Loading...</div></div>
+          </fieldset>
+        </div>
+        <div class="tab-pane" id="tab_bid_agreement_partner">
+          <fieldset>
+            <div id="bid_agreement_partner"><div class="loading-text">Loading...</div></div>
+          </fieldset>
+        </div>
+        <div class="tab-pane" id="tab_margin_settlement">
+          <fieldset>
+            <div id="bid_agreement_settlement"><div class="loading-text">Loading...</div></div>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+</div>
+<script>
+  var margin_id = "{{ id }}";
+  var order_id = "{{ order_id }}";
+  var applied_performer = "{{ applied_performer }}";
+  var process_status = "{{ margin_process.process_status }}";
+  block.unBlockUI();
+  $('#bid_agreement_detail').load('index.php?route=account/product_quotes/margin/agreementInfo&id=' + margin_id);
+  if (order_id) {
+    $('#bid_agreement_deposit').load('index.php?route=account/product_quotes/margin/agreementDeposit&id=' + margin_id + '&order_id=' + order_id);
+  }
+  if (applied_performer == 1) {
+    $('#bid_agreement_partner').load('index.php?route=account/product_quotes/margin/agreementPartner&id=' + margin_id);
+  }
+  if (process_status >=2 ){
+    $('#bid_agreement_settlement').load('index.php?route=account/product_quotes/margin/agreementSettlement&id=' + margin_id);
+  }
+</script>

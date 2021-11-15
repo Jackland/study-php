@@ -1,0 +1,1632 @@
+{% trans_default_category 'catalog/view/account/sales_order/sales_order_upload' %}
+<link href="public/css/common/common.css" rel="stylesheet">
+<link rel="stylesheet" href="catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css">
+<script type="text/javascript" src="catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js"></script>
+<style>
+  .tab-title {
+    height: 50px;
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #eee;
+    border-radius: 4px;
+  }
+
+  .upload-icon-batch {
+    color: #000;
+    margin-right: 10px;
+  }
+
+  .sub-title {
+    font-weight: bolder;
+    color: #000;
+    margin-right: 10px;
+  }
+
+  .sub-des {
+    font-size: 12px;
+    color: #888;
+    font-weight: normal;
+  }
+
+  .page-seller-portal .btn.btn-primary.btn-load {
+    background: #eee;
+    color: #333;
+    border-color: #eee;
+  }
+
+  .page-seller-portal .btn.btn-primary.btn-load:hover {
+    color: #3A75DC;
+  }
+
+  .batch-con, .single-con {
+    padding: 10px;
+    min-height: 100px;
+  }
+
+  .single-con {
+    width: 95%;
+  }
+
+  .mr20 {
+    margin-right: 20px;
+  }
+
+  .btn-link {
+    color: #3A75DC;
+    text-decoration: underline;
+    font-size: 13px;
+    vertical-align: bottom;
+  }
+
+  .btn-link:hover,.btn-link.btn-link-active:focus:hover {
+    color: #183464;
+    text-decoration: underline;
+  }
+  .btn-link.btn-link-active:active,.btn-link.btn-link-active:focus{
+    color: #3A75DC;
+    text-decoration: underline;
+  }
+  .btns {
+    text-align: center;
+  }
+
+  .mrb15 {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    font-weight: normal;
+    color: #333;
+  }
+
+  .form-group .form-control {
+    /*background: #f3f5f7;*/
+    border-radius: 4px;
+  }
+
+  .required:before {
+    content: '*';
+    color: #FF414D;
+    margin-right: 4px;
+  }
+
+  .upload-process {
+    margin-top: 20px;
+  }
+
+  .process-tip-error {
+    color: #FF414D;
+  }
+
+  .process-tip-success {
+    color: darkgreen;
+  }
+
+  #page-sales-order-management .progress .progress-bar.error {
+    background-color: #FF414D;
+  }
+
+  .progress {
+    margin-bottom: 10px;
+  }
+
+  .error-input {
+    border-color: #FF414D;
+  }
+
+  .error-text {
+    color: #FF414D;
+    font-size: 12px;
+  }
+
+  .add-remove-action {
+    position: absolute;
+    top: 8px;
+  }
+
+  .add-remove-action:hover {
+    cursor: pointer;
+    color: #3A75DC;
+  }
+  .panel-heading{
+    padding: 0;
+  }
+  .panel-default > .panel-heading + .panel-collapse > .panel-body{
+    border-top: none;
+  }
+  #collapseSingle .form-group > label{
+    font-size: 14px;
+    font-weight: normal;
+    color: #333;
+  }
+  #myUploadPanel .panel{
+    border: none;
+    box-shadow: none;
+  }
+
+  #collapseSingle .panel-body.single-con .col-sm-3{
+    padding-left: 4px;
+    padding-right: 0;
+  }
+  #collapseSingle .panel-body.single-con .col-sm-3.control-label{
+    padding-left: 0;
+  }
+  .form-wrapper label.radio-inline input[type="radio"]::before{
+    font-size: 16px;
+  }
+  .form-wrapper label.radio-inline span{
+    margin-left: 0;
+  }
+  .form-wrapper label.radio-inline input[type="radio"]{
+    line-height: 32px;
+  }
+  .form-wrapper label.radio-inline span{
+    line-height: 46px;
+  }
+  .form-wrapper .form-control{
+    border: 1px solid #ccc;
+  }
+  .form-wrapper .datetimepicker-range .datetimepicker span.icon i{
+    font-size: 18px;
+    line-height: 31px;
+  }
+  .form-wrapper .form-group{
+    margin-bottom: 15px;
+  }
+  .form-wrapper .form-group > label{
+    font-size: 14px;
+    text-transform: capitalize;
+    color: #333;
+    font-weight: initial;
+  }
+  .giga-show{
+    display: block;
+  }
+  .giga-hide{
+    display:none;
+  }
+  .process-tip-error-shopify,
+  .process-tip-error-ebay {
+    color: #FF414D;
+  }
+
+  .process-tip-success-shopify,
+  .process-tip-success-ebay {
+    color: darkgreen;
+  }
+  .disable-icon{
+    position: absolute;
+    right: 15px;
+    bottom: 0;
+    line-height:38px;
+    color: #aaa;
+    z-index: 99;
+  }
+  .mr0{
+    margin: 0;
+  }
+  .pr0{
+    padding-right: 0;
+  }
+  .form-group .dropdown-menu {
+    width: calc(100% - 4px);
+    margin: 0 0 0 4px;
+    border-radius: 4px;
+    box-shadow: none;
+  }
+  .country-remove{
+    position: absolute;
+    right: 6px;
+    top: 8px;
+    display: none;
+  }
+  .country-remove:hover{
+    cursor: pointer;
+    color: #3A75DC;
+  }
+  .pad-no-left{
+    padding-left: 0;
+  }
+  .pad-no-right{
+    padding-right: 0;
+  }
+  .bootstrap-select {
+     position: relative;
+  }
+
+  .bootstrap-select .dropdown-menu {
+      width: 100%;
+  }
+  .open > .dropdown-menu {
+      display: block !important;
+  }
+  .form-group .form-control .bootstrap-select {
+    /*background: #f3f5f7; */
+    border-radius: 4px;
+    height: 40px;
+    border-radius: 4px;
+    background-color: #f3f5f7;
+    border: 1px solid #ccc;
+    font-size: 12px;
+  }
+  .form-group .bs-searchbox input {
+    background: #fff !important;
+    height: 32px !important;
+  }
+  .form-group .bs-searchbox input:focus {
+    box-shadow: none !important;
+  }
+  .form-group .bootstrap-select button.dropdown-toggle{
+    height: 40px !important;
+    border-radius: 4px !important;
+    background-color: #f3f5f7 !important;
+    border: 1px solid #ccc !important;
+    font-size: 12px !important;
+  }
+  .form-group .bootstrap-select button.dropdown-toggle:focus {
+    outline: none !important;
+    box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 0 8px rgb(24 52 100 / 60%);
+  }
+  .form-group .bootstrap-select button.dropdown-toggle .filter-option-inner-inner{
+    line-height: 26px !important;
+    font-size: 12px;
+    color: #333;
+  }
+  .form-group .bootstrap-select button.dropdown-toggle .bs-caret {
+    color: #333;
+  }
+  .form-group .bootstrap-select ul.dropdown-menu {
+    max-height: 280px !important;
+    overflow-y: scroll;
+  }
+  .form-group .bootstrap-select .dropdown-menu > li.active > a {
+    background-color: #183464 !important;
+    color: #fff;
+
+  }
+  .form-group .bootstrap-select button.bs-placeholder .filter-option-inner-inner,
+  .form-group .bootstrap-select button.bs-placeholder .bs-caret{
+    color: #999 !important;
+  }
+
+/* 26062 */
+  .row .form-group input:not([type=checkbox]):not([type=radio]):not([type=button]):focus{
+    box-shadow: none;
+    border-color: #3A75DC;
+  }
+  #collapseSingle .panel-body.single-con .control-label{
+    padding-top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 40px;
+  }
+  .ebay-hint-position{
+    position: relative;
+  }
+  .ebay-tooltip-container + .tooltip .tooltip-inner {
+    max-width: 350px;
+  }
+  .eBay-notice{
+    height: 80px;
+    background: #FFEFE4;
+    border-radius: 4px;
+    padding-left: 16px;
+  }
+  .eBay-notice .eBay-hint-title{
+    height: 13px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #FF6600;
+    line-height: 20px;
+    padding-top: 7px;
+  }
+  .eBay-hint-content{
+    height: 31px;
+    font-size: 13px;
+    line-height: 18px;
+    display: inline-block;
+    padding-top: 4px
+  }
+  .eBay-hint-content-top{
+    padding-top: 18px;
+  }
+  .eBay-hint-content-bold{
+    font-weight: bold;
+    margin-right: 4px;
+    font-size: 14px;
+  }
+  .eBay-notice .action-sample{
+    color: #004bd8;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .eBay-notice .action-sample-ebay{
+    color: #004bd8;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .eBay-notice .action-sample-ebay:hover{
+    text-decoration:underline
+  }
+  .eBay-notice .action-sample:hover{
+    text-decoration:underline
+  }
+  .eBuy-postion{
+    display: inline-block;
+    position: relative;
+  }
+  .eBay-hint-arrows{
+    width: 0;
+    height: 0;
+    border: 22px solid transparent;
+    border-bottom-color: #FFEFE4;
+    position: absolute;
+    top: 12px;
+    right: -8px;
+  }
+  .eBay-hint-none{
+    display: none;
+  }
+  .ebay-num{
+    width: 16px;
+    height: 16px;
+    background: #333333;
+    border-radius: 50%;
+    display: inline-block;
+    color: white;
+    text-align: center;
+    font-size: 12px;
+    margin-top: 10px;
+    position: absolute;
+  }
+  .ebay-content{
+    margin-left: 18px;
+    font-size: 13px;
+  }
+  /*dialog*/
+  .ebay-dialog .modal-dialog {
+    width: 1000px;
+  }
+  .ebay-dialog .dialog-num {
+    width: 20px;
+    height: 20px;
+    background: #333333;
+    border-radius: 50%;
+    color: white;
+    text-align: center;
+    margin-top: 12px;
+  }
+  .ebay-dialog .ebay-item-number{
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 18px;
+  }
+  .ebay-dialog .ebay-item-location{
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 28px;
+  }
+  .ebay-dialog .ebay-item-content{
+    margin-top: -20px;
+    margin-left: 25px;
+  }
+  .ebay-dialog .ebay-sample-image{
+    margin-bottom:20px;
+
+  }
+</style>
+<div class="panel-group" id="myUploadPanel" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="collapseUploadOne">
+      <h4 class="panel-title tab-title" data-toggle="collapse" data-parent="#myUploadPanel" href="#collapseBatch" aria-expanded="true" aria-controls="collapseBatch">
+        <div class="tab-title-left">
+          <i class="giga icon-batch-export"></i>
+          <span class="sub-title">Batch Order Upload</span>
+          <span class="sub-des">Upload multiple orders together</span>
+        </div>
+        <div>
+          <a class="btn btn-primary btn-load" role="button">
+            <i class="giga icon-sidebar-unfold"></i>
+          </a>
+        </div>
+      </h4>
+    </div>
+    <div id="collapseBatch" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapseUploadOne">
+
+      {% if country == 223 or is_europe %}
+        <div class="panel-body batch-con ebay-hint-position">
+          <div class="form-wrapper" style=" margin:15px 10px 0 10px;">
+            Order From
+            <span style="margin-left: 30px">
+              {#General External Platform #}
+              <label class="radio-inline"><input name="gigaOrderFrom" type="radio" value="2"
+                  {% if 2 == order_from_history %} checked="checked" {% endif %}/><span>General External Platform</span></label>
+               <span class="hover-pointer" data-toggle="tooltip" data-html="true"
+                     title="Select this option if uploading document from any platform other not listed.">
+                 <i class="giga icon-V10-wenhaotishi" style="font-size: 14px;"></i>
+               </span>
+
+              {#shopfiy#}
+              {% if country==223 %}
+                <label class="radio-inline mr-2" style="margin-left: 30px">
+                <input name="gigaOrderFrom" type="radio" value="1"
+                  {% if 1 == order_from_history %} checked="checked" {% endif %}/><span>Shopify</span></label>
+              {% endif %}
+
+              {#eBay#}
+                <div class="eBuy-postion">
+                   <label class="radio-inline"><input name="gigaOrderFrom" type="radio" value="3"
+                  {% if 3 == order_from_history %} checked="checked" {% endif %}/><span>eBay</span></label>
+                   <div class="{% if 3 != order_from_history %} eBay-hint-none {% endif %} eBay-hint-arrows" id="eBayHintArrow" ></div>
+                </div>
+                <span class="hover-pointer ebay-tooltip-container oris-tooltip" data-toggle="tooltip" data-html="true"
+                    title="GIGA warehouses have partnered with eBay overseas warehouses.
+                     eBay warehouses will no longer evaluate the compliance listing rate, timely handing rate,
+                     or the timely delivery rate of big & bulky goods. Instead,
+                     Buyers shall upload accurate and valid orders generated from eBay following the requirements of GIGA.
+                     Otherwise, eBay will not recognize the orders, and in case of problems,
+                     the order defect rate cannot be exempted. Meanwhile,
+                     the Marketplace will add an eBay exclusive sign for the label of such orders.">
+                 <i class="giga icon-V10-wenhaotishi" style="font-size: 14px;"></i>
+               </span>
+            </span>
+          </div>
+          {#eBay 提示#}
+          <div  {% if 3 != order_from_history %} class="eBay-hint-none"  {% endif %} id="eBay-hint">
+            <div class="eBay-notice">
+              <p class="eBay-hint-title">Special prompt：</p>
+              <p class="eBay-hint-content eBay-hint-content-top">
+                <span>eBay will generate an</span>
+                <span class="eBay-hint-content-bold">"eBay item number"</span>
+                <div class="ebay-num">1</div>
+                <span class="ebay-content">and a</span>
+                <span class="eBay-hint-content-bold">"Transaction ID"</span>
+                <div class="ebay-num">2</div>
+                <span class="ebay-content">
+                  so please use those two codes to fill in the "eBayItemNumber" and "eBayTransactionID" on the Sales Order Template. Otherwise, eBay will not identify the orders, and in case of problems, the order defect rate cannot be exempted.
+                </span>
+                <span class="eBay-sample action-sample">View Sample</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {#shopfiy#}
+      <div class="panel-body batch-con" id="shopifyPlatform">
+        <button class="btn btn-primary mr20" id="upload_button_shopify">Upload</button>
+        <input type="file" id="upload_file_shopify" name='upload_file_shopify' onchange="handleFilesShopify(this.files)"
+               style="display:none;">
+        <a href="{{ url('account/sales_order/sales_order_management/downloadShopfiyTemplate') }}"
+           class="mr20 btn-link btn-link-active">Download Template</a>
+        <a
+          href="{{ url('account/sales_order/sales_order_management/downloadTemplateInterpretationFile',{'method':1}) }}"
+          target="_blank" class="mr20 btn-link btn-link-active">Instructions</a>
+        <a href="{{ url('information/information',{'shipmentTime':1}) }}" class="btn-link btn-link-active"
+           target="_blank">Shipping Information</a>
+        <div class="upload-process" id="uploadProcess-shopify" style="display: none">
+          <div class="progress">
+            <div id='progress-bar-upload-shopify' class="progress-bar" role="progressbar" aria-valuenow="0"
+                 aria-valuemin="0"
+                 aria-valuemax="100" style="width: 0;">
+            </div>
+          </div>
+          <div class="process-tip-error-shopify"></div>
+          <div class="process-tip-success-shopify"></div>
+        </div>
+      </div>
+
+      {#General External Platform #}
+      <div class="panel-body batch-con" id="otherPlatform">
+        <button class="btn btn-primary mr20" id="upload_button">Upload</button>
+        <input type="file" id="upload_file" name='upload_file' onchange="handleFiles(this.files)" style="display:none;">
+        <a href="{{ url('account/sales_order/sales_order_management/downloadDPTemplateFile') }}"
+           class="mr20 btn-link  btn-link-active">Download Template</a>
+        <a
+          href="{{ url('account/sales_order/sales_order_management/downloadTemplateInterpretationFile',{'method':2}) }}"
+          target="_blank" class="mr20 btn-link  btn-link-active">Instructions</a>
+        {% if is_europe %}
+          <a href="{{ url('account/sales_order/sales_order_management/cityComparison') }}"
+             class="mr20 btn-link btn-link-active" target="_blank">Country Code Search</a>
+        {% endif %}
+        <a href="{{ url('information/information',{'shipmentTime':1}) }}" class="btn-link  btn-link-active"
+           target="_blank">Shipping Information</a>
+
+        <div class="upload-process" id="uploadProcess" style="display: none">
+          <div class="progress">
+            <div id='progress-bar-upload' class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+                 aria-valuemax="100" style="width: 0;">
+            </div>
+          </div>
+          <div class="process-tip-error"></div>
+          <div class="process-tip-success"></div>
+        </div>
+      </div>
+
+      {#eBay#}
+      <div class="panel-body batch-con" id="eBayPlatform">
+        <button class="btn btn-primary mr20" id="upload_button_ebay">Upload</button>
+        <input type="file" id="upload_file_ebay" name='upload_file_ebay' onchange="handleFilesEbay(this.files, this)"
+               style="display:none;">
+        <a href="{{ url('account/sales_order/sales_order_management/downloadEbayTemplate') }}"
+           class="mr20 btn-link btn-link-active">Download Template</a>
+        <a
+          href="{{ url('account/sales_order/sales_order_management/downloadTemplateInterpretationFile',{'method':3}) }}"
+          target="_blank" class="mr20 btn-link btn-link-active">Instructions</a>
+        <a href="{{ url('information/information',{'shipmentTime':1}) }}" class="btn-link btn-link-active"
+           target="_blank">Shipping Information</a>
+        <div class="upload-process" id="uploadProcess-ebay" style="display: none">
+          <div class="progress">
+            <div id='progress-bar-upload-ebay' class="progress-bar" role="progressbar" aria-valuenow="0"
+                 aria-valuemin="0"
+                 aria-valuemax="100" style="width: 0;">
+            </div>
+          </div>
+          <div class="process-tip-error-ebay"></div>
+          <div class="process-tip-success-ebay"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="collapseUploadTwo">
+      <h4 class="panel-title tab-title" data-toggle="collapse" data-parent="#myUploadPanel" href="#collapseSingle" aria-expanded="false" aria-controls="collapseSingle">
+        <div class="tab-title-left">
+          <i class="giga icon-shangchuan"></i>
+          <span class="sub-title">Single record upload</span>
+          <span class="sub-des">A single order uploaded</span>
+        </div>
+        <div>
+          <a class="btn btn-primary btn-load collapsed" role="button" >
+            <i class="giga icon-sidebar-unfold"></i>
+          </a>
+        </div>
+
+      </h4>
+    </div>
+    <div id="collapseSingle" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseUploadTwo">
+      <div class="panel-body single-con">
+        <form class="form-horizontal" enctype="multipart/form-data" id="form-upload">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="inputOrderId" class="col-sm-3 control-label required">Order Id</label>
+                <div class="col-sm-9">
+                  <input class="form-control" name="OrderId" id="OrderId" placeholder="Must include only letters,numbers , -, _"
+                         onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="inputShippedDate" class="col-sm-3 control-label">Shipped Date</label>
+                <div class="col-sm-9">
+                  <input class="form-control" name="ShippedDate" id="ShippedDate" placeholder="Expected Dispatch Date"
+                         onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row b2b-item-code" style="position: relative">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="col-sm-3 control-label required B2B-item-name-1">B2B Item Code</label>
+                <div class="col-sm-9">
+                  <input class="form-control B2B-item-code" id="B2BItemCode0" name="B2BItemCode0"
+                         placeholder="Product code on B2B Platform" onkeyup="this.value=this.value.replace( /^\s*/, '');">
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="col-sm-3 control-label required B2B-item-qty-1">Ship To Qty</label>
+                <div class="col-sm-9">
+                  <input class="form-control ship-to-qty" id="ShipToQty0" name="ShipToQty0"
+                         placeholder="Dispatch Quantity" onkeyup="this.value=this.value.replace( /^\s*/, '');">
+                </div>
+              </div>
+            </div>
+            <span class="code-add add-remove-action"><i class="giga icon-action-add"></i></span>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                {% if is_europe or is_japan %}
+                  <label for="inputDeliveryToFBA" class="col-sm-3 control-label">Delivery to FBA
+                    <i class="giga icon-V10-wenhaotishi" style="cursor:pointer;font-size: 14px" data-toggle="tooltip" data-html="true" title="" data-original-title='Select "Yes" means delivery to FBA warehouse.'></i>
+                  </label>
+                  <div class="col-sm-9">
+                    <select class="form-control" name="DeliveryToFBA" id="DeliveryToFBA">
+                      <option value="0" selected>No</option>
+                      <option value="1">Yes</option>
+                    </select>
+                  </div>
+                {% else %}
+                  {% if disable_ship_to_service %}
+                    <label for="inputShipToService" class="col-sm-3 control-label">Shipping Service
+                      <i class="giga icon-V10-wenhaotishi" style="cursor:pointer;font-size: 14px" data-toggle="tooltip" data-html="true" title="" data-original-title="FedEx has temporarily suspended signature services until further notice."></i>
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" name="ShipToService" id="ShipToService" disabled
+                             placeholder="The Marketplace has temporarily suspended ASR services">
+                    </div>
+                  {% else %}
+                    <label for="inputShipToService" class="col-sm-3 control-label">Shipping Service</label>
+                    <div class="col-sm-9">
+                      <input class="form-control" name="ShipToService" id="ShipToService"
+                             placeholder="Type ASR here to require the signature upon delivery">
+                    </div>
+                  {% endif %}
+                {% endif %}
+
+
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label for="inputShipToAddress" class="col-sm-2 control-label required pad-no-left pad-no-right" style="width: 11.5%">Ship To Address</label>
+                <div class="col-sm-10 pr0" style="width: 87.5%">
+                  <div class="row mr0 pr0" style="margin-bottom: 15px">
+                    <div class="col-sm-4">
+                      <input class="form-control" name="ShipToName" id="ShipToName" placeholder="Name"
+                             onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                    </div>
+                    <div class="col-sm-4">
+                      <input class="form-control" name="ShipToEmail" id="ShipToEmail" placeholder="Email"
+                             onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                    </div>
+                    <div class="col-sm-4 pr0">
+                      <input class="form-control" name="ShipToPhone" id="ShipToPhone" placeholder="{{ __choice('shipToPhone',show_placeholder,[],'catalog/view/account/sales_order/sales_order_upload') }}"
+                             onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                    </div>
+                  </div>
+                  <div class="row mr0 pr0">
+                    <div class="col-sm-12 pr0">
+                      <input class="form-control" name="StreetAddress" id="StreetAddress" placeholder="{{ __choice('StreetAddress',show_placeholder,[],'catalog/view/account/sales_order/sales_order_upload') }}"
+                             onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label for="inputShipToAddress" class="col-sm-2 control-label" style="width: 11.5%"></label>
+                <div class="col-sm-10 pr0" style="width: 87.5%">
+                  <div class="col-sm-3" style="padding-left: 10px">
+                    <input class="form-control" name="ShipToPostalCode" id="ShipToPostalCode"
+                           placeholder="{{ __choice('ShipToPostalCode',show_placeholder,[],'catalog/view/account/sales_order/sales_order_upload') }}"
+                           onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                  </div>
+                  <div class="col-sm-3">
+                    <input class="form-control" name="ShipToCity" id="ShipToCity" placeholder="{{ __choice('ShipToCity',show_placeholder,[],'catalog/view/account/sales_order/sales_order_upload') }}"
+                           onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                  </div>
+                  <div class="col-sm-3">
+                    {% if is_japan %}
+                      <select class="form-control selectpicker" data-size="false" name="ShipToState" id="ShipToState" placeholder="{{ __choice('ShipToState',show_placeholder,[],'catalog/view/account/sales_order/sales_order_upload') }}"
+                              data-live-search="true" required>
+                        <option value="" selected disabled style="display: none;">{{ __choice('ShipToState',show_placeholder,[],'catalog/view/account/sales_order/sales_order_upload') }}</option>
+                        {% for state in state %}
+                          <option value="{{ state.county }}">{{ state.county }}</option>
+                        {% endfor %}
+                      </select>
+                    {% else %}
+                      <input class="form-control" name="ShipToState" id="ShipToState" placeholder="State"
+                             onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+{#                      {% if is_usa_wholesale %}#}
+{#                        #}{# feature:#29569 B2B平台销售订单录入或者导入限制州的填写规范 #}
+{#                        #}{# 只针对美国一件代发 #}
+{#                        #}{# @TODO 修改state数据填充 #}
+{#                        <select class="form-control selectpicker" data-size="false" name="ShipToState" id="ShipToState" placeholder="{{ __choice('ShipToState',show_placeholder,[],'catalog/view/account/sales_order/sales_order_upload') }}"#}
+{#                                data-live-search="true" required>#}
+{#                          <option value="" selected disabled style="display: none;">{{ __choice('ShipToState',show_placeholder,[],'catalog/view/account/sales_order/sales_order_upload') }}</option>#}
+{#                          {% for state in state_list %}#}
+{#                            <option value="{{ state.abbr }}">{{ state.county_e }}</option>#}
+{#                          {% endfor %}#}
+{#                        </select>#}
+{#                      {% else %}#}
+{#                          <input class="form-control" name="ShipToState" id="ShipToState" placeholder="State"#}
+{#                                 onkeyup="this.value=this.value.replace( /^\s*/, '');" >#}
+{#                      {% endif %}#}
+                    {% endif %}
+                  </div>
+                  <div class="col-sm-3 pr0" style="position: relative">
+                    <i class="giga icon-cuowu2 country-remove" id="counterRemove"></i>
+                    <input class="form-control dropdown-country" name="ShipToCountry" id="ShipToCountry" placeholder="{{ __choice('ShipToCountry',show_placeholder,[],'catalog/view/account/sales_order/sales_order_upload') }}"
+                           autocomplete="off" onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                    <ul class="dropdown-menu dropdown-country" aria-labelledby="dLabel">
+                    </ul>
+                  </div>
+{#                  #}{# 美国一键代发 #}
+{#                  {% if is_usa_wholesale %}#}
+{#                    <div class="col-sm-3 pr0" style="position: relative">#}
+{#                      <input class="form-control dropdown-country" name="ShipToCountry" id="ShipToCountry" value="US" disabled>#}
+{#                    </div>#}
+{#                  {% else %}#}
+{#                      <div class="col-sm-3 pr0" style="position: relative">#}
+{#                          <i class="giga icon-cuowu2 country-remove" id="counterRemove"></i>#}
+{#                          <input class="form-control dropdown-country" name="ShipToCountry" id="ShipToCountry" placeholder="{{ __choice('ShipToCountry',show_placeholder,[],'catalog/view/account/sales_order/sales_order_upload') }}"#}
+{#                                 autocomplete="off" onkeyup="this.value=this.value.replace( /^\s*/, '');" >#}
+{#                          <ul class="dropdown-menu dropdown-country" aria-labelledby="dLabel">#}
+{#                          </ul>#}
+{#                      </div>#}
+{#                  {% endif %}#}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="inputShipToService" class="col-sm-3 control-label">More Details</label>
+                <div class="col-sm-9">
+                  <a class="btn btn-primary btn-load" role="button" data-toggle="collapse" href="#collapseDetail"
+                     aria-expanded="false" aria-controls="collapseDetail">
+                    <i class="giga icon-sidebar-unfold"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="collapseDetail">
+            <div class="row">
+              <div class="col-sm-6">
+                {% if country == 223 %}
+                  <div class="form-group">
+                    <label for="inputShipFrom" class="col-sm-3 control-label">ShipFrom</label>
+                    <div class="col-sm-9">
+                      <input class="form-control" name="ShipFrom" id="ShipFrom" placeholder="ShipFrom"
+                             onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="form-group">
+                    <label for="inputSalesPlatform" class="col-sm-3 control-label">Sales Platform</label>
+                    <div class="col-sm-9">
+                      <input class="form-control" name="SalesPlatform" id="SalesPlatform" placeholder="Sales Platform">
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="inputBuyerSkuLink" class="col-sm-3 control-label">Buyer Sku Link</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" name="BuyerSkuLink" id="BuyerSkuLink" placeholder="Buyer's Product Link"
+                           onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="inputOrderDate" class="col-sm-3 control-label">Order Date</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" name="OrderDate" id="OrderDate" placeholder="OrderDate"
+                           onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="inputShipToServiceLevel" class="col-sm-3 control-label">Ship To Service Level</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" name="ShipToServiceLevel" id="ShipToServiceLevel"
+                           placeholder="Dispatch Logistics Service Process"
+                           onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="inputBuyerPlatformSku" class="col-sm-3 control-label">Buyer Platform Sku</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" name="BuyerPlatformSku" id="BuyerPlatformSku"
+                           placeholder="Buyer's Platform SKU" onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="inputShipToAttachmentUrl" class="col-sm-3 control-label">Ship To Attachment Url</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" name="ShipToAttachmentUrl" id="ShipToAttachmentUrl"
+                           placeholder="Link of Shipping Attachments" onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="inputBuyerSkuDescription" class="col-sm-3 control-label">Buyer Sku Description</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" name="BuyerSkuDescription" id="BuyerSkuDescription"
+                           placeholder="Buyer's Product Description" onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="inputBuyerBrand" class="col-sm-3 control-label">Buyer Brand</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" name="BuyerBrand" id="BuyerBrand" placeholder="Buyer's Brand"
+                           onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="inputBuyerSkuCommercial" class="col-sm-3 control-label">Buyer Sku Commercial Value</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" name="BuyerSkuCommercial" id="BuyerSkuCommercial"
+                           placeholder="Commercial Value of Buyer's Product Per Unit"
+                           onkeyup="this.value=this.value.replace( /^\s*/, '');" >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="btns">
+            <button class="btn btn-primary" onclick="submitOrderUpload()" type="button">Update</button>
+            <button class="btn btn-default" type="button" onclick="resetOrderUpload()">Reset</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{#ebuySample#}
+<div id="ebuySampleContent">
+  <div class="modal fade oris-modal ebay-dialog" id="eBaySampleModal" tabindex="-1" role="dialog" aria-labelledby="eBaySampleModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered oris-buyer oris-modal h-v-center" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+            <i class="giga icon-V10_danchuangguanbi close-icon"></i>
+          </button>
+          <h4 class="modal-title">View Sample</h4>
+        </div>
+        <div class="modal-body">
+          <div class="dialog-num">1</div>
+          <div class="ebay-item-content">
+            <p class="ebay-item-number">eBay item number:</p>
+            <p class="ebay-item-location">Location: Description module of the product page on eBay platform</p>
+          </div>
+          <div class="ebay-sample-image">
+            <img src="catalog/view/theme/yzcTheme/image/ebay/ebay.jpg" alt="">
+          </div>
+          <div class="dialog-num">2</div>
+          <div class="ebay-item-content">
+            <p class="ebay-item-number">Transaction ID:</p>
+            <p class="ebay-item-location">Location: "Transaction ID" field of the order form downloaded from eBay platform</p>
+          </div>
+          <div class="ebay-sample-image">
+            <img src="catalog/view/theme/yzcTheme/image/ebay/ebays.jpg" alt="">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  $(document).ready(function () {
+    gigaOrderFromShowByCheckout();
+    $("#inputShippedDate").datetimepicker({
+      minView: 2,
+      format: 'yyyy-mm-dd',
+      autoclose: true,
+    });
+    $('#ShipToState').selectpicker('refresh');
+    $('.ebay-tooltip-container').tooltip();
+  });
+
+  //重置单条上传表单
+  function resetOrderUpload() {
+    $("#form-upload").find('input,textarea,select').each(function() {
+      $(this).val('');
+      $(this).removeClass('error-input');
+      $(this).parent().find('.error-text').remove();
+    });
+    $('#ShipToState').selectpicker('refresh');
+    {#//美国一件代发类型，不清空固定的US值#}
+    {#{% if is_usa_wholesale %}#}
+    {#  $("#ShipToCountry").val("US");#}
+    {#{% endif %}#}
+  }
+
+  //校验必填
+  function checkFull(checkID, message) {
+    let check = true;
+    checkID.forEach(function (item, i) {
+
+      if ($(item).val() == "" || !$(item).val()) {
+        check = false;
+        $(item).addClass('error-input');
+        $(item).parent().find('.error-text').remove();
+        $(item).parent().append("<span class='error-text'>" + message[i] + "</span>");
+      }else{
+        $(item).removeClass('error-input');
+        $(item).parent().find('.error-text').remove();
+      }
+
+    });
+    return check;
+  }
+
+  //提交单条表单
+  function submitOrderUpload() {
+    let checkID = [
+      '#OrderId',
+      '#B2BItemCode0',
+      '#ShipToQty0',
+      '#ShipToName',
+      '#ShipToEmail',
+      '#ShipToPhone',
+      '#StreetAddress',
+      '#ShipToPostalCode',
+      '#ShipToCity',
+      '#ShipToState',
+      '#ShipToCountry'
+    ];
+    let message = [
+      'Required fields',
+      'Required fields',
+      'Required fields',
+      'Required fields',
+      'Required fields',
+      'Required fields',
+      'Required fields',
+      'Required fields',
+      'Required fields',
+      'Required fields',
+      'Required fields',
+    ];
+    // 校验所有的B2BItemCode
+    $(".b2b-item-code").each(function (i, item) {
+      checkID.push("#" + $(item).find(".B2B-item-code").attr("id"));
+      message.push('Required fields');
+      checkID.push("#" + $(item).find(".ship-to-qty").attr("id"));
+      message.push('Required fields')
+    });
+    // 校验所有的B2BItemCode
+    if (!checkFull(checkID, message)) {
+      return false;
+    }
+
+    //以防点击多次
+    layer.load(1, {shade: [0.3, '#000']});
+    $("#upload_submit").attr('disabled', true);
+
+    //获取提交参数并清除前后空格
+    // //serializeArray 无法获取禁用 临时启用 获取后禁用
+    // $("#ShipToCountry").removeAttr("disabled");
+    var OrderUploadData = $('#form-upload').serializeArray();
+    // $("#ShipToCountry").attr("disabled", "disabled");
+    //
+    // //获取提交参数并清除前后空格
+    for(let i=0;i<OrderUploadData.length;i++){
+      let newVal = OrderUploadData[i].value.trim();
+      OrderUploadData[i].value=newVal
+    }
+
+    //ajax 提交
+    $.ajax({
+      url: '/index.php?route=account/sales_order/sales_order_management/singleOrderUpload',
+      type: 'post',
+      data: OrderUploadData,
+      async: true,
+      success: function (result) {
+        if (result.error == 0) { //成功
+          $("#upload_submit").attr('disabled', false);
+          let tips = 'Successfully!';
+          if(result.notice){
+            tips += '<br/>International order, automatic freight pricing is unavailable.Please contact the customer service for assistance.';
+          }
+          layer.closeAll('loading');
+          $.toast({
+            heading:false,
+            text: tips,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 3000,
+            allowToastClose: true,
+            loader:false
+          });
+          let insert_order_id=[];
+          insert_order_id.push(result.insert_order_id);
+          //跳转到匹配页面
+          if(result.is_all_ltl_sku==1){
+            ltlConfirm(insert_order_id);
+          }else{
+            matchBox(insert_order_id);
+          }
+
+          $("#form-upload").find('input,textarea,select').each(function() {
+            $(this).val('');
+            $(this).removeClass('error-input');
+            $(this).parent().find('.error-text').remove();
+          });
+          $('#ShipToState').selectpicker('refresh');
+
+          // resetOrderUpload();
+        } else if (result.error == 2) {//失败
+          $("#upload_submit").attr('disabled', false);
+          layer.closeAll('loading');
+          $.toast({
+            heading:false,
+            text: 'Failed',
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 3000,
+            allowToastClose: true,
+            loader:false
+          })
+        } else if (result.error == 1) {//填写的消息有误
+          $("#upload_submit").attr('disabled', false);
+          layer.closeAll('loading');
+          $("#form-upload").find('input,textarea').each(function() {
+            $(this).removeClass('error-input');
+            $(this).parent().find('.error-text').remove();
+          });
+          result.info.forEach(function (item) {
+            $('#' + item.id).addClass('error-input');
+            $('#' + item.id).parent().find('.error-text').remove();
+            //后台返回的错误提示
+            $('#' + item.id).parent().append("<span class='error-text'>" + item.info + "</span>");
+          })
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $("#upload_submit").attr('disabled', false);
+        layer.closeAll('loading');
+        layerMsg('thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText');
+      }
+    });
+  }
+
+  function layerMsg(message, time = 3000) {
+    layer.msg(message, {time: time, skin: ''});
+  }
+
+  //上传shopify文件上传
+  var fileSelectSh = document.getElementById('upload_button_shopify'),
+    fileElemSh = document.getElementById('upload_file_shopify');
+  fileSelectSh.addEventListener("click", function (e) {
+    if (fileElemSh) {
+      fileElemSh.click();
+    }
+    e.preventDefault();// prevent navigation to "#"
+  });
+
+  //shopfiy上传处理
+  function handleFilesShopify(files) {
+    $('.process-tip-error-shopify').html('');
+    $('.process-tip-success-shopify').html('');
+    $('#progress-bar-upload-shopify').removeClass('error');
+    $('#upload_button_shopify').button('loading');
+    var formFile = new FormData();
+    var index = files[0]['name'].lastIndexOf(".");
+    var suffix = files[0]['name'].substr(index + 1);
+    if (suffix != 'csv') {
+      layerMsg('The order file from Shopify should be .csv');
+      $('#upload_button_shopify').button('reset');
+      return false;
+    }
+    $('#progress-bar-upload-shopify').css({'width': '30%'});
+
+    formFile.append("file", files[0]);
+    //一件代发
+    formFile.append("upload_type", 0);
+    var data = formFile;
+    $.ajax({
+      url: "/index.php?route=account/sales_order/sales_order_management/uploadShopifyFile",
+      data: data,
+      type: "Post",
+      dataType: "json",
+      cache: false,//上传文件无需缓存
+      processData: false,//用于对data参数进行序列化处理 这里必须false
+      contentType: false, //必须
+      beforeSend: function () {
+        $("#uploadProcess-shopify").show();
+        layer.load(1, {shade: [0.3, '#000']});
+      },
+      success: function (result) {
+        $('#upload_file_shopify').val('');
+        $('#upload_button_shopify').button('reset');
+        //后台返回的错误提示
+        if (result.error) {
+          $('.process-tip-error').html(result.error);
+          layer.closeAll('loading');
+        } else {
+          $('.process-tip-success').html(result.text);
+          saveOrderShopify(result.next, '50%');
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        $('#upload_file_shopify').val('');
+        $('#upload_button_shopify').button('reset');
+        $('#progress-bar-upload-shopify').addClass('error');
+        $('#progress-bar-upload-shopify').css({'width': '61.8%'});
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    })
+  }
+
+  //shopfiy导单保存
+  function saveOrderShopify(url, process) {
+    $('#progress-bar-upload-shopify').removeClass('error');
+    $('#progress-bar-upload-shopify').css({'width': process});
+    $.ajax({
+      url: url,
+      data: [],
+      type: "Post",
+      dataType: "json",
+      cache: false,//上传文件无需缓存
+      // processData: false,//用于对data参数进行序列化处理 这里必须false
+      // contentType: false, //必须
+      success: function (result) {
+        layer.closeAll('loading');
+        if (result.error) {
+          $('#progress-bar-upload-shopify').addClass('error');
+          $('.process-tip-error-shopify').html(result.error);
+          $('.process-tip-success-shopify').html('');
+        } else {
+          //todo 弹框 result.next
+          if (result.is_all_ltl) {
+            // 弹框
+            $('.process-tip-success-shopify').html(result.text);
+            $('.process-tip-error-shopify').html('');
+            $('#progress-bar-upload-shopify').css({'width': '80%'});
+            ltlConfirm(result.order_id_list, 1)
+          } else {
+            $('.process-tip-success-shopify').html(result.text);
+            $('.process-tip-error-shopify').html('');
+            $('#progress-bar-upload-shopify').css({'width': '100%'});
+            matchBox(result.order_id_list);
+          }
+
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        $('#progress-bar-upload-shopify').addClass('error');
+        $('#progress-bar-upload-shopify').css({'width': '61.8%'});
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    })
+  }
+
+  //上传ebay文件上传
+  var fileSelectEbay = document.getElementById('upload_button_ebay'),
+    fileElemEbay = document.getElementById('upload_file_ebay');
+  fileSelectEbay.addEventListener("click", function (e) {
+    if (fileElemEbay) {
+      fileElemEbay.click();
+    }
+    e.preventDefault();// prevent navigation to "#"
+  });
+
+  //ebay导单上传处理
+  function handleFilesEbay(files, context) {
+    $('.process-tip-error-ebay').html('');
+    $('.process-tip-success-ebay').html('');
+    $('#progress-bar-upload-ebay').removeClass('error');
+    $('#upload_button_ebay').button('loading');
+    var formFile = new FormData();
+    var index = files[0]['name'].lastIndexOf(".");
+    var suffix = files[0]['name'].substr(index + 1);
+    if (suffix != 'xls' && suffix != 'xlsx') {
+      layerMsg('The order file from eBay should be .xls or .xlsx');
+      $('#upload_button_ebay').button('reset');
+      context.value = null;
+      return false;
+    }
+    $('#progress-bar-upload-ebay').css({'width': '30%'});
+
+    formFile.append("file", files[0]);
+
+    var data = formFile;
+    $.ajax({
+      url: "{{ url('account/sales_order/sales_order_management/uploadEbayFile') }}",
+      data: data,
+      type: "Post",
+      dataType: "json",
+      cache: false,//上传文件无需缓存
+      processData: false,//用于对data参数进行序列化处理 这里必须false
+      contentType: false, //必须
+      beforeSend: function () {
+        $("#uploadProcess-ebay").show();
+        layer.load(1, {shade: [0.3, '#000']});
+      },
+      success: function (result) {
+        $('#upload_file_ebay').val('');
+        $('#upload_button_ebay').button('reset');
+        //后台返回的错误提示
+        if (result.error) {
+          $('.process-tip-error').html(result.error);
+          layer.closeAll('loading');
+
+        } else {
+          $('.process-tip-success').html(result.text);
+          saveOrderEbay(result.next, '50%');
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        $('#upload_file_ebay').val('');
+        $('#upload_button_ebay').button('reset');
+        $('#progress-bar-upload-ebay').addClass('error');
+        $('#progress-bar-upload-ebay').css({'width': '61.8%'});
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    })
+  }
+
+  //ebay导单保存
+  function saveOrderEbay(url, process) {
+    $('#progress-bar-upload-ebay').removeClass('error');
+    $('#progress-bar-upload-ebay').css({'width': process});
+    $.ajax({
+      url: url,
+      data: [],
+      type: "Post",
+      dataType: "json",
+      cache: false,//上传文件无需缓存
+      success: function (result) {
+        layer.closeAll('loading');
+        if (result.error) {
+          $('#progress-bar-upload-ebay').addClass('error');
+          $('.process-tip-error-ebay').html(result.error);
+          $('.process-tip-success-ebay').html('');
+        } else {
+          //todo 弹框 result.next
+          if (result.is_all_ltl) {
+            // 弹框
+            $('.process-tip-success-ebay').html(result.text);
+            $('.process-tip-error-ebay').html('');
+            $('#progress-bar-upload-ebay').css({'width': '80%'});
+            ltlConfirm(result.order_id_list, 1)
+          } else {
+            $('.process-tip-success-ebay').html(result.text);
+            $('.process-tip-error-ebay').html('');
+            $('#progress-bar-upload-ebay').css({'width': '100%'});
+            matchBox(result.order_id_list);
+          }
+
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        $('#progress-bar-upload-ebay').addClass('error');
+        $('#progress-bar-upload-ebay').css({'width': '61.8%'});
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    })
+  }
+
+  //上传Other External Platform
+  var fileSelect = document.getElementById('upload_button'),
+    fileElem = document.getElementById('upload_file');
+  fileSelect.addEventListener("click", function (e) {
+    if (fileElem) {
+      fileElem.click();
+    }
+    e.preventDefault(); // prevent navigation to "#"
+  }, false);
+
+  function handleFiles(files) {
+    $('.process-tip-error').html('');
+    $('.process-tip-success').html('');
+    $('#progress-bar-upload').removeClass('error');
+    $('#upload_button').button('loading');
+    var formFile = new FormData();
+    var index = files[0]['name'].lastIndexOf(".");
+    var suffix = files[0]['name'].substr(index+1);
+    if (suffix != 'xls' && suffix != 'xlsx') {
+      layerMsg('Upload must be a .xls file.');
+      $('#upload_button').button('reset');
+      return false;
+    }
+    $('#progress-bar-upload').css({'width': '30%'});
+
+    formFile.append("file", files[0]);
+    //一件代发
+    formFile.append("upload_type", 0);
+    var data = formFile;
+    $.ajax({
+      url: "/index.php?route=account/sales_order/sales_order_management/uploadFile",
+      data: data,
+      type: "Post",
+      dataType: "json",
+      cache: false,//上传文件无需缓存
+      processData: false,//用于对data参数进行序列化处理 这里必须false
+      contentType: false, //必须
+      beforeSend: function () {
+        $("#uploadProcess").show();
+        layer.load(1, {shade: [0.3, '#000']});
+      },
+      success: function (result) {
+        $('#upload_file').val('');
+        $('#upload_button').button('reset');
+        if (result.error) {
+          $('.process-tip-error').html(result.error);
+          layer.closeAll('loading');
+        } else {
+          $('.process-tip-success').html(result.text);
+          saveOrder(result.next, '50%');
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        $('#upload_file').val('');
+        $('#upload_button').button('reset');
+        $('#progress-bar-upload').addClass('error');
+        $('#progress-bar-upload').css({'width': '61.8%'});
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    })
+  }
+
+  function saveOrder(url, process) {
+    $('#progress-bar-upload').removeClass('error');
+    $('#progress-bar-upload').css({'width': process});
+    $.ajax({
+      url: url,
+      data: [],
+      type: "Post",
+      dataType: "json",
+      cache: false,//上传文件无需缓存
+      // processData: false,//用于对data参数进行序列化处理 这里必须false
+      // contentType: false, //必须
+      success: function (result) {
+        layer.closeAll('loading');
+        if (result.error) {
+          $('#progress-bar-upload').addClass('error');
+          $('.process-tip-error').html(result.error);
+          $('.process-tip-success').html('');
+        } else {
+          //todo 弹框 result.next
+          if(result.is_all_ltl){
+            // 弹框
+            $('.process-tip-success').html(result.text);
+            $('.process-tip-error').html('');
+            $('#progress-bar-upload').css({'width': '80%'});
+            ltlConfirm(result.order_id_list,2)
+          }else{
+            $('.process-tip-success').html(result.text);
+            $('.process-tip-error').html('');
+            $('#progress-bar-upload').css({'width': '100%'});
+            matchBox(result.order_id_list);
+          }
+
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        $('#progress-bar-upload').addClass('error');
+        $('#progress-bar-upload').css({'width': '61.8%'});
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    })
+  }
+
+  function ltlConfirm(salesOrderIdArray,method){
+    var salesOrderIdString = salesOrderIdArray.join('_');
+    var ltl_url = 'index.php?route=account/sales_order/sales_order_management/salesOrderCheckLtl&id=' + salesOrderIdString;
+    layer.open({
+      type: 2,
+      offset: '100px',
+      area: ['1000px', '600px'],
+      title: 'Check LTL',
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer all-LTL-confirm',
+      scrollbar: false,
+      content: ltl_url,
+      end: function () {
+        if(method==1){
+          $('.process-tip-success-shopify').html('Orders Processing');
+          $('.process-tip-error-shopify').html('');
+          $('#progress-bar-upload-shopify').css({'width': '100%'});
+        }
+        if(method==2){
+          $('.process-tip-success').html('Orders Processing');
+          $('.process-tip-error').html('');
+          $('#progress-bar-upload').css({'width': '100%'});
+        }
+        matchBox(salesOrderIdArray);
+      }
+    });
+  }
+
+  $('body').on('click', '.code-add', function () {
+    $(".add-remove-action").removeClass("code-add").addClass("code-remove").html("<i class=\"giga icon-action-remove\"></i>");
+    let addHtml = `
+       <div class="row b2b-item-code" style="position: relative">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label class="col-sm-3 control-label required B2B-item-name">B2B Item Code</label>
+              <div class="col-sm-9">
+                <input class="form-control B2B-item-code"  placeholder="Product code on B2B Platform"
+                       onkeyup="this.value=this.value.replace( /^\\s*/, '');" >
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label class="col-sm-3 control-label required B2B-item-qty">Ship To Qty</label>
+              <div class="col-sm-9">
+                <input class="form-control ship-to-qty "  placeholder="Dispatch Quantity"
+                       onkeyup="this.value=this.value.replace( /^\\s*/, '');" >
+              </div>
+            </div>
+          </div>
+          <span class="code-add add-remove-action"><i class="giga icon-action-add"></i></span>
+        </div>
+    `;
+    $(this).parent().after(addHtml);
+    $(".B2B-item-name-1").html('B2B Item Code1');
+    $(".B2B-item-qty-1").html('Ship To Qty1');
+    $().html();
+    $(".b2b-item-code").each(function (i, item) {
+      let line=i+1;
+      $(item).find(".B2B-item-name").html('B2B Item Code'+line);
+      $(item).find(".B2B-item-qty").html('Ship To Qty'+line);
+      $(item).find(".B2B-item-code").attr("name", "B2BItemCode" + i).attr("id", "B2BItemCode" + i);
+      $(item).find(".ship-to-qty").attr("name", "ShipToQty" + i).attr("id", "ShipToQty" + i)
+    });
+  });
+  $('body').on('click', '.code-remove', function () {
+    $(this).parent().remove();
+    $(".b2b-item-code").each(function (i, item) {
+      let line=i+1;
+      if(line>1){
+        $(item).find(".B2B-item-name").html('B2B Item Code'+line);
+        $(item).find(".B2B-item-qty").html('Ship To Qty'+line);
+      }else{
+        $(item).find(".B2B-item-name").html('B2B Item Code');
+        $(item).find(".B2B-item-qty").html('Ship To Qty');
+      }
+      $(item).find(".B2B-item-code").attr("name", "B2BItemCode" + i).attr("id", "B2BItemCode" + i);
+      $(item).find(".ship-to-qty").attr("name", "ShipToQty" + i).attr("id", "ShipToQty" + i)
+    });
+  });
+
+  $('body').on('hidden.bs.modal','#saleOrderModal',function () {
+    $(this).removeData("bs.modal");
+    $('#saleOrderModal').remove();
+    $('#sales_list a:first').tab('show');
+    let url = order_url + '&' + $.param(getSearchQueryParams());
+    block.blockUI();
+    clearTimer();
+    $('#salesOrderListPanel').load(url, function () {
+      block.unBlockUI();
+    });
+  });
+
+  $('input[type=radio][name=gigaOrderFrom]').change(function (e) {
+    if(e.currentTarget.defaultValue=='3'){
+      $('#eBay-hint').show();
+      $('#eBayHintArrow').show();
+    }
+    else {
+      $('#eBay-hint').hide();
+      $('#eBayHintArrow').hide();
+    }
+    gigaOrderFromShowByCheckout();
+  });
+
+  function gigaOrderFromShowByCheckout() {
+    $('.process-tip-error').html('');
+    $('.process-tip-success').html('');
+    $('#progress-bar-upload').removeClass('error');
+    $('.process-tip-error-shopify').html('');
+    $('.process-tip-success-shopify').html('');
+    $('#progress-bar-upload-shopify').removeClass('error');
+    $('#uploadProcess-shopify').hide();
+    $('#uploadProcess').hide();
+    //ebay
+    $('.process-tip-error-ebay').html('');
+    $('.process-tip-success-ebay').html('');
+    $('#progress-bar-upload-ebay').removeClass('error');
+    $('#uploadProcess-ebay').hide();
+    if ($("input[name='gigaOrderFrom']:checked").val() == 1) {//shopfiy
+      $('#otherPlatform').removeClass('giga-show').addClass('giga-hide');
+      $('#eBayPlatform').removeClass('giga-show').addClass('giga-hide');
+      $('#shopifyPlatform').removeClass('giga-hide').addClass('giga-show');
+    } else if ($("input[name='gigaOrderFrom']:checked").val() == 3) { //eBay
+      $('#otherPlatform').removeClass('giga-show').addClass('giga-hide');
+      $('#shopifyPlatform').removeClass('giga-show').addClass('giga-hide');
+      $('#eBayPlatform').removeClass('giga-hide').addClass('giga-show');
+    } else {
+      $('#eBayPlatform').removeClass('giga-show').addClass('giga-hide');
+      $('#shopifyPlatform').removeClass('giga-show').addClass('giga-hide');
+      $('#otherPlatform').removeClass('giga-hide').addClass('giga-show');
+    }
+  }
+
+
+
+
+  //输入后匹配建议
+  $("#ShipToCountry").bind("input propertychange", function() {
+    let that = this;
+    let valueExist = $(this).val();
+    if ($(this).val() != '') {
+      $.ajax({
+        url: "index.php?route=account/sales_order/sales_order_management/getCountryInfo&keyword=" + encodeURIComponent($(this).val()),
+        method: "GET",
+        dataType: 'json',
+        async:false,
+        success: function (json) {
+            let list = "";
+            $.each(json, function (k, v) {
+              list += "<li><a>" + v.name + "</a></li>";
+              if (v.name.toUpperCase() == valueExist.toUpperCase()) {//国别文本框内输入正确的国别code，则页面报错消失
+                $(that).parent().find(".error-text").remove();
+              }
+            });
+            if(list){
+              $("#myUploadPanel").find('.dropdown-country').html(list);
+              $('#ShipToCountry').parent().find(".dropdown-menu").show();
+            }else{
+              $('#ShipToCountry').parent().find(".dropdown-menu").hide();
+            }
+        }
+      });
+      // $('#ShipToCountry').parent().find(".dropdown-menu").show();
+      $("#counterRemove").show();
+    }else{
+      $("#counterRemove").hide();
+    }
+  });
+  //赋值给input框
+  $("#myUploadPanel .dropdown-menu").on("click", "li", function() {
+    $(this).parent().parent().find("input").val($(this).text());
+    $("#counterRemove").show();
+    $(this).parent().hide();
+    $(this).parentsUntil("div").parent().find(".error-text").remove();
+  });
+  //清除值
+  $("#counterRemove").click(function () {
+    $(this).next().val("");
+    $(this).hide();
+    $(this).parent().find(".error-text").remove();
+  });
+
+  //点击其他地方隐藏下拉框
+  $(document).bind('click', function(event) {
+    var evt = event.srcElement ? event.srcElement : event.target;
+    evt = $(evt);
+    if (evt.hasClass("dropdown-country")) {
+
+    } else {
+      $("body #myUploadPanel").find(".dropdown-menu").hide();
+    }
+  });
+  // 联想shiptocountry
+
+  //view Sample
+  $(".action-sample").on("click",function () {
+    $("#eBaySampleModal").modal("show");
+  })
+</script>

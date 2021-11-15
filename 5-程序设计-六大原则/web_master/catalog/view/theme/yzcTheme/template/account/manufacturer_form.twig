@@ -1,0 +1,149 @@
+{{ header }}
+<style>
+  #submitone{
+    width: 31px;
+    height: 31px;
+    text-align: center;
+    padding: 0;
+  }
+  #rebackone{
+    width: 31px;
+    height: 31px;
+    text-align: center;
+    padding: 5px;
+    color: #3a75dc;
+    border-color: #e3e3e3;
+    background-color: #fbfbfb;
+  }
+  #rebackone:hover, #rebackone:focus, #rebackone:active{
+    color: #e3e3e3;
+    background-color: #3a75dc;
+    border-color: #3a75dc;
+  }
+  #button-image0, #button-clear{
+    width: 31px;
+    height: 31px;
+    text-align: center;
+    padding: 5px;
+  }
+</style>
+{#菜单#}
+{% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+{#END 菜单#}
+<div id="account-download" class="container">
+  <div>{{ column_left }}
+      {% if column_left and column_right %}
+          {% set class = 'col-sm-6' %}
+      {% elseif column_left or column_right %}
+          {% set class = 'col-sm-9' %}
+      {% else %}
+          {% set class = 'col-sm-12' %}
+      {% endif %}
+  <div>
+
+      <div>
+          <h1>{{ heading_title_text }}
+              <div class="pull-right">
+                  <button id="submitone" type="button" data-toggle="tooltip" title="{{ button_save }}"
+                          class="btn btn-primary btn-submit"><i class="fa fa-save"></i></button>
+                  <a id="rebackone" href="{{ cancel }}" data-toggle="tooltip" title="{{ button_back_text }}" class="btn btn-default rebackone"><i
+                              class="fa fa-reply"></i></a></div>
+          </h1>
+      </div>
+  </div>
+  <div>
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-manufacturer" class="form-horizontal">
+          {#<ul class="nav nav-tabs">#}
+            {#<li class="active"><a data-toggle="tab">General</a></li>#}
+          {#</ul>#}
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-general">
+              <div class="form-group required">
+                <label class="col-sm-2 control-label" for="input-name">{{ entry_name }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="name" value="{{ name }}" placeholder="{{ entry_name }}" id="input-name" onchange="removeHasError()" class="form-control" />
+                  {% if error_name %}
+                  <div class="text-danger" id="error_name">{{ error_name }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group required">
+                <label class="col-sm-2 control-label" for="input-image" >
+                    <span data-toggle="tooltip" title="{{ help_brand_image }}">{{ entry_image }}<i class="giga icon-V10-wenhaotishi"></i></span>
+                </label>
+                <div class="col-sm-10"><a href="" id="thumb-image0" data-toggle="imageForAddAndRemove" class="img-thumbnail"><img src="{{ thumb }}" id= "img0" alt="" title="" data-placeholder="{{ placeholder }}"  style="height:102px;width: 132px"/></a>
+                  <input type="file" name="brandImage" value="" id="imageAdd0" accept="image/*" style="display: none" onchange="showImg(this)"/>
+                    {% if error_image %}
+                        <div class="text-danger" id="error_image">{{ error_image }}</div>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+{{ footer }}
+<script>
+    $(document).ready(function(){
+        $("#submitone").click(function(){
+            $(this).attr("disabled", true);
+            $("#form-manufacturer").submit();
+        });
+    });
+    function showImg(e){
+        var newsrc=getObjectURL(e.files[0]);
+        var id = e.id;
+        var pattern = new RegExp("[0-9]+");
+        var imgRow = id.match(pattern);
+        var reader = new FileReader();
+        reader.onload = function(theFile) {
+            var image = new Image();
+            image.onload = function() {
+                var width=this.width;
+                var height=this.height;
+                if(!(width/height ==6/4 || width/height == 4/6)){
+                    $('#imageAdd'+imgRow).value= null;
+                    var file = document.getElementById('imageAdd'+imgRow);
+                    file.value = '';
+                    alert("{{ help_brand_image }}");
+                }else{
+                $('#img'+imgRow).attr("src",newsrc);
+                }
+            };
+            image.src = theFile.target.result;
+        };
+        reader.readAsDataURL(e.files[0]);
+
+        $(".has-error").removeClass("has-error");
+        $("#error_image").hide()
+    }
+    function removeHasError() {
+        $(".has-error").removeClass("has-error");
+        $("#error_name").hide()
+    }
+    function getObjectURL(file) {
+        var url = null ;
+        if (window.createObjectURL!=undefined) {
+            url = window.createObjectURL(file) ;
+        } else if (window.URL!=undefined) {
+            url = window.URL.createObjectURL(file) ;
+        } else if (window.webkitURL!=undefined) {
+            url = window.webkitURL.createObjectURL(file) ;
+        }
+        return url ;
+    }
+</script>

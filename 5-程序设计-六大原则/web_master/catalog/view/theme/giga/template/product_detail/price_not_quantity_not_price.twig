@@ -1,0 +1,17 @@
+{#Buyer 不可购买 第一条价格展示#}
+<div class="price">
+    <div class="col-sm-11">
+        <span class="text-muted col-sm-3">
+            Price
+        </span>
+        <span class="col-sm-9">
+          <p style="color: #FA6400;">
+              <a style="color: #FA6400;cursor:pointer"
+                 onclick="sellerAffiliationCommonFn.actionAffiliation({{ seller_id }})"
+                 title="If you want to contact this seller,please click this button to apply."
+              >{{ text_contact_see_price_quantity }}
+              </a>
+            </p>
+        </span>
+    </div>
+</div>

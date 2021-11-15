@@ -1,0 +1,190 @@
+<link href="catalog/view/theme/yzcTheme/stylesheet/extension/module/slideshow.css?v={{ app_version }}" rel="stylesheet">
+{% if banners|length > 0 %}
+<section id="module-slideshow" class="center-module slideshow">
+  <div class="full-width default-flex pos-rela">
+    <div class="dropmenu box-bg slide-left">
+      <div class="dropdown-inner left-inner">
+        <ul class="list-unstyled left-list">
+          {% for category in categories.categories %}
+          <li class="dropdown menu-list btn-outline-clear">
+            <img src="{{ category.image }}" alt="">
+            <a url="{{ category.href }}" class="menu-firt-category has-children width150">{{ category.name }}</a>
+            <i class="giga icon-V10_youjiantougengduo"></i>
+            {% if category.children %}
+            <div class="dropdown-menu third-level">
+              <div class="dropdown-inner">
+                <ul class="list-unstyled no-padding-i">
+                  {% for inner in category.children %}
+                  <li class="p8-lr">
+                    <a class="ptb-title" href="{{ inner.href }}">{{ inner.name }}</a>
+                    <div class="third-level1">
+                      <ul class="list-unstyled text-light p10-b">
+                        {% for v in inner.children %}
+                        <li class="dropdown-li-p"> <a class="no-padding-i" href="{{ v.href }}">{{ v.name }}</a></li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            {% endif %}
+          </li>
+          {% endfor %}
+          {% if categories.otherMore %}
+            <li class="dropdown menu-list btn-outline-clear">
+              <img src="/image/catalog/category/other.png">
+              <a class="has-children width150">More Categories</a>
+              <i class="giga icon-V10_youjiantougengduo"></i>
+                <div class="dropdown-menu third-level">
+                  <div class="dropdown-inner">
+                    <ul class="list-unstyled no-padding-i">
+                        {% for category in categories.otherMore %}
+                        <li class="p8-lr">
+                          <a class="ptb-title" href="{{ category.href }}">{{ category.name }}</a>
+                          <div class="third-level1">
+                            <ul class="list-unstyled text-light p10-b">
+                              {% for inner in category.children %}
+                                <li class="dropdown-li-p"> <a class="no-padding-i" href="{{ inner.href }}">{{ inner.name }}</a></li>
+                              {% endfor %}
+                            </ul>
+                          </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    {# <div class="other-right default-flex"> #}
+      <div class="container banner-container m0">
+        <div class="full-height">
+          <div class="col-xs-12 full-height no-padding">
+            <div class="swiper full-height">
+              <div id="slideshow{{ module }}" class="swiper-container full-width full-height">
+                <div class="swiper-wrapper">
+                  {% for banner in banners %}
+                  <div class="swiper-slide text-center">
+                    {% if banner.link %}
+                    <a href="{{ banner.link }}" data-cnzz-event="首页|Hm_Banner_L0{{ loop.index }}">
+                      <div class="banner-img-container" style="background: url('{{ banner.image }}') no-repeat center;background-size: cover;"></div>
+                    </a>
+                    {% else %}
+                    <div class="banner-img-container" style="background: url('{{ banner.image }}') no-repeat center;background-size: cover;"></div>
+                    {% endif %}
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="swiper-pagination swiper-pagination-inside-bottom slideshow{{ module }}"></div>
+              {# {% if false %}#}
+              <div class="swiper-pager">
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+              </div>
+              {# {% endif %}#}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="banner-right" class="box-bg banner-right action-range">
+        <div class="featured-list media1200">      
+          {% if banners_right_is_end == 0 %}
+            {% if isNewStores %}
+              <a href="{{ url('product/channel/getChannelData',{'type':'new_stores' }) }}" target="_blank" >New Stores</a>
+              <a  class="view-more-ab" href="{{ url('product/channel/getChannelData',{'type':'new_stores' }) }}"  target="_blank" >More&nbsp;>&nbsp;</a>
+            {% else %}
+              <a href="{{ url('product/channel/getChannelData',{'type':'feature_stores' }) }}" target="_blank" >Featured Stores</a>
+              <a  class="view-more-ab" href="{{ url('product/channel/getChannelData',{'type':'feature_stores' }) }}"  target="_blank" >More&nbsp;>&nbsp;</a>
+            {% endif %}
+          {% else %}
+            {% if isNewStores %}
+              New Stores
+            {% else %}
+              Featured Stores
+            {% endif %}
+          {% endif %}
+        </div>
+        {% for key,banner in banners_right %}
+        {% if key < 4 %}
+        <div class="operations action-module-expand pointer">
+            <div class="store-img"><img src="{{ banner.image }}" alt=""></div>
+            <div class="store-information">
+              <div class="featured-name" title="{{ banner.title }}">{{ banner.title }}</div>
+              {% if banner.new_seller_score and logged and isNewStores == 0 %}
+                  <div><span class="text-light text-light"></span><span class="score">New Seller</span></div>
+              {% elseif banner.score and logged  %}
+                  <div><span class="text-light text-light"></span><span class="score" title="GIGA Index">{{ banner.score }}</span></div>
+              {% endif %}
+              <a class="text-small view-more no-under" onclick="openViewNow('{{ banner.link }}')" data-cnzz-event="首页|Hm_Promotion_L0{{ loop.index }}">View now</a>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        </div>
+      </div>
+</section>
+<script type="text/javascript">
+  function openViewNow(linkUrl){
+    var url= href=linkUrl;
+    window.open(url,'_blank');
+    stopBubbling1(event); //防止冒泡
+  }
+  function stopBubbling1(e) {
+    e = window.event || e;
+    if (e.stopPropagation) {
+      e.stopPropagation();      //阻止事件 冒泡传播
+    } else {
+      e.cancelBubble = true;   //ie兼容
+    }
+  }
+var swiper = new Swiper('#slideshow{{ module }}', {
+      {#
+        $('#slideshow{{ module }}').swiper({#} mode: 'horizontal',
+          slidesPerView: 1,
+          pagination: '.slideshow{{ module }}',
+          paginationClickable: true,
+          nextButton: '.swiper-button-next',
+          prevButton: '.swiper-button-prev',
+          spaceBetween: 0,
+          autoplay: 5000,
+          autoplayDisableOnInteraction: true,
+          loop: true
+        });
+      var comtainer = document.getElementById('slideshow{{ module }}');
+      comtainer.onmouseenter = function() {
+        swiper.stopAutoplay();
+      };
+      comtainer.onmouseleave = function() {
+        swiper.startAutoplay();
+      }
+      $(document).ready(function() {
+        $(".menu-firt-category").on("click", function() {
+          window.location.href = $(this).attr("url");
+        })
+      })
+</script>
+<script>
+// $(function () {
+//   $(window).resize(function () {
+//     var clientWidth = $(document).width()
+//     var operationsWidth = $('#banner-right').width()
+//     var marginLeft = (clientWidth-operationsWidth)/2
+//     if (clientWidth>1200 && clientWidth<1320) {
+//       console.log('>1200 <1320')
+//       $('#banner-right').css("margin-left",'327px')
+//     } else if (clientWidth<1200){
+//       console.log('<1200');
+//       console.log(marginLeft)
+//       $('#banner-right').css("margin-left",marginLeft)
+//     } else {
+//       $('#banner-right').css("margin-left",'0px')
+//     }
+//   })
+// })
+</script>
+{% endif %}

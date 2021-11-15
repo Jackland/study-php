@@ -1,0 +1,346 @@
+<script src="catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/magnific/magnific-popup.css" type="text/css" rel="stylesheet"/>
+
+<style>
+  .thumbnails {
+    overflow: auto;
+    clear: both;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .thumbnails > li {
+    margin-left: 10px;
+  }
+
+  .thumbnails {
+    margin-left: -10px;
+  }
+
+  .thumbnails > img {
+    width: 100%;
+  }
+
+  .image-additional a {
+    margin-bottom: 0px;
+    padding: 0px;
+    display: block;
+    border: 1px solid #ddd;
+  }
+
+  .image-additional {
+    max-width: 60px;
+  }
+
+  .thumbnails .image-additional {
+    float: left;
+    margin-left: 10px;
+  }
+  .order {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    width: 100%;
+  }
+  .order .line_pre {
+    display: inline-block;
+    width: 3%;
+    border-top: 1px solid #eee ;
+    vertical-align: 10%;
+  }
+  .order .line_suf {
+    display: inline-block;
+    width: 82.7%;
+    border-top: 1px solid #eee ;
+    vertical-align: 10%;
+  }
+  .order .txt {
+    vertical-align: middle;
+    color: #C3C3C3;
+  }
+
+</style>
+<div role="tabpanel" class="tab-pane active">
+  <div class="bg-white p-2">
+    {% if list.base_info.rebate_result == 5 %}
+      <div class="row" style="margin-left: 5px;">
+        <span style="background: #FFF5EF;color:#FA6400;height: 35px;line-height: 35px;display: inline-block;width: 1050px;border-radius:5px">
+          <i  style="color:#FA6400;margin-left: 10px;" class="fa fa-info-circle" aria-hidden="true" ></i>
+          {{ request_tips }}
+        </span>
+      </div>
+    {% endif %}
+    <div class="row" style="margin:10px 0px 10px 5px;border-bottom: 1px solid #eee;padding-bottom: 10px;">
+      <div style="width: 100%">
+        <span style="color:#183464;font-size: 20px;font-weight: bold;float: left;margin-left: 10px;">{{ text_agreement_results }}</span>
+        <span style="float: right;cursor: pointer;color: #43AFDD" onclick="changeAgreementTab()">{{ text_view_agreement_details }}</span>
+      </div>
+    </div>
+
+    <div class="row" style="margin:10px 0px 10px 5px;border-bottom: 1px solid #eee;">
+      <div style="width: 30%;float: left;color: #183464;font-weight: bold">
+          <span style="line-height: 28px;margin-left: 10px;">PRODUCTS</span>
+      </div>
+      <div style="width: 70%;float: left">
+        {% for key,value in list.product_list %}
+          <span style="float: left;margin:0 20px 5px 0;">
+            <img src="{{ value.image_show }}" style="width: 30px;height:30px;">
+            {{ value.sku }}
+            <i class="fa fa-play-circle" onclick="urlToProductDetails('{{ value.product_link }}')" data-toggle="tooltip"
+               title="{{ value.name}}" aria-hidden="true" style="color: #8493AC;cursor: pointer" ></i>
+          </span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="row" style="margin:10px 0px 10px 5px;border-bottom: 1px solid #eee;padding-bottom: 10px;">
+      <div style="width: 30%;float: left;color: #183464;font-weight: bold">
+        <span style="margin-left: 10px;">AGREEMENT TERM</span>
+      </div>
+      <div style="width: 70%;float: left">
+        <span>{{ list.base_info.effect_time }} - {{ list.base_info.expire_time }} ( {{ list.base_info.day }} days )</span>
+      </div>
+    </div>
+
+    <div class="row" style="margin:10px 0px 10px 5px;border-bottom: 1px solid #eee;padding-bottom: 10px;">
+      <div style="width: 30%;float: left;color: #183464;font-weight: bold">
+        <span style="margin-left: 10px;">MIN. TOTAL SELLING QUANTITY <i style="font-size: 12px;" class="giga icon-V10-wenhaotishi" aria-hidden="true" data-toggle="tooltip" title="{{ text_quantity_tips }}" ></i></span>
+      </div>
+      <div style="width: 70%;float: left">
+        <span>{{ list.base_info.qty }}</span>
+        <span style="margin-left: 10px;color: darkorange"><i class="fa fa-check-circle"  aria-hidden="true"></i> Actually purchased {{ list.base_info.all_count }} units</span>
+        <span style="float: right;cursor: pointer;color: #43AFDD" onclick="changeTransactionTab()">{{ text_view_transaction_details }}</span>
+      </div>
+    </div>
+
+    <div class="row" style="margin:10px 0px 10px 5px;border-bottom: 1px solid #eee;padding-bottom: 10px;">
+      <div style="width: 30%;float: left;color: #183464;font-weight: bold">
+        <span style="margin-left: 10px;" >AGREEED MINIMUM SELLING PRICE</span>
+      </div>
+      <div style="width: 70%;float: left">
+        {% if list.base_info.rebate_result == 5 %}
+          <span><i class="fa fa-times-circle" aria-hidden="true"></i> Proof images should be submitted via Request Rebate</span>
+        {% elseif  list.base_info.rebate_result > 5 %}
+          <span  style="color: darkorange"><i class="fa fa-check-circle" aria-hidden="true"></i> The proof images has been submitted</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row" style="margin:10px 0px 10px 5px;border-bottom: 1px solid #eee;padding-bottom: 10px;">
+      <div style="width: 30%;float: left;color: #183464;font-weight: bold">
+        <span style="margin-left: 10px;" >REBATE AMOUNT TO RECEIVE <i style="font-size: 12px;" class="giga icon-V10-wenhaotishi" aria-hidden="true" data-toggle="tooltip"  title="{{ text_receive_tips }}"></i></span>
+      </div>
+      <div style="width: 70%;float: left">
+        <span>{{ list.base_info.all_rebate_amount_show }}</span>
+        {#<span style="float: right;cursor: pointer;color: #43AFDD" onclick="changeTransactionTab()">{{ text_collapse_details }}</span>#}
+
+        <a
+           data-toggle="collapse"
+           href="#collapse_request"
+           aria-expanded="false"
+           aria-controls="#collapse_request"
+           onclick="changeIcon('request')"
+           style="float: right">
+          <span  style="color: #43AFDD"
+             id ="icon_down_request">{{ text_expand_details }}</span>
+          <span  style="display: none;color: #43AFDD"
+             id ="icon_up_request">{{ text_collapse_details }}</span>
+        </a>
+      </div>
+    </div>
+
+    <div id="collapse_request" class="collapse row" style="margin:10px 0px 0px 5px;">
+      <table class="table main table-hover">
+        <thead>
+          <tr>
+            <th class="text-center" >{{ column_rebates_image }}</th>
+            <th class="text-center" >{{ column_rebates_item_code }}</th>
+            <th class="text-center" >{{ column_rebates_quantity }}</th>
+            <th class="text-center" >{{ column_rebates_amount }}</th>
+            <th class="text-center" >{{ column_rebates_total_amount }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key,value in list.order_list %}
+            <tr>
+              <td class="text-center" >
+                <img src="{{ value.image_show }}" style="width: 30px;height:30px;">
+              </td>
+              <td class="text-center" >{{ value.sku }}
+                <i class="fa fa-play-circle" onclick="urlToProductDetails('{{ value.product_link }}')" data-toggle="tooltip"
+                title="{{ value.name }}" aria-hidden="true" style="color: #8493AC;cursor: pointer" ></i>
+              </td>
+              <td class="text-center" >{{ value.qty }}</td>
+              <td class="text-center" >{{ value.rebate_amount_show }}</td>
+              <td class="text-center text-price" >{{ value.rebate_amount_all_show }}</td>
+
+            </tr>
+          {% endfor %}
+
+
+        </tbody>
+      </table>
+    </div>
+    <div class="row" style="margin:20px 0px 10px 5px;padding-bottom: 10px;">
+    {% if list.base_info.rebate_result == 5 %}
+      <span style="color:#183464;font-size: 20px;font-weight: bold;float: left;width: 100%;margin: 0 0 20px 10px;">Request Rebate to {{ list.base_info.screenname }}</span>
+      <button style="margin: 0 0 0 10px;" onclick="getLayerFileUpload()" class="btn btn-primary button_filter">Request Rebate</button>
+    {% else %}
+
+      <span style="color:#183464;font-size: 20px;font-weight: bold;float: left;width: 100%;margin: 0 0 20px 10px;">Request Rebate to {{ list.base_info.screenname }}</span>
+      {%  for key,value in list.request_list %}
+        <div  class="order" >
+          <span class="line_pre"></span>
+          <span class="txt">{{ value.create_time }}</span>
+          <span class="line_suf"></span>
+        </div>
+        <div style="border-bottom: 1px solid #eee;padding-bottom: 10px;margin-top: 40px;float: left;width: 100%; color: #C3C3C3;">
+          <span style="width: 39%;float: left;margin-left: 1%;">Proof Images</span>
+          <span style="width: 60%;float: left">Comments</span>
+        </div>
+
+        <div style="border-bottom: 1px solid #eee;padding-bottom: 10px;margin-top: 20px;float: left;width: 100%">
+          <div style="width: 39%;float: left;margin-left: 1%;">
+            <ul class="thumbnails" id="thumbnails_{{  key }}">
+              {% for k,v in value.img_list %}
+                <li class="image-additional" style="height: 90px">
+                  <a href="{{  v.path  }}" data-toggle="tooltip"
+                     title="View Images" class="thumbnail">
+                    <img style="width: 60px;height:60px;" src="{{  v.path  }}" title="{{ v.file_name }}"/>
+                  </a>
+                </li>
+              {% endfor %}
+
+            </ul>
+
+          </div>
+          <div style="width: 60%;float: left;word-wrap:break-word;">
+            {{ value.comments }}
+          </div>
+        </div>
+
+        {% if value.process_status == 6 %}
+          <div style="padding-bottom: 10px;margin-top: 20px;float: left;width: 100%; ">
+            <span style="width: 100%;float: left;color:darkorange">Seller hasn't responded the rebate request.</span>
+          </div>
+        {% else %}
+          <div style="border-bottom: 1px solid #eee;padding-bottom: 10px;margin-top: 20px;float: left;width: 100%; color: #C3C3C3;">
+            <span style="width: 39%;float: left;margin-left: 1%;">Processed Result</span>
+            <span style="width: 40%;float: left">Comments</span>
+            {% if value.process_status == 7 %}
+              <span style="width: 20%;float: left">Refund Type</span>
+            {% endif %}
+          </div>
+          <div style="border-bottom: 1px solid #eee;padding-bottom: 10px;margin-top: 15px;float: left;width: 100%;margin-bottom: 30px;">
+            <div style="width: 39%;float: left;margin-left: 1%;">
+              <span>
+                {% if value.process_status == 7 %}
+                  <span style="color:green">Rebate Paid</span><br/>
+                {% else %}
+                  <span style="color:red">Rebate Declined</span><br/>
+                {% endif %}
+
+                <span style="color: #C3C3C3;">{{ value.update_time }}</span>
+              </span>
+              {% if value.rebate_again == 1 %}
+                <button style="margin: -20px 0 0 10px;" onclick="getLayerFileUpload()" class="btn btn-primary button_filter">Request Again</button>
+              {% endif %}
+            </div>
+            <div style="width: 40%;float: left;word-wrap:break-word;">
+              {{  value.reback }}
+            </div>
+            {% if value.process_status == 7 %}
+              {{ rebateMethod }}
+            {% endif %}
+          </div>
+
+        {% endif %}
+
+      {% endfor %}
+
+    {% endif %}
+
+
+
+
+
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+  $(function () {
+    $('.thumbnails').magnificPopup({
+      type: 'image',
+      delegate: 'a',
+      gallery: {
+        enabled: true
+      }
+    });
+  });
+  function changeAgreementTab() {
+    //参数转换
+    $('.tab-content').children().removeClass('active');
+    $('#tab-agreement').addClass('active');
+    $('#request_li').removeClass('active');
+    $('#agreement_li').addClass('active');
+  }
+
+  function changeTransactionTab() {
+    //参数转换
+    $('.tab-content').children().removeClass('active');
+    $('#tab-transaction').addClass('active');
+    $('#request_li').removeClass('active');
+    $('#transaction_li').addClass('active');
+  }
+  function changeIcon(line_id) {
+    var icon_up = '#icon_up_' + line_id;
+    var icon_down = '#icon_down_' + line_id;
+
+    if($(icon_down).is(':visible')){
+      $(icon_down).hide();
+      $(icon_up).show();
+    }else{
+      $(icon_up).hide();
+      $(icon_down).show();
+    }
+  }
+
+
+  function initRequest() {
+    layer.load();
+    var url_request = '{{ request_url }}';
+    var url_agreement = '{{ agreement_url }}';
+    $('#mapping-agreement').load(url_agreement);
+    $('#mapping-request').load(url_request,function(responseTxt,statusTxt,xhr){
+      if(statusTxt=="success"){
+        layer.closeAll('loading');
+      }
+
+    })
+  }
+  
+  
+  function getLayerFileUpload() {
+    var  info = 'Request Rebate to {{ list.base_info.screenname | e('js') }}';
+    var  url = '{{ file_upload_url }}';
+    {#var  confirm_info = '{{ text_close_confirm_info }}';#}
+    layer.open({
+      type: 2,
+      area: ['700px', '600px'],
+      title:info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar:false,
+      content: url,
+      cancel:function(index){
+
+      }
+    });
+  }
+
+</script>

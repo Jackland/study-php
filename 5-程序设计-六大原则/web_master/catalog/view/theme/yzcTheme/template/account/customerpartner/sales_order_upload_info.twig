@@ -1,0 +1,323 @@
+{#<script type="text/javascript" src="catalog/view/javascript/layui/layui.all.js"></script>#}
+{#<link rel="stylesheet" href="catalog/view/javascript/layui/css/layui.css">#}
+<div role="tabpanel" class="tab-pane active">
+  <div class="bg-white p-2">
+    <form class="form-horizontal">
+      <fieldset>
+        {#<legend>{{ text_customer_order_upload }}</legend>#}
+        <div class="form-group required">
+
+            {#<label class="col-sm-2 control-label" style="text-align: left" for="button-upload"><span data-toggle="tooltip" title="{{ help_upload }}">{{ entry_upload }}</span></label>#}
+            <div class="col-sm-12" style="margin-top: 10px;">
+                <button type="button" id="button-upload" data-trigger = "hover"  data-toggle="tooltip" title="Import sales order information .xls file"  data-loading-text="{{ text_loading }}" class="btn btn-primary" style="color: #fff;background-color: #3975db;}">
+                  <i class="giga  icon-action-upload"></i> {{ button_upload }}
+                </button>
+                <input type="file" id="upload_file" name='upload_file' onchange="handleFiles(this.files)" style="display:none;">
+
+                <a class="btn btn-default"  href="{{ downloadTemplateHref }}" data-trigger = "hover"  data-toggle="tooltip" title="Download sales order information .xls file"
+                     style="text-decoration: none;cursor: pointer;position: relative;margin-left: 20px;">
+                  Download Template</a>
+                <a class="btn btn-default" href="{{ downloadInterpretationHref }}" target="_blank"
+                      style="text-decoration:none;cursor: pointer;position: relative;margin-left: 20px;">
+                  How to Complete Template</a>
+                {% if isEurope %}
+                  <a   class="btn btn-default" href="{{ url('account/customerpartner/sales_order_management/cityComparison') }}" target="_blank"
+                        style="text-decoration:none;cursor: pointer;position: relative;margin-left: 20px;">
+                   Country Code Search</a>
+                {% endif %}
+
+            </div>
+
+        </div>
+      </fieldset>
+      <br/>
+      <fieldset>
+        <div class="form-group">
+          <div class="col-sm-12">
+            <div class="progress">
+              <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+            </div>
+            <div id="progress-text"></div>
+          </div>
+        </div>
+      </fieldset>
+      {% if isEurope == false %}
+        <div class="text-size-normal">
+          <ol class="pl-1">
+            <li>Our delivery service is currently only available in the continental United States.</li>
+            <li>The Marketplace has temporarily suspended signature services until further notice.</li>
+            <li>If you want to purchase the Logistics Protection Service for your uploaded sales order, please contact the Marketplace Customer Service.</li>
+          </ol>
+        </div>
+      {% else %}
+        <div class="text-size-normal">
+          If you want to purchase the Logistics Protection Service for your uploaded sales order, please contact the Marketplace Customer Service.
+        </div>
+      {% endif %}
+      <fieldset>
+        <div class="form-group" style="height: 100%">
+          <span class="col-sm-2 control-label" style="text-align: left;font-size: 18px;">{{ text_history }}</span> <a class="btn btn-default" href="{{ upload_history_records }}" style="text-transform:none;font-weight:normal;font-size: 14px;float:right;margin-top: 6px;margin-right:16px; " target="_blank">View all...</a>
+          {% if historys %}
+            <div id="history" style="width: 96.5%;margin-left: 15px;">
+              <table class="table main table-condensed table-hover">
+                <thead>
+                <tr>
+                  <th>File Name</th>
+                  <th>Create Time</th>
+                  <th>Status </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for history in historys %}
+                  <tr>
+                    <td><a  style="cursor: pointer;color: rgba(0, 0, 0, 0.85);" onclick=" window.location.href='{{ history.file_path }}'">{{ history.file_name }}&nbsp;<i  style="color: #6c7e9c;" class="giga icon-table-download"></i></a></td>
+                    <td style="word-break: break-word;">{{ history.create_time }}</td>
+                    <td style="word-break: break-word;">
+                      {% if history.handle_status == 1 %}
+                        <i class="giga icon-action-confirm-and-agree" aria-hidden="true" style="color: #00CC00;cursor: pointer"></i>
+                      {% else %}
+                        <i class="giga icon-action-warning" aria-hidden="true" style="color: #DB0000;cursor: pointer"></i>
+                      {% endif %}
+                      &nbsp;{{ history.handle_message }}
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+<script>
+
+  $('input:radio[name="upload_type"]').click(function(){
+    var checkValue = $('input:radio[name="upload_type"]:checked').val();
+    $('#upload_0').hide();
+    $('#upload_1').hide();
+    $('#upload_2').hide();
+    var id = '#upload_'+ checkValue;
+    $(id).show();
+
+
+  });
+</script>
+<style>
+  .progress .progress-bar {
+    border-radius: 10px;
+    /*background-color: #3a75dc;*/
+  }
+  .progress-bar-success {
+    background-color: #1e91cf;
+  }
+  .form-group label, .form-group a, .form-group button, h1 .pull-right a {
+    text-transform: none;
+  }
+  .labelauty-checked ,.labelauty-unchecked{
+    margin-top: 3px;
+  }
+  .page-seller-portal .btn.btn-default {
+    color:grey;
+    border-color: #e3e3e3;
+    background-color: #fbfbfb;
+  }
+  .page-seller-portal .btn.btn-default:hover {
+    color: white;
+    background-color: #3a75dc;
+    border-color: #3a75dc;
+  }
+  .modal-header {
+    padding: 15px;
+    border-bottom: 0px solid
+    #e5e5e5;
+  }
+  .modal-footer {
+    padding: 15px;
+    text-align: center;
+    border-top: 1px solid #e5e5e5;
+  }
+  .pl-1{
+    padding-left: 10px;
+  }
+  .text-danger{
+    color: #ff414d;
+  }
+  .text-size-normal{
+    font-size: 14px;
+  }
+</style>
+
+<script>
+  var fileSelect = document.getElementById('button-upload'),
+    fileElem = document.getElementById('upload_file');
+  fileSelect.addEventListener("click", function (e) {
+    if (fileElem) {
+      fileElem.click();
+    }
+    e.preventDefault(); // prevent navigation to "#"
+  }, false);
+
+  function handleFiles(files) {
+    // Reset everything
+    if(files.length){
+      $('.alert-dismissible').remove();
+      $('#progress-bar').css('width', '0%');
+      $('#progress-bar').removeClass('progress-bar-danger progress-bar-success');
+      $('#progress-text').html('');
+      $('#button-upload').button('loading');
+      var formFile = new FormData();
+      var index = files[0]['name'].lastIndexOf(".");
+      var suffix = files[0]['name'].substr(index+1);
+    }else{
+      return false;
+    }
+
+    if (suffix != 'xls' && suffix != 'xlsx') {
+      layerMsg('Upload must be a .xls file.');
+      $('#button-upload').button('reset');
+      return false;
+    }
+    formFile.append("file", files[0]);
+    //一件代发
+    formFile.append("upload_type", 0);
+    var data = formFile;
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/sales_order_management/uploadFile',
+      data: data,
+      type: "Post",
+      dataType: "json",
+      cache: false,//上传文件无需缓存
+      processData: false,//用于对data参数进行序列化处理 这里必须false
+      contentType: false, //必须
+      beforeSend: function () {
+        $('#button-upload').button('loading');
+      },
+      // 14091Sales Order Management - Upload History表中加上传结果列
+      complete: function () {
+
+      },
+      success: function (json) {
+        $('#upload_file').val(null);
+        // 14091Sales Order Management - Upload History表中加上传结果列
+        if (json['error']) {
+          $('#progress-bar').addClass('progress-bar-danger');
+          $('#progress-text').html('<div class="text-danger" style="font-weight: bold">' + json['error'] + '</div>');
+        }
+
+        if (json['text']) {
+          $('#progress-bar').css('width', '30%');
+          $('#progress-text').html(json['text']);
+        }
+        setTimeout(function () {
+          $('#button-upload').button('reset');
+
+        },3000);
+        if (json['next']) {
+          next(json['next'], 1);
+        }
+
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        // 14091Sales Order Management - Upload History表中加上传结果列
+        $('#upload_file').val(null);
+        setTimeout(function () {
+          $('#button-upload').button('reset');
+        },1000);
+        layer.msg(xhr.responseText, {icon: 5});
+      }
+    });
+  }
+  function next(url, i) {
+    i = i + 1;
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      success: function (json) {
+        $('#progress-bar').css('width', (i * 30) + '%');
+
+        if (json['error']) {
+          $('#progress-bar').addClass('progress-bar-danger');
+          if('err_href' in json){
+            $('#progress-text').html('<div class="text-danger" style="font-weight: bold" >' + json['error'] + '</div>' + json['err_href']);
+          }else{
+            $('#progress-text').html('<div class="text-danger" style="font-weight: bold" >' + json['error'] + '</div>');
+
+          }
+        }else{
+
+          if (json['text']) {
+            $('#progress-text').html(json['text']);
+          }
+
+          if (json['next']) {
+            next(json['next'], i);
+          }
+
+          if (json['success']) {
+            $('#progress-bar').css('width', '100%');
+            $('#progress-bar').addClass('progress-bar-success');
+            $('#progress-text').html('<span class="text-success" style="font-weight: bold" >' + json['success'] + '</span>');
+            var url = json['final'];
+            getOrderConfirm(url)
+          }
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+
+        layer.msg(xhr.responseText, {icon: 5});
+        // alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+
+  function getOrderConfirm(url) {
+    var  upload_info = 'Attention';
+    layer.open({
+      type: 2,
+      area: ['1000px', '600px'],
+      title: upload_info,
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar:false,
+      content: url,
+    });
+
+  }
+
+  function getSalesOrderList(next_url) {
+    location.href = next_url;
+  }
+
+  function getSalesOrderLTLMoreModel(url){
+    layer.open({
+      type: 2,
+      area: ['1000px', '600px'],
+      title: 'LTL Confirm',
+      fixed: false, //不固定Change
+      maxmin: true,
+      skin: 'yzc_layer',
+      scrollbar:false,
+      content: url,
+      cancel:function(){
+        window.location.href='{{ sales_order_url }}';
+      }
+    });
+  }
+
+  function layerMsg(message, time = 3000) {
+    layer.msg(message, {time: time, skin: ''});
+  }
+
+</script>
+<style>
+  .yzc_layer .layui-layer-content {
+    padding: 0;
+    text-align: center;
+  }
+</style>
+
+

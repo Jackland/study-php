@@ -1,0 +1,262 @@
+.form-wrapper {
+
+  .form-title {
+    margin-bottom: 16px;
+    color: #3e2b75;
+    font-size: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 30px;
+
+    > label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #bbb;
+    }
+
+    &.no-stay {
+      margin-bottom: 30px;
+
+      input {
+        border-color: red;
+      }
+
+      textarea {
+        border-color: red;
+      }
+
+    }
+
+    .msg-top {
+      position: relative;
+
+      .message-top {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 4;
+        color: #bbb;
+      }
+    }
+  }
+
+  .input-group {
+    input.form-control {
+      border-radius: 4px 0 0 4px;
+    }
+
+    .input-group-btn {
+      .btn {
+        height: 38px;
+        color: #aaa;
+        background: #fff;
+        border-color: #aaa;
+      }
+
+    }
+
+    .date {
+
+    }
+
+    .right-disabled {
+      border-right: none;
+    }
+
+    .input-group-addon {
+      background: #fff;
+      border-color: #aaa;
+      border-radius: 0 4px 4px 0;
+    }
+  }
+
+  .input-required {
+    float: right;
+    color: red;
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+  .disabled {
+    border: none !important;
+  }
+
+  p {
+    margin-bottom: 4px;
+    color: #888;
+  }
+
+  .form-control {
+    border-radius: 4px;
+    border: 1px solid #aaa;
+    background: #f3f5f7;
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    &.text-msg {
+      margin: 0px;
+      padding-right: 100px;
+      height: 167px;
+    }
+  }
+
+  .input-group {
+    .addon {
+      color: #999;
+      background: #f3f5f7 !important;
+
+
+      &.disabled {
+        color: #999;
+        border-radius: 4px;
+        border-top: 1px solid #e3e5e7 !important;
+        border-bottom: 0px solid #e3e5e7;
+        border-left: 0px solid #e3e5e7;
+        border-right: 0px solid #e3e5e7;
+        background: #f3f5f7 !important;
+      }
+    }
+  }
+
+  input[type="checkbox"] {
+   width: 2em;
+   height: 2em;
+   margin-right: .2em;
+   border-radius: .2em;
+   text-align: center;
+  }
+
+  .checkbox-inline {
+    // margin-right: 10em;
+    line-height: 2.5em;
+  }
+
+  .radio-inline {
+    input[type="radio"] {
+      width: 20px;
+      height: 20px;
+    }
+
+    span {
+      line-height: 30px;
+      margin-left: 14px;
+    }
+  }
+
+  textarea {
+    min-height: 100px;
+    border-radius: 6px;
+    border: 1px solid gray;
+  }
+
+  select {
+    border-radius: 0;
+    margin: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+
+    // https://codepen.io/vkjgr/pen/VYMeXp
+    background-image:
+        linear-gradient(45deg, transparent 50%, #ccc 50%),
+        linear-gradient(135deg, #ccc 50%, transparent 50%),
+        linear-gradient(to right, #fff, #fff),
+        linear-gradient(to right, #aaa, #aaa) !important;
+      background-position:
+        calc(100% - 20px) calc(1em + 2px),
+        calc(100% - 15px) calc(1em + 2px),
+        100% 0,
+        calc(100% - 2.5em) 0px !important;
+      background-size:
+        5px 5px,
+        5px 5px,
+        2.5em 2.5em,
+        1px 3em !important;
+      background-repeat: no-repeat !important;
+  }
+
+  // Attachment
+  .attachment-group {
+    span.status {
+      margin-left: 10px;
+      line-height: 30px;
+    }
+
+    .progress {
+      display: inline-block;
+      height: 16px;
+      width: 150px;
+      margin: 0 0 -2px 10px;
+      border-radius: 16px * 0.5;
+
+      .progress-bar {
+        line-height: 16px;
+        border-radius: 16px * 0.5;
+        box-shadow: none;
+        background-color: #55cbf9;
+      }
+    }
+  }
+
+  // date time picker
+  .datetimepicker-range {
+    display: flex;
+
+    .datetimepicker {
+      flex: 1;
+      position: relative;
+
+      &:first-child {
+        input {
+          border-radius: 4px 0 0 4px;
+        }
+      }
+
+      &:last-child {
+        margin-left: 4px;
+        input {
+          border-radius: 0 4px 4px 0;
+        }
+      }
+
+      input {
+        padding: 12px 13px 0 13px;;
+      }
+
+      span.title {
+        position: absolute;
+        top: 4px;
+        left: 14px;
+        font-size: 10px;
+        color: #b6b7b9;
+      }
+
+      span.icon {
+        position: absolute;
+        bottom: 4px;
+        right: 8px;
+
+        i {
+          font-size: 10px;
+          color: #b6b7b9;
+        }
+      }
+    }
+  }
+
+  .input-group.date {
+    button {
+      cursor: default;
+    }
+
+    i {
+      font-size: 18px !important;
+      color: #b6b7b9;
+    }
+  }
+}

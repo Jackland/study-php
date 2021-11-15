@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models{{namespace}};
+
+use Framework\Model\EloquentModel;
+
+/**
+ * {{fullModelClassName}}
+ * {{propertyComments}}
+ */
+class {{className}} extends EloquentModel
+{
+    protected $table = '{{tableName}}';{{primaryKey}}{{timestamp}}
+
+    protected $dates = [
+        {{dates}}
+    ];
+
+    protected $fillable = [
+        {{fillable}}
+    ];
+}

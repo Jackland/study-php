@@ -1,0 +1,408 @@
+{% trans_default_category 'catalog/view/account/print_product_labels' %}
+{{ header }}{{ separate_column_left }}
+<link rel="stylesheet" href="catalog/view/javascript/bootstrap-table/bootstrap-table.css">
+<script src="catalog/view/javascript/bootstrap-table/bootstrap-table.js"></script>>
+<style>
+  #content.container-fluid{
+    margin-top: 40px;
+  }
+  .container-fluid{
+        margin-left: 235px;
+  }
+  .box-shadow{
+        border-radius: 3px;
+        background-color: #fff;
+        margin-top: 3px;
+        padding: 10px 20px;
+        box-shadow: #aaa 0 0 6px;
+      min-height: 700px;
+      margin-bottom: 30px;
+    }
+  .prompt{
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 50px;
+    border-bottom: 1px solid #eee;
+    display: inline-block;
+    width: 100%;
+    color: #666;
+  }
+  .tab{
+    margin-top: 50px;
+  }
+  .btn-primary{
+    margin-right: 15px;
+  }
+  .dropdown-menu-high{
+    max-height: 400px;
+    overflow: auto;
+  }
+  .dropdown-menu{
+    z-index: 9999;
+  }
+  .bs-checkbox .th-inner label{
+    margin-bottom: 0;
+  }
+  .bs-checkbox .th-inner{
+    text-align: center;
+  }
+  #content.container-fluid .receipt-con{
+    padding-top: 20px;
+  }
+  .tab .bootstrap-table{
+    padding-bottom: 30px;
+  }
+  .table > tbody > tr > td:first-child{
+    padding-left: 8px;
+  }
+</style>
+
+<div class="{% if is_america %}container-fluid {% else %}container{% endif %}" id="content">
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+    <h1>{{ __('Label打印') }}</h1>
+    <div class="receipt-con box-shadow">
+        <form>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label">{{ __('入库单号') }}</label>
+                        <input
+                                type="text"
+                                name="filter_order_number"
+                                value="{{ filter_order_number }}"
+                                placeholder="{{ __('入库单号') }}"
+                                id="input-order-number"
+                                class="form-control"
+                                autocomplete="on"
+                        />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label" >Item Code</label>
+                        <input
+                                type="text"
+                                name="filter_item_code"
+                                value="{{ filter_item_code }}"
+                                placeholder="Item Code"
+                                id="input-item-code"
+                                class="form-control"
+                                autocomplete="on"
+                        />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                  <div class="form-group">
+                    <label class="control-label" >MPN</label>
+                    <input
+                      type="text"
+                      name="filter_mpn"
+                      value="{{ filter_MPN }}"
+                      placeholder="MPN"
+                      id="input-mpn"
+                      class="form-control"
+                      autocomplete="on"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                    </div>
+                    <div class="form-group">
+                        <a
+                                id="print_button"
+                                type="button"
+                                class="btn btn-primary pull-right"
+                                style="margin-right: 15px;"
+                        ><i class="fa fa-print"></i> {{ __('打印') }}</a>
+                          <button
+                            type="button"
+                            onclick="filter(this);"
+                            class="btn btn-primary pull-right filter-button"
+                          >{{ __('筛选') }}
+                          </button>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+      <form
+        id="printLabelsSubmitForm"
+        action="{{ url('account/print_product_labels/printLabels') }}"
+        method="post"
+        target="_blank"
+      >
+        <input type="hidden" name="idMaps"/>
+      </form>
+      <div class="prompt" id="noData">{{ __('请输入入库单号或者Item Code/MPN获取打印列表') }}</div>
+      <div class="tab">
+        <table id="print_product_labels"></table>
+      </div>
+    </div>
+
+</div>
+{{ footer }}
+<script>
+  let printTable = $("#print_product_labels");
+  let printButton = $("#print_button");
+  let printQuantityInputClass = '.print_quantity';
+  let printQuantityInputClasses = '.estimated_quantity';
+  let firstEnterPage = 1;
+
+  function filter(button) {
+
+    var url = getUrl();
+    $("#noData").hide();
+    var npm = $("#input-mpn").val().trim();
+    var item_code = $('#input-item-code').val().trim();
+    var num =$("#input-order-number").val().trim();
+    $("#input-mpn").val(npm);
+    $('#input-item-code').val(item_code);
+    $("#input-order-number").val(num);
+    var table = $("#print_product_labels")
+    var columns = [];
+    // npm不为空,number为空,隐藏第一列,Estimated可编辑
+    $("#print_product_labels").bootstrapTable('destroy');
+    if(npm != '' || num !='' || item_code != ''){
+      columns= [
+          {
+              checkbox: true,
+              width:'36px'
+          },
+          {
+              field: 'batch_number',
+              title: '{{ __('入库单号') }}',
+              align: 'center',
+              width:'200px'
+          },
+          {
+                field: 'sku',
+                title: 'Item Code',
+                align: 'center',
+                width:'200px'
+          },
+          {
+                field: 'mpn',
+                title: 'MPN',
+                align: 'center',
+                width:'200px'
+          },
+          {
+                field: 'estimated_quantity',
+                title: '{{ __('预计入库数量') }}',
+                width:'300px',
+                align: 'center',
+                formatter: function (value, row, index) {
+                  let id = 'estimated_quantity' + index;
+                  let qty = '';
+                  let only_read = '';
+                  if (row['estimated_quantity'] || row['estimated_quantity'] === 0) {
+                      qty = row['estimated_quantity'];
+                      only_read = 'readonly';
+                  }
+                  let str = '<input id="' + id +
+                    '" class="form-control estimated_quantity" value="' + qty +
+                    '" type="text" '+ only_read +'/>';
+                  return str;
+                }
+          },
+          {
+              title: '{{ __('打印数量') }}',
+              width:'300px',
+              align: 'center',
+              formatter: function (value, row, index) {
+                  let id = 'print_quantity' + index;
+                  let est_qty = '';
+                  if (row['estimated_quantity']) {
+                      est_qty = row['estimated_quantity'] * 4;
+                  }
+                  let str = '<input id="' + id +
+                    '" class="form-control print_quantity" value="' + est_qty +
+                    '" type="text"/>';
+                  return str;
+              }
+          }
+        ];
+    } else {
+      $("#noData").show();
+    }
+
+    if (!url) {
+      return;
+    }
+
+    printTable.bootstrapTable({
+      url: url,
+      columns:columns,
+      formatLoadingMessage: function () {
+        return '{{ __('加载中，请稍等') }}';
+      },
+      formatNoMatches: function () {
+        return '{{ __('无数据') }}';
+      },
+      onLoadSuccess: function () {
+        $('.filter-button').html('{{ __('筛选') }}');
+        $(printQuantityInputClass).on('input', function (e) {
+          e.target.value = e.target.value.replace(/^(0+)|[^\d]+/g,"")
+          if(e.target.value>99999){
+            e.target.value=''
+            layer.msg('{{ __('格式错误，请检查打印数量！') }}');
+          }
+        })
+        $(printQuantityInputClasses).on('input ', function (e) {
+          e.target.value = e.target.value.replace(/^(0+)|[^\d]+/g,"")
+          if(e.target.value>99999){
+            e.target.value=''
+            layer.msg('{{ __('格式错误，请检查预计入库数量！') }}');
+          }
+        })
+      }
+    });
+
+    $(button).html('loading');
+    // printTable.bootstrapTable('refresh', {url: url});
+    printTable.bootstrapTable('resetView', {height: 500});
+
+  }
+
+  function getUrl(page) {
+    let url = '{{ url("account/print_product_labels/getLists") }}';
+    let flag = false;
+    let filter_order_number = $('input[name=\'filter_order_number\']').val();
+    if (filter_order_number) {
+      url += '&filter_order_number=' + encodeURIComponent(filter_order_number);
+      flag = true;
+    }
+    let filter_mpn = $('input[name=\'filter_mpn\']').val();
+    if (filter_mpn) {
+      url += '&filter_mpn=' + encodeURIComponent(filter_mpn);
+      flag = true;
+    }
+    let filter_item_code = $('input[name=\'filter_item_code\']').val();
+    if (filter_item_code) {
+      url += '&filter_item_code=' + encodeURIComponent(filter_item_code);
+      flag = true;
+    }
+    if (flag == false) {
+      layer.msg('{{ __('请输入至少一个查询条件！') }}');
+      return;
+    }
+    if (page) {
+      url += "&page_num=" + page;
+    }
+    return url;
+  }
+
+  printButton.on('click', function () {
+    let dataLoad = printTable.bootstrapTable('getData');
+    let selectIndex = [];
+    let selectOptions = [];
+    printTable.find('.selected').each(function (key, item) {
+      selectIndex.push($(item).data('index'));
+    });
+    if (selectIndex.length == 0) {
+      layer.msg('{{ __('请最少选择一条记录') }}');
+      return;
+    }
+    for (let i = 0; i < selectIndex.length; i++) {
+      let index = selectIndex[i];
+      let selectRow = dataLoad[index];
+      selectRow['print_quantity'] = parseInt($("#print_quantity" + index).val());
+      selectOptions.push(selectRow);
+    }
+    let str = '| ';
+    $.each(selectOptions, function (key, item) {
+      str += item['sku'] + ',' + item['mpn'] + ',' + item['print_quantity'] + '|';
+    })
+    $('input[name="idMaps"]').val(str);
+    $('#printLabelsSubmitForm').submit();
+  });
+
+  $(function () {
+    function enterForm() {
+      if (event.keyCode == 13) {
+        filter();
+      }
+    }
+
+    $('input[name="filter_mpn"]').on('keydown', function () {
+      enterForm();
+    });
+    $('input[name="filter_item_code"]').on('keydown', function () {
+      enterForm();
+    });
+    $('input[name="filter_order_number"]').on('keydown', function () {
+      enterForm();
+    });
+    $('body').on('change','.estimated_quantity',function () {
+      $(this).parent('td').next().find('.print_quantity').val($(this).val()*4?$(this).val()*4:'');
+    })
+
+
+    $("#input-order-number").bind("input propertychange change", function() {
+      var inputOrderNumber = $("#input-order-number").val();
+      $("#input-order-number").val(inputOrderNumber.replace(/^\s*/g, ''));// 控制开始不允许输入空格)
+    })
+
+    $("#input-mpn").bind("input propertychange change", function() {
+      var inputMpn = $("#input-mpn").val();
+      $("#input-mpn").val(inputMpn.replace(/^\s*/g, '')); // 控制开始不允许输入空格)
+    })
+
+    $("#input-item-code").bind("input propertychange change", function() {
+      var inputItemCode = $("#input-item-code").val();
+      $("#input-item-code").val(inputItemCode.replace(/^\s*/g, '')); // 控制开始不允许输入空格)
+    })
+
+  });
+
+  let inputNames = ['filter_order_number', 'filter_mpn', 'filter_item_code'];
+  for (let i = 0; i < inputNames.length; i++) {
+    let inputObj = $('input[name="' + inputNames[i] + '"]');
+    inputObj.autocomplete({
+      'source': function (request, response) {
+        let data = {};
+        for (i in inputNames) {
+            data[inputNames[i]] = $('input[name="' + inputNames[i] + '"]').val();
+        }
+        data['checkColumn'] = inputObj.attr('name');
+       if(inputObj.val()){
+         $.ajax({
+           method: 'POST',
+           url: '{{ url("account/print_product_labels/autocomplete") }}',
+           data: data,
+           dataType: 'json',
+           success: function (data) {
+             response($.map(data, function (item) {
+               return {
+                 value: item,
+                 label: item
+               }
+             }));
+           }
+         });
+        $(this).parent().find('.dropdown-menu').addClass('dropdown-menu-high')}
+       else {
+         $(this).parent().find('.dropdown-menu').hide();
+       }
+
+      },
+      'select': function (item) {
+        inputObj.val(item['label']);
+      }
+    });
+  }
+
+</script>
+
+
+
+
+

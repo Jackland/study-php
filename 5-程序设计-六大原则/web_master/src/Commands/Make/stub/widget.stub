@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Widgets{{namespace}};
+
+use Framework\Widget\Widget;
+
+class {{className}} extends Widget
+{{{attributes}}
+    /**
+     * @inheritDoc
+     */
+    public function run()
+    {
+        return {{returnResult}};
+    }
+}

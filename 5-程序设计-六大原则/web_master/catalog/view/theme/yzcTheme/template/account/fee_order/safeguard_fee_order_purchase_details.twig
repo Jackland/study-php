@@ -1,0 +1,167 @@
+<style>
+  .fee-order-purchase-details .width-200{
+    width: 200px;
+  }
+  .fee-order-purchase-details .width-220{
+    width: 220px;
+  }
+  .fee-order-purchase-details .width-140{
+    width: 140px;
+  }
+  .fee-order-purchase-details .item-code-text{
+    display: flex;
+    align-items: center;
+  }
+  .fee-order-purchase-details .oris-modal{
+    width: 1000px;
+  }
+  .fee-order-purchase-details .item-code-text span,.seller-text,.purchase-text span{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    max-width: 120px;
+  }
+  .fee-order-purchase-details .purchase-text{
+    display: flex;
+    align-items: center;
+  }
+  .fee-order-purchase-details .purchase-text a{
+    margin-left: 4px;
+  }
+  .fee-order-purchase-details .item-code-text img{
+    margin-left: 2px;
+  }
+  .fee-order-purchase-details .qty{
+    color: #333;
+  }
+  .fee-order-purchase-details table{
+    margin: 10px 0;
+  }
+  .fee-order-purchase-details .modal-body{
+    max-height: 800px;
+    overflow: auto;
+  }
+  .fee-order-purchase-details .item-code-text , .qty , .purchase-text{
+    margin-bottom: 0;
+  }
+  .fee-order-purchase-details .oris-tooltip~.tooltip .tooltip-inner {
+    min-width: 280px;
+  }
+
+</style>
+<div class="modal fade fee-order-purchase-details" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="feeOrderPurchaseDetails" data-backdrop="static">
+  <div class="modal-dialog modal-lg oris-modal" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          <i class="giga icon-V10_danchuangguanbi close-icon"></i>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Purchase details</h4>
+      </div>
+      <div class="modal-body">
+        <div>
+          <table class="oris-table border-table ">
+            <thead>
+              <tr>
+                <th class="text-left width-200">Item Code / QTY</th>
+                <th class="text-left width-200">Seller</th>
+                <th class="width-140">Related Purchase Order</th>
+                <th class="text-right width-200">Item Costs</th>
+                <th class="text-right width-220">Fulfillment Fee <br> {{ is_europe ? '(Additional Shipping Fee Incl.)' : '' }}</th>
+                <th class="text-right width-200">Total Purchase <br> Amount</th>
+              </tr>
+            </thead>
+            <tbody id="detailInfo">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  //采购明细弹窗
+  $('body').on("click",'.open-purchase-details',function () {
+    let parmarsText=$(this).attr('data-parmarstext');
+    let orderId=$(this).attr('data-orderid');
+    let url = "{{ url('account/fee_order/fee_order/getSafeguardFeeOrderPurchaseDetailData') }}";
+    url += `&${parmarsText}=${orderId}`;
+    $("#detailInfo").html("");
+    $.ajax({
+      url: `${url}`,
+      type: 'get',
+      beforeSend: function() {
+        block.blockUI();
+      },
+      complete: function() {
+        block.unBlockUI();
+      },
+      success: function(res) {
+        let letDom='';
+        if(res.purchase_list){
+          res.purchase_list.forEach(item=>{
+            let tagDom='';
+            if(item.tags){
+              item.tags.forEach(e=>{
+                tagDom+=`${e}`;
+              });
+            }
+            letDom+=`
+               <tr>
+                  <td class="text-left">
+                    <p class="item-code-text">
+                      <a
+                        target="_blank"
+                        href="{{ url('product/product')}}&product_id=${item.product_id}"
+                        class="link-color my-break-all"
+                        title="${item.item_code}">
+                        ${item.item_code}
+                      </a>
+                      ${tagDom}
+                    </p>
+                    <p class="qty">x${item.qty}</p>
+                  </td>
+                  <td class="text-left">
+                    <span class="seller-text" title="JinTangLi Store">${item.seller_name}</span>
+                  </td>
+                  <td>
+                   <p class='purchase-text'>
+                      <span>
+                        <a
+                          target="_blank"
+                          title="${item.order_id}"
+                          href="{{ url('account/order/purchaseOrderInfo')}}&order_id=${item.order_id}"
+                          class="link-color my-break-all">
+                          ${ item.order_id }
+                        </a>
+                      </span>
+                      ${item.transaction_type}
+                   </p>
+                  </td>
+                  <td class="text-right">
+                    <span>${item.price_str}</span>
+                  </td>
+                  <td class="text-right">
+                    <span>${item.freight_str}</span>
+                  </td>
+                  <td class="text-right">
+                    <span>${item.total_amount_str}</span>
+                  </td>
+                </tr>
+            `
+          })
+        }
+        $("#detailInfo").html(letDom);
+        $("#feeOrderPurchaseDetails").modal('show');
+        setTimeout(()=>{
+          $('.oris-tooltip').tooltip();
+        },200)
+
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  })
+</script>

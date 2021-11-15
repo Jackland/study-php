@@ -1,0 +1,301 @@
+{% trans_default_category 'catalog/view/customerpartner/warehouse/inventory' %}
+{{ header }}
+{{ separate_column_left }}
+{{ jsOrigin(['catalog/view/javascript/datetimepicker/bootstrap-datetimepicker.min.js']) }}
+{{ cssOrigin(['catalog/view/javascript/datetimepicker/css/bootstrap-datetimepicker.min.css']) }}
+<link href="/catalog/view/theme/yzcTheme/stylesheet/customerpartner/warehouse/inout_inventory.css" rel="stylesheet" type="text/css" />
+{{ css(['css/common/common.css']) }}
+<link rel="stylesheet" href="/catalog/view/javascript/bootstrap-table/bootstrap-table.min.css">
+<script src="/catalog/view/javascript/bootstrap-table/bootstrap-table.min.js"></script>
+<div class="container-fluid" id="content" style="margin-left: 235px;">
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+    <h1>{{ __('入出库查询') }}</h1>
+    <div class="inout-inventory-box box-shadow" id="content" style="margin-right: 0;padding-bottom: 20px">
+
+        {#   查询条件   #}
+        <div class="search-info padding19">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="control-label" for="itemCode">{{ __('Item Code/MPN') }}</label>
+                        <input type="text" class="form-control" placeholder="Item Code/MPN" id="itemCode" maxlength="64">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="remark" style="height: 20px;">{{ __('备注') }}
+                            <i class="giga icon-help-inactive" data-toggle="tooltip" html="true" title="<div style='min-width:300px;'>{{ __('入库单号/采购订单号/库存调整批次号/RMA ID') }}</div>"></i>
+                        </label>
+                        <input type="text" class="form-control" id="remark" maxlength="30">
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="control-label" for="">{{ __('入库/出库') }}</label>
+                        <select name="" id="inOut" class="form-control" onchange="getInventoryType(this.value);">
+                            <option value="">{{ __('所有') }}</option>
+                            {% for item in inoutInventoryCates %}
+                                <option value="{{ item.value }}">{{ item.key }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="">{{ __('生成日期') }}</label>
+                        <div style="display: flex">
+                            <div class="input-group datetime col-sm-6" id="datetimepicker1">
+                                <input type="text" name="startTime" class="form-control date_from" placeholder="{{ __('选择日期') }}" id="startTime"
+                                style="border-bottom-right-radius: 0!important;border-top-right-radius: 0!important;">
+                                <span class="input-group-addon "><i class="fa fa-calendar"></i></span>
+                            </div>
+                            <div class="input-group datetime col-sm-6" id="datetimepicker1">
+                                <input type="text" name="endTime" class="form-control date_to" placeholder="{{ __('选择日期') }}" id="endTime"
+                                style="border-bottom-right-radius: 0!important;border-top-right-radius: 0!important;">
+                                <span class="input-group-addon "><i class="fa fa-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="control-label" for="">{{ __('类型') }}</label>
+                        <select name="type" id="type" class="form-control">
+                            <option value="">{{ __('所有') }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div style="margin-top: 25px">
+                            <button type="button" onclick="resetForm();return false;"
+                                    class="btn btn-default pull-right inout-filter-btn" data-toggle="tooltip"
+                                    title="{{ __('重置') }}" >
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                            <button type="button" onclick="downloadProductInformation();return false;"
+                                    class="btn btn-default pull-right inout-filter-btn" data-toggle="tooltip" title="{{ __('下载') }}" style="margin-right:10px;padding: 8px 0;">
+                                <i class="giga icon-xiazai"></i>
+                            </button>
+
+                            <button type="button" onclick="filter();return false;" class="btn btn-primary pull-right" style="margin-right:10px;height: 40px;"
+                            >{{ __('筛选') }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {#   表格     #}
+        <div class="table-responsive">
+            <table id="tableList" class="table table-hover table-striped" style="margin-top: 30px;border: none"></table>
+        </div>
+
+        {#    无数据    #}
+        <div id="noData" class="text-center">
+            {{ __('请输入筛选条件查询入出库记录') }}
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    var count = 0;
+    // 初始化
+    $(function () {
+        initDate();
+    });
+
+    // 日期初始化
+    function initDate() {
+        // 日期初始化
+        $('#startTime').datetimepicker({
+            format: 'yyyy-mm-dd 00:00:00',
+            minView: 2,
+            autoclose: true,
+            forceParse: true,
+        });
+        $('#endTime').datetimepicker({
+            format: 'yyyy-mm-dd 23:59:59',
+            minView: 2,
+            autoclose: true,
+            forceParse: true,
+        });
+    }
+
+    function getInventoryType(value) {
+        $('#type').html('<option value="">{{ __('所有') }}</option>');
+        if (value == '') {
+            return;
+        }
+
+        let url = "{{ url('customerpartner/warehouse/inout_inventory/getInoutInventoryType') }}";
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            data: {'inoutInventoryCate' : value},
+            success: function(json) {
+                if (json.code == 200) {
+                    let options = '';
+                    $.each(json.data, function(index,value) {
+                        options = options + '<option value="' + value.value + '">' + value.key + '</option>'
+                    })
+                    $('#type').append(options);
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    }
+
+    // 表格初始化
+    function initTable() {
+        // 初始化表格
+        $("#tableList").bootstrapTable({
+            url:'{{ url('customerpartner/warehouse/inout_inventory/getList') }}',
+            sidePagination: "server",
+            queryParams: function (params) {
+                let data = {};
+                data['page'] = (params['offset'] / params['limit'] + 1);
+                data['page_limit'] = params['limit'];
+                data = $.extend(data, getQueryParam());
+                return data;
+            },
+            pagination: true,
+            pageNumber: 1,
+            pageSize: 15,
+            pageList: [5, 15, 20, 50, 100],
+            formatLoadingMessage: function () {
+                return '{{ __('加载中，请稍等') }}';
+            },
+            formatNoMatches:function () {
+                return '{{ __('无数据') }}';
+            },
+            columns: [
+                {
+                    title: '{{ __('No.') }}',
+                    formatter: function (value, row, index) {
+                        return index+1;
+                    },
+                    align:'center',
+                },
+                {
+                    field: 'sku',
+                    title: '{{ __('Item Code') }}',
+                    align:'center',
+                },
+                {
+                    field: 'mpn',
+                    title: '{{ __('MPN') }}',
+                    align:'center',
+                },
+                {
+                    field: 'transaction_cate',
+                    title: '{{ __('入库/出库') }}',
+                    align:'center',
+                },
+                {
+                    field: 'transaction_type_format',
+                    title: '{{ __('类型') }}',
+                    align:'center',
+                },
+                {
+                    field: 'original_qty',
+                    title: '{{ __('数量') }}',
+                    align:'center',
+                },
+                {
+                    field: 'common_two',
+                    title: '{{ __('备注') }}',
+                    width: '200',
+                    formatter:function (value, row) {
+                        if (row.transaction_type_tag == 2) { // 出库
+                            if (row.transaction_type == 1) { // 采购订单出库 -- 展示采购订单号，跳转采购单详情
+                                let url = "{{ url('account/customerpartner/orderinfo') }}";
+                                return '<a href="' + url + '&order_id=' + row.batch_number + '" target="_blank">' + row.batch_number + '</a>';
+                            } else if (row.transaction_type == 2) { // RMA退货 -- 展示RMA ID，跳转RMA详情
+                                let url = "{{ url('account/customerpartner/rma_management/rmaInfo') }}";
+                                return '<a href="' + url + '&rmaId=' + row.rma_id + '" target="_blank">' + value + '</a>';
+                            }
+                        } else { // 入库
+                            if (row.transaction_type == 1) { // 入库单收货 -- 展示入库单号，跳转入库单详情
+                                let url = "{{ url('customerpartner/warehouse/receipt/view') }}";
+                                return '<a href="' + url + '&receive_order_id=' + row.batch_number + '" target="_blank">' + row.common_one + '</a>';
+                            } else if (row.transaction_type == 5) { // RMA退货 -- 展示RMA ID，跳转RMA详情
+                                let url = "{{ url('account/customerpartner/rma_management/rmaInfo') }}";
+                                return '<a href="' + url + '&rmaId=' + row.rma_id + '" target="_blank">' + row.common_one + '</a>';
+                            }
+                        }
+                        if(value!=null){
+                            return `<div class="overflow-text" title="${value}" data-toggle="tooltip" data-html="true">${value}</div>`;
+                        }else{
+                            return  ''
+                        }
+
+                    },
+                    align:'center',
+                },
+                {
+                    field: 'create_time_format',
+                    title: '{{ __('生成日期') }}',
+                    align:'center',
+                },
+            ]
+        })
+    }
+
+    // 查询
+    function filter() {
+        if(count==0){
+            $("#noData").hide();
+            initTable();
+        }else{
+            $("#tableList").bootstrapTable('refresh', {pageNumber: 1});
+        }
+
+        count++;
+    }
+
+    // 获取表单
+    function getQueryParam() {
+        let data = {
+            filter_sku: $("#itemCode").val().trim(),
+            filter_cate:$("#inOut").val(),
+            filter_type:$("#type").val(),
+            filter_remark: $("#remark").val(),
+            filter_create_start_date:$("#startTime").val(),
+            filter_create_end_date:$("#endTime").val()
+        };
+        return data;
+    }
+
+    // 下载
+    function downloadProductInformation() {
+        var filter_sku = $("#itemCode").val().trim();
+        var filter_cate = $("#inOut").val();
+        var filter_type = $("#type").val();
+        var filter_remark =  $("#remark").val();
+        var filter_create_start_date = $("#startTime").val();
+        var filter_create_end_date = $("#endTime").val();
+
+        var url = "{{ url('customerpartner/warehouse/inout_inventory/downloadData') }}" + '&filter_sku=' + filter_sku + '&filter_cate=' + filter_cate + '&filter_type=' + filter_type + '&filter_remark=' + filter_remark + '&filter_create_start_date=' + filter_create_start_date + '&filter_create_end_date=' + filter_create_end_date;
+        window.location = url;
+    };
+
+    // 重置表单
+    function resetForm() {
+        $("#itemCode").val('');
+        $("#inOut").val('');
+        $("#type").val('');
+        $("#remark").val('');
+        $("#startTime").val('');
+        $("#endTime").val('');
+        // type类型下拉清空，保留All
+        $('#type').html('<option value="">{{ __('所有') }}</option>');
+
+        filter();
+    }
+</script>
+{{ footer }}

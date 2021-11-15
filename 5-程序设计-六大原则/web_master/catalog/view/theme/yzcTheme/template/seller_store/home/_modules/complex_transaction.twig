@@ -1,0 +1,106 @@
+{# 模板：复杂交易 ------Start #}
+<section class="complex-module m20-b" id="module{{mIndex}}">
+  {% if module.data.title_show %}
+  <div class="common-title">Complex Transaction</div>
+  {% endif %}
+  {% set complexData = [] %}
+  {% if module.data.rebate.products|length > 0 %}
+  {% set complexData = complexData|merge([{'type':'rebate', 'products': module.data.rebate.products}]) %}
+  {% endif %}
+  {% if module.data.margin.products|length > 0 %}
+  {% set complexData = complexData|merge([{'type':'margin', 'products': module.data.margin.products}]) %}
+  {% endif %}
+  {% if module.data.future.products|length > 0 %}
+  {% set complexData = complexData|merge([{'type':'future', 'products': module.data.future.products}]) %}
+  {% endif %}
+  <div class="w1200 m20-t">
+    <div class="store-tabs">
+      {% for tIndex, tab in complexData %}
+        <div class="one-tab action-tab {% if tIndex == 0 %} active{% endif %}" data-mIndex="{{tIndex}}">
+          {% if tab.type == 'rebate' %}
+          Rebates
+          {% elseif tab.type == 'margin' %}
+          Margin
+          {% elseif tab.type == 'future' %}
+          Futures
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    <div>
+      {% for ctIndex, item in complexData %}
+      <div class="tab{{ctIndex}} {% if ctIndex==tIndex %} module-flex {% else %} none{% endif %}">
+        {% for ctItem in item.products %}
+          <div class="complex-item">
+            <div class="left-image">
+              <div class="scale-range">
+                <a href="{{ url('product/product',{'product_id': ctItem.id}) }}" target="_blank">
+                  <img class="scale" src="{{ ctItem.image }}" title="{{ctItem.name}}">
+                </a>
+              </div>
+              {% if ctItem.discount is not null %}
+                <div class="percent-tag">
+                  <span class="text-small p6-l">UP TO</span>
+                  <div class="percent-content">
+                    <text class="percent-num font-number">{{ctItem.discount}}</text>
+                    <text class=percent-desc>
+                      <span class="font-number module-largef">%</span>
+                      <span class="percent-off text-bold">Back</span>
+                    </text>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+            <div class="right-content">
+              {% if ctItem.name is not null %}
+                <div class="module-line2 text-bold m10-b">
+                  <a class="title-link" href="{{ url('product/product',{'product_id': ctItem.id}) }}" target="_blank" title="{{ ctItem.name }}">
+                    {{ ctItem.name }}
+                  </a>
+                </div>
+              {% endif %}
+              {% if ctItem.item_code is not null %}
+                <div class="text-small break-all pos-top-img">Item Code:&nbsp;{{ ctItem.item_code }}{{ ctItem.tags }}</div>
+              {% endif %}
+              {% if ctItem.price is not null or ctItem.qty is not null %}
+                <div class="m14-b">
+                  {% if ctItem.price is not null %}
+                    <div class="text-small p3-t">Price:&nbsp;<span class="text-bold">{{ ctItem.price }}</span><span class="module-grey p2-l">/Unit</span></div>
+                  {% endif %}
+                  {% if ctItem.qty is not null %}
+                    <div>Qty Available:&nbsp;{{ ctItem.qty }}</div>
+                  {% endif %}
+                </div>
+              {% endif  %}
+              {# Futures 到货日期显示 #}
+              {% if ctItem.delivery_date is not null %}
+                <div class="text-small text-bold">Delivery Date:</div>
+                <div class="p4-tb">
+                  <span class="complex-date">{{ ctItem.delivery_date }}</span>
+                </div>
+              {% endif %}
+              {% if ctItem.template_price is not null %}
+                <div class="text-small text-bold">contract price:</div>
+                <div class="p4-tb"><span class="price">{{ ctItem.template_price }}</span><span class="module-grey p2-l">/Unit</span></div>
+              {% endif %}
+              {% if ctItem.template_qty is not null and ctItem.day is not null %}
+                <div>{{ctItem.template_qty}}&nbsp;PCS&nbsp;
+                  {% if item.type == 'rebate' %}
+                  <span>in&nbsp;{{ctItem.day}}&nbsp;Days</span>
+                  {% endif %}
+                </div>
+              {% elseif ctItem.min_num is not null and ctItem.max_num is not null %}
+                <div>{{ctItem.min_num}}-{{ctItem.max_num}}&nbsp;PCS</div>
+              {% endif %}
+              {% if ctItem.buy_now %}
+                <a class="btn-buy m10-t" href="{{ url('product/product',{'product_id': ctItem.id}) }}" target="_blank">BUY NOW</a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{# 模板：复杂交易 ------End #}

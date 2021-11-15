@@ -1,0 +1,790 @@
+{{ css([
+    'css/common/common.css',
+    'css/common/common-ext.css',
+    'static/message/message-common.css',
+    'static/customerpartner/message_center/my-message-common.css',
+]) }}
+
+<link rel="stylesheet" type="text/css" href="catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css">
+<link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css">
+<script type="text/javascript" src="/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+
+<style>
+    .mymessage-buyer__contact-nav {
+        margin-top: -14px;
+    }
+
+    .mymessage-buyer__contact-btn {
+        float: right;
+    }
+
+    .mymessage-buyer__contact-btn a {
+        color: #fff;
+    }
+
+    #page-notice .group-receive:hover {
+        cursor: pointer;
+    }
+</style>
+
+<div id="page-inbox" class="msgcent-mymessage">
+    {# 搜索框部分 #}
+    <div>
+        <div class="oris-row msgb-search-row">
+            <div class="oris-col-3 mymessage-col">
+                <label class="control-label mymessage-label" for="input-name">Subject</label>
+                <input type="text" name="subject" value="{{ search.filter_subject }}" placeholder="Enter subject" id="filter_subject" class="oris-input"/>
+            </div>
+
+            {# 发件人/收件人搜索 #}
+            {% if tab_type=='inbox' %}
+                <div class="oris-col-3 mymessage-col">
+                    <label class="control-label mymessage-label" for="input-sender">Sender</label>
+                    <input type="text" placeholder="Enter sender name" value="{{ search.filter_sender }}" id="filter_sender" class="oris-input" autocomplete="off"/>
+                </div>
+            {% else %}
+                <div class="oris-col-3 mymessage-col">
+                    <label class="control-label mymessage-label" for="input-recipient">Recipient</label>
+                    <input type="text" placeholder="Enter recipient name" value="{{ search.filter_receiver }}" id="filter_receiver" class="oris-input" autocomplete="off"/>
+                </div>
+            {% endif %}
+
+            <div class="oris-col-3 mymessage-col">
+              <label class="msgcent mymessage-label">Post Time</label>
+              <div class="oris-ingroup action-clear">
+                <input type="text" name="creation_time" readonly class="oris-input" id="creation_time"
+                      placeholder="From ~ To"/>
+                <i class="giga icon-v10quxiao-01 oris-clear" data-action-range="1"></i>
+              </div>
+            </div>
+
+            {% if(tab_type=='inbox') %}
+                <div class="oris-col-3 mymessage-col oris-select">
+                    <label class="control-label mymessage-label">Status</label>
+                    <select name="filter_status" id="filter_status" data-dropup-auto=false>
+                        <option value="">All</option>
+                        <option value="1" {% if '1' == search.filter_read_status %}selected{% endif %}> Read</option>
+                        <option value="0" {% if '0' == search.filter_read_status %}selected{% endif %}> Unread</option>
+                        <option value="5" {% if '5' == search.filter_replied_status %}selected{% endif %}>Not Replied</option>
+                        <option value="6" {% if '6' == search.filter_replied_status %}selected{% endif %}>Replied</option>
+                        <option value="7" {% if '7' == search.filter_replied_status %}selected{% endif %}>Ignore</option>
+                    </select>
+                </div>
+            {% endif %}
+
+            <div class="oris-col-3 mymessage-col oris-select">
+                <label class="control-label mymessage-label">Marked</label>
+                <select name="marked" id="marked" class="selectpicker"  {{ search.filter_mark_status }} data-dropup-auto=false>
+                    <option value="">All</option>
+                    <option value="1" {% if '1' == search.filter_mark_status %}selected{% endif %}>
+                        <span class="fa fa-star-o" style="color: yellow"></span> Marked
+                    </option>
+                    <option value="0" {% if '0' == search.filter_mark_status %}selected{% endif %}>
+                        <span class="fa fa-star"></span> Unmarked
+                    </option>
+                </select>
+            </div>
+
+            <div class="oris-col-3 mymessage-col search-btn">
+                <button class="oris-button mymessage-a-btn oris-button-bigger width80" onclick="filter('{{ tab_type }}');" style="margin-top:24px">
+                    <a data-toggle="tooltip" id="quote_filter_btn">Filter</a>
+                </button>
+                <button type="button" onclick="reset('{{ tab_type }}')" class="oris-button oris-button-default oris-button-bigger msg-w80">Reset</button>
+            </div>
+        </div>
+
+        <div class="oris-row msgcent msg-markas__row mymessage-markas__row">
+            <button disabled class="oris-button oirs-button-default msgcent msg-search__btn" onclick="confirm_multiple(true);return false;">Delete</button>
+            <div class="oris-select msgcent msg-markas__select">
+                <select disabled name="action_setup" id="action_setup" class="selectpicker" title="Mark As" style="display: inline-flex" onchange="confirm_multiple()">
+                    {% if(tab_type=='inbox') %}
+                        <option value="1" data-cnzz-event-extra="Message Center|MS_fromseller_setup_type|Unread">Unread</option>
+                        <option value="2" data-cnzz-event-extra="Message Center|MS_fromseller_setup_type|Read"> Read</option>
+                    {% endif %}
+                    <option value="3" data-cnzz-event-extra="Message Center|MS_fromseller_setup_type|Unmarked">Unmarked</option>
+                    <option value="4" data-cnzz-event-extra="Message Center|MS_fromseller_setup_type|Marked"> Marked </option>
+                    {% if(tab_type=='inbox') %}
+                        <option value="5" data-cnzz-event-extra="Message Center|MS_fromseller_setup_type|Not Replied">Not Replied</option>
+                        <option value="6" data-cnzz-event-extra="Message Center|MS_fromseller_setup_type|Replied">Replied</option>
+                        <option value="7" data-cnzz-event-extra="Message Center|MS_fromseller_setup_type|Ignore">Ignore</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+
+    </div>
+    <form  method="post" enctype="multipart/form-data" id="form-message" class="form-horizontal" style="margin-top: 20px">
+        <div class="table-responsive msgcent msg-table__container" id="input">
+            <table class="table-hover oris-table oris-table-minicheck">
+                <thead>
+                <tr>
+                    <th class="text-left oris-w42">
+                        <input type="checkbox" style="margin: 0px;" name="all_select" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);"/>
+                    </th>
+                    <th class="msg-w24"></th>
+                    <th class="text-left" style="word-break: break-all">Subject</th>
+                    {% if(tab_type=='inbox') %}
+                        <th class="text-left" style="width: 160px">Sender</th>
+                    {% else %}
+                        <th class="text-left" style="width: 160px">Recipient</th>
+                    {% endif %}
+                    {% if(tab_type=='inbox') %}
+                        <th class="text-left" style="width: 110px">Status</th>
+                    {% else %}
+                        <th class="text-left" style="width: 120px">Type</th>
+                    {% endif %}
+                    <th class="text-center" style="width: 64px">Marked</th>
+                    <th class="text-left" style="width:160px;">Post Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if list %}
+                    {% for message in list %}
+                        <tr class="{{ message.replied_status == 1 ? ' msg-table__row-replied ' : '' }} {{ message.is_read == 1 or tab_type != 'inbox' ? '' : ' msg-table__row-unanswered ' }}">
+                            <td class="text-left oris-w42">
+                                <input type="checkbox" name="selected[]" style="margin: 0" onclick="inputChecked()" value="{{ message.id }}"/>
+                            </td>
+                            <td class="msg-w24">
+                                {% if message.replied_status == 1 %}
+                                    <i class="giga icon-huifu-01 msg-replyicon"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-left" title="{{ message.subject }}">
+
+                                <a href="{{ url('account/message_center/message/detail', {msg_id: message.msg_id}) }}"
+                                   data-cnzz-event="Message Center|MS_fromseller_viewdetail">
+                                    {# {% if tab_type=='inbox' %}
+                                        {% if message.is_read %}
+                                            <i class="gcl gclxinfengxinjian" style="color: #ddd"></i>
+                                        {% else %}
+                                            <i class="gcl gclxinfeng" style="color: red;"></i>
+                                        {% endif %}
+                                    {% endif %} #}
+                                    <span class="msg-subject-tdspan msg-clickable" title="{{ message.subject }}">{{ message.subject }}</span>
+                                </a>
+                            </td>
+
+                            <td class="text-left" style="width: 160px">
+                                {% if tab_type=='inbox' %}
+                                    {% if message.sender_id > 0 %}
+                                        <span class="user_portrait msg-subject-tdspan" data-user_customer_id="{{ message.sender_id }}">{{ message.sender }}</span>
+                                    {% else %}
+                                        <span class="msg-subject-tdspan">{{ message.sender }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    {% if message.msg_mode == 2 %}
+                                        <a class="group-receive" onclick="openPostingDialog({{ message.msg_id }})">
+                                            <span class="msg-subject-tdspan msg-clickable">{{ message.recipient }}</span>
+                                        </a>
+                                    {% else %}
+                                        <span class="user_portrait msg-subject-tdspan" data-user_customer_id="{{ message.receiver_id }}">{{ message.recipient }}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            {% if(tab_type=='inbox') %}
+                                <td class="text-left" style="width: 110px"><div class="msg-state__cell"><div class="msgcent msg-state__icon"></div>{{ message.replied_status_name }}</div></td>
+                            {% else %}
+                                <td class="text-left" style="width: 110px"><div class="msg-state__cell">{{ message.msg_mode_name }}</div></td>
+                            {% endif %}
+                            <td class="text-center">
+                                <a onclick="marked(this, {{ message.id }})" style="color: #888"
+                                        {% if message.is_marked %}
+                                            data-cnzz-event="Message Center|MS_fromseller_unmarked"
+                                        {% else %}
+                                            data-cnzz-event="Message Center|MS_fromseller_marked"
+                                        {% endif %}
+                                >
+                                    {% if message.is_marked %}
+                                        <i class="fa fa-star msg-markicon__active" id="marked_{{ message.id }}" data="{{ message.is_marked }}"></i>
+                                    {% else %}
+                                        <i class="fa fa-star-o msg-markicon__default" id="marked_{{ message.id }}" data="{{ message.is_marked }}"></i>
+                                    {% endif %}
+                                </a>
+                            </td>
+                            <td class="text-left" style="width:160px;">{{ message.post_time }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                  </tbody>
+                </table>
+                <div class="msg-empty">
+                  <div class="msg-empty-container">
+                    <div class="msg-empty-icon">
+                      <img src="{{ asset("image/icons/empty.png") }}"></img>
+                    </div>
+                    <div class="msg-empty-title">No Records Found !</div>
+                  </div>
+                </div>
+                {% endif %}
+        </div>
+    </form>
+    <div class="oris-row oris-pagination">
+        <ul id="bos_pagination"></ul>
+    </div>
+</div>
+
+
+<script src="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js"></script>
+
+<script type="text/javascript">
+    const dateRangeto = ' ~ ';
+
+    $(function() {
+        //初始化select控件
+        $('#filter_status').selectpicker();
+        $('#marked').selectpicker();
+        $('#action_setup').selectpicker();
+
+        initTimePicker();
+        orisComponents.initClearInputIcon();
+        orisComponents.clearInputIcon();
+    })
+
+    // 勾选框控制按钮是否禁用
+    $("#page-inbox input[name='selected[]'] ,#page-inbox input[name='all_select']").on('change', function() {
+      var length = $("#page-inbox input[name='selected[]']:checked").length;
+      if(length <= 0) {
+        $(".msg-markas__row button").attr('disabled', true);
+        $(".msg-markas__row select").attr('disabled', true);
+      } else {
+        $(".msg-markas__row button").removeAttr('disabled')
+        $(".msg-markas__row select").removeAttr('disabled')
+      }
+      $("#action_setup").selectpicker('refresh');
+    });
+
+    //初始化日期选择控件
+    var startDate = moment().subtract(1, 'y').format('YYYY-MM-DD');
+    var endDate = moment().format('YYYY-MM-DD');
+    function initTimePicker() {
+      var searchStartDateFrom = "{{ search.filter_post_time_from }}";
+      var searchStartDateTo = "{{ search.filter_post_time_to }}";
+
+      if (searchStartDateFrom && searchStartDateTo) {
+        startDate = searchStartDateFrom.substr(0, 10);
+        endDate = searchStartDateTo.substr(0, 10);
+        // 初始化数据
+        $('#creation_time').val(startDate + dateRangeto + endDate);
+      }
+      $('#creation_time').daterangepicker({
+        separator: dateRangeto,
+        startDate: startDate,
+        endDate: endDate,
+        format: 'YYYY-MM-DD'
+      }, function (start, end, label) {
+        orisComponents.triggerInputClear($('#creation_time'));
+      });
+    }
+
+    function reset(types) {
+        {# let url = "{{ url('account/message_center/seller/list') }}&tab_type=" + types;
+        block.blockUI();
+        $("#tab-content").load(url, function() {
+            block.unBlockUI();
+        })
+        window.location.reload(); #}
+        reloadPage(types, '')
+    }
+
+    function filter(types, page, page_info) {
+        var subject = encodeURIComponent($("#filter_subject").val().trim());
+
+        let dateArr = $('#creation_time').val().split(dateRangeto);
+        let post_date_from = dateArr[0] ? encodeURIComponent(dateArr[0] + ' 00:00:00') : '';
+        let post_date_to = dateArr[1] ? encodeURIComponent(dateArr[1] + ' 23:59:59') : '';
+        var status = $("#filter_status").val();
+        var marked = $("#marked").val();
+
+        // var url = "{{ url('account/message_center/seller/list') }}&tab_type=" + types;
+        let url = '';
+        if (subject) {
+            url += "&filter_subject=" + subject;
+        }
+        if (types === 'inbox') {
+            var sender = encodeURIComponent($("#filter_sender").val().trim());
+            if (sender != '' && sender != undefined) {
+                url += "&filter_sender=" + sender;
+            }
+        }
+
+        if (types === 'sent') {
+            var receiver = encodeURIComponent($("#filter_receiver").val().trim());
+            if (receiver != '' && receiver != undefined) {
+                url += "&filter_receiver=" + receiver;
+            }
+        }
+
+        if (post_date_from) {
+            url += "&filter_post_time_from=" + post_date_from;
+        }
+        if (post_date_to) {
+            url += "&filter_post_time_to=" + post_date_to;
+        }
+        if (status != '' && status != undefined) {
+            if (status > 1) {
+                url += "&filter_replied_status=" + status;
+            } else {
+                url += "&filter_read_status=" + status;
+            }
+        }
+        if (marked != '' && marked != undefined) {
+            url += "&filter_mark_status=" + marked;
+        }
+        if (page) {
+            url += "&page=" + page;
+        }
+
+        if (page_info) {
+            for (let i in page_info) {
+                url += '&' + i + '=' + page_info[i];
+            }
+        }
+
+        reloadPage(types, url);
+    }
+
+    /* function tab_toggle(type) {
+        block.blockUI();
+        window.location = "{{ url('account/message_center/seller/list') }}&tab_type=" + type;
+        {# $("#tab-content").load("{{ url('account/message_center/seller/list') }}&tab_type=" + type, function() {
+            block.unBlockUI();
+        }) #}
+    } */
+
+    //分页
+    $('#bos_pagination').bootstrapPaginator({
+        /*当前使用的是3版本的bootstrap*/
+        bootstrapMajorVersion: 3,
+        /*配置的字体大小是小号*/
+        size: 'normal',
+        /*当前页*/
+        currentPage: {{ paginator.getPage() }},
+        /*一共多少页*/
+        totalPages: {{ max(paginator.getPageCount(), 1) }},
+        /*页面上最多显示几个含数字的分页按钮*/
+        numberOfPages: 5,
+        pageRange: [10, 20, 30, 50, 100],
+        total: {{ paginator.getTotalCount() }},
+        rowsOfPage: {{ paginator.getPageSize() }},
+        onPageClicked: function (event, originalEvent, type, page) {
+            filter('{{ tab_type }}', page, originalEvent['page_info'] || {});
+        }
+    });
+
+    $('.date').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD'
+    });
+
+    function confirm_multiple(isDel = null) {
+        var length = $("input[name='selected[]']:checked").length;
+        if (length <= 0) {
+            layer.alert('Please select at least one message.', {
+                title: 'Message',
+                btn: 'OK',
+                skin: 'oris-layer', //样式类名
+                closeBtn: 0
+            });
+            $("#action_setup").val('');
+            return false;
+        }
+
+        let eventInfo = $("#action_setup option:selected").attr('data-cnzz-event-extra');
+        let eventArr = (typeof eventInfo == "string") ? eventInfo.split('|') : [];
+        if (window.CNZZ && eventArr.length >= 2) {
+            window.CNZZ.triggerEvent(eventArr[0], eventArr[1], eventArr[2]);
+        }
+
+        var type = '{{ tab_type }}';
+        var status = $("#action_setup").val();
+
+        var ids = '';
+        $("input[name='selected[]']:checked").each(function () {
+            ids += Number($(this).val()) + ',';
+        });
+
+        if (isDel) {
+            layer.confirm("Are you sure you want to delete these messages?", {
+                    title: 'Message',
+                    skin: 'oris-layer', //样式类名
+                    btn: ['Yes', 'No']
+                }, //按钮
+                function (index) {
+                    layer.close(index);
+                    $.ajax({
+                        url: "{{ url('account/message_center/message/handleDeleted') }}",
+                        type: 'post',
+                        data: {tab_type: type, ids:ids, delete_status: 1},
+                        dataType: 'json',
+                        success: function (json) {
+                            if (json.code == 200) {
+                                $.toast({
+                                    heading: false,
+                                    text: 'Delete successfully.',
+                                    position: 'top-center',
+                                    showHideTransition: 'fade',
+                                    icon: 'success',
+                                    hideAfter: 3000,
+                                    allowToastClose: false,
+                                    loader: false,
+                                });
+                                //window.location.reload();
+                                reset('{{ tab_type }}');
+                            } else {
+                                $.toast({
+                                    heading: false,
+                                    text: 'Please try again later!',
+                                    position: 'top-center',
+                                    showHideTransition: 'fade',
+                                    icon: 'error',
+                                    hideAfter: 3000,
+                                    allowToastClose: false,
+                                    loader: false,
+                                });
+                            }
+                        }
+                    });
+                });
+        }
+
+       /* let is_all_select = $('input[name=all_select]').is(':checked') ? 1 : 0;
+        if (is_all_select) {
+            batchSetUpCurrentMsg(type, status)
+            return;
+        }*/
+
+        switch (status) {
+            case '1':
+                batchRead({tab_type: type, ids: ids, is_read: 0})
+                break;
+            case '2':
+                batchRead({tab_type: type, ids: ids, is_read: 1})
+                break;
+            case '3':
+                batchMarked({tab_type: type, ids: ids, is_marked: 0})
+                break;
+            case '4':
+                batchMarked({tab_type: type, ids: ids, is_marked: 1})
+                break;
+            case '5':
+                batchReplied({tab_type: type, ids: ids, replied_status: 0})
+                break;
+            case '6':
+                batchReplied({tab_type: type, ids: ids, replied_status: 1})
+                break;
+            case '7':
+                batchReplied({tab_type: type, ids: ids, replied_status: 2})
+                break;
+        }
+    }
+
+    function batchSetUpCurrentMsg(tab_type, setup_type, exclude_ids = '') {
+        if (setup_type == 0) {
+            return ;
+        }
+        var subject = encodeURIComponent($("#filter_subject").val());
+        let dateArr = $('#creation_time').val().split(dateRangeto);
+        let post_date_from = dateArr[0] ? encodeURIComponent(dateArr[0] + ' 00:00:00') : '';
+        let post_date_to = dateArr[1] ? encodeURIComponent(dateArr[1] + ' 23:59:59') : '';
+
+        var status = $("#filter_status").val();
+        var marked = $("#marked").val();
+
+        var url = "{{ url('account/message_center/message/handleAllData') }}";
+        if (subject) {
+            url += "&filter_subject=" + subject;
+        }
+        if (tab_type === 'inbox') {
+            var sender = $("#filter_sender").val();
+            if (sender != '' && sender != undefined) {
+                url += "&filter_sender=" + sender;
+            }
+        }
+
+        if (tab_type === 'sent') {
+            var receiver = $("#filter_receiver").val();
+            if (receiver != '' && receiver != undefined) {
+                url += "&filter_receiver=" + receiver;
+            }
+        }
+        if (post_date_from) {
+            url += "&filter_post_time_from=" + post_date_from;
+        }
+        if (post_date_to) {
+            url += "&filter_post_time_to=" + post_date_to;
+        }
+        if (status != '' && status != undefined) {
+            if (status > 1) {
+                url += "&filter_replied_status=" + status;
+            } else {
+                url += "&filter_read_status=" + status;
+            }
+        }
+        if (marked != '' && marked != undefined) {
+            url += "&filter_mark_status=" + marked;
+        }
+
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: {
+                tab_type: tab_type,
+                setup_type: setup_type,
+                exclude_ids: exclude_ids,
+                user_type: 1,
+            },
+            dataType: 'json',
+            success: function (json) {
+                if (json.code == 200) {
+                    $.toast({
+                        heading: false,
+                        text: setupSuccessMsg(setup_type),
+                        position: 'top-center',
+                        showHideTransition: 'fade',
+                        icon: 'success',
+                        hideAfter: 3000,
+                        allowToastClose: false,
+                        loader: false,
+                    });
+                    //window.location.reload();
+                    reset('{{ tab_type }}')
+                } else {
+                    $.toast({
+                        heading: false,
+                        text: 'Please try again later!',
+                        position: 'top-center',
+                        showHideTransition: 'fade',
+                        icon: 'error',
+                        hideAfter: 3000,
+                        allowToastClose: false,
+                        loader: false,
+                    });
+                }
+            }
+        });
+    }
+
+    function setupSuccessMsg(status) {
+        switch (status) {
+            case '1':
+                return 'Unread successfully';
+            case '2':
+                return 'Read successfully';
+            case '3':
+                return 'Unmarked successfully';
+            case '4':
+                return 'Marked successfully';
+            case '5':
+                return 'Not Replied successfully';
+            case '6':
+                return 'Replied successfully';
+            case '7':
+                return 'Ignore successfully';
+        }
+    }
+
+    function batchReplied(param) {
+        $.ajax({
+            url: "{{ url('account/message_center/message/handleReplied') }}",
+            type: 'post',
+            data: param,
+            dataType: 'json',
+            success: function (json) {
+                if (json.code == 200) {
+                    $.toast({
+                        heading: false,
+                        text: param.replied_status == 0 ? 'Not Replied successfully' : (param.replied_status == 1 ? 'Replied successfully' : 'Ignore successfully'),
+                        position: 'top-center',
+                        showHideTransition: 'fade',
+                        icon: 'success',
+                        hideAfter: 3000,
+                        allowToastClose: false,
+                        loader: false,
+                    });
+                    //window.location.reload();
+                    reset('{{ tab_type }}')
+                } else {
+                    $.toast({
+                        heading: false,
+                        text: 'Please try again later!',
+                        position: 'top-center',
+                        showHideTransition: 'fade',
+                        icon: 'error',
+                        hideAfter: 3000,
+                        allowToastClose: false,
+                        loader: false,
+                    });
+                }
+            }
+        });
+    }
+
+    function batchRead(param) {
+        $.ajax({
+            url: "{{ url('account/message_center/message/handleRead') }}",
+            type: 'post',
+            data: param,
+            dataType: 'json',
+            success: function (json) {
+                if (json.code == 200) {
+                    $.toast({
+                        heading: false,
+                        text: param.is_read == 1 ? 'Read successfully' : 'Unread successfully',
+                        position: 'top-center',
+                        showHideTransition: 'fade',
+                        icon: 'success',
+                        hideAfter: 3000,
+                        allowToastClose: false,
+                        loader: false,
+                    });
+                    //window.location.reload();
+                    reset('{{ tab_type }}')
+                } else {
+                    $.toast({
+                        heading: false,
+                        text: 'Please try again later!',
+                        position: 'top-center',
+                        showHideTransition: 'fade',
+                        icon: 'error',
+                        hideAfter: 3000,
+                        allowToastClose: false,
+                        loader: false,
+                    });
+                }
+            }
+        });
+    }
+
+    function batchMarked(param) {
+        $.ajax({
+            url: "{{ url('account/message_center/message/handleMarked') }}",
+            type: 'post',
+            data: param,
+            dataType: 'json',
+            success: function (json) {
+                if (json.code == 200) {
+                    $.toast({
+                        heading: false,
+                        text: param.is_marked == 1 ? 'Marked successfully' : 'Unmarked successfully',
+                        position: 'top-center',
+                        showHideTransition: 'fade',
+                        icon: 'success',
+                        hideAfter: 3000,
+                        allowToastClose: false,
+                        loader: false,
+                    });
+                    window.location = '{{ url('account/message_center/seller') }}'+'&tab_type={{ tab_type }}';
+                } else {
+                    $.toast({
+                        heading: false,
+                        text: 'Please try again later!',
+                        position: 'top-center',
+                        showHideTransition: 'fade',
+                        icon: 'error',
+                        hideAfter: 3000,
+                        allowToastClose: false,
+                        loader: false,
+                    });
+                }
+            }
+        });
+    }
+
+    function marked(domEle, message_id) {
+        var is_marked = $("#marked_" + message_id).attr('data');
+        var type = '{{ tab_type }}';
+        var param = {tab_type: type, ids: message_id, is_marked: is_marked == 0 ? 1 : 0};
+        $.ajax({
+            url: "{{ url('account/message_center/message/handleMarked') }}",
+            type: 'post',
+            data: param,
+            dataType: 'json',
+            success: function (json) {
+                if (json.code == 200) {
+                    if (0 == is_marked) {
+                        $("#marked_" + message_id).attr('data', 1).attr('class', 'fa fa-star msg-markicon__active').attr('style', 'color: #f3ab09d1');
+                        $(domEle).attr("data-cnzz-event", "Message Center|MS_fromseller_unmarked");
+                    } else {
+                        $("#marked_" + message_id).attr('data', 0).attr('class', 'fa fa-star-o msg-markicon__default').attr('style', 'color: none');
+                        $(domEle).attr("data-cnzz-event", "Message Center|MS_fromseller_marked");
+                    }
+                } else {
+                    $.toast({
+                        heading: false,
+                        text: 'Please try again later',
+                        position: 'top-center',
+                        showHideTransition: 'fade',
+                        icon: 'error',
+                        hideAfter: 3000,
+                        allowToastClose: false,
+                        loader: false,
+                    });
+                }
+            }
+        });
+    }
+
+    function inputChecked() {
+        if ($('input[name="selected[]"]').length == $('input[name="selected[]"]:checked').length) {
+            $('input[name=all_select]').prop('checked', true);
+        } else {
+            $('input[name=all_select]').prop('checked', false);
+        }
+    }
+
+    //打开群发收件人列表弹窗
+    function openPostingDialog(msgId) {
+        layer.open({
+            type: 2,
+            area: ['800px', '800px'],
+            title: 'Group Posting',
+            fixed: false,
+            skin: 'oris-layer msgcent msg-layer',
+            scrollbar: true,
+            content: '{{ url("account/message_center/seller/massReceiveList") }}&msg_id=' + msgId,
+            success: function (layero, index2) {
+                var body = layer.getChildFrame('body', index2);
+                //获取content的窗口
+                var iframeWin = layero.find('iframe')[0].contentWindow;
+
+                let pagination = body.find('#mass-receive_pagination');
+                //分页
+                pagination.bootstrapPaginator({
+                    /*当前使用的是3版本的bootstrap*/
+                    bootstrapMajorVersion: 3,
+                    /*配置的字体大小是小号*/
+                    size: 'normal',
+                    /*当前页*/
+                    currentPage: pagination.data('page'),
+                    /*一共多少页*/
+                    totalPages: pagination.data('total_pages'),
+                    /*页面上最多显示几个含数字的分页按钮*/
+                    numberOfPages: 5,
+                    pageRange: [10, 20, 30, 50, 100],
+                    total: pagination.data('total'),
+                    rowsOfPage: pagination.data('page_size'),
+                    onPageClicked: function (event, originalEvent, type, page) {
+                        let url = pagination.data('url') + '&page=' + page;
+                        let page_info = originalEvent['page_info'];
+                        if (page_info) {
+                            for (let i in page_info) {
+                                url += '&' + i + '=' + page_info[i];
+                            }
+                        }
+                        iframeWin.location.href = url;
+                    }
+                });
+
+                body.find('#mass-receive-search').on('click', function () {
+                    iframeWin.location.href = '{{ url("account/message_center/seller/massReceiveList") }}&msg_id=' + msgId + '&filter_receiver=' + encodeURIComponent(body.find('#filter-mass-receive').val());
+                })
+            }
+        });
+    }
+
+</script>

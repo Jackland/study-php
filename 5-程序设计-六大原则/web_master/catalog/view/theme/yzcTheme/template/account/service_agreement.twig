@@ -1,0 +1,81 @@
+{{ header }}
+<style>
+  .agreement{
+    border-top: 1px solid #677999;
+  }
+  .agreement h1{
+    margin: 0 auto;
+    width: 100%;
+    background-color: #fff;
+    padding: 20px 0;
+  }
+  .consent{
+    padding: 10px;
+    width: 100%;
+    background-color: #fff;
+  }
+  .consent a{
+    width: 450px;
+    height: 45px;
+    background-color: #478BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    display: block;
+    margin: 0 auto;
+    line-height: 45px;
+  }
+  .consent a:hover{
+    background-color: #225CC1;
+
+  }
+  .agreement .container{
+    /*overflow: auto;*/
+  }
+  /*.detail > p:first-child{*/
+  /*  font-size: 30px;*/
+  /*  margin-top: 30px;*/
+  /*}*/
+</style>
+<div class="bg-white agreement">
+  <h1 class="text-center">{{ heading_title }}</h1>
+  <div class="container">
+    <div class="detail">
+      {{ description |replace({'&nbsp;': ' '}) }}
+    </div>
+  </div>
+  <div class="consent text-center">
+    <a href="{{ agree_link }}"> I've read and agreed the terms and conditions of this agreement </a>
+  </div>
+</div>
+
+<style>
+
+</style>
+{{ footer }}
+<script type="text/javascript">
+  let winHeight = $(window).height();
+  let offsettop = $(".agreement").offset()['top'];
+  let btnHeight = $(".consent").outerHeight();
+  let agreementHeight = $(".agreement").height();
+  $(window).scroll(function () {
+    let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    console.log(scrollTop);
+    if (scrollTop > offsettop){
+      $('.agreement h1').css({'position': 'fixed', 'top': '0px'});
+      $('.agreement h1').css('box-shadow','0 2px 4px 0 #00000019')
+    }else{
+      $('.agreement h1').css('position','static');
+      $('.agreement h1').css('box-shadow','none')
+    }
+    if (agreementHeight - scrollTop -  btnHeight  >  winHeight ){
+      $('.consent').css({'position': 'fixed', 'bottom': '0px'});
+      $('.consent').css('box-shadow','0 -4px 4px 0 #00000019')
+    }else{
+      $('.consent').css('position','static')
+    }
+
+  })
+
+</script>
+

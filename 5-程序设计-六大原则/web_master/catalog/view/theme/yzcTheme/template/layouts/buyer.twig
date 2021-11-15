@@ -1,0 +1,62 @@
+{{ header }}
+{{ css(['css/common/common.css']) }}
+<style type="text/css">
+  .bg-grey {
+    background: #f2f2f2 !important;
+  }
+</style>
+<div class="center-module">
+  <div class="row">
+    <div class="col-md-12 mb-3">
+      {# breadcrumbs #}
+      <div class="breadcrumb-simple">
+        {% set _breadcrumbs = this.params('breadcrumbs') == 'hide' ? {} : (this.params('breadcrumbs') ?: ['home', 'current']) %}
+        {% if _breadcrumbs %}
+          {% for breadcrumb in _breadcrumbs %}
+            {% if breadcrumb == 'home' %}
+              <a href="{{ url('common/home') }}" {{ loop.last ? 'class="active"' }}>Home</a>
+            {% elseif breadcrumb == 'current' %}
+              <a href="{{ url('') }}" {{ loop.last ? 'class="active"' }}>{{ this.getTitle()?:title }}</a>
+            {% else %}
+              <a href="{{ breadcrumb.href }}" {{ loop.last ? 'class="active"' }}>{{ breadcrumb.text }}</a>
+            {% endif %}
+            {% if not loop.last %}
+              <i class="giga icon-arrow-right-copy"></i>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+      {# pageTitle，默认不开启是因为兼容已经做过的页面，需要开启使用 {{ this.params('pageTitle', {show: true}) }} #}
+      {% set _pageTitleParams = {
+        show: this.params('title'),
+        title: this.params('title') ?: (this.getTitle() ?: title),
+        buttons: [],
+        rightContent: ''
+      } %}
+      {% set _pageTitleParams = _pageTitleParams|merge(this.params('pageTitle') ?: {}) %}
+      {% if _pageTitleParams.show %}
+        <div class="title-line">
+          <div class="page-title">{{ _pageTitleParams.title }}</div>
+          <div>
+          {{ _pageTitleParams.rightContent }}
+          {% for btn in _pageTitleParams.buttons %}
+            <a href="{{ btn.href ?: 'javascript:void(0);' }}" target="{{btn.target?:''}}" id="{{btn.id}}" class="{{ btn.class ?: 'oris-button' }}">
+              {% if btn.icon %}
+                <i class="{{btn.icon}}"></i>&nbsp;
+              {% endif %}
+              {{ btn.content }}
+            </a>
+          {% endfor %}
+        </div>
+        </div>
+      {% endif %}
+      {# success 提示 #}
+      {% if success %}
+        <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}</div>
+      {% endif %}
+      {# content #}
+      {{ content }}
+    </div>
+  </div>
+</div>
+{{ footer }}

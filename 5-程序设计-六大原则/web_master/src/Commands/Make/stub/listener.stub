@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Listeners;
+
+class {{className}}
+{
+    public function handle({{eventName}} $event)
+    {
+        // 处理事件
+    }
+}

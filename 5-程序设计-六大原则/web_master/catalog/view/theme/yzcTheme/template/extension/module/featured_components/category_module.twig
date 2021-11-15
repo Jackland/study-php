@@ -1,0 +1,156 @@
+<!-- 首页分类产品模块 多个分类-->
+<div class="section-container">
+  <!--多个就循环多个section-->
+  {% for key,value in homePageOperation %}
+    {% if value.home_page_operation_valid_details[0] %}
+      <section class="m24-t">
+        <div class="section-title">
+          <h3 class="module-title text-bold"><a  target="_blank" href="{{ url('product/category',{'category_id':value.operation_id }) }}">{{ value.name }}</a> </h3>
+        </div>
+        <div class="category-container no-padding">
+          <div class="self-adaption-width no-padding h100 border-right sub-heading">
+            <div class="category-content-box bk-category no-padding h100 p20 pointer">
+              <p class="catalog-explain-left">{{ value.show_copywriter }}</p>
+              <a class="catalog-view-more" onclick="openSub('{{ value.url }}')">View More</a>
+              <div class="category-img"> 
+                {% if value.image_menu_id %}
+                  <img src="{{ menuInfo[value.image_menu_id]['list'][0]['filePath'] }}" class="img-responsive">
+                {% endif %}    
+              </div>
+            </div>
+          </div>
+          {% for k,v in value.home_page_operation_valid_details %}
+            {% if k == 0 %}
+              <div class="self-adaption-width no-padding h100 border-right main-heading">
+                <div class="category-content-box no-padding h100 p20 catalog-img-scale font-size20">
+                  <div class="category-title no-padding lingHeight20"><a onclick="openSub('{{ v.url }}')">{{ v.classify_name }}</a></div>
+                  <p class="catalog-explain">{{ v.show_copywriter }}</p>
+                  <div class="category-img-right category-img-ops">
+                    {% if v.image_menu_id %}
+                      <img src="{{ menuInfo[v.image_menu_id]['list'][0]['filePath'] }}" class="img-responsive">
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            {% if k > 0 and  (k % 2) == 1 and k < 7 %}
+              <div class="self-adaption-width no-padding h100  {{ k > 4 ? 'self-width':''}}">
+                <div class="category-content-box no-padding h100">
+                  <div class="category-item p20 catalog-img-scale font-size16">
+                    <div class="cross-heading">
+                      <div class="category-title no-padding"><a onclick="openSub('{{ v.url }}')">{{ v.classify_name }}</a></div>
+                      <div class="category-img-right img-size">
+                        {% if v.image_menu_id %}
+                        <img src="{{ menuInfo[v.image_menu_id]['list'][0]['filePath'] }}" class="img-responsive">
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  {% if value.home_page_operation_valid_details[k+1] %} 
+                    <div class="category-item p20 catalog-img-scale font-size16">
+                      <div class="cross-heading">
+                        <div class="category-title no-padding 11"><a  onclick="openSub('{{ value.home_page_operation_valid_details[k+1]["url"] }}')"
+                            >{{ value.home_page_operation_valid_details[k+1]['classify_name'] }}</a></div>
+                        <div class="category-img-right img-size">
+                          {% if value.home_page_operation_valid_details[k+1].image_menu_id %}
+                          <img src="{{ menuInfo[value.home_page_operation_valid_details[k+1].image_menu_id]['list'][0]['filePath'] }}"
+                            class="img-responsive">
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  {% endfor %}
+</div>
+<style>
+  .cross-heading{
+    height: 100%;
+    width: 100%;
+  }
+  .section-container .m24-t:first-child{
+    margin-top: 4px;
+  }
+  .section-container .m24-t{
+    margin-top: 24px;
+  }
+  .section-container{
+    margin-bottom: 12px;
+    border: 1px solid transparent;
+  }
+  .section-title{
+    margin-bottom: 10px;
+  }
+  .section-container .module-title{
+    font-size: 24px;
+  }
+  .mb20 {
+    margin-bottom: 20px;
+  }
+
+  section:nth-child(3n+1) .bk-category {
+    background-color: #C2CFE6;
+  }
+
+  section:nth-child(3n+2) .bk-category {
+    background-color: #C0DED6;
+  }
+
+  section:nth-child(3n+3) .bk-category {
+    background-color: #F1E8BF;
+  }
+
+  section:nth-child(3n+1) .catalog-view-more {
+    color: #004BD8;
+  }
+
+  section:nth-child(3n+2) .catalog-view-more {
+    color: #41A489;
+  }
+
+  section:nth-child(3n+3) .catalog-view-more {
+    color: #B87720;
+  }
+</style>
+<script type="text/javascript">
+  function openSub(url){
+    window.open(url,'_blank');
+    stopBubbling(event); //防止冒泡
+  }
+    //副标题跳转链接
+  $('.sub-heading').on('click', 'div.category-content-box', function () {
+    if ($(this).find('a').length > 0) {
+      $(this).find('a')[0].click();
+      stopBubbling(event); //防止冒泡   
+    }
+  })
+  //主标题
+  $('.main-heading').on('click', 'div.category-content-box', function () {
+    if ($(this).find('a').length > 0) {
+      $(this).find('a')[0].click();
+      stopBubbling(event); //防止冒泡   
+    }
+  })
+  //小标题
+  $('.category-item').on('click', function () {
+    if ($(this).find('a').length > 0) {
+      $(this).find('a')[0].click();
+      stopBubbling(event); //防止冒泡   
+    }
+  })
+  function stopBubbling(e) {
+    e = window.event || e;
+    if (e.stopPropagation) {
+      e.stopPropagation();      //阻止事件 冒泡传播
+    } else {
+      e.cancelBubble = true;   //ie兼容
+    }
+  }
+</script>
+{{ footer }}

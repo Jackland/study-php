@@ -1,0 +1,333 @@
+
+
+{{ header }}{{ column_left }}
+
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+				<button type="submit" form="form-payment-checkout" data-toggle="tooltip" title="{{ button_save }}"
+						class="btn btn-primary"><i class="fa fa-save"></i></button>
+				<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i
+							class="fa fa-reply"></i></a></div>
+			<h1>{{ heading_title }}</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+				<li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+
+		{% if error['error_warning']  %}
+		<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error['error_warning'] }}
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+
+		{% endif %}
+
+		{% if success %}
+		<div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+
+		{% endif %}
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+			</div>
+			<div class="panel-body">
+				<form action="{{ ACTION }}" method="post" enctype="multipart/form-data" id="form-extension" class="form-horizontal">
+
+					{% if tab_class == 'vtabs' %}<div class="col-sm-2">{% endif %}
+						<ul class="nav {{ tab_class == 'vtabs' ? 'nav nav-pills nav-stacked' : 'nav-tabs' }}">
+							{% for k,tab in tabs %}
+							<li {% if k==0 %}class="active"{% endif %}><a href="#{{ tab['id'] }}" data-toggle="tab">{{ tab['title'] }}</a>
+								{% endfor %}
+							<li><a href="#tab_more" data-toggle="tab">More Mods</a>
+						</ul>
+						{% if tab_class == 'vtabs' %}</div>{% endif %}
+
+
+
+					{% if  tab_class == 'vtabs' %}<div class="col-sm-10">{% endif %}
+						<div class="tab-content">
+
+							{% for k,tab in tabs %}
+							<div class="tab-pane {% if k==0 %}active{% endif %}" id="{{ tab['id'] }}">
+
+
+								{% for field in fields %}
+
+								{% if (field['tab'] is not defined and loop.index0==0) or (field['tab'] and field['tab'] == tab['id']) %}
+
+								<div class="form-group {% if field['required']%}required{% endif %}">
+
+									{% if field['entry']%}
+									<label class="col-sm-2 control-label"
+
+										   for="{{ field['name'] }}">
+										{% if field['tooltip'] %}<span  data-toggle="tooltip" title="" data-original-title="{{ field['tooltip'] }}">{% endif %}
+
+											{{ field['entry'] }}
+                                            {% if field['tooltip'] %}</span>{% endif %}
+									</label>
+									{% endif %}
+									<div class="col-sm-10">
+
+
+										{% if  field['type'] == 'select'  %}
+										<select name="{{ field['name'] }}" id="{{ field['name'] }}"
+
+												{% if field['multiple'] is not null%}multiple="multiple"{% endif %}
+												{% if field['size'] is not null %}size="{{ field['size'] }}"{% endif %}
+												{% if field['params'] is not null %}{{ field['params'] }}{% endif %}
+
+												{% if field['size'] is not null %} size="{{ field['size'] }}"{% endif %}
+												{% if field['params'] is not null %}{{ field['params'] }}{% endif %}
+												class="form-control">
+
+											{% for key,value in field['options'] %}
+											<option value="{{ key }}"
+
+													{% if key in field['value'] or field['value'] == key %}selected="selected"{% endif %}
+											>{{ value }}</option>
+
+											{% endfor %}
+										</select>
+
+										{% elseif field['type'] == 'radio' %}
+
+										{% for key,value in field['options'] %}
+										<input type="radio" name="{{ field['name'] }}" id="{{ field['name'] }}"
+
+											   value="{{ key }}"{% if field['value'] == key %}checked="checked"{% endif %}{% if field['params'] is not null %}{{ field['params'] }}{% endif %}
+											   class="form-control" /><label for="{{ field['name'] }}">{{ value }}</label>
+										{% endfor %}
+
+										{% elseif  field['type'] == 'text'%}
+										<input type="text" name="{{ field['name'] }}" value="{{ field['value'] }}"
+
+											   placeholder="{{ field['placeholder'] }}"
+
+											   id="{{ field['name'] }}" {% if field['size'] is not null %}size="{{ field['size'] }}" {% endif %}{% if field['params'] is not null %}{{ field['params'] }}{% endif %}
+											   class="form-control"/>
+
+										{% elseif  field['type'] == 'password'%}
+										<input type="password" name="{{ field['name'] }}" id="{{ field['name'] }}"
+
+											   value="{{ field['value'] }}" {% if field['size'] is not null %}size="{{ field['size'] }}"{% endif %}
+											   {% if field['params'] is not null %}{{ field['params'] }}{% endif %}
+											   class="form-control" />
+
+										{% elseif  field['type'] == 'checkbox'%}
+										<input type="checkbox" name="{{ field['name'] }}" id="{{ field['name'] }}"
+
+											   value="1" {% if field['value'] %}checked="checked"{% endif %} {% if field['params'] is not null %}{{ field['params'] }}{% endif %}
+											   class="form-control" />
+
+										{% elseif field['type'] == 'file' %}
+										<input type="file" name="{{ field['name'] }}" id="{{ field['name'] }}"
+
+											   value="" {% if field['size'] is not null %}size="{{ field['size'] }}"{% endif %}{% if field['params'] is not null %}{{ field['params'] }}{% endif %}
+											   class="form-control" />
+										{% elseif field['type'] == 'textarea' %}
+										<textarea name="{{ field['name'] }}" id="{{ field['name'] }}"
+												  cols="{{ field['cols'] }}"
+												  rows="{{ field['rows'] }}"
+
+												  {% if field['params'] is not null %}{{ field['params'] }}{% endif %}
+                                        class="form-control">{{ field['value'] }}</textarea>
+
+										{% elseif field['type'] == 'hidden' %}
+										<input type="hidden" id="{{ field['name'] }}" name="{{ field['name'] }}"
+											   value="{{ field['value'] }}"/>
+
+										{% elseif field['type'] == 'label' %}
+
+										<label id="{{ field['name'] }}" {% if field['params'] is not null %}{{ field['params'] }}{% endif %}
+										>{{ field['value'] }}</label>
+
+										{% elseif field['type'] == 'image' %}
+
+
+										<div class="image"
+
+
+											 style="{{ field['style'] }}" {{ field['params'] }}>
+
+											<img src="{{ field['thumb'] }}" alt="" id="thumb_{{ fname }}" /><br/>
+
+											<input type="hidden" name="{{ field['name'] }}" value="{{ field['value'] }}" id="image_{{ fname }}" />
+
+											<a onclick="image_upload('image_{{ fname }}','thumb_{{ fname }} ');">{{ field['text'] }}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a
+
+													onclick="$('#thumb_{{ fname }}').attr('src', '{{ field['no_image'] }}');
+
+															$('#image_{{ fname }}').attr('value','');">{{ text_clear }}</a>
+										</div>
+
+										{% elseif field['type'] == 'scrollbox' %}
+										<div class="well well-sm"
+
+											 style="min-height: 150px; overflow: auto;{{ field['style'] }}"
+
+											 {{ field['params'] }}>
+
+
+											{% for key,value in field['options']%}
+
+											<div>
+												<input type="checkbox" name="{{ field['name'] }}"
+
+													   value="{{ key }}" {% if key in field['value'] or field['value'] == key %} checked="checked"{% endif %}
+												/>
+												{{ value }}
+											</div>
+
+											{% endfor %}
+										</div>
+										{% endif %}
+
+
+										{% if field['help'] is not null %}
+										<span class="help-block">{{ field['help'] }}</span><br/>
+										{% endif %}
+
+										{% if field['error'] is not null %}
+										<div class="text-danger">{{ field['error'] }}</div>
+										{% endif %}
+									</div>
+								</div>
+
+								{% endif %}
+
+								{% endfor %}
+							</div>
+
+
+							{% endfor %}
+
+							<!-- Mods -->
+							<div class="tab-pane" id="tab_more">
+								<div class="row">
+
+
+									{% for product in mods %}
+									<div class="col-xs-6 col-sm-3 col-md-2">
+										<div class="thumbnail"
+											 onclick='$("#extension_id-{{ product['extension_id'] }}").modal();'
+											 data-toggle="tooltip" data-placement="bottom" title="Click to Read more...">
+											<img src="{{ product['img'] }}" alt="{{ product['title'] }}" width="100%"/>
+										</div>
+
+										<div class="modal fade" id="extension_id-{{ product['extension_id'] }}" tabindex="-1"
+											 role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+											<div class="modal-dialog" style="max-width:450px;">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal"
+																aria-label="Close"><span aria-hidden="true">&times;</span>
+														</button>
+														<h4 class="modal-title" id="myModalLabel">{{ product['title'] }}</h4>
+													</div>
+													<div class="modal-body">
+														<div role="tabpanel">
+
+															<ul class="nav nav-tabs" role="tablist">
+																<li class="active"><a
+																			href="#modal-info-{{ product['extension_id'] }}"
+																			data-toggle="tab"><i class="fa fa-info-circle"></i>
+																		Info</a></li>
+																<li>
+																	<a href="#modal-opencart-version-{{ product['extension_id'] }}"
+																	   data-toggle="tab"><i class="fa fa-check-circle"></i>
+																		OpenCart Versions</a></li>
+																<li><a href="#modal-features-{{ product['extension_id'] }}"
+																	   data-toggle="tab"><i class="fa fa-star"></i> Features</a>
+																</li>
+															</ul>
+
+															<div class="tab-content">
+																<div class="tab-pane active"
+																	 id="modal-info-{{ product['extension_id'] }}">
+																	<ul class="list-group">
+																		<li class="list-group-item">Price: <b
+																					class="pull-right">{{ product['price'] }}</b>
+																		</li>
+																		<li class="list-group-item">Date Added: <b
+																					class="pull-right">{{ product['date_added'] }}</b>
+																		</li>
+																		<li class="list-group-item">Latest Version: <b
+																					class="pull-right">{{ product['latest_version'] }}</b>
+																		</li>
+																	</ul>
+																</div>
+																<div class="tab-pane"
+																	 id="modal-opencart-version-{{ product['extension_id'] }}">
+																	<ul class="list-group">
+																		<li class="list-group-item">
+																			<div class="row">
+
+																				{% for value in product['opencart_version'] %}
+																				<div class="col-xs-6 col-sm-3 col-md-2">{{ value }}</div>
+																				{% endfor %}
+																			</div>
+																		</li>
+																	</ul>
+																</div>
+																<div class="tab-pane"
+																	 id="modal-features-{{ product['extension_id'] }}">
+																	<ul class="list-group">
+																		<li class="list-group-item">
+																			<div class="row">
+
+																				{% for value in product['features'] %}
+																				<div class="col-xs-12 col-md-12 col-sm-12">{{ value }}</div>
+																				{% endfor %}
+																			</div>
+																		</li>
+																	</ul>
+																</div>
+															</div>
+														</div>
+														<a href="{{ product['ocg_link'] }}" target="blank"
+														   class="btn btn-primary btn-submit" style="width:100%;"><i
+																	class="fa fa-external-link"></i> More info on
+															OpenCartGuru.com</a>
+														<br/><br/>
+														<a href="{{ product['oc_link'] }}" target="blank"
+														   class="btn btn-primary btn-submit" style="width:100%;"><i
+																	class="fa fa-external-link"></i> More info on
+															OpenCart.com</a>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+									{% endfor %}
+								</div>
+								<!-- End Mods -->
+							</div>
+						</div>
+
+						{% if tab_class == 'vtabs' %}</div>{% endif %}
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% if jscript is not null %}
+<script type="text/javascript"><!--
+	{{ jscript }}
+	//--></script>
+{% endif %}
+
+{{ footer }}
+

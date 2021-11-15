@@ -1,0 +1,393 @@
+<style>
+  .radio input[type="radio"],
+  .radio-inline input[type="radio"],
+  .checkbox input[type="checkbox"],
+  .checkbox-inline input[type="checkbox"] {
+    margin: -2px 4px 0 -2px;
+    vertical-align: middle;
+  }
+</style>
+<div id="box-shadow">
+  <div class="col-sm-12" style="padding: 0;margin-left: -20px">
+    <div class="panel panel-default">
+      <div class="panel-body " id="neg_radio_check">
+        {% if radio_option is defined and radio_option == 1 %}
+          <div class="radio">
+            <label>
+              <input type="radio" name="option_values" value="1" checked>
+              All the product prices are negotiable
+            </label>
+          </div>
+        {% else %}
+          <div class="radio">
+            <label>
+              <input type="radio" name="option_values" value="1">
+              All the product prices are negotiable
+            </label>
+          </div>
+        {% endif %}
+        {% if radio_option is defined and radio_option == 0 %}
+          <div class="radio">
+            <label>
+              <input type="radio" name="option_values" value="0" checked>
+              Add specific products for price negotiation
+            </label>
+          </div>
+        {% else %}
+          <div class="radio">
+            <label>
+              <input type="radio" name="option_values" value="0">
+              Add specific products for price negotiation
+            </label>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% if radio_option is defined and radio_option == 0 %}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          Upload File
+          <span
+            data-toggle="tooltip"
+            data-original-title="Upload tiered pricing list.CSV file">
+            <i class="giga icon-V10-wenhaotishi"></i>
+          </span>
+          <button id="button-upload" class="btn btn-primary" style="margin-left: 30px">
+            <i class="fa fa-upload" style="margin-right: 2px"></i>Upload File
+          </button>
+          <button id="button-upload" class="btn btn-primary" style="margin-left: 30px">
+            <a class="giga-btn" href="{{ download_template_url }}"><i class="fa fa-download"></i> Download Template </a>
+          </button>
+
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form id="neg_price_form">
+            <div class="col-sm-3">
+              <input name="filter_sku_mpn" class="form-control" type="text" placeholder="Item Code / MPN">
+            </div>
+            <div class="col-sm-3">
+              <button type="button" class="btn btn-primary" id="neg-price-filter">Filter</button>
+            </div>
+            <div class="col-sm-6 ">
+              <button
+                id="neg_add_button"
+                type="button"
+                class="btn btn-primary pull-right" title="Add" data-toggle="tooltip"
+                style="margin-left: 10px">
+                <i class="fa fa-plus"></i>
+              </button>
+              <a type="button"
+                 class="btn btn-default pull-right btn-download" title="Download" data-toggle="tooltip">
+                <i class="fa fa-download"></i>
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <table id="negotiate_price_list"></table>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  {# catalog/controller/customerpartner/spot_price/negotiated_price.php #}
+  let now_radio_option = parseInt({{ radio_option }});
+  let $table = $('#negotiate_price_list');
+  let negotiate_price_form = $('#neg_price_form');
+  let post_url = 'index.php?route=customerpartner/spot_price/negotiated_price/getList';
+  let download_url = '{{ download_url }}';
+  let price_title = 'Curt. Dropshipping Price' +
+    '<span data-toggle="tooltip" ' +
+    'data-original-title="Current price including freight.">' +
+    '<i class="giga icon-V10-wenhaotishi"></i>' +
+    '</span>';
+  let pickup_price_title = 'Current Price' +
+    '<span data-toggle="tooltip" ' +
+    'data-original-title="Current price excluding fulfillment of this product.">' +
+    '<i class="giga icon-V10-wenhaotishi"></i>' +
+    '</span>';
+  $table.bootstrapTable({
+    url: post_url,
+    queryParams: function (params) {
+      let data = {};
+      let newParams = negotiate_price_form.serializeArray();
+      data['sort'] = params['sort'];
+      data['order'] = params['order'];
+      data['page'] = (params['offset'] / params['limit'] + 1);
+      data['per_page'] = params['limit'];
+      newParams.forEach(function (val, key) {
+        data[val['name']] = val['value'];
+      });
+      return data;
+    },
+    sidePagination: "server",
+    pagination: true,
+    pageNumber: 1,
+    pageSize: 15,
+    pageList: [5, 15, 20, 50, 100],
+    columns: [
+      {
+        field: 'mpn',
+        title: 'MPN',
+        align: 'center',
+        formatter: function (value, row, index) {
+          if (row.hasOwnProperty('input')) {
+            return '<input name="input_mpn" class="form-control" value="' + row['mpn']
+              + '" type="text">'
+          }
+          return '<a target="_blank" href="index.php?route=product/product&product_id='
+            + row['product_id'] + '">'
+            + value
+            + '</a>';
+        }
+      },
+      {
+        field: 'sku',
+        title: 'Item Code',
+        align: 'center'
+      },
+      {
+        field: 'price_format',
+        title: pickup_price_title,
+        align: 'center'
+      },
+      {
+        title: 'Action',
+        align: 'center',
+        formatter: function (value, row, index) {
+          let str = '';
+          if (row.hasOwnProperty('input')) {
+            str += '<a data-index="' + index
+              + '" class="btn btn-primary btn-save" data-toggle="tooltip" title="Save"><i class="fa fa-save"></i></a>';
+          }
+          str += '<a style="margin-left: 5px" data-index="' + index
+            + '" class="btn btn-danger btn-delete" data-toggle="tooltip" title="Delete"><i class="fa fa-trash"></i></a>';
+          return str;
+        }
+      }
+    ],
+    formatNoMatches: function () {
+      return 'No records.';
+    },
+    onResetView: function () {
+      // input 框联动
+      let input_mpn = $('input[name="input_mpn"]');
+      if (input_mpn.length <= 0) return;
+      input_mpn.autocomplete({
+        'source': function (request, response) {
+          $.ajax({
+            url: 'index.php?route=customerpartner/spot_price/negotiated_price/getProducts&filter_search=' + encodeURIComponent(request),
+            dataType: 'json',
+            success: function (json) {
+              json = json['data'];
+              response($.map(json, function (item) {
+                item['label'] = item['mpn'];
+                item['value'] = item['product_id'];
+                return item;
+              }));
+            }
+          });
+        },
+        'select': function (item) {
+          input_mpn.val(item['label']);
+          let data = $table.bootstrapTable('getData')[0];
+          for (let i in data) {
+            if (item.hasOwnProperty(i)) {
+              data[i] = item[i];
+            }
+          }
+          // 联动更新
+          $table.bootstrapTable('updateRow', {index: 0, row: data});
+        }
+      });
+    }
+  });
+  // click save
+  $('body').on('click', '.btn-save', function () {
+    let dataList = $table.bootstrapTable('getData');
+    if (dataList.length <= 0 || !dataList[0].hasOwnProperty('input') || dataList[0].product_id <= 0) {
+      layer.msg('{{ error_save_error }}');
+      return false;
+    }
+    let data = dataList[0];
+    layer.load();
+    $.ajax({
+      method: 'post',
+      data: {product_id: data['product_id']},
+      url: 'index.php?route=customerpartner/spot_price/negotiated_price/store',
+      success: function (res) {
+        layer.closeAll();
+        let code = parseInt(res['code']);
+        if (code === 1) {
+          layer.msg(res.msg);
+          return;
+        }
+        layer.msg(res.msg);
+        $table.bootstrapTable('refresh', {pageNumber: 1})
+      }
+    });
+    return false;
+  });
+
+  // click delete
+  $('body').on('click', '.btn-delete', function () {
+    let index = $(this).data('index');
+    $table = $('#negotiate_price_list');
+    let dataList = $table.bootstrapTable('getData');
+    let selectData = dataList[index];
+    if (selectData.hasOwnProperty('input')) {
+      $table.bootstrapTable('remove', {
+        field: 'product_id',
+        values: [selectData['product_id']]
+      });
+      return;
+    }
+    layer.confirm('Are you sure to delete this item?',
+      {btn: ['Confirm', 'Cancel'], title: 'Message'},
+      function () {
+        layer.closeAll();
+        layer.load();
+        $.ajax({
+          method: 'post',
+          data: {product_id: selectData['product_id']},
+          url: 'index.php?route=customerpartner/spot_price/negotiated_price/delete',
+          success: function (res) {
+            layer.closeAll();
+            let code = parseInt(res['code']);
+            if (code === 1) {
+              layer.msg(res.msg);
+              return;
+            }
+            layer.msg(res.msg);
+            $table.bootstrapTable('refresh', {pageNumber: 1})
+          }
+        });
+      }
+    )
+  });
+
+  // click download
+  $('body').on('click', '.btn-download', function () {
+    let url = download_url;
+    let newParams = negotiate_price_form.serializeArray();
+    newParams.forEach(function (val, key) {
+      url += '&' + val['name'] + '=' + val['value'];
+    });
+    window.location.href = url;
+  });
+
+  // click upload
+  $('#button-upload').on('click', function () {
+
+    $('#form-upload').remove();
+    $('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;"><input type="file" name="file" /></form>');
+    $('#form-upload input[name=\'file\']').trigger('click');
+    if (typeof timer != 'undefined') {
+      clearInterval(timer);
+    }
+    var timer = setInterval(function () {
+      if ($('#form-upload input[name=\'file\']').val() != '') {
+        clearInterval(timer);
+        $.ajax({
+          url: '{{ upload_template_url }}',
+          type: 'post',
+          dataType: 'json',
+          data: new FormData($('#form-upload')[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          beforeSend: function () {
+            $('#button-upload').button('loading');
+          },
+          complete: function () {
+            $('#button-upload').button('reset');
+          },
+          success: function (json) {
+            let code = parseInt(json['code']);
+            if (code === 1) {
+              layer.msg(json['msg']);
+              return;
+            }
+            layer.msg(json['msg']);
+            $table.bootstrapTable('refresh', {pageNumber: 1})
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        });
+      }
+    }, 500);
+  });
+
+  // filter
+  $('#neg-price-filter').on('click', function () {
+    $table.bootstrapTable('refresh', {pageNumber: 1})
+  });
+
+  // radio click
+  $('#neg_radio_check input[name="option_values"]').on('click', function () {
+    let item = $(this);
+    let checkedValue = parseInt(item.val());
+    if (checkedValue === now_radio_option) return false;
+    layer.confirm(
+      checkedValue === 0
+        ? 'Do you confirm to manually add specific products for price negotiation?'
+        : 'Do you confirm that all product prices are negotiable?',
+      {
+        btn: ['Confirm', 'Cancel'],
+        skin: 'yzc_layer',
+        btnAlign: 'c',
+        title: 'Message'
+      },
+      function () {
+        layer.closeAll();
+        layer.load();
+        $.post(
+          'index.php?route=customerpartner/spot_price/negotiated_price/changeOption',
+          {value: checkedValue},
+          function (res) {
+            layer.closeAll();
+            let code = parseInt(res['code']);
+            if (code === 1) {
+              layer.msg('Edit failed.');
+              return false;
+            }
+            $('#tab-negotiated-price').load('index.php?route=customerpartner/spot_price/negotiated_price');
+          }
+        )
+      });
+    return false;
+  });
+
+  // add 
+  $('#neg_add_button').on('click', function () {
+    let data = $table.bootstrapTable('getData');
+    if (data.length >= 1 && data[0].hasOwnProperty('input')) {
+      layer.msg('Please fill the data and save first!');
+      return false;
+    }
+    $table.bootstrapTable('insertRow', {
+      index: 0,
+      row: {
+        freight: "",
+        freight_format: "",
+        mpn: "",
+        pick_up_price: "",
+        pick_up_price_format: "",
+        price: "",
+        price_format: "",
+        product_id: 0,
+        seller_id: 0,
+        sku: "",
+        input: '1'           // 标志位 标志这一行为input框
+      }
+    });
+  })
+
+</script>

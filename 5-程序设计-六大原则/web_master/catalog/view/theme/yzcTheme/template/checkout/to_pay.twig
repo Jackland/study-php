@@ -1,0 +1,1923 @@
+{{ header }}
+<script type="text/javascript" src="catalog/view/javascript/clipboard.min.js"></script>
+{% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+
+<style>
+  .mt-1{
+    margin-top: 10px;
+  }
+  .mb-1{
+    margin-bottom: 10px;
+  }
+  #pay-time{
+    line-height: 50px;
+    width: 480px;
+    height: 50px;
+    border: 2px solid rgba(250, 100, 0, 1);
+    border-radius: 11px;
+    background-color: rgba(255, 245, 239, 1);
+  }
+
+  #pay-time .time-left {
+    font-size: 20px;
+    font-weight: 700;
+    color: #000000;
+    margin-right: 10px;
+    line-height: 49px;
+  }
+
+  #pay-time .time-tips {
+    font-size: 14px;
+    font-weight: 400;
+    color: #000000;
+  }
+
+  #pay-time .time-logo {
+    margin-right: 10px;
+  }
+
+  .time-logo i {
+    font-size: 24px;
+  }
+
+  #pay-time span {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .pay-time-main {
+    text-align: center;
+    position: relative;
+    top: 50%;
+    margin-top: -26px
+  }
+
+  #paymentApp {
+    padding: 30px;
+    background-color: #fff;
+  }
+  .line-of-credit{
+    height: 66px;
+    width: 100%;
+    border: 2px solid #F3F5F7;
+  }
+  .line-of-credit-checked{
+    /*height: 80px;*/
+    width: 100%;
+    border: 2px solid rgb(58, 117, 220);
+  }
+
+  .line-of-credit .inline-item {
+    display: inline-block;
+    float: left;
+    height: 64px;
+  }
+
+  .line-of-credit .inline-item:first-child {
+    width: 50px;
+  }
+
+  .line-of-credit .inline-item:last-child {
+    float: right;
+  }
+  .virtual-pay{
+    height: 66px;
+    width: 100%;
+    border: 2px solid #F3F5F7;
+  }
+  .virtual-pay-checked{
+    height: 60px;
+    width: 100%;
+    border: 2px solid rgb(58, 117, 220);
+  }
+
+  .virtual-pay .inline-item {
+    display: inline-block;
+    float: left;
+    height: 64px;
+  }
+
+  .virtual-pay .inline-item:first-child {
+    width: 50px;
+  }
+
+  .virtual-pay .inline-item:last-child {
+    float: right;
+  }
+
+  #line-checkbox {
+    display: none;
+  }
+
+  #virtual-checkbox {
+    display: none;
+  }
+
+  #save_card_info + label {
+    display: inline-block;
+    width: 50px;
+    height: 30px;
+    border: none;
+    border-radius: 30px;
+    background-color: #F3F5F7;
+  }
+
+  .save-toggle {
+    display: inline-block;
+    position: relative;
+    float: left;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    border: 1px solid #F3F5F7;
+    box-sizing: border-box;
+    background-color: #fff;
+  }
+
+  #save_card_info:checked + label .save-toggle {
+    float: right;
+    border: 1px solid #FA6400;
+  }
+
+  #save_card_info:checked + label {
+    background-color: #FA6400;
+  }
+
+  #line-checkbox + label {
+    display: block;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    background-color: #fff;
+    /*border: 2px solid rgb(58, 117, 220);*/
+    border: 2px solid #F3F5F7;
+    height: 20px;
+    width: 20px;
+    border-radius: 4px;
+  }
+
+  #line-checkbox:checked + label {
+    border-color: rgb(58, 117, 220);
+  }
+
+  #line-checkbox:checked + label::before {
+    display: block;
+    content: "\2714";
+    text-align: center;
+    background-color: rgb(58, 117, 220);
+    vertical-align: middle;
+    font-size: 13px;
+    color: white;
+  }
+
+  #virtual-checkbox + label {
+    display: block;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    background-color: #fff;
+    /*border: 2px solid rgb(58, 117, 220);*/
+    border: 2px solid #F3F5F7;
+    height: 20px;
+    width: 20px;
+    border-radius: 4px;
+  }
+
+  #virtual-checkbox:checked + label {
+    border-color: rgb(58, 117, 220);
+  }
+
+  #virtual-checkbox:checked + label::before {
+    display: block;
+    content: "\2714";
+    text-align: center;
+    background-color: rgb(58, 117, 220);
+    vertical-align: middle;
+    font-size: 13px;
+    color: white;
+  }
+
+  .price {
+    color: #333333;
+    font-size: 12px;
+  }
+
+  .recommend {
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    border-bottom-left-radius: 17px;
+    position: relative;
+    float: right;
+    top: 0;
+    right: 0;
+    background-color: #F3F5F7;
+    color: rgb(58, 117, 220);
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  .recommend-checked {
+    background-color: rgb(58, 117, 220);
+    color: #fff;
+  }
+
+  .pay-collapse {
+    height: 500px;
+    margin-top: 30px;
+    border: 1px solid lightgrey;
+  }
+
+  .methods {
+    width: 230px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    font-family: 'Arial Normal', 'Arial', sans-serif;
+    font-weight: 400;
+  }
+
+  .methods:hover {
+    cursor: pointer;
+  }
+
+  .methods-main {
+    margin-top: 50px;
+  }
+
+  .line {
+    height: 1px;
+    background-color: #F3F5F7;
+  }
+  .methods-title{
+    font-size: 14px;
+    height: 35px !important;
+    line-height: 35px !important;
+  }
+  .methods-title-single{
+    font-size: 14px;
+    height: 53px !important;
+    line-height: 53px !important;
+  }
+
+  /*.methods-radio {*/
+  /*  line-height: 43px !important;*/
+  /*  height: 43px !important;*/
+  /*}*/
+
+  .mt-2 {
+    margin-top: 20px;
+  }
+  .mt-1{
+    margin-top: 10px;
+  }
+  .mb-1{
+    margin-bottom: 10px;
+  }
+
+  .form-wrapper #wechatInfo .form-control {
+    /*border: 0;*/
+    border-radius: 0;
+    box-shadow: none;
+    height: 35px;
+  }
+  .form-wrapper .form-control-warning{
+    border: 1px solid #FA6400;
+  }
+
+  .wechat-input:focus {
+    /*border: 1px solid #FA6400;*/
+  }
+  .wechat-input{
+    /*border: 1px solid #FA6400;*/
+  }
+  .top-placeholder{
+    width: 100%;
+    /*background-color: #f3f5f7;*/
+    height: 30px;
+    color: #D5D5D5;
+    font-size: 15px;
+    /*font-style: italic;*/
+    /*padding-left: 10px;*/
+    padding-top: 5px;
+  }
+
+  .border-bottom {
+    border-bottom: 1px solid #F3F5F7;
+  }
+
+  .form-wrapper .pay-textarea {
+    background-color: #fff;
+    width: 100%;
+    border: 1px solid #F3F5F7;
+    border-radius: 0;
+  }
+  .recommend-title{
+    height: 35px;
+    line-height: 40px;
+    font-size: 18px;
+    margin-right: 20px
+  }
+  .recommend-tips{
+    font-family: 'Arial Normal', 'Arial', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 12px;
+    letter-spacing: normal;
+    color: #D7D7D7;
+    text-align: center;
+    line-height: normal;
+    text-transform: none;
+  }
+
+  .input-tips {
+    height: 25px;
+    width: 25px;
+    border: 1px solid #FA6400;
+    color: #FA6400;
+    font-size: 12px;
+    border-radius: 50%;
+    position: absolute;
+    right: 20px;
+    top: 75%;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 25px;
+    margin-top: -15px;
+  }
+
+  .inner-tips{
+    display: none;
+    height: 40px;
+    line-height: 40px;
+    background-color: #fff9ec;
+    border-radius: 5px;
+    border: 1px solid #F3F5F7;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    padding: 0 10px;
+    z-index: 2;
+    transform: translate(-50%, 5px);
+    color: #000000;
+  }
+  .input-tips:hover>.inner-tips{
+    display: block;
+  }
+  .triangle{
+    height: 10px;
+    width: 10px;
+    background-color: #fff9ec;
+    border: 1px solid #F3F5F7;
+    border-right: none;
+    border-bottom: none;
+    position: absolute;
+    top: -5px;
+    left: 45%;
+    transform: rotate(45deg);
+  }
+
+  .icon-action-warning:before {
+    color: #FA6400;
+  }
+
+  .footer {
+    width: 100%;
+    height: 50px;
+    position: fixed;
+    padding-right: 222px;
+    background-color: #fff;
+    bottom: 0;
+    left: 0;
+    box-shadow: 1px 2px 9px 1px grey;
+    z-index: 10;
+  }
+
+  .continue-btn {
+    height: 50px;
+    width: 200px;
+    background-color: #FA6400;
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    line-height: 50px;
+    float: right;
+    border: none;
+    outline: none;
+    /*box-shadow: 1px 1px 3px #000000;*/
+  }
+
+  .continue-btn.disabled {
+    cursor: not-allowed;
+  }
+
+  .footer-total {
+    display: inline-block;
+    float: right;
+    height: 80px;
+    width: 300px;
+    margin-right: 30px;
+  }
+
+  .grand-total {
+    font-size: 20px;
+    color: black;
+    text-align: right;
+  }
+
+  .grand-total .total-price {
+    font-size: 20px;
+    color: #FA6400;
+  }
+
+  .include {
+    font-size: 14px;
+    color: black;
+    text-align: right;
+  }
+
+  /*.include .include-price {*/
+  /*  font-size: 14px;*/
+  /*  color: #FA6400;*/
+  /*}*/
+  .include-price {
+    font-size: 14px;
+    color: #FA6400;
+  }
+  .form-continue .include-price{
+    float: right;
+  }
+  .select-account {
+    margin-top: 20px;
+    width: 387px;
+    height: 40px;
+    border-color: #F3F5F7;
+  }
+
+  .credit-form-item {
+    width: 340px;
+    height: 50px;
+    display: inline-block;
+    float: left;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .credit-form-item p{
+    font-size: 12px;
+  }
+
+  .form-item-select {
+    width: 340px;
+    height: 40px;
+    border: 1px solid #F3F5F7;
+  }
+
+  .add-account-btn {
+    width: 100px;
+    height: 30px;
+    color: #3A75DC;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #F3F5F7;
+    background-color: #fff;
+  }
+
+  .credit-card-form {
+    width: 70%;
+    margin-top: 50px;
+    padding: 15px;
+    margin-left: 25px;
+  }
+  .airwallex-tips{
+    background-color: #f3f5f7;
+    width: 90%;
+    height: 60px;
+    margin-left: 35px;
+    margin-bottom: 20px;
+    padding: 10px
+  }
+  .airwallex-warning{
+    background-color: #f5c1bb;
+    width: 100%;
+    height: 50px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    line-height: 30px;
+  }
+  .airwallex-close{
+    color: #e45847;
+    float: right;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .continue-btn-disabled{
+    background-color: #F3F5F7;
+  }
+  .form-continue{
+    /*margin-bottom: 50px;*/
+    float: right;
+  }
+  input::-webkit-input-placeholder {
+    /* WebKit browsers */
+    color: #F3F5F7;
+    font-size: 12px;
+  }
+  input:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #F3F5F7;
+    font-size: 12px;
+  }
+
+  input::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #F3F5F7;
+    font-size: 12px;
+  }
+  input::-ms-input-placeholder{
+    color: #F3F5F7;
+    font-size: 12px;
+  }
+  select{
+    font-size: 12px;
+  }
+
+  .form-wrapper label.radio-inline input[type="radio"]::before{
+    font-size: 20px;
+  }
+  /*.radio-inline{*/
+  /*  height: 28px;*/
+  /*}*/
+  input{
+    border: none;
+  }
+  #balance_value{
+    color: #FA6400;
+    border: 1px solid #D7D7D7;
+  }
+  #balance_value:hover{
+    color: #333333;
+    border: 1px solid #FA6400;
+  }
+  .dialog-form-input{
+    border: 1px solid #f3f5f7;
+  }
+  .grand_total_center{
+    line-height: 55px;
+  }
+  /*.credit-card-form .form-wrapper select{*/
+  /*  background-image: linear-gradient(45deg, transparent 50%, #ccc 50%), linear-gradient(135deg, #ccc 50%, transparent 50%), linear-gradient(to right, #fff, #fff) !important;*/
+  /*}*/
+
+  .yzc_layer .layui-layer-content{
+    text-align: left;
+  }
+  .yzc_layer .layui-layer-ico{
+    background: none;
+  }
+  .yzc_layer .layui-layer-close.layui-layer-close1:after{
+    content: "\e6b4";
+    font-family: 'giga';
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  .yzc_layer .layui-layer-btn {
+    padding: 0 17px 17px;
+  }
+  .yzc_layer .layui-layer-btn .layui-layer-btn0{
+    border-color: #3A75DC;
+    background-color: #3A75DC;
+  }
+  .yzc_layer .layui-layer-btn .layui-layer-btn0:hover{
+    background-color: #2d57a9;
+    opacity: 1;
+  }
+  .yzc_layer .layui-layer-btn .layui-layer-btn1{
+    color: #3A75DC;
+  }
+  .yzc_layer .layui-layer-btn .layui-layer-btn1:hover{
+    background-color: #3A75DC;
+    color: #fff;
+    opacity: 1;
+  }
+  .not-enough-balance{
+    margin-top: 0;
+    position: relative;
+    top: 16px;
+  }
+  .not-enough-balance-con{
+    display: flex;
+    align-items: center;
+  }
+  .warning-icon .icon-tishii-01{
+    font-size: 18px;
+    color: #ff6600;
+    margin-right: 8px;
+  }
+  .warning-text{
+    font-size: 14px;
+    color: #ff6600;
+    margin-right: 32px;
+  }
+  .warning-close-icon .icon-V10_danchuangguanbi{
+    font-size: 14px;
+    color: #999;
+  }
+  .warning-close-icon .icon-V10_danchuangguanbi:hover{
+    color: #333;
+    cursor: pointer;
+  }
+  .tooltip-inner {
+    text-align: left;
+    word-break: break-word;
+  }
+
+</style>
+<link href="catalog/view/javascript/layer/theme/yzc/layuiOris.css?v={{ app_version }}" rel="stylesheet"/>
+<div id="page-checkout" class="page-seller-portal">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <h1>{{ heading_title }}</h1>
+        {% if error_warning %}
+          <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+        {% endif %}
+
+        {% if error_warning_final %}
+          <div class="alert alert-danger alert-dismissible"><i
+              class="fa fa-exclamation-circle"></i> {{ error_warning_final }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+        {% endif %}
+        <div class="tab-content main mb-4">
+
+          <div id="paymentApp">
+            {% if payment_methods %}
+              {#              新增-剩余支付时间#}
+              <div id="pay-time">
+                <div class="pay-time-main">
+                  <span class="time-logo"><i class="giga icon-Action-Time"></i></span>
+                  <span class="time-left">{{ expire_time }}</span>
+                  <span class="time-tips">{{ expire_time_notice }}</span>
+                </div>
+              </div>
+              {% if virtual_pay == false %}
+                <div class="not-enough-balance" id="notEnoughBalance" style="display: none">
+                  <div class="not-enough-balance-con">
+                    <span class="warning-icon"><i class="giga icon-tishii-01"></i></span>
+                    <span class="warning-text">Your line of credit balance is insufficient for the payment. The balance has been updated, please try the payment again.</span>
+                    <span class="warning-close-icon"><i class="giga icon-V10_danchuangguanbi" id="handleCloseWarning"></i></span>
+                  </div>
+                </div>
+                <div id="line-of-credit" class="line-of-credit" style="margin-top: 20px">
+                  <div class="inline-item">
+                    <input id="line-checkbox" class="line-checkbox" type="checkbox">
+                    <label id="line-checkbox-label" for="line-checkbox"></label>
+                  </div>
+                  <div class="inline-item">
+                    <div style="height: 33px;line-height: 33px">
+                      <span style="font-size: 16px;margin-right: 20px">{{ balance_title }}</span>
+                      <span style="font-size: 12px">Balance: <span class="price" id="balance_value_format"
+                                                                   style="font-size: 12px">{{ balance_currency }}</span></span>
+                    </div>
+                    <div style="font-size: 12px">
+                      <span style="margin-right: 20px">Amount Applied to Order Total</span>
+                      {#                    <div style="height: 28px;color: #A30014;">#}
+                      {#                      <div style="border-right: 1px solid #fa6400;width: 30px">$</div>#}
+                      {% if symbolLeft %}{{ symbolLeft }}{% endif %}
+                      <input type="text" style="width: 80px" name="balance_value" id="balance_value">
+                      <input type="hidden" value="{{ balance }}" id="hidden_balance_value">
+                      {% if symbolRight %}{{ symbolRight }}{% endif %}
+                      {#                    </div>#}
+                      {% if total>balance %}
+                        <span class="recommend-tips">{{ tip_line_of_credit }}</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div id="line-of-credit-recommend" class="recommend">Recommend</div>
+                </div>
+              {% else %}
+                <div id="virtual-pay" class="virtual-pay" style="margin-top: 20px">
+                  <div class="inline-item">
+                    <input id="virtual-checkbox" class="virtual-checkbox" type="checkbox" checked>
+                    <label id="virtual-checkbox-label" for="virtual-checkbox"></label>
+                  </div>
+                  <div class="inline-item">
+                    <div style="height: 33px;line-height: 33px">
+                      <span style="font-size: 16px;margin-right: 20px">Virtual Payment</span>
+                    </div>
+                    <div style="font-size: 16px">
+                      <span class="recommend-tips">{{ tip_virtual_pay }}</span>
+                    </div>
+                  </div>
+                  <div id="virtual-pay-recommend" class="recommend">Recommend</div>
+                </div>
+              {% endif %}
+              {#form#}
+              <div class="form-wrapper">
+                <div class="methods">
+                  <span id="methods-toggle" style="margin-right: 10px">Other Payment Methods</span>
+                  <div id="btn-toggle">
+                    <i id="down" class="giga icon-arrow-down-outline-white"></i>
+                    <i id="up" class="giga icon-sidebar-fold"></i>
+                  </div>
+                </div>
+                {% for payment_method in payment_methods %}
+
+                  {#                      <div class="mb-2 mt-2 row payment-way">#}
+                  {#                    <div class="mb-2 mt-2 row payment-way" style="height: 63px;">#}
+                  {% if payment_method.code == 'umf_pay' %}
+                    <div class="border-bottom mt-1" style="height: 100%">
+                      <div class="mb-1 row payment-way">
+                        <div class="col-md-6">
+                          <label class="radio-inline mr-2" style="height: 28px">
+                            <input class="methods-radio" type="radio" style="margin-top: 3px;" name="payment_method"
+                                   value="{{ payment_method.code }}"
+                                   v-model="payment_method" :disabled="useBalanceToZero==1"/>
+                            <span class="methods-title">
+                            {{ payment_method.title }}
+                        </span>
+                          </label>
+                          <div style="margin-left: 35px;font-size: 12px">
+                            ICBC and CMB are recommended
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div style="float: right">
+                            {#                            <img src="{{ text_path_icbc }}" style="width:237px;height: 50px">#}
+                            <img src="{{ text_path_icbc }}" style="width:200px">
+                            <img src="{{ text_path_china_merchants_bank }}" style="width:200px;height: 50px">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% elseif  payment_method.code == 'line_of_credit' %}
+                    {% if virtual_pay %}
+                      <div class="border-bottom mt-1" style="height: 100%">
+                        <div class="mb-1 row payment-way">
+                          <div class="col-md-5">
+                            <label class="radio-inline mr-2">
+                              <input class="methods-radio" type="radio" style="margin-top: 3px;"
+                                     name="payment_method"
+                                     value="{{ payment_method.code }}"
+                                     v-model="payment_method"/>
+                              <span class="methods-title-single">
+                                  {{ payment_method.title }}
+                                (Balance: {{ balance }})
+                                </span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% elseif  payment_method.code == 'cybersource_sop' %}
+                    <div class="border-bottom mt-1" style="height: 100%">
+                      <div class="mb-1 row payment-way">
+                        <div class="col-md-6">
+                          <label class="radio-inline mr-2" style="height: 28px">
+                            <input class="methods-radio" type="radio" style="margin-top: 3px;" name="payment_method"
+                                   value="{{ payment_method.code }}"
+                                   v-model="payment_method" :disabled="useBalanceToZero==1"/>
+                            <span class="methods-title">
+                                {{ payment_method.title }}
+                              </span>
+                          </label>
+                          <div style="margin-left: 35px;font-size: 12px">
+                            Accepted card types : VISA, MasterCard, American Express, Discover
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div style="float: right">
+                            {#                            <img src="{{ text_path_visa }}" style="width:102px;height: 63px">&nbsp;&nbsp;#}
+                            {#                            <img src="{{ text_path_master_card }}" style="width:102px;height: 63px">&nbsp;&nbsp;#}
+                            {#                            <img src="{{ text_path_american_express }}" style="width:102px;height: 63px">&nbsp;&nbsp;#}
+                            {#                            <img src="{{ text_path_discover }}" style="width:102px;height: 63px">#}
+                            <img src="{{ text_path_visa }}" style="width:80px">&nbsp;&nbsp;
+                            <img src="{{ text_path_master_card }}" style="width:80px">&nbsp;&nbsp;
+                            <img src="{{ text_path_american_express }}" style="width:80px">&nbsp;&nbsp;
+                            <img src="{{ text_path_discover }}" style="width:80px">
+                          </div>
+                        </div>
+                        {{ cybersource_sop_form }}
+                      </div>
+                    </div>
+                  {% elseif  payment_method.code == 'wechat_pay' %}
+                    <div class="border-bottom mt-1" style="height: 100%">
+                      <div class="mb-1 row payment-way">
+                        <div class="col-md-6">
+                          <label class="radio-inline mr-2"><input class="methods-radio" type="radio"
+                                                                  name="payment_method"
+                                                                  value="{{ payment_method.code }}"
+                              {#                          <label class="radio-inline mr-2"><input class="methods-radio" type="radio" style="margin-top: 3px;" name="payment_method" value="{{ payment_method.code }}"#}
+                                                                  v-model="payment_method"
+                                                                  :disabled="useBalanceToZero==1"/>
+                            <span class="methods-title-single">
+                    {{ payment_method.title }}
+                    </span>
+                          </label>
+                        </div>
+                        <div class="col-md-6">
+                          <div style="float: right">
+                            <img src="{{ text_path_wechat }}" style="height:50px;">
+                          </div>
+                        </div>
+                        <div id="wechatInfo" style="z-index: 10" v-show="payment_method=='wechat_pay'"
+                             class="col-sm-12">
+                          {#                        <div id="wechatInfo" style="z-index: 10;" v-show="payment_method=='wechat_pay'" class="col-sm-12">#}
+                          <div class="col-sm-12">
+                            {#                          <div class="form-group required" style="display: flex">#}
+                            {#                            <label class="col-sm-2 control-label">FULL Name</label>#}
+                            <div class="col-sm-4">
+                              <div class="colsm-6 wechatError" v-html="error.wechatName" hidden></div>
+                              <div class="wechat-input">
+                                <div class="top-placeholder">Full name</div>
+                                {#                                <div class="input-tips" id="wechatNameWarning" hidden><i class="giga icon-action-warning"  data-toggle="tooltip" data-original-title="Name can not be empty."></i></div>#}
+                                <div class="input-tips" id="wechatNameWarning" hidden>
+                                  <i style="font-size: 12px" class="giga icon-action-warning"  data-toggle="tooltip" data-original-title="Name can not be empty."></i>
+                                </div>
+
+                                <input v-model="wechatName.mask" type="text" class="form-control" id="wechatName"
+                                       @input="change($event,'wechatName')"/>
+                                <input v-model="wechatName.value" type="hidden"/>
+                              </div>
+                            </div>
+                            {#                          </div>#}
+                            {#                          <div class="form-group required" style="display: flex">#}
+                            {#                            <label class="col-sm-2 control-label">Chinese Resident Identity Card Number</label>#}
+                            <div class="col-sm-4">
+                              <div class="colsm-6 wechatError" v-html="error.wechatIdCard" hidden></div>
+                              <div class="wechat-input">
+                                <div class="top-placeholder">Chinese resident identity card number</div>
+                                <div class="input-tips" id="wechatIdWarning" hidden><i class="giga icon-action-warning" data-toggle="tooltip" data-original-title="Chinese Resident Identity Card Number can not be empty."></i></div>
+                                <input v-model="wechatIdCard.mask" @input="change($event,'wechatIdCard')" type="text" id="wechatIdCard"
+                                       class="form-control"/>
+                                <input v-model="wechatIdCard.value" type="hidden"/>
+                              </div>
+                            </div>
+                            {#                          </div>#}
+                            {#                          <div class="form-group required" style="display: flex">#}
+                            {#                            <label class="col-sm-2 control-label">Phone</label>#}
+                            <div class="col-sm-4">
+                              <div class="colsm-6 wechatError" v-html="error.wechatPhone" hidden></div>
+                              <div class="wechat-input">
+                                <div class="top-placeholder">Phone number</div>
+                                <div class="input-tips" id="wechatPhoneWarning" hidden><i class="giga icon-action-warning" data-toggle="tooltip" data-original-title="Phone can not be empty."></i></div>
+                                <input v-model="wechatPhone.mask" @input="change($event,'wechatPhone')" type="text" id="wechatPhone"
+                                       class="form-control"/>
+                                <input v-model="wechatPhone.value" type="hidden"/>
+                              </div>
+                            </div>
+                            {#                          </div>#}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% else %}
+                    <div class="border-bottom mt-1" style="height: 100%">
+                      <div class="mb-1 row payment-way">
+                        <div class="col-md-5">
+                          <label class="radio-inline mr-2">
+                            <input class="methods-radio" type="radio" style="margin-top: 3px;" name="payment_method"
+                                   value="{{ payment_method.code }}"
+                                   v-model="payment_method"
+                            />
+                            <span class="methods-title">
+                      {{ payment_method.title }}
+                              {% if payment_method.terms %}
+                                ({{ payment_method.terms }})
+                              {% endif %}
+                      </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                  {#                  <div class="line"></div>#}
+                {% endfor %}
+                {#                <div class="form-group mt-3" style="margin-bottom: 50px">#}
+                <div class="form-group mt-3">
+                  <div class="row">
+                    {#                    <div class="col-md-5">#}
+                    <div class="col-md-12">
+                      <label for="" style="font-size: 16px">{{ text_comments }}</label>
+                      {#                      <textarea name="comment" rows="8" class="form-control" placeholder="Enter comments here">{{ comment }}</textarea>#}
+                      <textarea style="height: 100px;padding: 10px;" name="comment" rows="8" class="pay-textarea"
+                                placeholder="Enter comments here" v-model="comments" @keyup="checkCommentLen"></textarea>
+                    </div>
+
+                  </div>
+                </div>
+
+
+                {#                <div>#}
+                <div class="row" style="height: 100px">
+                  <div class="col-md-12">
+                    <div class="form-continue" style="float: right">
+                      <div>
+                        <span style="font-size: 20px">Grand Total</span>
+                        <span style="font-size: 20px;color: #FA6400;float: right" name="grand_total">{{ total_currency }}</span>
+                      </div>
+                      <div name="poundage_show" hidden>
+                        <span>Include Transaction Fee </span>
+                        <span name="poundage" class="include-price"></span>
+                      </div>
+                      {% if asset_control %}
+                        <input
+                          type="button" value="{{ button_continue }}" name="button-payment-method"
+                          data-loading-text="{{ text_loading }}" class="continue-btn"
+                        />
+                      {% else %}
+                        <button class="continue-btn disabled"
+                          data-toggle="tooltip" data-html="true" title="{{ __('触发风控提醒',{screenName:asset_control_screen_name_str},'controller/seller_asset') }}"
+                        >{{ button_continue }}</button>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                {#                </div>#}
+
+
+                {#                {% if text_agree %}#}
+                {#                  <div class="text-center mt-5">#}
+                {#                    {{ text_agree }}#}
+                {#                    {% if agree %}#}
+                {#                      <input type="checkbox" name="agree" value="1" checked="checked"/>#}
+                {#                    {% else %}#}
+                {#                      <input type="checkbox" name="agree" value="1"/>#}
+                {#                    {% endif %}#}
+                {#                    &nbsp;#}
+                {#                    <input type="button" value="{{ button_continue }}" id="button-payment-method"#}
+                {#                           data-loading-text="{{ text_loading }}" class="btn btn-primary"/>#}
+                {#                  </div>#}
+                {#                {% else %}#}
+                {#                  <div class="text-center mt-5">#}
+                {#                    <input type="button" value="{{ button_continue }}" id="button-payment-method"#}
+                {#                           data-loading-text="{{ text_loading }}" class="btn btn-primary"/>#}
+                {#                  </div>#}
+                {#                {% endif %}#}
+                <div class="footer">
+                  {% if asset_control %}
+                    <input
+                      type="button" value="{{ button_continue }}" name="button-payment-method"
+                      data-loading-text="{{ text_loading }}" class="continue-btn"
+                    />
+                  {% else %}
+                    <button class="continue-btn disabled"
+                            data-toggle="tooltip" data-html="true" title="{{ __('触发风控提醒',{screenName:asset_control_screen_name_str},'controller/seller_asset') }}"
+                    >{{ button_continue }}</button>
+                  {% endif %}
+                  <div class="footer-total">
+                    <p id="grand_total_p" class="grand-total grand_total_center"><span>Grand Total </span><span name="grand_total" class="total-price">{{ total_currency }}</span></p>
+                    <p class="include"  name="poundage_show" hidden><span>Include Transaction Fee </span><span name="poundage" class="include-price"></span></p>
+                    {#                    <span>Grand Total</span><span id="grand-total">$360</span>#}
+                    {#                    <span>Include Transaction Fee</span><span id="include">$60</span>#}
+                  </div>
+                </div>
+              </div>
+
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% include 'yzcTheme/template/extension/payment/umf_pay_modal.twig' %}
+{% include 'yzcTheme/template/extension/payment/wechat_pay_modal.twig' %}
+<style>
+  .wechatError {
+    font-weight: bold;
+    color: #ff0000;
+    font-size: 14px;
+  }
+</style>
+<script>
+  var paymentApp = new Vue({
+    el: '#paymentApp',
+    delimiters: ['${', '}'],
+    data() {
+      return {
+        useBalanceToZero: '{{ useBalanceToZero }}',
+        payment_method: '{{ code }}',
+        wechatName: {
+          mask: '',
+          value: '',
+        },
+        wechatPhone: {
+          mask: '',
+          value: '',
+        },
+        wechatIdCard: {
+          mask: '',
+          value: '',
+        },
+        wechatSessionInfo:{{ wechatInfo|json_encode|raw }},
+        payInfo: {
+          qrcodeUrl: '',
+          total_yzc: '',
+          currency_yzc: '',
+          rate_yzc: '',
+          total_cny: '',
+        },
+        error: '',
+        comments: '', //支付评论
+      }
+    },
+    created() {
+      var vue = this;
+      if (vue.wechatSessionInfo) {
+        vue.wechatName['value'] = vue.wechatSessionInfo['wechatName'];
+        vue.wechatPhone['value'] = vue.wechatSessionInfo['wechatPhone'];
+        vue.wechatIdCard['value'] = vue.wechatSessionInfo['wechatIdCard'];
+        //微信个人信息  后4位换成*
+        vue.wechatName['mask'] = vue.wechatSessionInfo['wechatName'].replace(/(.{1}).*/, '$1***');
+        vue.wechatPhone['mask'] = vue.wechatSessionInfo['wechatPhone'].replace(/.{4}$/, '****');
+        vue.wechatIdCard['mask'] = vue.wechatSessionInfo['wechatIdCard'].replace(/.{4}$/, '****');
+      }
+    },
+    methods: {
+      // comments中文日文算两个字符计算总长度不超过200
+      checkCommentLen() {
+        var len = 0;
+        var charCode = -1;
+        var str = this.comments;
+        var maxStr = ''; // 记录最大字符串
+        if(!str || !str.length) {
+          return;
+        }
+        for (var i=0; i<str.length; i++) {
+          charCode = str.charCodeAt(i);
+          if (charCode >= 2048 && charCode <= 40869) {
+               len += 2;
+           } else {
+               len ++;
+           }
+          if (len <= 200) {
+            maxStr += str[i];
+          }
+        }
+        // 大于200个字符
+        if (len > 200) {
+          this.comments = maxStr;
+        }
+      },
+      change($event, key) {
+        var vue = this;
+        //带*号的编辑时要清空
+        if (vue[key]['mask'] && vue[key]['mask'].includes('*')) {
+          vue[key]['mask'] = $event.data;
+        }
+        vue[key]['value'] = vue[key]['mask'];
+      },
+      validate() {
+        var vue = this;
+        vue.error = {};
+        $('#wechatName').removeClass('form-control-warning');
+        $('#wechatIdCard').removeClass('form-control-warning');
+        $('#wechatPhone').removeClass('form-control-warning');
+        if (!vue.wechatName.value) {
+          $('#wechatNameWarning').show();
+          vue.error['wechatName'] = 'Name can not be empty.';
+          $('[name="button-payment-method"]').button('reset');
+          $('#wechatName').addClass('form-control-warning');
+        }
+        if (!vue.wechatIdCard.value) {
+          $('#wechatIdWarning').show();
+          vue.error['wechatIdCard'] = 'Chinese Resident Identity Card Number can not be empty.';
+          $('[name="button-payment-method"]').button('reset');
+          $('#wechatIdCard').addClass('form-control-warning');
+        }
+        if (!vue.wechatPhone.value) {
+          $('#wechatPhoneWarning').show();
+          vue.error['wechatPhone'] = 'Phone can not be empty.';
+          $('[name="button-payment-method"]').button('reset');
+          $('#wechatPhone').addClass('form-control-warning');
+        }
+        return $.isEmptyObject(vue.error)
+      },
+      createWechatPayment() {
+        if (!this.validate()) {
+          return false
+        }
+        var vue = this;
+        var isSuccess = false;
+        var order_id = {{ order_id }};
+        var fee_order_id = {{ fee_order_id }};
+        var payment_method = $("input[name=payment_method]:checked").val();
+        var balance_check  = $("#line-checkbox:checked").val();
+        if(balance_check == 'on'){
+          var balance = $('#balance_value').val()== undefined?0:$('#balance_value').val();
+        }else{
+          var balance = 0;
+        }
+        var comment = $("[name=comment]").val();
+        var data = {
+          orderCreated: false,
+          wechatName: vue.wechatName.value,
+          wechatPhone: vue.wechatPhone.value,
+          wechatIdCard: vue.wechatIdCard.value,
+          order_id:order_id,
+          fee_order_id:fee_order_id,
+          payment_method:payment_method,
+          balance:balance,
+          comment:comment
+        };
+        $.ajax({
+          url: 'index.php?route=extension/payment/wechat_pay/createPayment',
+          method: 'post',
+          data: data,
+          async: false,
+          dataType: 'json',
+          complete: function () {
+            $('[name="button-payment-method"]').button('reset');
+          },
+          success: function (json) {
+            isSuccess = json['success'];
+            checkWechatOrderStatus();
+            if (json['success']) {
+              vue.payInfo = json['payInfo'];
+              var payInfo = paymentApp.payInfo;
+              $('#qrcode').html('');
+              new QRCode('qrcode', {
+                text: payInfo.qrcodeUrl,
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+              });
+//         Total: 订单总金额（货币种类）
+//         Current exchange rates: 1 USD= 7.0926 CNY（当前汇率：各国别转人民币）
+//          Amount to pay: XXXXX CNY订单总金额（人民币）【保留两位小数，四舍五入】
+              $('#total').html(payInfo.total_yzc+' '+payInfo.currency_yzc);
+              $('#rate').html('1 '+payInfo.currency_yzc+' = '+payInfo.rate_yzc+' CNY');
+              $('#total_cny').html('<span style="color:#ff0000;font-weight:bold;">'+payInfo.total_cny+'</span> CNY');
+              $('#wechatPayModal').modal()
+            } else {
+              //错误信息放在中间的框框内
+              // vue.error['wechatIdCard'] = '&nbsp;&nbsp;&nbsp;' + json['msg'];
+              layer.alert(json['msg'], {icon: 2, title: ' ', btn: 'OK'});
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            vue.error = 'Sorry, the system is busy now, please try again later.';
+            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        });
+        return isSuccess;
+      }
+    }
+  });
+</script>
+<style>
+  #btn-toggle{
+    display: inline-block;
+  }
+</style>
+<script type="text/javascript" src="catalog/view/javascript/layerOris.js?v={{ app_version }}"></script>
+<script>
+  var timerThis = null;
+  $(function () {
+    var decimal = {{ decimal }};
+
+    // 选中信用额度时候监控余额，每隔一段时间验证信用额度余额
+    checkLineOfCredit()
+    var request_interval_seconds = Number({{ request_interval_seconds }});
+    var total = {{ total }};
+    function checkLineOfCredit() {
+      if ($("#line-checkbox").prop("checked") == true) {
+        $.ajax({
+          url: '{{ url('checkout/confirm/getLineOfCredit') }}',
+          type: 'post',
+          success: function(json) {
+            if(json['code'] != 200){
+              return;
+            }
+            let latestPrice = Number(json.data.price);
+            let latestFormatPrice =json.data.format_price;
+            let balanceValue = $('#balance_value').val() ? Number($('#balance_value').val()) : 0;
+            $('#balance_value_format').html(latestFormatPrice);
+            $('#hidden_balance_value').val(latestPrice);
+            if (total > latestPrice && balanceValue > latestPrice) {
+              if (latestPrice > 0) {
+                $('#balance_value').val(latestPrice);
+              } else {
+                $('#balance_value').val('');
+                $("#line-checkbox").trigger("click");
+                $("#line-of-credit").removeClass("line-of-credit-checked");
+                $("#line-of-credit-recommend").removeClass("recommend-checked");
+              }
+              $('#balance_value').trigger('change');
+              balanceNotEnoughTip();
+            }
+          },
+          complete: function (e, xhr, settings) {
+            if (e.status == 302) {
+              if (timerThis) {
+                clearTimeout(timerThis);
+              }
+              window.location.reload();
+            }
+          }
+        })
+      }
+
+      timerThis = setTimeout(checkLineOfCredit, request_interval_seconds * 1000)
+    }
+    //10s轮询的余额不足提示
+    function  balanceNotEnoughTip() {
+      $("#notEnoughBalance").show();
+    }
+
+    //关闭余额不足的Warning
+    $('body').on("click","#handleCloseWarning",function () {
+      $("#notEnoughBalance").hide();
+    })
+
+    //判断button是否置灰
+    function buttonCheck(data) {
+      var payment_method = $("input[name=payment_method]:checked").val();
+      var balance_check  = $("#line-checkbox:checked").val();
+      var virtualIsChecked =data?true:!($('#virtual-checkbox').is(":checked"));
+      var balance = $('#balance_value').val();
+      var total = {{ total }}
+      var virtual_pay_check = {{ virtual_pay_check }}
+      var checkButton = true;
+      if(payment_method == undefined && balance_check == 'on' && balance<total){
+        checkButton = false;
+      }
+      if(payment_method == undefined && balance_check == undefined && virtual_pay_check == 0){
+        checkButton = false;
+      }
+      if(payment_method == undefined && !virtualIsChecked && virtual_pay_check == 1){
+        checkButton = false;
+      }
+      getPoundage();
+      if(checkButton){
+        $('[name="button-payment-method"]').removeClass('continue-btn-disabled');
+      }else{
+        $('[name="button-payment-method"]').addClass('continue-btn-disabled');
+      }
+    }
+
+    $('input:radio').click(function(){
+      var domName = $(this).attr('name');
+
+      var $radio = $(this);
+
+      var payment_method = $("input[name=payment_method]:checked").val();
+      if ($radio.data('waschecked') == true){
+        $radio.prop('checked', false);
+        $radio.data('waschecked', false);
+        if(payment_method=='wechat_pay'){
+          $('#wechatInfo').hide();
+        }
+        if(payment_method=='cybersource_sop'){
+          $('#cybersource_sop_form').hide();
+        }
+        $("[name='payment_method_total']").remove();
+        $('#poundage').text('');
+        $('[name="grand_total"]').text('{{ total_currency }}');
+      } else {
+        if(payment_method=='wechat_pay'){
+          $('#wechatInfo').show();
+        }
+        if(payment_method=='cybersource_sop'){
+          $('#cybersource_sop_form').show();
+        }
+        $radio.prop('checked', true);
+        $radio.data('waschecked', true);
+      }
+      buttonCheck(false);
+    });
+
+
+    var virtual_pay_check = {{ virtual_pay_check }};
+    if(virtual_pay_check == 1){
+      $('#virtual-pay-recommend').addClass('recommend-checked')
+      $('#virtual-pay').addClass('virtual-pay-checked')
+      var radioGroup = $("input[name=payment_method]");
+      radioGroup.attr('disabled',true);
+      for(var i=0;i<radioGroup.length;i++){
+        radioGroup.get(i).checked = false;
+      }
+    }
+
+    var total = {{ total }};
+    var balance = $('#hidden_balance_value').val();
+    if(balance>=total && virtual_pay_check== 0){
+      $('#line-checkbox').attr('checked',true);
+      $('#line-of-credit').addClass('line-of-credit-checked')
+      $('#line-of-credit-recommend').addClass('recommend-checked')
+      $('#balance_value').val(total.toFixed(decimal));
+      var radioGroup = $("input[name=payment_method]");
+      radioGroup.attr('disabled',true);
+      for(var i=0;i<radioGroup.length;i++){
+        radioGroup.get(i).checked = false;
+      }
+    }
+
+    // var paymentHeight = $('#paymentApp').height()
+
+    //显示、隐藏methods
+    $('.border-bottom').hide()
+    $('#up').hide()
+    $('.footer').hide()
+    var flag = false
+    $('.methods').on('click', function () {
+      flag = !flag
+      //展开payment methods footer显示
+      //距离底部360显示表单中的continue
+      // $('.form-continue').hide()
+      if(flag){
+        $('.footer').toggle()
+        $('.form-continue').toggle()
+        $(window).scroll(function () {
+          if (flag){
+            if($(window).height()-$(window).scrollTop()<360 ){
+              $('.form-continue').fadeIn()
+              $('.footer').fadeOut('fast')
+            }else {
+              $('.form-continue').fadeOut()
+              $('.footer').fadeIn()
+            }
+          }
+        })
+      }else {
+        $('.footer').toggle()
+        $('.form-continue').toggle()
+      }
+
+      $('.border-bottom').toggle()
+      $('#up').toggle()
+      $('#down').toggle()
+    })
+    if(balance<total && virtual_pay_check== 0){
+      $('.methods').click();
+    }
+
+    buttonCheck(true);
+
+    //倒計時
+    var countdownTime = '{{ expire_time_num }}'
+    var time = countdownTime;
+    var interval =setInterval(function () {
+      if (time > 0) {
+        time = time - 1
+        var minute = parseInt(time/60)
+        var second = parseInt(time%60)
+        if (minute < 10){
+          minute = '0' + minute
+        }
+        if (second < 10){
+          second = '0' + second
+        }
+        countdownTime = minute+':'+second
+        //倒计时结束 刷新当前页
+        if (countdownTime === '00:00'){
+          clearInterval(interval);
+          $('[name="button-payment-method"]').addClass('continue-btn-disabled');
+          setTimeout(function () {
+            window.location.reload()
+          },5000)
+        }
+        $('.time-left').text(countdownTime)
+      }
+    }, 1000);
+    //
+    $('#line-checkbox-label').on('click', function () {
+      var lineIsChecked = !($('#line-checkbox').is(":checked"))
+      if (lineIsChecked) {
+        $('#line-of-credit').addClass('line-of-credit-checked')
+        $('#line-of-credit-recommend').addClass('recommend-checked')
+        //校验余额
+        var balance = $('#balance_value').val();
+        var total = {{ total }}
+        if(balance == total ){
+          $('[name="payment_method"]').attr('checked',false);
+          $('[name="payment_method"]').attr('disabled',true);
+        }else{
+          $('[name="payment_method"]').attr('disabled',false);
+        }
+      } else {
+        $('[name="payment_method"]').attr('disabled',false);
+        $('#line-of-credit').removeClass('line-of-credit-checked')
+        $('#line-of-credit-recommend').removeClass('recommend-checked')
+      }
+    })
+    $('#virtual-checkbox-label').on('click', function () {
+      var virtualIsChecked = !($('#virtual-checkbox').is(":checked"));
+      if (virtualIsChecked) {
+        virtualCheck(true);
+        $('#virtual-pay').addClass('virtual-pay-checked')
+        $('#virtual-pay-recommend').addClass('recommend-checked')
+      } else {
+        virtualCheck(false);
+        $('#virtual-pay').removeClass('virtual-pay-checked')
+        $('#virtual-pay-recommend').removeClass('recommend-checked')
+      }
+      buttonCheck(false);
+    })
+    $('#balance_value').on('keyup',function () {
+      var input_balance = $('#balance_value').val();
+      var country_id = {{ country_id }};
+      input_balance = input_balance.replace(/[^\d.]/g, "");  //清除“数字”和“.”以外的字符
+      input_balance = input_balance.replace(/\.{2,}/g, "."); //只保留第一个. 清除多余的
+      input_balance = input_balance.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+      input_balance = input_balance.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3');//只能输入两个小数
+      if(country_id == 107) {
+        input_balance = input_balance.match(/[0-9]*/) ? input_balance.match(/[0-9]*/) : '';
+      }else{
+        input_balance = input_balance.match(/\d+(\.\d{0,2})?/) ? input_balance.match(/\d+(\.\d{0,2})?/)[0] : ''
+      }
+      if (input_balance.indexOf(".") < 0 && input_balance != "") {//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+        input_balance = parseFloat(input_balance);
+      }
+      let balance = Number($('#hidden_balance_value').val());
+      // 支付金额大于实际余额
+      if (balance <= {{ total }}) {
+        // 输入的小于于实际余额
+        if (input_balance <= balance) {
+          $('#balance_value').val(input_balance);
+        } else {
+          $('#balance_value').val(balance);
+        }
+      }
+      // 支付金额小于实际余额
+      else {
+        // 输入的小于支付金额
+        if (input_balance <= {{ total }}) {
+          $('#balance_value').val(input_balance);
+        }else{
+          $('#balance_value').val({{ total }});
+        }
+      }
+    })
+
+    $('#balance_value').on('change',function () {
+      // 获取输入的金额
+      buttonCheck(false);
+      var balance = Number($('#balance_value').val());
+      var balance_check  = $("#line-checkbox:checked").val();
+      var balance_format = parseFloat(balance).toFixed(decimal);
+      $('#balance_value').val(balance_format);
+      if(balance_check == 'on') {
+        if(balance<{{ total }}) {
+          virtualCheck(false);
+        }else{
+          virtualCheck(true);
+        }
+        getPoundage();
+      }
+
+    })
+
+    $('#line-checkbox').on('click',function () {
+      buttonCheck(false);
+      getPoundage();
+    })
+
+    $("input[name=payment_method]").on('change',function () {
+      buttonCheck(false);
+      getPoundage();
+    })
+  })
+
+  $('[name="button-payment-method"]').on('click', function() {
+    var balance_check  = $("#line-checkbox:checked").val();
+    var virtual_check  = $("#virtual-checkbox:checked").val();
+    var passwordCheck = {{ checkSecondPassword }};
+    var payment_method = $("input[name=payment_method]:checked").val();
+    if(balance_check == 'on'){
+      var balance = $('#balance_value').val()== undefined?0:$('#balance_value').val();
+    }else{
+      var balance = 0;
+    }
+    if(balance_check == 'on'&& payment_method==undefined && balance < {{ total }} ){
+      layer.alert('Amount applied to order total is not enough', {icon: 2, title: 'Error', btn: 'OK'});
+    }else if((balance_check == 'on'&& passwordCheck == 1)||payment_method=='line_of_credit'  ) {
+      checkSecondPassword();
+    }else if(payment_method==undefined && balance_check== undefined && virtual_check== undefined){
+      layer.alert('Please select payment method.', {icon: 2, title: 'Error', btn: 'OK'});
+    }else{
+      modifiedOrder();
+    }
+  });
+
+  function checkSecondPassword() {
+    layer.open({
+      title: 'Message',
+      skin: 'yzc_layer', //样式类名
+      content: '<div class="dialog-form-line">\n' +
+      '            <label class="dialog-form-label"><i style="color: red">*</i>&nbsp;&nbsp;Please enter the checkout password</label>\n' +
+      '            <div style="width: 100%">\n' +
+      '              <input class="dialog-form-input" style="width: 100%" type="text" id="secondPassword" name="secondPassword" maxlength="50" value="">\n' +
+      '            </div>\n' +
+      '          </div>',
+      btn:['Confirm','Cancel'],
+      yes: function(index, layero){
+        // 获取当前按钮
+        var thisBtn = $($(layero).find(".layui-layer-btn0"));
+        // 禁止点击
+        thisBtn.attr("disabled",true).css("pointer-events","none");
+        var secondPassword = $('#secondPassword').val();
+        $('#errorMsg').remove();
+        $.ajax({
+          url: 'index.php?route=extension/payment/line_of_credit/checkSecondPassword',
+          type: 'post',
+          data: 'secondPassword=' + secondPassword,
+          success: function(json) {
+            if(json['success']){
+              layer.close(index);
+              modifiedOrder();
+            }else{
+              // 启用点击
+              thisBtn.attr("disabled",false).css("pointer-events","auto");
+              $('#secondPassword').after('<p style="color: red" id="errorMsg">'+json['text']+'</p>')
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            // 启用点击
+            thisBtn.attr("disabled",false).css("pointer-events","auto");
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        })
+      }
+    })
+  }
+
+  function virtualCheck(flag) {
+    var radioGroup = $("input[name=payment_method]");
+    var payment_method = $("input[name=payment_method]:checked").val();
+    if(payment_method=='wechat_pay'){
+      $('#wechatInfo').hide();
+    }
+    if(payment_method=='cybersource_sop'){
+      $('#cybersource_sop_form').hide();
+    }
+    $("[name='payment_method_total']").remove();
+    $('[name="poundage"]').text('');
+    $('[name="grand_total"]').text('{{ total_currency }}');
+    radioGroup.attr('disabled',flag);
+    for(var i=0;i<radioGroup.length;i++){
+      radioGroup.get(i).checked = false;
+    }
+  }
+
+  function modifiedOrder(){
+    var balance_check  = $("#line-checkbox:checked").val();
+    var virtual_check  = $("#virtual-checkbox:checked").val();
+    var passwordCheck = {{ checkSecondPassword }};
+    var payment_method = $("input[name=payment_method]:checked").val();
+    var comment = $("[name=comment]").val();
+    if(balance_check == 'on'){
+      var balance = $('#balance_value').val()== undefined?0:$('#balance_value').val();
+    }else{
+      var balance = 0;
+    }
+    var order_id = {{ order_id }};
+    var fee_order_id = {{ fee_order_id }};
+    var order_source = '{{ order_source }}';
+    var payment_method = $("input[name=payment_method]:checked").val();
+    if (payment_method == 'wechat_pay') {
+      var jsonData = {'balance': balance, 'payment_method': payment_method, 'order_id': order_id,'comment':comment,'fee_order_id':fee_order_id, 'order_source':order_source};
+      // checkWechatOrderStatus();
+    } else if (payment_method == 'cybersource_sop') {
+      var jsonData = $('#cybersource_sop_form').serialize()
+      jsonData = jsonData + "&balance=" + balance;
+      jsonData = jsonData + "&payment_method=" + payment_method;
+      jsonData = jsonData + "&order_id=" + order_id;
+      jsonData = jsonData + "&comment=" + comment;
+      jsonData = jsonData + "&fee_order_id=" + fee_order_id;
+      jsonData = jsonData + "&order_source=" + order_source;
+      // var jsonData = {'balance': balance, 'payment_method': payment_method, 'order_id': order_id};
+    } else if (payment_method == 'umf_pay') {
+      var jsonData = {'balance': balance, 'payment_method': payment_method, 'order_id': order_id,'comment':comment,'fee_order_id':fee_order_id, 'order_source':order_source};
+      // checkUmfOrderStatus();
+    } else if(virtual_check){
+      var jsonData = {'balance': balance, 'virtual_pay': '1', 'order_id': order_id,'comment':comment,'fee_order_id':fee_order_id, 'order_source':order_source};
+    }else {
+      var jsonData = {'balance': balance, 'payment_method': payment_method, 'order_id': order_id,'comment':comment,'fee_order_id':fee_order_id, 'order_source':order_source};
+    }
+    $.ajax({
+      url: 'index.php?route=checkout/confirm/modifiedOrder',
+      type: 'post',
+      data: jsonData,
+      dataType: 'json',
+      beforeSend: function () {
+        $('[name="button-payment-method"]').button('loading');
+      },
+      success: function (json) {
+        $('.alert-dismissible, .text-danger').remove();
+        var paymentMethod = json['payment_method'];
+        if(!json['order_status']){
+          if (json['msg']) {
+            layer.confirm(json['msg'], {
+              btn: ['OK'],
+              title: 'Message',
+              skin: 'yzc_layer',
+              closeBtn: false,
+              area: ['480px', 'auto'],
+              yes: function () {
+                location = json['redirect'];
+              }
+            });
+            return;
+          } else {
+            location = json['redirect'];
+          }
+        }
+        if(paymentMethod == 'error'){
+          //虚拟支付校验
+          layer.confirm('Unit Price of Agreement should round off up to 2 decimal place and not be less than 0.',{
+            btn: ['Yes'],
+            title: 'Message',
+            skin: 'yzc_layer',
+            yes:function(){
+              location = json['redirect'];
+            }
+          });
+        }
+        //微信支付创建订单
+        if (paymentMethod == 'wechat_pay' && !paymentApp.createWechatPayment()) {
+          return;
+        }
+        if (paymentMethod == 'line_of_credit') {
+          if (json['status'] == "2" || json['status'] == "3") {
+            if (json['redirect']) {
+              location = json['redirect'];
+            }
+          } else {
+            if (json['status'] == "0") {
+              layer.alert(json['msg'], {icon: 2, title: ' ', btn: 'OK'});
+            } else if (json['status'] == "-1") {
+              // 信用额度余额不足提醒优化
+              let updateBanTipOptions={
+                title: "Error",
+                content: json['msg'],
+                btn: ['OK'],
+              }
+              layerOris.confirmLayer(updateBanTipOptions,()=>{
+                //confirm 的回调
+                window.location.reload();
+              },()=>{
+                //关闭 的回调
+                window.location.reload();
+              });
+            } else if (json['status'] == "1") {
+              // 购买的产品数量超过了供应商库存
+              $('#myModalLabel').text("下列产品数量超过了供应商库存");
+              $('#myModalBody').empty();
+              $('#myModalBody').append("<table class='table table-condensed table-hover table-bordered'><thead style='text-align: center; font-weight: bold'><tr><td>No.</td><td>Item Name</td><td>Qty</td><td>Qty Avail</td></tr></thead><tbody id='dataBody' style='text-align: center;font-weight: bold'></tbody></table>");
+              let datas = json['data'];
+              for (let i = 0; i < datas.length; i++) {
+                let data = datas[i];
+                let rowData = '<tr>';
+                rowData += '<td>' + i + '</td>';
+                rowData += '<td>' + data.itemName + '</td>';
+                rowData += '<td>' + data.qty + '</td>';
+                rowData += '<td style="color: red">' + data.qtyAvail + '</td>';
+                rowData += '</tr>';
+                $('#dataBody').append(rowData);
+              }
+              $('#jumpCartButton').click(function () {
+                location = json['redirect'];
+              });
+              $('#myModal').modal();
+            } else if (json['status'] == '4') {
+              if (layer.confirm(json['msg'], {icon: 2, title: ' ', btn: 'OK'})) {
+                location = json['redirect'];
+              }
+            }
+          }
+        }
+
+        if (paymentMethod == 'umf_pay') {
+          checkUmfOrderStatus();
+          $('[name="button-payment-method"]').button('reset');
+          if (json['status'] == 5) {
+            window.location.href = '{{ success }}';
+            return;
+          }
+          if (json['pay_url']) {
+            let isIE = IEVersion();
+            if (isIE > 0) {
+              //如果是IE直接打开
+              window.location = json['pay_url'];
+            } else {
+              // 提示用户使用IE打开
+              $('#pay_url').val(json['pay_url']);
+              $('#umfPayModal').modal()
+            }
+          } else {
+            layer.alert(json['msg'], {icon: 2, title: ' ', btn: 'OK'});
+          }
+        }
+
+        if (paymentMethod == 'cybersource_sop') {
+          if (json['status'] == 5) {
+            layer.alert(json['error'], {icon: 2, title: ' ', btn: 'OK'});
+            $('[name="button-payment-method"]').button('reset');
+            return;
+          }
+          if (json['html']) {
+            $(document.body).append(json['html']);
+          }
+
+          // if 3ds redirect instruction
+          if (json['ACSURL']) {
+            $('#3dauth').remove();
+
+            html = '<form action="' + json['ACSURL'] + '" method="post" id="3dauth">';
+            html += '  <input type="hidden" name="MD" value="' + json['MD'] + '" />';
+            html += '  <input type="hidden" name="PaReq" value="' + json['PaReq'] + '" />';
+            html += '  <input type="hidden" name="TermUrl" value="' + json['TermUrl'] + '" />';
+            html += '</form>';
+
+            $('form#{{ classname }}').after(html);
+
+            $('#3dauth').submit();
+          }
+
+          // if error
+          if (json['error']) {
+            $('form#form_{{ classname }}').before('<div id="payment_message_error" class="warning alert alert-warning"><i class="fa fa-info-circle"></i> ' + json['error'] + '</div>');
+          }
+
+          // if success
+          if (json['success']) {
+            location = json['success'];
+          }
+          if (json['status'] == 4) {
+            if (confirm(json['msg'])) {
+              location = json['redirect'];
+            }
+          }
+        }
+
+        if (paymentMethod == 'virtual_pay') {
+          if (json['status'] == "2" || json['status'] == "3") {
+            if (json['redirect']) {
+              location = json['redirect'];
+            }
+          }
+          if (json['status'] == "0") {
+            layer.alert(json['msg'], {
+              title: 'Attention',
+              skin: 'yzc_layer',
+              btnAlign: 'c',
+              btn: 'View Sales Order',
+              btn1: function () {
+                if (json['redirect']) {
+                  window.location = json['redirect'];
+                } else {
+                  window.reload();
+                }
+              },
+              cancel: function () {
+                window.history.back()
+              }
+            });
+          }
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        if (xhr.status == 302) {
+          if (timerThis) {
+            clearTimeout(timerThis);
+          }
+          window.location.reload();
+          return ;
+        }
+        var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+          title: 'Message',
+          btn: 'OK',
+          skin: 'yzc_layer' //样式类名
+          , closeBtn: 1
+        }, function () {
+          layer.close(tmplayer);
+        });
+      },
+      complete: function (e, xhr, settings) {
+        if (e.status == 302) {
+          if (timerThis) {
+            clearTimeout(timerThis);
+          }
+          window.location.reload();
+        }
+      }
+    });
+
+  }
+
+  function getPoundage() {
+    var decimal = {{ decimal }};
+    $("[name=payment_method_total]").remove();
+    var balance_check  = $("#line-checkbox:checked").val();
+    if(balance_check == 'on'){
+      var balance = $('#balance_value').val();
+    }else{
+      var balance = 0;
+    }
+    var payment_method = $("input[name=payment_method]:checked").val();
+    var total = {{ total }};
+    var country_id = {{ country_id }};
+    var poundageToatl = total-balance;
+    var payment_method_total = (total-balance);
+    var paymentMethods = {{ payment_methods|json_encode }};
+
+    if (paymentMethods[payment_method]) {
+      var poundagePercent = paymentMethods[payment_method]['poundage'];
+      var poundage = parseFloat(country_id==107?fomatFloat(poundageToatl*poundagePercent,0):fomatFloat(poundageToatl*poundagePercent,2).toFixed(2));
+    } else {
+      var poundage = 0.00;
+    }
+
+    var grand_total = poundage+total;
+    var grand_total = country_id==107?fomatFloat(grand_total,0):fomatFloat(grand_total,2).toFixed(2);
+    var payment_method_total = country_id==107?fomatFloat(payment_method_total,0):fomatFloat(payment_method_total,2).toFixed(2);
+
+    {% if symbolLeft %}
+    var poundage_currency = '{{ symbolLeft }}'+poundage.toFixed(decimal);
+    var grand_total_currency ='{{ symbolLeft }}'+grand_total;
+    var payment_method_total_currency = '{{ symbolLeft }}'+payment_method_total;
+    {% endif %}
+    {% if symbolRight %}
+    var poundage_currency = poundage.toFixed(decimal)+'{{ symbolRight }}';
+    var grand_total_currency = grand_total+'{{ symbolRight }}';
+    var payment_method_total_currency = payment_method_total+'{{ symbolRight }}';
+    {% endif %}
+    if(poundage != 0){
+      $('[name="poundage"]').text(poundage_currency);
+      $('[name="poundage_show"]').show();
+      $('#grand_total_p').removeClass('grand_total_center');
+    }else{
+      $('[name="poundage_show"]').hide();
+      $('#grand_total_p').addClass('grand_total_center');
+    }
+    $('[name="grand_total"]').text(grand_total_currency);
+    $("input[name=payment_method]:checked").parent().append('<span name="payment_method_total" style="font-size: 14px;margin-left: 14px;color: #FA6400;font-size: 14px">'+payment_method_total_currency+'</span>');
+  }
+</script>
+<script>
+  function accMul(num1,num2){
+    var m=0,s1=num1.toString(),s2=num2.toString();
+    try{m+=s1.split(".")[1].length}catch(e){};
+    try{m+=s2.split(".")[1].length}catch(e){};
+    return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m);
+  }
+  function IEVersion() {
+    var userAgent = navigator.userAgent;
+
+    var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器
+
+    var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器
+
+    var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1;
+    if (isIE) {
+      var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+
+      reIE.test(userAgent);
+      var fIEVersion = parseFloat(RegExp["$1"]);
+      if (fIEVersion == 7) {
+        return 7;
+
+      } else if (fIEVersion == 8) {
+        return 8;
+
+      } else if (fIEVersion == 9) {
+        return 9;
+
+      } else if (fIEVersion == 10) {
+        return 10;
+
+      } else {
+        return 6;//IE版本<=7
+      }
+    } else if (isIE11) {
+      return 11; //IE11
+
+    } else {
+      return -1;//不是ie浏览器
+    }
+  }
+
+  function fomatFloat(src,pos){
+    return Math.round(src*Math.pow(10, pos))/Math.pow(10, pos);
+  }
+</script>
+
+
+{% if merchid is not null  %}
+  <script type="text/javascript" src="https://h.online-metrix.net/fp/check.js?org_id={{ orgid }}&session_id={{ merchid }}{{ dfid }}"></script>
+{% endif %}
+{{ footer }}

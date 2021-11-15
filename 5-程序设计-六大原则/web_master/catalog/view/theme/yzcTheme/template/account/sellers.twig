@@ -1,0 +1,305 @@
+{{ header }}
+<style>
+  .breadcrumb-simple {
+    padding: 20px 0;
+  }
+  .toggle-mark {
+    margin-left: 4px;
+  }
+  .toggle-mark .giga.icon-V10-wenhaotishi{
+    font-size: 14px;
+  }
+  .loading-btn {
+    min-width: 30px !important;
+    width: unset !important;
+    line-height: 28px !important;
+  }
+</style>
+
+<div id="page-inventory-management-index" class="page-seller-portal">
+  {#面包屑#}
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  {#END 面包屑#}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 style="margin: 0 0 20px;">{{ heading_title_sellers }}</h1>
+      </div>
+    </div>
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="tab-content main">
+          <div role="tabpanel" class="tab-pane active" id="upload">
+            <div class="bg-white p-2">
+              <div class="filter-wrapper form-wrapper mt-3 mb-3" style="margin-top: 20px;margin-bottom: 20px;">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="input-filter-seller-name" class="control-label">{{ column_seller_store }}</label>
+                      <input type="text" name="filter_seller_name" value="{{ filter_seller_name }}"
+                             placeholder="{{ column_seller_store }}" id="input-filter-seller-name"
+                             class="form-control"/>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="input-filter-status" class="control-label">{{ column_status }}</label>
+                      <select name="filter_status" id="input-filter-status" class="form-control">
+                        <option value="">{{ __('请选择', {}, 'common') }}</option>
+                        <option value="1" {% if filter_status == "1" %}selected{% endif %}>{{ text_active }}</option>
+                        <option value="0" {% if filter_status == "0" %}selected{% endif %}>{{ text_inactive }}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group pull-right">
+                      <label>&nbsp;</label>
+                      <div>
+                        <button type="button" onclick="filterData(this);"
+                                class="btn btn-primary">{{ button_filter }}</button>
+                        <button type="button" onclick="downloadItemCodeMapping();" class="btn btn-default"
+                                data-toggle="tooltip" title="{{ text_commodity_statistics }}">
+                          <i class="fa fa-download"></i>
+                        </button>
+                        <button type="button" onclick="clrFilterData(this);" class="btn btn-default">Reset</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <table class="table main table-hover">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th style="width: 15%">
+                    {% if sort == 'ctc.`screenname`' %}
+                      <a style="cursor: pointer" href="{{ sort_seller_name }}"
+                         class="{{ order|lower }}">{{ column_seller_store }}</a>
+                    {% else %}
+                      <a style="cursor: pointer" href="{{ sort_seller_name }}">{{ column_seller_store }}</a>
+                    {% endif %}
+                  </th>
+                  <th>{{ column_main_category }}</th>
+                  <th class="text-center">{{ column_number_transaction }}</th>
+                  <th class="text-center">{{ column_total_transaction }}</th>
+                  <th class="text-center">{{ column_Last_transaction_time }}</th>
+                  <th class="text-center" style="width:10%">
+                    <span data-toggle="tooltip"
+                          title="{{ tip_coop_seller_status }}" class="toggle-mark">
+                      {{ column_coop_status_seller }}
+                      <i class="giga icon-V10-wenhaotishi"></i>
+                    </span>
+
+                  </th>
+                  <th style="width:10%" class="text-center">
+                    {% if sort == 'bts.`buyer_control_status`' %}
+                      <a style="cursor: pointer" href="{{ sort_coop_status_buyer }}" class="{{ order|lower }}">
+                        <span data-toggle="tooltip" title="{{ tip_coop_buyer_status }}" class="toggle-mark">
+                          {{ column_status }}
+                          <i class="giga icon-V10-wenhaotishi"></i>
+                        </span>
+                      </a>
+                    {% else %}
+                      <a style="cursor: pointer" href="{{ sort_coop_status_buyer }}">
+                        <span data-toggle="tooltip" title="{{ tip_coop_buyer_status }}" class="toggle-mark">
+                          {{ column_status }}
+                          <i class="giga icon-V10-wenhaotishi"></i>
+                        </span>
+                      </a>
+                    {% endif %}
+                  </th>
+                  <th class="text-right" style="width:14%">{{ column_action }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if tableData %}
+                  {% for data in tableData %}
+                    <tr id="data_{{ data.id }}">
+                      <td>
+                        <input hidden value="{{ data.id }}" name="id" type="text"/>
+                        {{ data.num }}
+                      </td>
+                      <td>
+                        <a href="{{ data.store_link }}" target="_blank" style="color:#3A75DC;"
+                           onmousemove="addUnderline(this)" onmouseout="removeUnderline(this)">
+                          {{ data.seller_name }}
+                        </a>
+                      </td>
+                      <td>{{ data.main_cate_name }}</td>
+                      <td style="text-align: center">{{ data.number_of_transaction }}</td>
+                      <td style="text-align: center">{{ data.money_of_transaction }}</td>
+                      <td style="text-align: center">
+                        {{ (data.last_transaction_time=='0000-01-01 00:00:00' or data.last_transaction_time=='0001-01-01 00:00:00')?'N/A':data.last_transaction_time }}
+                      </td>
+                      <td class="text-center">
+                        {% if data.coop_status_seller == 0 %}
+                          {{ text_inactive }}
+                        {% elseif data.coop_status_seller == 1 %}
+                          {{ text_active }}
+                        {% endif %}
+                      </td>
+                      <td class="text-center">
+                        {% if data.coop_status_buyer == 1 %}
+                          <span class="form-display">{{ text_active }}</span>
+                        {% elseif data.coop_status_buyer == 0 %}
+                          <span class="form-display">{{ text_inactive }}</span>
+                        {% endif %}
+                        <select class="form-edit form-control" style="display: none" name="coop_status_buyer">
+                          <option
+                            value="0" {% if data.coop_status_buyer == 0 %} selected {% endif %}>{{ text_inactive }}</option>
+                          <option
+                            value="1" {% if data.coop_status_buyer == 1 %} selected {% endif %}>{{ text_active }}</option>
+                        </select>
+                      </td>
+                      <td>
+                        <div class="action-group">
+                          <a onclick="edit('data_{{ data.id }}');" data-toggle="tooltip" title="{{ button_edit_seller }}"
+                             class="btn-form-display"><i class="fa fa-pencil"></i></a>
+                          <a href="{{ data.send_message_link }}" data-toggle="tooltip" title="{{ button_message_seller }}"
+                             class=""><i class="fa fa-envelope"></i></a>
+                          <button type="button" style="display: none" onclick="save('data_{{ data.id }}',this);" data-toggle="tooltip"
+                             title="{{ button_save }}" class="btn-form-edit loading-btn"><i class="fa fa-save"></i></button>
+                          <a style="display: none" onclick="back('data_{{ data.id }}');" data-toggle="tooltip"
+                             title="{{ button_cancel }}" class="btn-form-edit"><i class="fa fa-reply"></i></a>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <td colspan="10" align="center">No records.</td>
+                {% endif %}
+                </tbody>
+              </table>
+
+              {#{% include 'giga/template/_parts/pagination_simple.twig' %}#}
+
+              <div class="row" style="margin-right: 0">
+                <div class="col-sm-12 text-right">{{ pagination }}</div>
+              </div>
+
+
+              {#<div class="text-center">#}
+              {#<a href="{{ continue }}" class="btn btn-primary">{{ button_continue }}</a>#}
+              {#</div>#}
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ footer }}
+<script>
+  // 添加下划线
+  function addUnderline(obj) {
+    $(obj).css("text-decoration", "underline");
+  }
+
+  //移除下划线
+  function removeUnderline(obj) {
+    $(obj).css("text-decoration", "");
+  }
+
+  function edit(id) {
+    // 显示编辑
+    $("#" + id + " .form-edit").css("display", "block");
+    $("#" + id + " .btn-form-edit").css("display", "inline-block");
+    // 隐藏展示
+    $("#" + id + " .form-display").css("display", "none");
+    $("#" + id + " .btn-form-display").css("display", "none");
+  }
+
+  function back(id) {
+    $("#" + id + " .form-display").css("display", "block");
+    $("#" + id + " .btn-form-display").css("display", "inline-block");
+    $("#" + id + " .form-edit").css("display", "none");
+    $("#" + id + " .btn-form-edit").css("display", "none");
+  }
+
+  function filterData(button) {
+    $(button).button('loading');
+    // customer name
+    let filter_seller_name = $("#input-filter-seller-name").val();
+    // email
+    let filter_status = $("#input-filter-status").val();
+    let url = "index.php?route=account/sellers";
+    url += "&filter_seller_name=" + filter_seller_name;
+    url += "&filter_status=" + filter_status;
+    location = url;
+  }
+
+  //下载数据
+  function downloadItemCodeMapping() {
+    let url = 'index.php?route=account/sellers/filterByCsv';
+    let sort = "{{ sort }}";
+    if (sort) {
+      url += '&sort=' + encodeURIComponent(sort);
+    }
+    let order = "{{ order }}";
+    if (order) {
+      url += '&order=' + encodeURIComponent(order);
+    }
+    let filter_seller_name = $("#input-filter-seller-name").val();
+    ;
+    if (filter_seller_name) {
+      url += '&filter_seller_name=' + encodeURIComponent(filter_seller_name);
+    }
+    let filter_status = $("#input-filter-status").val();
+    if (filter_status) {
+      url += '&filter_status=' + encodeURIComponent(filter_status);
+    }
+
+    window.location.href = url;
+  }
+
+  function clrFilterData(button) {
+    $(button).button('loading');
+    let url = "index.php?route=account/sellers";
+    location = url;
+  }
+
+  function save(id, button) {
+    var data = {};
+    var formData = $("#" + id + " .form-edit");
+    if (formData !== undefined) {
+      for (var i = 0; i < formData.length; i++) {
+        data[formData[i].name] = formData[i].value;
+      }
+    }
+    data[$("#" + id + " input[name='id']")[0].name] = $("#" + id + " input[name='id']")[0].value;
+    data["customer_id"] = "{{ customer_id }}";
+    data["sort"] = "{{ sort }}";
+    data["order"] = "{{ order }}";
+    data["page_limit"] = {{ page_limit }};
+    data["page"] = {{ page_num }};
+    // customer name
+    let filter_seller_name = $("#input-filter-seller-name").val();
+    // status
+    let filter_status = $("#input-filter-status").val();
+    data["filter_seller_name"] = filter_seller_name;
+    data["filter_status"] = filter_status;
+    $.ajax({
+      url: 'index.php?route=account/sellers/update',
+      type: 'post',
+      dataType: 'json',
+      data: data,
+      beforeSend: function () {
+        $(button).button('loading');
+      },
+      success: function (json) {
+        if (json['load'] !== undefined) {
+          location = json['load'];
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+</script>

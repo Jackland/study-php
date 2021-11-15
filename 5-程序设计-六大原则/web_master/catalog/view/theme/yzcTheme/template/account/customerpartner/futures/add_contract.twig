@@ -1,0 +1,1657 @@
+{{ header }}{{ separate_column_left }}
+<style>
+   .el-scrollbar p{
+       margin: 0;
+   }
+    #box-shadow {
+        display: none;
+        padding-top: 30px;
+        margin-top: 20px;
+    }
+
+    .form-group span {
+        margin-right: 20px;
+    }
+
+    .modal-header {
+        padding: 13px;
+    }
+
+    .modal-footer {
+        text-align: center;
+    }
+
+    a.link {
+        color: #3A75DC !important;
+    }
+
+    a.link:hover {
+        text-decoration: underline;
+    }
+
+    .modal-content .form-group label {
+        color: #333;
+        font-weight: inherit;
+    }
+
+    .questionnaire .modal-body > div {
+        border-bottom: 1px solid #ccc !important;
+    }
+
+    /*平台政策*/
+    /*.policy {*/
+    /*    width: 60%;*/
+    /*    margin: 0 auto;*/
+    /*}*/
+
+    .content-policy {
+        height: 200px;
+        overflow: auto;
+        border: 1px solid #eee;
+        padding: 3px;
+        font-size: 13px;
+    }
+
+    .effective-bill,
+    .spot-price,
+    .historical-price {
+        position: relative;
+    }
+
+    .effective-bill .valid,
+    .spot-price .spot,
+    .historical-price .lineChart {
+        background-color: #fff;
+        width: 500px;
+        position: absolute;
+        z-index: 99;
+        right: 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px 10px;
+        font-size: 12px;
+        display: none;
+    }
+
+
+    .effective-bill .bill:hover .valid,
+    .spot-price:hover .spot,
+    .historical-price:hover .lineChart {
+        display: block;
+    }
+
+    .effective-bill .note {
+        background-color: #fff0e6;
+        padding: 3px 5px;
+        color: #FA6400;
+
+    }
+
+    .spot > div {
+        height: 50px;
+        overflow: hidden;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+    }
+
+    .spot .pcs {
+        margin-right: 20px;
+        width: 30%;
+    }
+
+    .flex {
+        display: flex;
+    }
+
+    .datetimepicker span.icon {
+        margin-right: 0;
+        position: absolute;
+        right: 8px;
+        bottom: 0;
+        line-height: 40px;
+        color: #ccc;
+    }
+
+    .form-group label {
+        display: block;
+    }
+
+    .form-group input {
+        display: inline-block;
+    }
+
+   .manner .btn,
+   .manner2 .btn {
+       height: 40px;
+       border: 1px solid #eee;
+       box-shadow: none;
+       color: #666;
+       margin-top: -3px;
+   }
+   .manner .btn:hover,
+   .manner2 .btn:hover{
+       color: #3A75DC;
+   }
+   .manner .btn[disabled],
+   .manner2 .btn[disabled]{
+     color: #666 !important;
+   }
+
+    div.submit {
+        text-align: center;
+        margin-top: 20px;
+        padding: 10px 0;
+    }
+
+   div.submit .btn {
+       width: 100px;
+       height: 40px;
+       line-height: 38px;
+       font-size: 14px;
+       padding: 0;
+   }
+   div.submit .btn:hover{
+       background-color: #2d57a9;
+       border-color: #2d57a9;
+   }
+
+    .code {
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .code input {
+        height: 38px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        margin-left: 20px;
+        background-color: #f3f5f7;
+        width: 25%;
+        padding: 4px 8px;
+    }
+
+    .msg-list {
+        overflow: hidden;
+    }
+
+   .msg-list > div {
+       margin: 0 15px;
+       padding: 10px 0;
+       border-bottom: 1px solid #eee;
+   }
+
+   .msg-list > div > div {
+       height: 50px;
+       display: flex;
+       align-items: center;
+
+   }
+
+    .msg-name {
+        color: #677999;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    .mt-2 {
+        margin-top: 20px;
+    }
+    .mannerNum{
+        display: none;
+        font-weight: initial;
+    }
+    .bootstrap-datetimepicker-widget td.today:before{
+        border-width: 0;
+    }
+    #myDivSellerFuturesQuestion input[type=radio]{
+        vertical-align: sub;
+    }
+    i.icon-help-inactive{
+        font-size: 14px;
+    }
+    .error-msg{
+        color: #ff414d;
+        /*display: none;*/
+    }
+    .input-error{
+        border: 1px solid #ff414d!important;
+    }
+   .el-popper[x-placement^=bottom] {
+       margin-top: 5px !important;
+   }
+
+   .el-scrollbar > div:first-child {
+       padding: 5px 0;
+       overflow: unset;
+   }
+   .btn.btn-primary:hover{
+       background-color: #2d57a9;
+       border-color: #2d57a9;
+   }
+   .yzc_layer .layui-layer-content{
+       text-align: left;
+   }
+   .yzc_layer .layui-layer-ico{
+       background: none;
+   }
+   .yzc_layer .layui-layer-close.layui-layer-close1:after{
+       content: "\e6b4";
+       font-family: 'giga';
+       color: #fff;
+       font-weight: bold;
+       font-size: 16px;
+   }
+   .yzc_layer .layui-layer-btn .layui-layer-btn0{
+       border-color: #3A75DC;
+       background-color: #3A75DC;
+   }
+   .yzc_layer .layui-layer-btn .layui-layer-btn0:hover{
+       background-color: #2d57a9;
+       opacity: 1;
+   }
+   .yzc_layer .layui-layer-btn .layui-layer-btn1{
+       color: #3A75DC;
+   }
+   .yzc_layer .layui-layer-btn .layui-layer-btn1:hover{
+       background-color: #3A75DC;
+       color: #fff;
+       opacity: 1;
+   }
+  .plr{
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+   .form-group label{
+       text-transform: none;
+   }
+  .heght22{
+    height: 22px;
+  }
+    .btn.btn-default:hover{
+        background-color: #3A75DC;
+        color: #fff;
+    }
+   .modal .btn{
+       padding: 0;
+       height: 40px;
+       width: 85px;
+       line-height: 40px;
+   }
+   .myModal{
+      top: 200px;
+      width: 900px
+   }
+   .myModal .footer {
+      text-align: center;
+      margin-top: 15px
+   }
+   .myModal .footer .describe {
+      margin-bottom: 8px;
+   }
+   .myModal .footer a:not(:first-child) {
+      margin-left: 8px;
+   }
+   .myModal .layer-btn {
+      height: 40px;
+      padding: 0 15px;
+      line-height: 38px;
+      box-shadow: none;
+   }
+
+    #payment_ratio-box .dropdown-menu{
+        width: calc(100% - 38px) !important;
+        max-height: 120px;
+        overflow: auto;
+    }
+    #payment_ratio-box .dropdown-menu li:hover{
+        cursor: pointer;
+    }
+</style>
+
+<link rel="stylesheet" href="catalog/view/javascript/product/element-ui.css">
+<script src="catalog/view/javascript/product/vue.min.js"></script>
+<script src="catalog/view/javascript/product/element-ui.js"></script>
+<script src="catalog/view/javascript/product/element-ui-en.js"></script>
+<script src="catalog/view/javascript/product/axios.min.js"></script>
+
+<div
+        {% if separate_view is defined and separate_view %}
+            class="container-fluid" id="content" style="margin-left:235px"
+        {% else %}
+            class="container"
+        {% endif %}
+>
+    {% include 'giga/template/_parts/breadcrumb.twig' %}
+    <div class="row" style="margin-right: 0px;margin-left: 0">
+        {% include 'giga/template/_parts/column_place.twig' %}
+        <div class="{{ class }} giga-content">
+            <h1 style="display: inline-block">{{ text_list_create_contract }}</h1>
+            {% verbatim %}
+                <div id="add-contract-init">
+                    <el-row >
+                        <el-col  class="code" style="width: 130px">
+                            Item Code / MPN &nbsp;
+                        </el-col>
+                            <el-col  style="width:250px">
+                                <el-autocomplete
+                                    v-model="code_mpn"
+                                    :fetch-suggestions="queryProducts"
+                                    @select="querySelectProduct"
+                                    placeholder="Enter Item Code / MPN"
+                                    value-key='mpn'
+                                    popper-class="select-autocomplete"
+                                    style="width: 100%">
+                                    <template v-slot:default="{ item }">
+                                        <p>{{ item.sku }}/{{ item.mpn }}</p>
+                                    </template>
+                                </el-autocomplete>
+                            </el-col>
+                            <div class="el-form-item__error" style="margin-left: 130px;color: red">
+                                {{ code_mpn_error }}
+                            </div>
+                    </el-row>
+                </div>
+                {% endverbatim %}
+        </div>
+        <div id="box-shadow" style="margin-right: 0">
+            <div id="product-detail"></div>
+            <div class="row">
+                <div style="overflow:hidden;">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label heght22"
+                                   for="input_futures_agreement_no">{{ text_form_contract_no }}</label>
+                            <input type="text" name="contractNo" value=""
+                                   placeholder="" id="contractNo" class="form-control" disabled/>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group required">
+                            <label class="control-label heght22" for="contract_status">{{ text_form_status }} <i
+                                        class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title=""
+                                        data-original-title="{{ text_notice_contract_status }}"></i></label>
+                            <select name="contract_status" id="contract_status" class="form-control" onchange=""
+                                    disabled>
+                                <option value="1">{{ text_contract_status_active }}</option>
+                                <option value="2">{{ text_contract_status_disabled }}</option>
+                                <option value="3">{{ text_contract_status_sold_out }}</option>
+                                <option value="4">{{ text_contract_status_terminated }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group required">
+                            <label class="control-label heght22" for="bargain">{{ text_form_bid }}
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-toggle="tooltip" title=""
+                                   data-original-title="{{ text_notice_is_bid }}"></i></label>
+                            <select name="bargain" id="bargain" class="form-control" onchange="">
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div style="overflow:hidden;">
+                    <div class="col-sm-4">
+                        <div class="form-group required">
+                            <label class="control-label heght22">{{ text_form_delivery_date }} <i
+                                        class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title=""
+                                        data-original-title="{{ text_notice_delivery_date|replace({"%s": estimate_receiving_days}) }}"></i></label>
+                            <div class="datetimepicker-range">
+                                <div class="datetimepicker" style="position: relative">
+                                    <input type="text" name="delivery_date" onchange="checkDeliveryDate()"
+                                           onblur="checkDeliveryDate()"
+                                           value="{{ delivery_date_from }}" placeholder="Pick a date..."
+                                           id="delivery_date" class="form-control" onkeydown="return false" autocomplete="off"/>
+                                    <span class="icon"><i class="giga icon-DatePicker"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group required">
+                            <label class="control-label heght22" for="contract_qty">{{ text_form_total_quantity }} <i
+                                        class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title=""
+                                        data-original-title="{{ text_notice_quantity }}"></i></label>
+                            <input type="text" name="contract_qty" value="" placeholder=""
+                                   onblur="checkContractQty()" id="contract_qty" class="form-control" title=""/>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group required">
+                            <label class="control-label heght22" for="purchase_qty">{{ text_form_min_quantity }}
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-toggle="tooltip" title=""
+                                   data-original-title="{{ text_notice_min_quantity }}"></i></label>
+                            <input type="text" name="purchase_qty" value="" placeholder=""
+                                   onblur="checkPurchaseQty()" id="purchase_qty" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="error-msg" id="error_delivery_date"></div>
+                        <div class="error-msg" id="error_contract_qty"></div>
+                        <div class="error-msg" id="error_purchase_qty"></div>
+                    </div>
+                </div>
+                <div class="manner" style="overflow:hidden;">
+                    <div class="col-sm-4">
+                        <div class="form-group required">
+                            <label class="control-label heght22"
+                                   for="delivery_method">{{ text_form_payment_method }}<b class="mannerNum">A</b> <i
+                                        class="giga icon-V10-wenhaotishi" data-toggle="tooltip"
+                                        title=""
+                                        data-original-title="{{ text_notice_payment_method }}"></i></label>
+                            <select name="delivery_method1" id="delivery_method1"
+                                    class="form-control" onchange="changeDeliveryMethod(this)">
+                                <option value="1">{{ text_contract_method_balance_amount }}</option>
+                                <option value="2">{{ text_contract_method_change_margin }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="form-group required">
+                            <label class="control-label heght22" for="delivery_method_price">{{ text_form_price }}<b
+                                        class="mannerNum">A</b></label>
+                            <input type="text" name="delivery_method_price1" value="" placeholder=""
+                                   onblur="checkDeliveryMethodPrice('A')"
+                                   id="delivery_method_price1" class="form-control" style="width: 79%"/>
+                            <a class="btn btn-add"><i class="giga icon-add"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <span class="error-msg" id="error_delivery_method_price1"></span>
+                    </div>
+                </div>
+                <div class="manner2" style="overflow:hidden;display: none">
+                    <div class="col-sm-4">
+                        <div class="form-group required">
+                            <label class="control-label heght22"
+                                   for="delivery_method">{{ text_form_payment_method }}<b class="mannerNum">B</b> <i
+                                        class="giga icon-V10-wenhaotishi" data-toggle="tooltip"
+                                        title=""
+                                        data-original-title="{{ text_notice_payment_method }}"></i></label>
+                            <select name="delivery_method2" id="delivery_method2"
+                                    class="form-control" onchange="changeDeliveryMethod(this)">
+                                <option value="1">{{ text_contract_method_balance_amount }}</option>
+                                <option value="2">{{ text_contract_method_change_margin }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="form-group required">
+                            <label class="control-label heght22" for="contract_qty">{{ text_form_price }}<b
+                                        class="mannerNum">B</b></label>
+                            <input type="text" name="delivery_method_price2" value="" placeholder=""
+                                   onblur="checkDeliveryMethodPrice('B')"
+                                   id="delivery_method_price2" class="form-control" style="width: 79%"/>
+                            <a class="btn btn-delete"><i class="giga icon-lajitong"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <span class="error-msg" id="error_delivery_method_price2"></span>
+                    </div>
+                </div>
+                <div>
+                    <div class="col-sm-4">
+                        <div class="form-group required">
+                            <label class="control-label heght22" for="margin">
+                                {{ text_form_deposit_percentage }} <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip"
+                                                                      title=""
+                                                                      data-original-title="{{ text_notice_deposit_percentage }}"></i>
+                            </label>
+                            <div class="input-group" id="payment_ratio-box">
+                                <input type="text" class="form-control right-radius enter-input" name="payment_ratio" id="payment_ratio" autocomplete="off"
+                                       placeholder="" value="{{ payment_ratio }}" onblur="checkPaymentRatio()" onclick="getNewRatioValue()">
+                                <ul class="dropdown-menu" aria-labelledby="dLabel">
+                                    {% set depositPercentages = deposit_percentages|split(',') %}
+                                    {% for v in depositPercentages %}
+                                        <li><a>{{ v }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                                <div class="input-group-addon">%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label heght22" for="Margin Amount">{{ text_form_deposit_amount }} <i
+                                        class="giga icon-V10-wenhaotishi"
+                                        data-toggle="tooltip" title=""
+                                        data-original-title="{{ text_notice_deposit_amount }}"></i></label>
+                            <div class="input-group">
+                                <input type="text" class="form-control right-radius" id="margin_amount" placeholder="" disabled>
+                                <div class="input-group-addon">{{ currency_code }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label heght22"
+                                   for="Margin Amount">
+                                {% if account_type == 1 %}{{ text_form_available_remaining_balance }}{% else %}{{ text_form_available_total_balance }}{% endif %}
+                                {% if account_type != 1 %}
+                                <i class="giga icon-V10-wenhaotishi"
+                                    data-toggle="tooltip"
+                                    data-original-title="The amount includes collateral and receivables."></i>
+                                {% endif %}
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control right-radius" id="amount" placeholder="" disabled
+                                       value="{{ amount }}">
+                                <div class="input-group-addon">{{ currency_code }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="error-msg" id="error_payment_ratio"></div>
+                        <div class="error-msg" id="error_amount"></div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="hidden-product-id" value="">
+            <input type="hidden" id="hidden-sku" value="">
+            <input type="hidden" id="payment-ratio-value" value="{{ payment_ratio }}">
+            <input type="hidden" id="max-payment-ratio-value" value="{{ max_payment_ratio }}">
+            <input type="hidden" id="min-payment-ratio-value" value="{{ min_payment_ratio }}">
+            <input type="hidden" id="deposit_percentages-value" value="{{ deposit_percentages }}">
+            <div class="submit">
+                <a class="btn btn-primary btn-save" style="margin-right: 30px" onclick="checkInput('save')"> Save </a>
+                <a class="btn btn-primary btn-apply" onclick="checkInput('saveAndNew')"> Save & Copy </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade policy-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+     data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg myModal" role="document">
+        <div class="modal-content policy">
+            <div class="modal-header">
+                <h4 class="modal-title"> {{ text_policy_title }}</h4>
+            </div>
+            <div class="modal-body">
+                {% if information is defined %}
+                <h2 class="text-center">{{ information.title }}</h2>
+                <div class="content-policy">
+                    {{ information.description }}
+                </div>
+                {% endif %}
+                <div class="footer">
+                    <div style="text-align: left">
+                        <input type="checkbox" id="trading-policy"> {{ text_policy_acknowledged }}
+                    </div>
+                    <a data-toggle="tooltip" title="" class="btn btn-primary layer-btn" target="_blank" id="confirm"
+                       data-original-title="" disabled onclick="loadFuturesQuestion()">
+                        {{ text_policy_button }}
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade save-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document" style="width: 900px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">{{ text_model_preview_title }}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="msg-list">
+                    <div class="contract-model-notice">{{ text_model_preview_notice }}</div>
+                   <div class="row">
+                       <div class="col-sm-3 contract-model-product plr">
+                           <img src="image/placeholder.png" style="height: 36px"> <span style="margin-left:10px">WF187607EAA</span>
+                       </div>
+                       <div class="col-sm-3 plr">
+                           <span class="msg-name">{{ text_form_delivery_date }}</span>
+                           <span class="contract-model-delivery-date">2019-06-20</span>
+                       </div>
+                       <div class="col-sm-3 plr">
+                           <span class="msg-name">{{ text_form_total_quantity_preview }}</span>
+                           <span class="contract-model-num">1234</span>
+                       </div>
+                       <div class="col-sm-3 plr">
+                           <span class="msg-name">{{ text_form_min_quantity }}</span>
+                           <span class="contract-model-min-num">5</span>
+                       </div>
+                   </div>
+                   <div class="row">
+                       <div class="col-sm-4 plr">
+                           <span class="msg-name">{{ text_form_payment_method }}</span>
+                           <span class="contract-model-delivery-type">尾款交割或转现货保证金</span>
+                       </div>
+                       <div class="col-sm-4 plr">
+                           <span class="msg-name">{{ text_form_price }}</span>
+                           <span class="contract-model-price">$50.23 - $60.21</span>
+                       </div>
+                       <div class="col-sm-4 plr">
+                           <span class="msg-name">{{ text_form_deposit_percentage }}</span>
+                           <span class="contract-model-payment-ratio">10.00%</span>
+                       </div>
+                   </div>
+                    <div class="contract-model-end-msg"></div>
+                </div>
+                <div class="text-center mt-2">
+                    <button type="button" class="btn btn-primary"
+                            onclick="submitContract('save')">{{ text_alert_confirm }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ text_alert_cancel }}</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div id="myDivSellerFuturesQuestion"></div>
+<div class="modal fade apply-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document" style="width: 900px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">{{ text_model_preview_title }}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="msg-list">
+                    <div class="contract-model-notice">{{ text_model_preview_notice }}</div>
+                    <div class="row">
+                        <div class="col-sm-3 contract-model-product">
+                            <img src="image/placeholder.png" style="height: 36px"> <span style="margin-left:10px">WF187607EAA</span>
+                        </div>
+                        <div class="col-sm-3">
+                            <span class="msg-name">{{ text_form_delivery_date }}</span>
+                            <span class="contract-model-delivery-date">2019-06-20</span>
+                        </div>
+                        <div class="col-sm-3">
+                            <span class="msg-name">{{ text_form_total_quantity_preview }}</span>
+                            <span class="contract-model-num">1234</span>
+                        </div>
+                        <div class="col-sm-3">
+                            <span class="msg-name">{{ text_form_min_quantity }}</span>
+                            <span class="contract-model-min-num">5</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <span class="msg-name">{{ text_form_payment_method }}</span>
+                            <span class="contract-model-delivery-type">尾款交割或转现货保证金</span>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="msg-name">{{ text_form_price }}</span>
+                            <span class="contract-model-price">$50.23 - $60.21</span>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="msg-name">{{ text_form_deposit_percentage }}</span>
+                            <span class="contract-model-payment-ratio">10.00%</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 contract-model-end-msg"></div>
+                </div>
+                <div style="margin: 5px 15px;">
+                    {{ text_model_notice }}
+                </div>
+                <div class="text-center mt-2">
+                    <button type="button" class="btn btn-primary"
+                            onclick="submitContract('apply')">{{ text_alert_confirm }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ text_alert_cancel }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{# 7724确认交货日期弹框 #}
+<div id="deliveryDateLayer" class="modal fade date-modal" tabindex="-1" role="dialog" aria-labelledby="deliveryDateLayer"
+     data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg myModal" role="document">
+        <div class="modal-content policy">
+            <div class="modal-header">
+                <button type="button" class="close action-cancel" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Press Page Down to see the rest of the agreement.</h4>
+            </div>
+            <div class="modal-body">
+                <div class="content-policy action-policy"></div>
+                <div class="footer">
+                    <div class="text-left describe">
+                       If you accept the terms of the agreement, click I Agree to continue.
+                    </div>
+                    <a data-toggle="tooltip" class="btn btn-primary layer-btn action-agree">
+                        I Agree
+                    </a>
+                    <a data-toggle="tooltip" title="" class="btn btn-default layer-btn action-cancel">
+                        Cancel
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="deposit_percentages" value="{{ deposit_percentages }}">
+<script>
+    var checkDeliveryDateErrorStatus = 0;
+    var checkDeliveryDateValue = '';
+    var checkDeliveryDateParam = '';
+
+    $("body").on("click", ".noRemind", function () {
+        $(".scale-popover").popover('hide');
+        $(".scale-popover").hide();
+    });
+    let seller_products_link = '{{ url('account/customerpartner/future/contract/sellerProducts') }}';
+    let vm = new Vue({
+        el: "#add-contract-init",
+        data: function () {
+            return {
+                axios: null,
+                code_mpn: '',
+                code_mpn_error: '',
+            };
+        },
+        watch: {},
+        computed: {},
+        methods: {
+            queryProducts(queryString, cb) {
+                let vm = this;
+                vm.code_mpn_error = '';
+                this.axios.get(seller_products_link + "&code_mpn=" + queryString).then(function (res) {
+                    if (res.data.code === 0 || res.data.data.products.length === 0) {
+                        $("#box-shadow").hide();
+                        vm.code_mpn_error = 'Cannot find the matched item by this MPN or Item Code or, this item is not available, has been discarded or cannot be sold separately.';
+                    }
+                    return cb(res.data.data.products);
+                })
+            },
+            querySelectProduct: function (item) {
+                this.code_mpn_error = '';
+                this.code_mpn = item.sku + '/' + item.mpn;
+                $("#hidden-sku").val(item.sku);
+                $("#hidden-product-id").val(item.product_id);
+                loadProductDetail(item.product_id);
+            },
+        },
+        mounted: function () {
+            this.axios = axios.create({});
+        },
+    });
+</script>
+
+<script>
+    Number.prototype.toFixed = function (d) {
+        var s = this + "";
+        if (!d) d = 0;
+        if (s.indexOf(".") == -1) s += ".";
+        s += new Array(d + 1).join("0");
+        if (new RegExp("^(-|\\+)?(\\d+(\\.\\d{0," + (d + 1) + "})?)\\d*$").test(s)) {
+            var s = "0" + RegExp.$2, pm = RegExp.$1, a = RegExp.$3.length, b = true;
+            if (a == d + 2) {
+                a = s.match(/\d/g);
+                if (parseInt(a[a.length - 1]) > 4) {
+                    for (var i = a.length - 2; i >= 0; i--) {
+                        a[i] = parseInt(a[i]) + 1;
+                        if (a[i] == 10) {
+                            a[i] = 0;
+                            b = i != 1;
+                        } else break;
+                    }
+                }
+                s = a.join("").replace(new RegExp("(\\d+)(\\d{" + d + "})\\d$"), "$1.$2");
+            }
+            if (b) s = s.substr(1);
+            return (pm + s).replace(/\.$/, "");
+        }
+        return this + "";
+    };
+
+    function keyPress(ob) {
+        if (!ob.value.match(/^[\+\-]?\d*?\.?\d*?$/))
+            ob.value = ob.t_value;
+        else
+            ob.t_value = ob.value;
+        if (ob.value.match(/^(?:[\+\-]?\d+(?:\.\d+)?)?$/))
+            ob.o_value = ob.value;
+    }
+
+    function keyUp(ob) {
+        if (!ob.value.match(/^[\+\-]?\d*?\.?\d*?$/))
+            ob.value = ob.t_value;
+        else
+            ob.t_value = ob.value;
+        if (ob.value.match(/^(?:[\+\-]?\d+(?:\.\d+)?)?$/))
+            ob.o_value = ob.value;
+
+        if (ob.value == 'undefined')
+            ob.value = '';
+    }
+
+    function loadProductDetail(productId) {
+        let loadUrl = '{{ url("account/customerpartner/future/contract/productDetail") }}'
+        $("#product-detail").load(loadUrl + "&product_id=" + productId, function () {
+            $("#box-shadow").show();
+            checkDeliveryDateErrorStatus = 0;
+            checkDeliveryDateValue = '';
+
+            let randNum = "";
+            for (let i = 0; i < 6; i++) {
+                randNum += Math.floor(Math.random() * 10);
+            }
+            $("#contractNo").val('{{ contract_no_pre_date }}' + randNum);
+            expectedMarginAmount();
+        });
+    }
+
+    function verityRoundCountFun(string) {
+        let is_japan = '{{ is_japan }}';
+        let indexOf = String(string).indexOf('.');
+        if (is_japan && indexOf > -1) {
+            return true;
+        }
+
+        let roundCount = 0;
+        if (String(string).indexOf('.') !== -1) {
+            roundCount = String(string).length - (String(string).indexOf('.') + 1);
+        }
+
+        if (is_japan) {
+            return roundCount > 0;
+        } else {
+            return roundCount > 2
+        }
+    }
+
+    function checkDeliveryDate() {
+        if ($('#delivery_date').attr('disabled') === 'disabled') {
+            return false;
+        }
+        let contract_no = $("#contractNo").val();
+        let verify_delivery_date_link = '{{ url("account/customerpartner/future/contract/verifyDeliveryDate") }}';
+        let delivery_date = $('#delivery_date').val();
+        if (delivery_date == '') {
+            $('#delivery_date').addClass('input-error');
+            $('#error_delivery_date').html('{{ text_verify_delivery_date_required }}');
+            return false;
+        } else {
+          // 首先清空日期校验的错误信息
+          $('#delivery_date').removeClass('input-error');
+          $('#error_delivery_date').html('');
+        }
+        let product_id = $('#hidden-product-id').val();
+        let item_code = $('#hidden-sku').val();
+        if (checkDeliveryDateValue !== delivery_date) {
+            checkDeliveryDateParam = '';
+            $('#delivery_date').attr('disabled', true);
+            $.get(verify_delivery_date_link + '&product_id=' + product_id + '&delivery_date=' + delivery_date, function (res) {
+                checkDeliveryDateValue = delivery_date;
+                $('#delivery_date').attr('disabled', false);
+                if (res.code === 0) {
+                    checkDeliveryDateErrorStatus = res.data.error_status;
+                    switch (res.data.error_status) {
+                        case 2:
+                            checkDeliveryDateParam = res.data.longest_delivery_days;
+                            break;
+                        case 3:
+                            checkDeliveryDateParam = res.data.contract_id;
+                            break;
+                        case 4:
+                            checkDeliveryDateParam = res.data.contract_id;
+                            break;
+                    }
+                    checkDeliveryDateErrorMsg(contract_no, item_code, delivery_date, false)
+                    return false;
+                }
+
+                $('#delivery_date').removeClass('input-error');
+                $('#error_delivery_date').html('');
+                checkDeliveryDateErrorStatus = 0;
+                return true;
+            });
+        } else {
+            if (checkDeliveryDateErrorStatus !== 0) {
+                checkDeliveryDateErrorMsg(contract_no, item_code, delivery_date, true)
+                return false;
+            }
+
+            $('#delivery_date').removeClass('input-error');
+            $('#error_delivery_date').html('');
+            return true;
+        }
+    }
+
+    function checkDeliveryDateErrorMsg(contract_no, item_code, delivery_date, isChecked) {
+        switch (checkDeliveryDateErrorStatus) {
+            case 1:
+                $('#delivery_date').addClass('input-error');
+                $('#error_delivery_date').html('{{ text_verify_delivery_date_later_than_today_error }}');
+                $('#delivery_date').val('');
+                break;
+            case 2:
+                let msg2 = '{{ text_alert_delivery_date_than_some_days }}';
+                msg2 = msg2.replace(/%s1/, contract_no).replace(/%s2/, item_code).replace(/%s3/, checkDeliveryDateParam).replace(/%s4/, checkDeliveryDateParam);
+                $('#delivery_date').addClass('input-error');
+                $('#error_delivery_date').html(msg2);
+                $('#delivery_date').val('');
+                break;
+            case 3:
+                $('#error_delivery_date').html('');
+                let msg3 = '{{ text_alert_delivery_date_exist }}';
+                msg3 = msg3.replace(/%s1/, item_code).replace(/%s2/, delivery_date.slice(0, 10))
+                layer.confirm(msg3, {
+                    title: '{{ text_alert_reminder }}',
+                    skin: 'yzc_layer',
+                    btnAlign: 'c',
+                    btn: ['{{ text_alert_yes }}', '{{ text_alert_no }}'],
+                    btn1: function () {
+                        window.open('{{ url("account/customerpartner/future/contract/tab") }}' + '&id=' + checkDeliveryDateParam);
+                    },
+                    btn2: function () {
+                        $('#delivery_date').val('');
+                        $('#delivery_date').blur();
+                        layer.closeAll();
+                    },
+                    cancel: function () {
+                        $('#delivery_date').val('');
+                        $('#delivery_date').blur();
+                        layer.closeAll();
+                    }
+                });
+                break;
+            case 4:
+                // 7724期货三期 日期确认弹框
+                getPolicyFilePrompt(isChecked);
+                break;
+        }
+        return false;
+    }
+
+    function getPolicyFilePrompt(isChecked) {
+      if (isChecked) {
+        return $('#deliveryDateLayer').modal();
+      }
+      $('#delivery_date').attr('disabled', true);
+      var policyFileUrl = '{{ url("account/customerpartner/future/contract/policyFilePrompt") }}';
+      $.get(policyFileUrl , function (res) {
+        $('#delivery_date').attr('disabled', false);
+        if (res.code === 200) {
+          $('#deliveryDateLayer').modal();
+          setTimeout(function(){
+            $('#deliveryDateLayer').find('.action-policy').html(res.data);
+          },200)
+        } else {
+          $.toast({
+            heading: false,
+            text: res.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false
+          });
+        }
+      });
+    }
+
+    function checkContractQty() {
+        let contract_qty = $('input[name="contract_qty"]').val();
+        if (contract_qty == '') {
+            $('input[name="contract_qty"]').addClass('input-error')
+            $('#error_contract_qty').html('{{ text_verify_total_quantity_required }}');
+            return false;
+        }
+        if (!contract_qty.match(/^[\+\-]?\d*?\.?\d*?$/) || verityRoundCountFun(contract_qty)) {
+            $('input[name="contract_qty"]').addClass('input-error')
+            $('#error_contract_qty').html('{{ text_verify_total_quantity_error }}');
+            return false;
+        }
+        contract_qty = Number(contract_qty);
+        if (Math.floor(contract_qty) != contract_qty) {
+            $('input[name="contract_qty"]').addClass('input-error')
+            $('#error_contract_qty').html('{{ text_verify_total_quantity_error }}');
+            return false;
+        }
+        if (contract_qty <= 0 || contract_qty > 9999) {
+            $('input[name="contract_qty"]').addClass('input-error')
+            $('#error_contract_qty').html('{{ text_verify_total_quantity_characters_error }}');
+            return false;
+        }
+
+        if ($('#purchase_qty').val() != '') {
+            checkPurchaseQty();
+        }
+
+        $('input[name="contract_qty"]').removeClass('input-error')
+        $('#error_contract_qty').html('');
+        expectedMarginAmount();
+        return true;
+    }
+
+    function checkPurchaseQty() {
+        let purchase_qty = $('#purchase_qty').val();
+        if (purchase_qty == '') {
+            $('#purchase_qty').addClass('input-error')
+            $('#error_purchase_qty').html('{{ text_verify_min_quantity_required }}');
+            return false;
+        }
+        if (!purchase_qty.match(/^[\+\-]?\d*?\.?\d*?$/) || verityRoundCountFun(purchase_qty)) {
+            $('#purchase_qty').addClass('input-error')
+            $('#error_purchase_qty').html('{{ text_verify_min_quantity_error }}');
+            return false;
+        }
+        let contract_qty = Number($('#contract_qty').val());
+        purchase_qty = Number(purchase_qty);
+        if (Math.floor(purchase_qty) != purchase_qty) {
+            $('#purchase_qty').addClass('input-error')
+            $('#error_purchase_qty').html('{{ text_verify_min_quantity_error }}');
+            return false;
+        }
+        if (purchase_qty <= 0 || purchase_qty > contract_qty) {
+            $('#purchase_qty').addClass('input-error')
+            $('#error_purchase_qty').html('{{ text_verify_min_quantity_characters_error }}');
+            return false;
+        }
+        $('#purchase_qty').removeClass('input-error')
+        $('#error_purchase_qty').html('');
+        return true;
+    }
+
+    function changeDeliveryMethod(_this) {
+        let name = $(_this).attr("name");
+        let value = $(_this).val();
+        let otherName = name === 'delivery_method1' ? 'delivery_method2' : 'delivery_method1';
+        let otherValue = value == 1 ? 2 : 1;
+        $('#' + otherName).val(otherValue);
+    }
+
+    function checkDeliveryMethodPrice(mannerNum = '') {
+        let delivery_method_price = $('#delivery_method_price1').val();
+        let delivery_method_price2 = $('#delivery_method_price2').val();
+        let delivery_method_price2_show = true;
+        if ($(".manner2").attr("is_show") === undefined || $(".manner2").attr("is_show") == 'false') {
+            delivery_method_price2 = 1;
+            delivery_method_price2_show = false;
+        }
+        if (delivery_method_price == '' && mannerNum !== 'B') {
+            let msg2 = '{{ text_verify_price_required }}';
+            msg2 = msg2.replace(/option/, delivery_method_price2_show ? 'option A' : 'option')
+            $('#delivery_method_price1').addClass('input-error')
+            $('#error_delivery_method_price1').html(msg2);
+            return false;
+        }
+        if (delivery_method_price2 == '' && mannerNum !== 'A') {
+            $('#delivery_method_price2').addClass('input-error')
+            $('#error_delivery_method_price2').html('{{ text_verify_price_required|replace({"option": "option B"}) }}');
+            return false;
+        }
+
+        if (mannerNum !== 'B' && (isNaN(Number(delivery_method_price)) || !delivery_method_price.match(/^[\+\-]?\d*?\.?\d*?$/) || verityRoundCountFun(delivery_method_price))) {
+            let msg1 = '{{ text_verify_price_error }}';
+            msg1 = msg1.replace(/option/, delivery_method_price2_show ? 'option A' : 'option')
+            $('#delivery_method_price1').addClass('input-error')
+            $('#error_delivery_method_price1').html(msg1);
+            return false;
+        }
+        if (mannerNum !== 'A' && (isNaN(Number(delivery_method_price2)) || (delivery_method_price2_show && !delivery_method_price2.match(/^[\+\-]?\d*?\.?\d*?$/)) || verityRoundCountFun(delivery_method_price2))) {
+            $('#delivery_method_price2').addClass('input-error')
+            $('#error_delivery_method_price2').html('{{ text_verify_price_error|replace({"option": "option B"}) }}');
+            return false;
+        }
+
+        let is_japan = '{{ is_japan }}';
+        delivery_method_price = Number(delivery_method_price);
+        delivery_method_price2 = Number(delivery_method_price2);
+        if (is_japan) {
+            if ((delivery_method_price <= 0 || delivery_method_price > 999999999) && mannerNum !== 'B') {
+                $('#delivery_method_price1').addClass('input-error')
+                $('#error_delivery_method_price1').html('{{ text_verify_price_characters_japan_error }}');
+                return false;
+            }
+            if ((delivery_method_price2 <= 0 || delivery_method_price2 > 999999999) && mannerNum !== 'A') {
+                $('#delivery_method_price2').addClass('input-error')
+                $('#error_delivery_method_price2').html('{{ text_verify_price_characters_japan_error }}');
+                return false;
+            }
+        } else {
+            if ((delivery_method_price <= 0 || delivery_method_price > 9999999.99) && mannerNum !== 'B') {
+                $('#delivery_method_price1').addClass('input-error')
+                $('#error_delivery_method_price1').html('{{ text_verify_price_characters_not_japan_error }}');
+                return false;
+            }
+            if ((delivery_method_price2 <= 0 || delivery_method_price2 > 9999999.99) && mannerNum !== 'A') {
+                $('#delivery_method_price2').addClass('input-error')
+                $('#error_delivery_method_price2').html('{{ text_verify_price_characters_not_japan_error }}');
+                return false;
+            }
+        }
+
+        delivery_method_price = delivery_method_price.toFixed(is_japan ? 0 : 2);
+        delivery_method_price2 = delivery_method_price2.toFixed(is_japan ? 0 : 2);
+        if (mannerNum === 'A') {
+            $('#delivery_method_price1').val(delivery_method_price);
+        } else if (mannerNum === 'B') {
+            $('#delivery_method_price2').val(delivery_method_price2);
+        } else {
+            $('#delivery_method_price1').val(delivery_method_price);
+            if (delivery_method_price2_show) {
+                $('#delivery_method_price2').val(delivery_method_price2);
+            }
+        }
+
+        if (mannerNum === 'A') {
+            $('#delivery_method_price1').removeClass('input-error')
+            $('#error_delivery_method_price1').html('');
+        } else if (mannerNum === 'B') {
+            $('#delivery_method_price2').removeClass('input-error')
+            $('#error_delivery_method_price2').html('');
+        } else {
+            $('#delivery_method_price1').removeClass('input-error')
+            $('#error_delivery_method_price1').html('');
+            $('#delivery_method_price2').removeClass('input-error')
+            $('#error_delivery_method_price2').html('');
+        }
+
+        expectedMarginAmount();
+        return true;
+    }
+
+    function checkPaymentRatio() {
+        if ($('#payment_ratio-box .dropdown-menu').css('display') === 'block') {
+            return ;
+        }
+        var value = $('#payment_ratio').val();
+
+        if (value == '') {
+            $('#payment_ratio').addClass('input-error');
+            $('#error_payment_ratio').html('{{ text_verify_deposit_percentage_required }}');
+            return false;
+        }
+        if (isNaN(Number(value)) || !value.match(/^[\+\-]?\d*?\.?\d*?$/)) {
+            $('#payment_ratio').addClass('input-error')
+            $('#error_payment_ratio').html('{{ text_verify_deposit_percentage_format_error }}');
+            return false;
+        }
+
+        if (verityRoundCountFun(value)) {
+            $('#payment_ratio').addClass('input-error')
+            $('#error_payment_ratio').html('{{ text_verify_deposit_percentage_format_error }}');
+            return false;
+        }
+
+        let is_japan = '{{ is_japan }}';
+        if (is_japan) {
+            value = Math.floor(Number(value));
+        } else {
+            value = Number(value).toFixed(2)
+        }
+        $('#payment_ratio').val(value);
+        let min_payment_ratio = Number($('#min-payment-ratio-value').val());
+        let max_payment_ratio = Number($('#max-payment-ratio-value').val());
+        let deposit_percentages = ($('#deposit_percentages-value').val()).split(',');
+        if (!deposit_percentages.includes(value.toString())) {
+            $('#contract_status').val(2);
+        } else {
+            $('#contract_status').val(1);
+        }
+        if (value < min_payment_ratio || value > max_payment_ratio) {
+            $('#payment_ratio').addClass('input-error')
+            let text_verify_delivery_percentage_error = '{{ text_verify_delivery_percentage_error }}';
+            $('#error_payment_ratio').html(text_verify_delivery_percentage_error.replace('%s1', min_payment_ratio).replace('%s2', max_payment_ratio));
+            return false;
+        }
+
+        expectedMarginAmount();
+        $('#payment_ratio').removeClass('input-error')
+        $('#error_payment_ratio').html('');
+        return true;
+    }
+
+    function expectedMarginAmount() {
+        let is_japan = '{{ is_japan }}';
+        let contract_qty = Number($('input[name="contract_qty"]').val());
+        let delivery_method_price2 = 0
+        if ($(".manner2").attr("is_show") == 'true') {
+            delivery_method_price2 = Number($('#delivery_method_price2').val());
+        }
+        let delivery_method_price1 = Number($('#delivery_method_price1').val());
+        let payment_ratio = Number($('#payment_ratio').val());
+
+        let singleAmount = Number((delivery_method_price1 > delivery_method_price2 ? delivery_method_price1 : delivery_method_price2) * payment_ratio * 0.01);
+        let formatSingleAmount = is_japan ? Number(singleAmount.toFixed(0)) : Number(singleAmount.toFixed(2));
+        let amount = Number(contract_qty * formatSingleAmount).toFixed(is_japan ? 0 : 2);
+        $('#margin_amount').val(amount);
+        if (Number($('#margin_amount').val()) > Number($('#amount').val())) {
+            $('#amount').addClass('input-error')
+            $('#error_amount').html('{% if account_type == 1 %}{{ text_verify_remaining_balance_error }}{% else %}{{ text_verify_total_balance_error }}{% endif %}');
+        } else {
+            $('#amount').removeClass('input-error')
+            $('#error_amount').html('');
+        }
+    }
+
+    function checkInput(text) {
+        if ($('#delivery_date').attr('disabled') === 'disabled') {
+            return false;
+        }
+
+        if (!checkDeliveryDate()) {
+            return false;
+        }
+        if (!checkContractQty()) {
+            return false;
+        }
+        if (!checkPurchaseQty()) {
+            return false;
+        }
+        if (!checkDeliveryMethodPrice()) {
+            return false;
+        }
+
+        if (Number($('#margin_amount').val()) > Number($('#amount').val())) {
+            $('#amount').addClass('input-error')
+            $('#error_amount').html('{% if account_type == 1 %}{{ text_verify_remaining_balance_error }}{% else %}{{ text_verify_total_balance_error }}{% endif %}');
+            return false;
+        } else {
+            $('#amount').removeClass('input-error')
+            $('#error_amount').html('');
+        }
+
+        if ($('.btn-save').attr('disabled') === 'disabled' || $('.btn-apply').attr('disabled') === 'disabled') {
+            return false;
+        }
+
+        $('.btn-save').attr('disabled', 'disabled');
+        $('.btn-apply').attr('disabled', 'disabled');
+        $.ajax({
+            url: '{{ url("account/customerpartner/future/contract/getLatestSettingValue") }}',
+            data: '',
+            method: 'get',
+            dataType: 'json',
+            success: function (res) {
+                $('.btn-save').removeAttr('disabled');
+                $('.btn-apply').removeAttr('disabled');
+
+                $('#payment-ratio-value').val(res.data.payment_ratio);
+                $('#min-payment-ratio-value').val(res.data.min_payment_ratio);
+                $('#max-payment-ratio-value').val(res.data.max_payment_ratio);
+                $('#deposit_percentages-value').val(res.data.deposit_percentages);
+
+                if (!checkPaymentRatio()) {
+                    return false;
+                }
+
+                let contract_value = getContractValue();
+                let deposit_percentages = ($('#deposit_percentages-value').val()).split(',');
+                if (!deposit_percentages.includes(contract_value.payment_ratio)) {
+                    $(".contract-model-notice").html('{{ text_model_preview_notice_change_percentage }}');
+                    $(".contract-model-payment-ratio").html('<span style="color:red">' + contract_value.payment_ratio + '%</span>');
+                } else {
+                    $(".contract-model-notice").html('{{ text_model_preview_notice }}');
+                    $(".contract-model-payment-ratio").html(contract_value.payment_ratio + "%");
+                }
+                $(".contract-model-product img").attr('src', $("#product_image").attr('src'));
+                $(".contract-model-product span").html(($("#product-detail-sku-mpn").html()).replace(/<a/g, '<span').replace(/a>/g, 'span>').replace(/href="(.*?)">/g, ">"));
+                $(".contract-model-delivery-date").html(contract_value.delivery_date.slice(0, 10));
+                $(".contract-model-num").html(contract_value.num);
+                $(".contract-model-min-num").html(contract_value.min_num);
+                let delivery_type_msg = '{{ text_contract_method_balance_amount }}' + "/" + '{{ text_contract_method_change_margin }}';
+                let price = '';
+                if (contract_value.delivery_type == 1) {
+                    delivery_type_msg = '{{ text_contract_method_balance_amount }}';
+                    price = '{{ currency_symbol_left }}' + contract_value.last_unit_price + '{{ currency_symbol_right }}';
+                } else if (contract_value.delivery_type == 2) {
+                    delivery_type_msg = '{{ text_contract_method_change_margin }}';
+                    price = '{{ currency_symbol_left }}' + contract_value.margin_unit_price + '{{ currency_symbol_right }}';
+                } else {
+                    if (contract_value.last_unit_price != contract_value.margin_unit_price) {
+                        price = (Number(contract_value.last_unit_price) < Number(contract_value.margin_unit_price)) ? ('{{ currency_symbol_left }}' + contract_value.last_unit_price + '{{ currency_symbol_right }}' + ' - ' + '{{ currency_symbol_left }}' + contract_value.margin_unit_price + '{{ currency_symbol_right }}') : ('{{ currency_symbol_left }}' + contract_value.margin_unit_price + '{{ currency_symbol_right }}' + ' - ' + '{{ currency_symbol_left }}' + contract_value.last_unit_price + '{{ currency_symbol_right }}')
+                    } else {
+                        price = '{{ currency_symbol_left }}' + contract_value.margin_unit_price + '{{ currency_symbol_right }}';
+                    }
+                }
+                $(".contract-model-delivery-type").html(delivery_type_msg);
+                $(".contract-model-price").html(price);
+                let msg = '';
+                {% if account_type == 1 %}
+                msg = "{{ text_model_preview_msg_remaining_balance }}";
+                {% else %}
+                msg = "{{ text_model_preview_msg_total_balance }}";
+                {% endif %}
+                msg = msg.replace('%s1', $("#contractNo").val()).replace('%s2', '{{ currency_symbol_left }}' + $('#margin_amount').val() + '{{ currency_symbol_right }}')
+                $(".contract-model-end-msg").html(msg);
+
+                let alarmPrice = $('#alarm-price').val();
+                if ((Number(contract_value.last_unit_price) > 0 && Number(contract_value.last_unit_price) < alarmPrice) || (Number(contract_value.margin_unit_price) > 0 && Number(contract_value.margin_unit_price)  < alarmPrice)) {
+                    layer.confirm('{{ is_show_cwf_notice ? error_product_price_proportion_cwf : error_product_price_proportion }}', {
+                        title: '{{ text_alert_reminder }}',
+                        skin: 'yzc_layer',
+                        btnAlign: 'c',
+                        btn: ['{{ text_alert_yes }}', '{{ text_alert_no }}']
+                    }, function () {
+                        layer.closeAll();
+                        if (text === 'save') {
+                            $('.save-modal').modal();
+                        } else {
+                            $('.apply-modal').modal();
+                        }
+                    });
+                } else {
+                    if (text === 'save') {
+                        $('.save-modal').modal();
+                    } else {
+                        $('.apply-modal').modal();
+                    }
+                }
+            }
+        })
+    }
+
+    function getContractValue() {
+        let delivery_method1 = $("#delivery_method1").val();
+        let delivery_method2 = $("#delivery_method2").val();
+        let delivery_method_price1 = $('#delivery_method_price1').val()
+        let delivery_method_price2 = $('#delivery_method_price2').val()
+
+        let delivery_type = 0;
+        let last_unit_price = 0;
+        let margin_unit_price = 0;
+        if (delivery_method1 == 1) {
+            delivery_type = 1;
+            last_unit_price = delivery_method_price1;
+            margin_unit_price = 0;
+        } else if (delivery_method1 == 2) {
+            delivery_type = 2;
+            margin_unit_price = delivery_method_price1;
+            last_unit_price = 0;
+        }
+
+        if ($(".manner2").attr("is_show") == 'true') {
+            delivery_type = 3;
+            if (delivery_method2 == 1) {
+                last_unit_price = delivery_method_price2;
+            } else if (delivery_method2 == 2) {
+                margin_unit_price = delivery_method_price2;
+            }
+        }
+
+        return {
+            product_id: $("#hidden-product-id").val(),
+            contract_no: $("#contractNo").val(),
+            payment_ratio: $('#payment_ratio').val(),
+            is_bid: $('#bargain').val(),
+            delivery_date: $('#delivery_date').val(),
+            num: Number($('input[name="contract_qty"]').val()),
+            min_num: Number($('input[name="purchase_qty"]').val()),
+            delivery_type: delivery_type,
+            margin_unit_price: margin_unit_price,
+            last_unit_price: last_unit_price,
+        }
+    }
+
+    function submitContract(text) {
+        let data = getContractValue();
+        let item_code = $('#hidden-sku').val();
+        $('.save-modal').modal('hide');
+        $('.apply-modal').modal('hide');
+        parent.layer.load(1);
+        $.ajax({
+            url: '{{ url("account/customerpartner/future/contract/insert") }}',
+            data: data,
+            method: 'post',
+            dataType: 'json',
+            success: function (res) {
+                layer.closeAll();
+                if (res.code === 0) {
+                    switch (res.data.error_status) {
+                        case 1:
+                            $('#delivery_date').addClass('input-error');
+                            $('#error_delivery_date').html('{{ text_verify_delivery_date_later_than_today_error }}');
+                            $('#delivery_date').val('');
+                            break;
+                        case 2:
+                            let msg2 = '{{ text_alert_delivery_date_than_some_days }}';
+                            msg2 = msg2.replace(/%s1/, data.contract_no).replace(/%s2/, item_code).replace(/%s3/, res.data.longest_delivery_days).replace(/%s4/,  res.data.longest_delivery_days);
+                            $('#delivery_date').addClass('input-error');
+                            $('#error_delivery_date').html(msg2);
+                            $('#delivery_date').val('');
+                            break;
+                        case 3:
+                            let msg3 = '{{ text_alert_delivery_date_exist }}';
+                            msg3 = msg3.replace(/%s1/, item_code).replace(/%s2/, data.delivery_date.slice(0, 10))
+                            layer.confirm(msg3, {
+                                title: '{{ text_alert_reminder }}',
+                                skin: 'yzc_layer',
+                                btnAlign: 'c',
+                                btn: ['{{ text_alert_yes }}', '{{ text_alert_no }}'],
+                                btn1: function () {
+                                    window.open('{{ url("account/customerpartner/future/contract/tab") }}' + '&id=' + res.data.contract_id);
+                                },
+                                btn2: function () {
+                                    $('#delivery_date').val('');
+                                    $('#delivery_date').blur();
+                                    layer.closeAll();
+                                },
+                                cancel: function () {
+                                    $('#delivery_date').val('');
+                                    $('#delivery_date').blur();
+                                    layer.closeAll();
+                                }
+                            });
+                            break;
+                        case 4:
+                            $('#error_amount').html('{% if account_type == 1 %}{{ text_verify_remaining_balance_error }}{% else %}{{ text_verify_total_balance_error }}{% endif %}');
+                            break;
+                        default:
+                            layer.alert('{{ text_add_contract_error_msg }}'.replace(/%s/, data.contract_no), {
+                                title: '{{ text_alert_reminder }}',
+                                skin: 'yzc_layer',
+                                btnAlign: 'c',
+                                btn: '{{ text_alert_ok }}',
+                            })
+
+                    }
+                } else {
+                    if (text === 'save') {
+                        let success_msg = '';
+                        if ($('#contract_status').val() == 2) {
+                            success_msg = "{{ text_add_contract_success_msg_change_percentage }}".replace(/%s/, data.contract_no)
+                        } else {
+                            success_msg = "{{ text_add_contract_success_msg }}".replace(/%s/, data.delivery_date.slice(0, 10))
+                        }
+                        layer.alert(success_msg, {
+                            title: '{{ text_alert_reminder }}',
+                            skin: 'yzc_layer',
+                            btnAlign: 'c',
+                            btn: '{{ text_alert_ok }}',
+                            btn1: function () {
+                                window.location.href = '{{ url("account/customerpartner/future/contract/list") }}';
+                            },
+                            cancel: function () {
+                                window.location.href = '{{ url("account/customerpartner/future/contract/list") }}';
+                            }
+                        })
+                    } else {
+                        let success_msg = '';
+                        if ($('#contract_status').val() == 2) {
+                            success_msg = "{{ text_add_contract_copy_success_msg_change_percentage }}".replace(/%s/, data.contract_no)
+                        } else {
+                            success_msg = "{{ text_add_contract_copy_success_msg }}".replace(/%s/, data.delivery_date.slice(0, 10))
+                        }
+                        layer.alert(success_msg, {
+                            title: '{{ text_alert_reminder }}',
+                            skin: 'yzc_layer',
+                            btnAlign: 'c',
+                            btn: '{{ text_alert_ok }}',
+                            btn1: function () {
+                                layer.closeAll();
+                                checkDeliveryDateErrorStatus = 0;
+                                checkDeliveryDateValue = '';
+                                let randNum = "";
+                                for (let i = 0; i < 6; i++) {
+                                    randNum += Math.floor(Math.random() * 10);
+                                }
+                                $("#contractNo").val('{{ contract_no_pre_date }}' + randNum);
+                                $('#amount').val(res.data.amount);
+                                $('#delivery_date').val('')
+                            },
+                            cancel: function () {
+                                layer.closeAll();
+                                checkDeliveryDateErrorStatus = 0;
+                                checkDeliveryDateValue = '';
+                                let randNum = "";
+                                for (let i = 0; i < 6; i++) {
+                                    randNum += Math.floor(Math.random() * 10);
+                                }
+                                $("#contractNo").val('{{ contract_no_pre_date }}' + randNum);
+                                $('#amount').val(res.data.amount);
+                                $('#delivery_date').val('')
+                            }
+                        })
+                    }
+
+                }
+            },
+        });
+    }
+</script>
+
+{#问卷调查#}
+<script>
+    function loadFuturesQuestion() {
+        if ($("#confirm").attr("disabled") === undefined) {
+            $('.policy-modal').modal('hide');
+        }
+    }
+
+    $(function() {
+        $(".policy-modal").on("hide.bs.modal", function () {
+            $("#myDivSellerFuturesQuestion").load("{{ url('account/question/sellerFutures') }}");
+        })
+    });
+</script>
+
+{#平台政策#}
+<script>
+    $(document).ready(function () {
+        $(function () {
+          initAddContractPage();
+        });
+    });
+    function initAddContractPage() {
+      {% if exist_futures_questionnaire == false %}
+        $('.policy-modal').modal();
+      {% endif %}
+        $('#trading-policy').click(function () {
+            if ($(this).is(":checked")) {
+                $('.policy #confirm').removeAttr('disabled');
+            } else {
+                $('.policy #confirm').attr("disabled", "disabled");
+            }
+        });
+        // 交货日期需要确认弹框按钮
+        $('#deliveryDateLayer').on('click', '.action-cancel',function() {
+          // 清空填写的交货日期，并提示交货日期不能为空
+          $('#deliveryDateLayer').modal('hide');
+          $('#delivery_date').val('');
+          $('#delivery_date').blur();
+        }).on('click','a.action-agree',function(){
+          // 关闭弹窗，Seller可以继续设置期货合约
+          $('#deliveryDateLayer').modal('hide');
+          $('#delivery_date').removeClass('input-error');
+          $('#error_delivery_date').html('');
+          checkDeliveryDateErrorStatus = 0;
+        })
+    };
+    function confirm() {
+        if ($('#trading-policy').is(":checked")) {
+            $(".policy #confirm").attr("data-original-title", "");
+            $('.policy #confirm').removeAttr('disabled');
+        } else {
+            $(".policy #confirm").attr("data-original-title", "{{ text_policy_button_msg }}");
+            $('.policy #confirm').attr("disabled", "disabled");
+        }
+    }
+
+    $(".policy #confirm").on('mouseover', function () {
+        confirm();
+    })
+</script>
+<script>
+    $('#delivery_date').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD',
+        useCurrent: false
+    });
+    $(".manner .btn-add").on('click', function () {
+        if ($(this).attr('disabled') === undefined) {
+            $(this).attr('disabled', true);
+            let value = $("#delivery_method1").val();
+            let otherValue = value == 1 ? 2 : 1;
+            $('#delivery_method2').val(otherValue);
+            $(".manner2").show();
+            $(".manner2").attr("is_show", true);
+            $('.mannerNum').show();
+            $('#error_delivery_method_price1').html(($('#error_delivery_method_price1').html()).replace(/option/, 'option A'));
+            expectedMarginAmount();
+        }
+    });
+    $(".manner2 .btn-delete").on('click', function () {
+        $(".manner .btn-add").removeAttr('disabled')
+        $(".manner2").hide();
+        $(".manner2").attr("is_show", false);
+        $('.mannerNum').hide();
+        $('#error_delivery_method_price1').html(($('#error_delivery_method_price1').html()).replace(/option A/, 'option'));
+        expectedMarginAmount();
+    });
+    //赋值给input框
+    $("#payment_ratio-box .dropdown-menu").on("click", "li", function() {
+        $(this).parent().parent().find("input").val($(this).text());
+        $(this).parent().hide()
+        checkPaymentRatio()
+    });
+
+    //点击其他地方隐藏下拉框
+    $(document).bind('click', function(event) {
+        var evt = event.srcElement ? event.srcElement : event.target;
+        evt = $(evt);
+        if (evt.hasClass("enter-input") || evt.parents(".enter-input").length != 0) {
+            return;
+        } else {
+            if ($('#payment_ratio-box .dropdown-menu').css('display') === 'block') {
+                $("body").find("#payment_ratio-box .dropdown-menu").hide();
+                checkPaymentRatio();
+            }
+        }
+    });
+
+    function getNewRatioValue() {
+        let old_deposit_percentages = $('#deposit_percentages-value').val();
+        $.ajax({
+            url: '{{ url("account/customerpartner/future/contract/getLatestSettingValue") }}',
+            data: '',
+            method: 'get',
+            dataType: 'json',
+            success: function (res) {
+                $('#payment-ratio-value').val(res.data.payment_ratio);
+                $('#min-payment-ratio-value').val(res.data.min_payment_ratio);
+                $('#max-payment-ratio-value').val(res.data.max_payment_ratio);
+
+                if (res.data.deposit_percentages != old_deposit_percentages) {
+                    $('#deposit_percentages-value').val(res.data.deposit_percentages);
+                    let deposit_percentages = (res.data.deposit_percentages).split(',');
+                    let html = '';
+                    for (let i = 0; i < deposit_percentages.length; i++) {
+                        html += '<li><a>' + deposit_percentages[i] + '</a></li>';
+                    }
+                    $("body").find("#payment_ratio-box .dropdown-menu").html(html);
+                }
+                $("body").find("#payment_ratio-box .dropdown-menu").show();
+            }
+        })
+    }
+</script>
+
+{{ footer }}

@@ -1,0 +1,36 @@
+{# 费用单退款方式弹窗 #}
+{# detail:仓租单明细 item:费用单明细 #}
+<style>
+  .pay-type-tab {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .pay-type-tab .pay-label{
+    color: #666;
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+  .pay-type-tab .pay-value{
+    text-align: right;
+    color: #333;
+    font-weight: bold;
+    /*width: 80px;*/
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+  .pay-type-tab .pay-value.no-weight{
+    font-weight: normal;
+  }
+</style>
+<div class="pay-type">
+  {% if item.refund_code == 'line_of_credit' %}
+    <div class="pay-type-tab">
+      <div class="nowrap pay-label">Refund Method: <span class="pay-value no-weight">Line of Credit</span></div>&nbsp;
+    </div>
+  {% elseif item.refund_code == 'virtual_pay' %}
+    <div class="pay-type-tab">
+      <div class="nowrap pay-label">Refund Method: <span class="pay-value no-weight">Virtual Pay</span></div>&nbsp;
+    </div>
+  {% endif %}
+</div>

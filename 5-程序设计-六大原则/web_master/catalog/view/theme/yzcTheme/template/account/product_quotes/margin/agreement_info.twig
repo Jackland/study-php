@@ -1,0 +1,87 @@
+<link href="catalog/view/javascript/jquery/magnific/magnific-popup.css" type="text/css" rel="stylesheet"/>
+<div>
+  <div class="module-row">
+    <div class="module-title">
+      <span class="Y-axis"></span>{{ __('Agreement Summary') }}
+    </div>
+    <div class="summary-list">
+      <div class="summary-details full-width">
+        <span class="title">{{ __('Agreement Status') }}:</span>
+        <span class="txt text-larger text-bold "
+              style="color: {{ detail.status_color }}">{{ detail.status_name }}</span>
+      </div>
+      <div class="summary-details full-width">
+        <span class="title">{{ __('Agreement ID') }}:</span>
+        <span class="txt">{{ detail.agreement_id }}
+          {% if future_to_margin_with_fid > 0 %}
+          <a class="oris-mark-futures" href="{{ url('account/product_quotes/futures/buyerFuturesBidDetail', {'id': future_to_margin_with_fid }) }}" target="_blank" data-toggle="tooltip" data-placement="right" data-original-title="{{ tips_future_to_margin_agreement }}">F</a>
+          {% endif %}
+        </span>
+      </div>
+      <div class="summary-details full-width">
+        <span class="title">{{ __('Seller') }}:</span>
+        <span class="txt">
+           <a class="link" target="_blank" href="{{ url('customerpartner/profile', {'id': detail.seller_store_id }) }}"> {{ detail.seller_name }} </a>
+        </span>
+      </div>
+      {% if detail.buyer_seller_message.seller_message %}
+      <div class="result-details full-width ">
+          <span class="title">Seller Message:</span>
+          <span class="txt break-word">
+            {{ detail.buyer_seller_message.seller_message }}
+          </span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="module-row">
+    <div class="module-title"><span class="Y-axis"></span>Agreement Detail</div>
+    <div class="detail-table">
+      <table class="oris-table border-table no-hover">
+        <thead>
+        <tr>
+          <th class="text-left oris-w200">{{ __('Item Code') }} / {{ __('MPN') }}</th>
+          <th class="text-left oris-w160">{{ __('Attribute') }}</th>
+          <th class="text-right oris-w90">{{ __('Agreed Price') }}</th>
+          <th class="oris-w160">{{ __('Agreed Days') }}</th>
+          <th class="oris-w160">{{ __('Agreed Quantity') }}</th>
+          <th class="oris-w220">{{ __('Margin Validity') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="text-left" width="30%">
+            <a class="oris-link image-td"  target="_blank" href="{{ url('product/product', {product_id: detail.product_id}) }}">
+                <img class="pro-image" src="{{ detail.show_image }}"/>
+                <span class="tags-image"><text class="max-line2" title="{{ detail.sku }}">{{ detail.sku }}</text>{{detail.tags|join('') }}</span>
+            </a>
+          </td>
+          <td class="text-left">
+            <div class="max-line1" title="{{ detail.color_and_material }}">{{ detail.color_and_material }}</div>
+          </td>
+          <td class="nowrap text-right">{{ detail.unit_price|formatPrice(currency) }}
+            {% if detail.discountShow != '' %}
+              <br><span class="limit-discount">Discount:<span class="percent-dis"> {{ detail.discountShow }}% </span>OFF</span>
+            {% endif %}
+          </td>
+          <td>{{ detail.day }}</td>
+          <td>{{ detail.num }}</td>
+          <td>
+            {% if detail.effect_time and detail.expire_time %}
+            {{ detail.effect_time | formatZone(country,null,'Y-m-d')  ~ ' - ' ~ detail.expire_time|formatZone(country,null,'Y-m-d') }}
+            {% else %}
+            --
+            {% endif %}
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      {% if  detail.buyer_seller_message.buyer_message %}
+        <div class="buyer-msg">
+            <span class="text-bold">My Message:</span>
+            <span class="break-word">{{ detail.buyer_seller_message.buyer_message }}</span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

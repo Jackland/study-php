@@ -1,0 +1,5 @@
+{% macro uploadInput() %}
+  {% import 'yzcTheme/template/upload/upload_input.twig' as uploadCmp  %}
+  {# 后续在可以考虑这里引入js css #}
+  {{ uploadCmp.uploadInput() }}
+{% endmacro %}

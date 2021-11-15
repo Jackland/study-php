@@ -1,0 +1,48 @@
+{# 模板：产品分类 ------Start #}
+{# 产品分类自动和手动数据结构不同，首先整理数据 #}
+  {% if module.data.mode_auto is not null %}
+    {% set categoryData = module.data.mode_auto.product_types %}
+  {% elseif module.data.mode_manual is not null %}
+    {% set categoryData = module.data.mode_manual.product_types %}
+  {% endif %}
+  {% set categoryData = categoryData|array_filter({attribute: 'products', attributeFn: 'count', operator: '>', value: 0}) %}
+{% if categoryData|length > 0 %}
+<section class="category-module m20-b" id="module{{mIndex}}" data-mIndex="{{mIndex}}">
+  <div class="common-title">Main Categories</div>
+  <div class="w1200 m20-t">
+    <div class="store-tabs">
+      {% for tIndex, tab in categoryData %}
+        <div class="one-tab action-tab {% if tIndex == 0 %} active{% endif %}" data-mIndex="{{tIndex}}">{{tab.type_name}}</div>
+      {% endfor %}
+    </div>
+    <div>
+      {% for ctIndex, item in categoryData %}
+      <div class="tab{{ctIndex}} {% if ctIndex==tIndex %} module-flex {% else %} none{% endif %}">
+        {% for i,one in item.products %}
+        <div class="category-item">
+          <div class="category-img scale-range">
+            <a href="{{ url('product/product',{'product_id': one.id}) }}" target="_blank">
+              <img class="scale" src="{{ one.image }}" title="{{ one.name }}">
+            </a>
+          </div>
+          <div class="category-content">
+            <div class="text-small break-all pos-top-img">Item Code:&nbsp;{{one.sku}}{{one.tags}}</div>
+            <div class="p3-t">
+              <span class="module-largef text-bold">{{one.price}}</span>
+              <span class="module-grey p2-l">/Unit</span>
+            </div>
+            <div class="text-small">Qty Available:&nbsp;{{one.qty}}</div>
+            <a class="cart" href="{{ url('product/product',{'product_id': one.id}) }}" target="_blank">
+              <i class="giga icon-gouwuche-fuben"></i>
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+        <a class="show-more" href="{{ url('seller_store/products',{'id': seller_id, 'category_id': item.type_id}) }}" target="_blank">MORE<i class="giga icon-V10_youjiantougengduo"></i></a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{# 模板：产品分类 ------End #}

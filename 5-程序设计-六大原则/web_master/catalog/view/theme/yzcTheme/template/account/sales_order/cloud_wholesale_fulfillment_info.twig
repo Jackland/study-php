@@ -1,0 +1,573 @@
+{{ header }}
+<style>
+  .flag-margin-order {
+    color: #FF784E;
+    margin-left: 5px;
+  }
+
+  .sub-title {
+    margin-left: 25px;
+    color: #183464;
+  }
+
+  .page-seller-portal .info-wrapper .row > div span i {
+    font-size: 15px;
+    color: #183464;
+  }
+
+  .page-seller-portal .info-wrapper .row > div span.title {
+    color: #677999;
+    font-size: 13px;
+  }
+
+  .page-seller-portal .info-wrapper .row > div span.value {
+    color: rgba(0, 0, 0, 0.80);
+    font-size: 14px;
+  }
+
+  .page-seller-portal .info-addr .row > div span i {
+    font-size: 15px;
+    color: #183464;
+  }
+
+  .page-seller-portal .info-addr .row > div span.value {
+    color: rgba(0, 0, 0, 0.80);
+    font-size: 14px;
+  }
+
+  .a-link {
+    text-decoration: underline;
+    color: #6eaade;
+  }
+
+  .span-package {
+    background: rgba(138, 221, 51, 0.2);
+    color: #009900;
+    font-size: 13px;
+    padding: 1px 5px;
+    border-radius: 2px;
+  }
+
+  .other-info-key {
+    color: #54688c;
+    font-weight: bold;
+    width: 25%;
+  }
+
+  /*.table-other-info tr td:nth-child(3) {*/
+  /*  border-left: 1px solid #eee*/
+  /*}*/
+
+  .table-other-info tr td {
+    width: 25%;
+  }
+
+  #pallet-label-upload .layui-upload-file {
+    display: none;
+  }
+
+  .break-line {
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+
+  .border-left-no-full {
+    border-left: 1px solid #eee;
+    padding: 5px;
+  }
+
+  .table-hover > tbody > tr:hover > td.son-rowsspan:first-child {
+    background-color: #fff;
+  }
+
+  .max-file-show {
+    max-width: 300px;
+    word-break: break-all;
+  }
+</style>
+<script type="text/javascript" src="catalog/view/javascript/layui/layui.all.js"></script>
+<div id="page-purchase-order-management-detail" class="page-seller-portal">
+  {#菜单#}
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  {#END 菜单#}
+
+  <div class="container">
+    <div class="row">
+      {% set class = 'col-sm-12' %}
+      <div id="content" class="{{ class }}">
+        <h1>{{ heading_title_order_info }}</h1>
+
+        {% if success %}
+          <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+        {% endif %}
+        {% if warning %}
+          <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ warning }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+        {% endif %}
+
+        <div class="tab-content main mb-4" style="border: 1px #eee solid;float: left;width: 100%;">
+          <div role="tabpanel" class="tab-pane active">
+            <div class="bg-white p-2">
+
+              <h4 class="sub-title">Order Summary</h4>
+              <div class="info-wrapper mb-4 mt-2">
+                <div class="row">
+                  <div class="col-md-2">
+                    <span><i class="giga icon-dingdan"></i></span>
+                    <span class="title">{{ info_text_order_id }}</span>
+                    <span class="value">{{ sales_order_code }}</span>
+                  </div>
+                  <div class="col-md-2">
+                    <span><i class="giga icon-grid-view-blue"></i></span>
+                    <span class="title">{{ info_text_cwf_type }}</span>
+                    <span class="value">{{ type_str }}</span>
+                  </div>
+                  <div class="col-md-2">
+                    <span><i class="giga icon-summary-status"></i></span>
+                    <span class="title">{{ info_text_order_status }}</span>
+                    <span class="value" style="color: {{ status_color }}">{{ status_str }}</span>
+                  </div>
+                  <div class="col-md-2">
+                    <span><i class="giga icon-summary-day"></i></span>
+                    <span class="title">{{ info_text_order_create_time }}</span>
+                    <span class="value">{{ so_create_time }}</span>
+                  </div>
+                  <div class="col-md-2">
+                    <span><i class="giga icon-dingdan"></i></span>
+                    <span class="title">{{ info_text_purchase_order_id }}</span>
+                    <span class="value"><a href="{{ url_purchase_order ~ purchase_order_id }}"
+                                           target="_blank">{{ purchase_order_id }}</a>
+                      <i class="giga icon-cwf" style="color: #1f5268;width: 16px" data-toggle="tooltip"
+                         title="{{ heading_title }}"></i>
+                    </span>
+                  </div>
+                  <div class="col-md-2">
+                    <span><i class="giga icon-return-product"></i></span>
+                    <span class="title">{{ info_text_order_rma_id }}</span>
+                    <span class="value">
+                      {% if cwf_status in [16,7] %}
+                        {% if rma_arr %}
+                          {% for rma_value in rma_arr %}
+                            <a href="{{ url_rma_order ~ rma_value.id }}"
+                               target="_blank">{{ rma_value.rma_order_code }}({{ rma_value.status_str }})</a><br>
+                          {% endfor %}
+                        {% else %}
+                          <span style="color: #FA6400">Not Applied RMA</span>
+                        {% endif %}
+                      {% else %}
+                        Not Applied RMA
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <h4 class="sub-title">Ship To</h4>
+              <div class="info-addr mb-4 mt-2 text-center">
+                <div class="row">
+                  {% if not is_fba %}
+                    <div class="col-md-2">
+                      <span><i class="giga icon-account-blue"></i></span>
+                      <span class="value break-line">{{ recipient }}</span>
+                    </div>
+                    <div class="col-md-2">
+                      <span><i class="glyphicon glyphicon-earphone"></i></span>
+                      <span class="value break-line">{{ phone }}</span>
+                    </div>
+                    <div class="col-md-3">
+                      <span><i class="giga icon-email-contact-buyer"></i></span>
+                      <span class="value break-line">{{ email }}</span>
+                    </div>
+                  {% endif %}
+                  <div {% if is_fba %} class="col-md-12 text-left" style="margin-left: 60px" {% else %} class="col-md-5 text-left" {% endif %}>
+                    <span><i class="glyphicon glyphicon-map-marker"></i></span>
+                    <span class="value break-line">{{ full_address }}</span>
+                  </div>
+                </div>
+                <div class="row">
+                  {% if is_fba and fba_warehouse_code %}
+                    <div class="col-md-12  text-left" style="margin-left: 60px;margin-top: 10px">
+                      <span>  <i class="giga icon-cangku"></i></span>
+                      <span class="value break-line">{{ fba_warehouse_code ?? '' }}</span>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <h4 class="sub-title">Shipment Details</h4>
+              <div class="" style="width: 100%;margin-bottom: 25px;">
+                <table class="table main table-hover" style="margin: 0 auto;">
+                  <thead>
+                  {% set colspan = 6 %}
+                  <tr>
+                    <th class="text-center"> #</th>
+                    <th class="text-center"> Image</th>
+                    <th class="text-center"> Item Code</th>
+                    {% if is_fba %}
+                      {% set colspan = colspan + 2 %}
+                      <th class="text-center" style="width: 100px"> Merchant SKU</th>
+                      <th class="text-center" style="width: 100px"> FNSKU</th>
+                    {% endif %}
+                    <th class="text-center"> Store</th>
+                    <th class="text-center"> Qty</th>
+                    <th class="text-center"> Overall Weight <br>(per package)</th>
+                    {% if is_fba %}
+                      {% set colspan = colspan + 1 %}
+                      <th class="text-center"> Team Lift</th>
+                    {% endif %}
+                    <th class="text-center"> Length*Width*Height <br>(per package)</th>
+                    <th class="text-center"> Volume<br>(per package)
+                      <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" style="cursor: pointer;font-size: 12px"
+                         title="{{ is_inch ? tips_column_volume_inch : tips_column_volume }}"></i>
+                    </th>
+                    {% if is_fba %}
+                      {% set colspan = colspan + 2 %}
+                      <th class="text-center"> Box Label</th>
+                      <th class="text-center"> Item Label</th>
+                    {% endif %}
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for item in items %}
+                    <tr>
+                      <td class="text-center">{{ item.num }}</td>
+                      <td class="text-center">
+                        <a href="{{ url_product_info ~ item.product_id }}" style="text-decoration: underline">
+                          <img src="{{ item.product_img_url }}" style="width: 40px;height: 40px;"></a>
+                      </td>
+                      <td class="text-center break-line">
+                        <div style="display: flex;align-items: center;justify-content: center">
+                          {{ item.sku }}
+                          <a href="{{ url_product_info ~ item.product_id }}" target="_blank">
+                            <i class="giga icon-table-link" style="font-size: 14px;margin-left:3px"></i></a>
+                          {% for tag in item.tags %}
+                            <img data-toggle="tooltip" title="{{ tag.desc }}"
+                                 class="{{ tag.class_style }}"
+                                 style="margin: 0 3px"
+                                 src="{{ tag.icon_image_url }}">
+                          {% endfor %}
+                        </div>
+                      </td>
+                      {% if is_fba %}
+                        <td class="text-center break-line">{{ item.merchant_sku }}</td>
+                        <td class="text-center break-line">{{ item.fn_sku }}</td>
+                      {% endif %}
+                      <td class="text-center">{{ item.store }}</td>
+                      <td class="text-center">{{ item.qty }}</td>
+                      <td class="text-center">{{ item.weight }}</td>
+                      {% if is_fba %}
+                        <td class="text-center">{{ item.team_lift_status ? 'Yes':'No' }}</td>
+                      {% endif %}
+                      <td class="text-center">{{ item.l_w_h }}</td>
+                      <td class="text-center">{{ item.volume }}</td>
+                      {% if is_fba %}
+                        <td class="text-center">
+                          {% if item.pak_file_name %}
+                            <a href="{{ item.pak_file_path }}" target="_blank"
+                               class="a-link">{{ item.pak_file_name_30 }}</a>
+                          {% else %} - {% endif %}
+                        </td>
+                        <td class="text-center">
+                          {% if item.pro_file_name %}
+                            <a href="{{ item.pro_file_path }}" target="_blank"
+                               class="a-link">{{ item.pro_file_name_30 }}</a>
+                          {% else %} - {% endif %}
+                        </td>
+                      {% endif %}
+                    </tr>
+                    {# combo 子sku #}
+                    {% if item.sons %}
+                      {% for i,son in item.sons %}
+                        <tr>
+                          {% if i==0 %}
+                            <td rowspan="{{ item.sons_num }}" class="son-rowsspan"></td>
+                          {% endif %}
+                          <td class="text-center">
+                            <span class="span-package">{{ son.package }}</span>
+                          </td>
+                          <td class="text-center">
+                            <div style="display: flex;align-items: center;justify-content: center">
+                              {% if item.is_rebate %}
+                                <img data-toggle="tooltip" style="position: relative;"
+                                     src="{{ rebate_logo }}"
+                                     title="Rebate">
+                              {% endif %}
+                              {% if item.is_margin %}
+                                <a href="{{ product.url_margin }}">
+                            <span class="flag-margin-order">
+                              <span class="giga icon-margin" data-toggle="tooltip" title="{{ item.tip_margin }}"></span></span>
+                                </a>
+                              {% endif %}
+                              {{ son.sku }}
+                              <a href="{{ url_product_info ~ son.product_id }}" target="_blank">
+                                <i class="giga icon-table-link" style="font-size: 14px;margin-left: 3px"></i>
+                              </a>
+                              {% for tag in son.tags %}
+                                <img data-toggle="tooltip" title="{{ tag.desc }}"
+                                     class="{{ tag.class_style }}"
+                                     style="margin-left: 3px;"
+                                     src="{{ tag.icon_image_url }}">
+                              {% endfor %}
+                            </div>
+                          </td>
+                          <td class="text-center">{{ son.store }}</td>
+                          <td class="text-center">{{ son.qty }}</td>
+                          <td class="text-center">{{ son.weight }}</td>
+                          <td class="text-center">{{ son.l_w_h }}</td>
+                          <td class="text-center">{{ son.volume }}</td>
+                        </tr>
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                  {# total-packages #}
+                  <tr>
+                    <td colspan="{{ colspan }}" style="border: none"></td>
+                    <td class="text-right"><strong>Total Package Count:</strong></td>
+                    <td class="text-center"><span class="text-price">{{ total_packages }}</span></td>
+                  </tr>
+                  {# total-volume #}
+                  <tr>
+                    <td colspan="{{ colspan }}" style="border: none"></td>
+                    <td class="text-right"><strong>Total Volume ({{ is_inch ? volume_class_inch : volume_class_cm }}):</strong></td>
+                    <td class="text-center">{{ total_volume_show }}
+                      {% if is_less_2 %}
+                        <i class="glyphicon glyphicon-info-sign" data-toggle="tooltip"
+                           style="cursor: pointer;font-size: 12px" title="{{ tips_total_volume_less_2 }}"></i>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="sub-title">Tracking Information</h4>
+              <div class="" style="width: 100%;margin-bottom: 35px;">
+                <table class="table main table-hover" style="margin: 0 25px;width: -webkit-fill-available">
+                  <thead>
+                  <tr>
+                    <th class="text-center"> Number of Pallets</th>
+                    <th class="text-center"> # of Batch Pallets</th>
+                    <th class="text-center"> Shipping Status</th>
+                    <th class="text-center"> Carrier</th>
+                    <th class="text-center"> Tracking Number</th>
+                    <th class="text-center"> BOL-signed</th>
+                    <th class="text-center"> POD</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for i,tracking in trackings %}
+                    <tr>
+                      {% if i == 0 %}
+                        <td class="text-center" rowspan="{{ trackings|length }}">{{ sum_pallet }}<br>
+                          <span class="span-package">{{ tracking_order_status }}</span>
+                        </td>
+                      {% endif %}
+                      <td class="text-center">{{ tracking.pallet_qty }}</td>
+                      <td class="text-center">{{ tracking.shipping_status_str }}</td>
+                      <td class="text-center">{{ tracking.carrier }}</td>
+                      <td class="text-center">{{ tracking.tracking_number }}</td>
+                      <td class="text-center max-file-show">
+                        {% if tracking.bol_signed_file is empty %}
+                          N/A
+                        {% else %}
+                          <a href="{{ tracking.bol_signed_file.path }}" target="_blank"
+                             class="a-link">{{ tracking.bol_signed_file.name }}</a>
+                        {% endif %}
+                      </td>
+                      <td class="text-center max-file-show">
+                        {% if tracking.pod_file is empty %}
+                          N/A
+                        {% else %}
+                          <a href="{{ tracking.pod_file.path }}" target="_blank"
+                             class="a-link">{{ tracking.pod_file.name }}</a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="sub-title" id="order_details">Order Details</h4>
+              <div class="" style="width: 100%;margin-bottom: 35px;">
+                <table class="table main table-hover table-other-info"
+                       style="margin: 0 25px;width: -webkit-fill-available">
+                  <thead></thead>
+                  <tbody>
+                  {% if is_fba %}
+                    <tr>
+                      <td class="other-info-key">Have Loading Dock</td>
+                      <td>{{ has_dock==1?'Yes':'No' }}</td>
+                      <td class="other-info-key"><span class="border-left-no-full">Shipment Id</span></td>
+                      <td>{{ fba_shipment_code }}</td>
+                    </tr>
+                    <tr>
+                      <td class="other-info-key">Amazon Reference Number (ARN)</td>
+                      <td>{{ fba_amazon_reference_number ?? '' }}</td>
+                      {#<td class="other-info-key">Amazon PO Id</td>
+                      <td>{{ fba_po_code }}</td>#}
+                      <td class="other-info-key"><span class="border-left-no-full">Amazon Reference Id</span></td>
+                      <td>{{ fba_reference_code }}</td>
+                    </tr>
+                    <tr>
+                      <td class="other-info-key">Number of Pallets</td>
+                      <td><span {{ cwf_status==3?'style="color: #FA6400"':'' }}>{{ sum_pallet }}</span></td>
+                      <td class="other-info-key"><span class="border-left-no-full">Pallet Label</span></td>
+                      <td>
+                        {% if not show_label_upload_btn %}
+                          <a href="{{ lb_file_path }}" target="_blank" class="a-link">{{ lb_file_name }}</a>
+                        {% else %}
+                          <div id="pallet-label-upload">
+                            <a class="btn btn-primary uploader"><i class="giga icon-action-upload"></i> Upload File</a>
+                          </div>
+                          <div id="pallet-label-save" class="hidden">
+                            <a href="" target="_blank" class="a-link"></a>
+                            <i class="giga icon-error" style="margin-left: 3px" onclick="func_cancel(this)"></i>
+                            <a class="btn btn-primary" onclick="func_save(this)">
+                              <i style="color: white;" data-toggle="tooltip" title="{{ tips_save_label_btn }}"
+                                 class="giga icon-action-confirm-and-agree"></i></a>
+                          </div>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {#
+                    101843 这里不需要显示了，team lift和产品明细挂钩
+                    <tr>
+                      <td class="other-info-key">Team Lift</td>
+                      <td><a href="{{ tl_file_path }}" class="a-link">{{ tl_file_name }}</a></td>
+                      <td></td>
+                      <td></td>
+                    </tr>#}
+                  {% else %}
+                    <tr style="padding-left: 20px;padding-right: 20px">
+                      <td class="other-info-key">Have Loading Dock</td>
+                      <td>{{ has_dock==1?'Yes':'No' }}</td>
+                      <td class="other-info-key"><span class="border-left-no-full">Number of Pallets</span></td>
+                      <td>{{ sum_pallet }}</td>
+                    </tr>
+                  {% endif %}
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="sub-title">Order Comments</h4>
+              <div class="" style="margin:0 25px 25px 25px;">
+                <textarea class="form-control" cols="30" rows="5" readonly>{{ comments }}</textarea>
+                <p>
+                  {% for attachment in attachments %}
+                    <span><i class="glyphicon glyphicon-paperclip"></i>
+                      <a href="{{ attachment.file_path }}" target="_blank" class="a-link">{{ attachment.file_name }}</a>
+                    </span>
+                  {% endfor %}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let id = '{{ id }}';
+
+  function func_cancel(_this) {
+    $(_this).prev().attr('href', '').text('').attr('data-id', '');
+    $("#pallet-label-upload").removeClass('hidden');
+    $("#pallet-label-save").addClass('hidden');
+  }
+
+  function func_save(_this) {
+    let elem = $(_this).prev().prev();
+
+    let file_id = elem.attr('data-id');
+    if (file_id === undefined || file_id === 0 || file_id === '') {
+      $("#pallet-label-save i.icon-error").click();
+      layer.msg('{{ error_upload_again }}');
+      return;
+    }
+    $.ajax({
+      url: '{{ url_save_label }}',
+      type: 'POST',
+      dataType: 'json',
+      data: {id: id, file_id: file_id},
+      beforeSend: function () {
+        layer.load();
+      },
+      success: function (json) {
+        if (json.code == 200) {
+          layer.alert(json.msg, {
+            skin: 'yzc_layer' //样式类名
+            , closeBtn: 0
+            , btn: 'Ok'
+            , title: 'Message'
+          }, function () {
+            window.location.reload();
+          });
+        } else {
+          layer.alert(json.msg, {
+            skin: 'yzc_layer' //样式类名
+            , closeBtn: 0
+            , btn: 'Ok'
+            , title: 'Message'
+          }, function () {
+            if (json.code == 2) {
+              window.location.reload();
+            }
+          });
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError,) {
+        if (!errorCallback === undefined) {
+          alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      }
+    });
+  }
+
+  let upload;
+  $(function () {
+    layui.use('upload', function () {
+      upload = layui.upload;
+    });
+    upload.render({
+      elem: '.uploader',
+      url: '{{ url_upload }}',
+      size: 30 * 1024,
+      accept: 'file',
+      acceptMime: 'application/pdf',
+      before: function (obj) {
+        layer.load();
+      },
+      done: function (res, index, upload) {
+        layer.closeAll('loading');
+        if (res.code == 200 && res.data) {
+          $("#pallet-label-upload").addClass('hidden');
+          $("#pallet-label-save").removeClass('hidden');
+          $("#pallet-label-save a.a-link")
+            .attr('data-id', res.data.file_id)
+            .attr('href', res.data.file_url)
+            .text(res.data.file_name);
+        } else {
+          layer.msg(res.msg);
+        }
+      },
+      error: function (index, upload) {
+        layer.alert('{{ error_timeout_flush }}', {
+          skin: 'yzc_layer' //样式类名
+          , closeBtn: 0
+          , btn: 'Ok'
+          , title: 'Message'
+        }, function () {
+          window.location.reload();
+        });
+      }
+    })
+  })
+</script>
+
+{{ footer }}

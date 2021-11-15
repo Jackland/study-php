@@ -1,0 +1,94 @@
+{# detail:仓租单明细 item:费用单明细 #}
+<style>
+  .pay-type-tab {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .pay-type-tab .pay-label{
+    color: #666;
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+  .pay-type-tab .pay-value{
+    text-align: right;
+    color: #333;
+    font-weight: bold;
+    /*width: 80px;*/
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+</style>
+<div class="pay-type">
+  {% if item.payment_code == 'umf_pay' %}
+    <div class="pay-type-tab">
+      <div class="nowrap pay-label">UnionPay Used:</div>&nbsp;
+      <div class="nowrap pay-value">{{ (item.fee_total-item.balance)|formatPrice(currency) }}</div>
+    </div>
+    {% if item.poundage is not empty and item.poundage > 0 %}
+      <div class="pay-extral nowrap">(Additional {{ item.poundage|formatPrice(currency) }} for transaction fee)</div>
+    {% endif %}
+    {% if item.has_union_line_of_payment %}
+      <div class="pay-type-tab">
+        <div class="nowrap pay-label">Credit Used:</div>&nbsp;
+        <div class="nowrap pay-value">{{ item.balance|formatPrice(currency) }}</div>
+      </div>
+    {% endif %}
+  {% endif %}
+  {% if item.payment_code == 'cybersource_sop' %}
+    <div class="pay-type-tab">
+      <div class="nowrap pay-label">Credit Card Used:</div>&nbsp;
+      <div class="nowrap pay-value">{{ (item.fee_total-item.balance)|formatPrice(currency) }}</div>
+    </div>
+    {% if item.poundage is not empty and item.poundage > 0 %}
+      <div class="pay-extral nowrap">
+        (Additional {{ item.poundage|formatPrice(currency) }} for transaction fee)
+      </div>
+    {% endif %}
+    {% if item.has_union_line_of_payment %}
+      <div class="pay-type-tab">
+        <div class="nowrap pay-label">Credit Used:</div>&nbsp;
+        <div class="nowrap pay-value">{{ item.balance|formatPrice(currency) }}</div>
+      </div>
+    {% endif %}
+  {% endif %}
+  {% if item.payment_code == 'wechat_pay' %}
+    <div class="pay-type-tab">
+      <div class="nowrap pay-label">	WeChat Pay Used:</div>&nbsp;
+      <div class="nowrap pay-value">{{ (item.fee_total-item.balance)|formatPrice(currency) }}</div>
+    </div>
+    {% if item.poundage is not empty and item.poundage > 0 %}
+      <div class="pay-extral nowrap">
+        (Additional {{ item.poundage|formatPrice(currency) }} for transaction fee)
+      </div>
+    {% endif %}
+    {% if item.has_union_line_of_payment %}
+      <div class="pay-type-tab">
+        <div class="nowrap pay-label">Credit Used:</div>&nbsp;
+        <div class="nowrap pay-value">{{ item.balance|formatPrice(currency) }}</div>
+      </div>
+    {% endif %}
+  {% endif %}
+  {% if item.payment_code == 'line_of_credit' %}
+    <div class="pay-type-tab">
+      <div class="nowrap pay-label">Credit Used:</div>&nbsp;
+      <div class="nowrap pay-value">{{ item.balance|formatPrice(currency) }}</div>
+    </div>
+    {% if item.poundage is not empty and item.poundage > 0 %}
+      <div class="pay-extral nowrap">
+        (Additional {{ item.poundage|formatPrice(currency) }} for transaction fee)
+      </div>
+    {% endif %}
+  {% endif %}
+  {% if item.payment_code == 'virtual_pay' %}
+    <div class="pay-type-tab">
+      <div class="nowrap pay-label">Virtual Pay Used:</div>&nbsp;
+      <div class="nowrap pay-value">{{ item.fee_total|formatPrice(currency) }}</div>
+    </div>
+    {% if item.poundage is not empty and item.poundage > 0 %}
+      <div class="pay-extral nowrap">
+        (Additional {{ item.poundage|formatPrice(currency) }} for transaction fee)
+      </div>
+    {% endif %}
+  {% endif %}
+</div>

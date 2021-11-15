@@ -1,0 +1,265 @@
+<link href="catalog/view/theme/yzcTheme/stylesheet/font_demo/iconfont.css?v={{ app_version }}" rel="stylesheet" type="text/css"/>
+<script>
+      $(function () {
+          {% if menuLink %}
+                sessionStorage.setItem('menu','{{ menuLink }}');
+          {% endif %}
+          $('#button-menu').on('click', function(e) {
+              e.preventDefault();
+
+              $('#column-left').toggleClass('active');
+          });
+
+          // Set last page opened on the menu
+          $('#menu a[href]').on('click', function() {
+              sessionStorage.setItem('menu', $(this).attr('href'));
+          });
+
+          var menuUrl = sessionStorage.getItem('menu');
+          var menuObj = $('#menu a[href=\'' + menuUrl + '\']');
+          var menuLength = menuObj.length;
+          if (!menuUrl) {
+              $('#menu #dashboard').addClass('active');
+          } else if(menuLength === 0) {
+            menuUrl = menuUrl.slice(0,menuUrl.lastIndexOf('/'));
+            menuObj = $('#menu a[href=\'' + menuUrl + '\']');
+              menuObj.parent().addClass('active');
+          } else {
+            menuObj.parent().addClass('active');
+          }
+          menuObj.parents('li').children('a').removeClass('collapsed');
+          menuObj.parents('ul').addClass('in');
+          menuObj.parents('li').addClass('active');
+      });
+  </script>
+<style>
+  #menu{
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  #menu li{
+    position: relative;
+  }
+  #menu li a.parent:after {
+    content: "\f107";
+  }
+
+  #menu li a.parent:after {
+    font-family: FontAwesome;
+    float: right;
+  }
+
+  #menu li a.collapsed:after{
+    content: "\f105";
+  }
+  #menu > li > a,
+  #menu li li > a{
+    display: flex;
+    align-items: center;
+  }
+  #menu li a span,
+  #menu li li > a span{
+    padding-left: 5px;
+  }
+  .display{
+    display: none !important;
+  }
+  .column-min{
+    width: 62px !important;
+  }
+  .content{
+    margin-left: 63px !important;
+  }
+  .remove_margin_right:after{
+    margin-right:0 !important;
+  }
+  .padding_zero{
+    padding: 3px 0 0 3px !important;
+  }
+  .melu-a-icon-to-left{
+    margin-right: -8px;
+  }
+  #menu .new-badge {
+    width: 8px;
+    background: #f00;
+    display: inline-block;
+    border-radius: 50%;
+    height: 8px;
+    margin-left: 5px;
+  }
+  .listMsg-tip {
+    padding:0 5px;
+    margin:2px 4px 0 4px;
+    border-radius: 10px;
+    display: inline-block;
+    background: #E64545;
+    line-height: 18px;
+    font-size: 12px;
+    min-width: 18px;
+    color: #fff;
+  }
+  .flex1{
+    flex: 1;
+  }
+  .meun-list-title{
+    position: absolute;
+    z-index: 1000;
+    display: none;
+  }
+  .meunTitle-content{
+    background-color: #464C59;
+    color: #fff;
+    padding: 8px 16px;
+    white-space: nowrap;
+    border-radius: 2px;
+  }
+  .active-btn i{
+    font-size: 16px;
+    color: white;
+    opacity: 0.7
+  }
+  .active-btn:hover i{
+    opacity: 1;
+  }
+</style>
+<nav id="column-left">
+  <ul id="menu" style="margin-bottom: 0">
+    {% set i = 0 %}
+    {% for menu in menus %}
+      <li id="{{ menu.id }}">
+        {% if menu.href %}
+          <a href="{{ menu.href }}" >
+            <i class="giga {{ menu.icon }}"></i>
+            <span class="max-line1 menuList-name"> {{ __(menu.name) }}</span>
+              <div class="flex1">
+                {% if menu.num > 0 and menu.num <= 99 %}
+                  <div class="listMsg-tip">{{ menu.num }}</div>
+                {% elseif  menu.num > 99 %}
+                  <div class="listMsg-tip">99+</div>
+                {% endif %}
+              </div>
+          </a>
+        {% else %}
+          <a href="#collapse{{ i }}" data-toggle="collapse" class="parent collapsed">
+            <i class="giga {{ menu.icon }} "></i>
+            <span class="max-line1 menuList-name"> {{ __(menu.name) }}</span>
+            <div class="flex1">
+              {% if menu.num > 0 and menu.num <= 99 %}
+                <div class="listMsg-tip">{{ menu.num }}</div>
+              {% elseif  menu.num > 99%}
+                <div class="listMsg-tip">99+</div>
+              {% endif %}
+            </div>
+          </a>
+        {% endif %}
+        {% if menu.children %}
+          <ul id="collapse{{ i }}" class="collapse">
+            {% for children_1 in menu.children %}
+              <li>
+                {% if children_1.href %}
+                  <a href="{{ children_1.href }}"
+                    {% if children_1.target %} target="{{ children_1.target }}" {% endif %}>
+                    <i class="giga {{ children_1.icon }} "></i>
+                    <span class="max-line1 menuList-name">{{ __(children_1.name) }}</span>
+                    <div class="flex1">
+                      {% if children_1.num > 0 and children_1.num <= 99%}
+                        <div class="listMsg-tip">{{ children_1.num }}</div>
+                      {% elseif  children_1.num > 99 %}
+                        <div class="listMsg-tip">99+</div>
+                      {% endif %}
+                    </div>
+                  </a>
+                {% else %}
+                  <a href="#collapse{{ i }}" data-toggle="collapse" class="parent collapsed" >
+                    <span class="max-line1 menuList-name">{{ __(children_1.name) }}</span>
+                    {% if children_1.num > 0 and children_1.num <= 99 %}
+                      <div class="listMsg-tip">{{ children_1.num }}</div>
+                    {% elseif  children_1.num > 99%}
+                      <div class="listMsg-tip">99+</div>
+                    {% endif %}
+                  </a>
+                {% endif %}
+              </li>
+              {% set i = i + 1 %}
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+      {% set i = i + 1 %}
+    {% endfor %}
+  </ul>
+  <div style="width: 100%;text-align: center">
+    <a id="zz" class="btn active-btn" style="box-shadow:none;">
+      <i class="giga icon-shouqi1"></i>
+    </a>
+  </div>
+</nav>
+<div class="meun-list-title" id="meunListTitle"></div>
+<script>
+  let leftTip = 180;
+  $("#zz").click(function () {
+    $("#menu").find('span,.flex1').toggleClass('display');
+    if ($("#menu").find('span,.flex1').hasClass('display')) {
+      $("#menu li ul").collapse('hide');
+      $("#column-left").addClass('column-min');
+      $("#content").addClass('content');
+      $("#menu li a").addClass("remove_margin_right");
+      $("#menu li a").addClass("melu-a-icon-to-left");
+      $(this).find('i').removeClass('icon-shouqi1').addClass('icon-shouqi1-copy');
+      $("#navigation").addClass('padding_zero');
+      $("#container").addClass('menu-collapse');
+      leftTip=40;
+    }else{
+      $("#menu li.active ul").collapse('show');
+      $("#column-left").removeClass('column-min');
+      $("#content").removeClass('content');
+      $("#menu li a").removeClass("remove_margin_right");
+      $("#menu li a").removeClass("melu-a-icon-to-left");
+      $(this).find('i').removeClass('icon-shouqi1-copy').addClass('icon-shouqi1');
+      $("#navigation").removeClass('padding_zero');
+      $("#container").removeClass('menu-collapse');
+      leftTip=180;
+    }
+  });
+  $("#menu .parent").click(function (e) {
+    if ($("#menu").find('span').hasClass('display')) {
+      $("#zz").trigger('click');
+      // e.preventDefault();
+    }
+  })
+</script>
+<script>
+  //显示长度限制
+  $(".menuList-name").each(function() {
+    let allContent = $(this).html();
+    $(this).attr('data-content',allContent)
+    if ($.trim(allContent).length > 16) {
+      var str = $(this).html().trim().substring(0, 16) + '...';
+      $(this).html(str);
+      $(this).closest('a').addClass('limit-show')
+    }
+  });
+  $("#menu").on('mouseenter','a.limit-show',function (event) {
+    event.stopPropagation();
+    let Y = $(this).parent().offset().top + 30;
+    $('.meun-list-title').css({'top':Y,'left':leftTip});
+    let content = $(this).children('.menuList-name').attr('data-content');
+    let tip = `<div class="meunTitle-content">${content}</div>`;
+    $('#meunListTitle').html('').hide();
+    $('#meunListTitle').html(tip).show();
+  }).on('mouseleave','a.limit-show',function(){
+    $('#meunListTitle').hide()
+  });
+
+  $("#meunListTitle").on('mouseenter',function (event) {
+    $('#meunListTitle').show()
+  }).on('mouseleave',function(){
+    $('#meunListTitle').hide()
+  });
+
+  $('#column-left').scroll(function(){
+    $('#meunListTitle').hide()
+  });
+  $(window).scroll(function(){
+    $('#meunListTitle').hide()
+  })
+</script>

@@ -1,0 +1,611 @@
+{% trans_default_category 'catalog/view/customerpartner/warehouse/receipt' %}
+
+<script>
+var rowNumber = 4; // 当前的行数量
+var currentIndex = -1; // 记录当前row index
+var rowIndexSet = new Set(); // 记录存在的index列表
+//区分是编辑页还是新增页
+//新增：apply  编辑：edit
+var type = "{{ data_type }}";
+var receipt = {{ receipt | json_encode() | raw }};
+
+$(document).ready(function () {
+	//设置默认值
+	if(type != "apply" && receipt && receipt.receipt_details.length ){
+		rowNumber = receipt.receipt_details.length;
+		genTableDetailWithData(receipt.receipt_details)
+	} else {
+		genTableDetail(rowNumber);
+	}
+
+  let method = $("#shippingMethod").val() || receipt.shipping_way;
+  let hide = true;
+  if (receipt && receipt.program_code != '3.0'){
+    if ((method == 1 && !receipt.shipping_order_book && receipt.status != 1) || (method == 2)){
+      hide = false;
+    }
+  }
+	refreshDetailTableCols(hide);
+	bindNumberInput();
+});
+
+function bindNumberInput() {
+	$("input[type=number]").on("keydown", function(e) {
+		var invalidChars = ["-", "+", "e", "."]; //include "." if you only want integers
+		if (invalidChars.includes(e.key)) {
+				e.preventDefault();
+		}
+	});
+}
+
+//表格列表id
+var tableColId = {
+	input: `filter-code-`,
+	productname: `productname-`,
+	length: `length-`,
+	width: `width-`,
+	height: `height-`,
+	weight: `weight-`,
+	estimatedQuan: `estimated-quan-`,
+	hscode: `hscode-`,
+	hscode301: `hscode301-`,
+	defference: `difference-`,
+	received_qty: `received-qty-`
+};
+
+// 生成可编辑带有默认值的行项
+function genTableDetailWithData(details) {
+	for (let index = 0; index < details.length; index ++) {
+		let difference = (details[index]['expected_qty'] ? details[index]['expected_qty'] : 0) -
+								(details[index]['received_qty'] ? details[index]['received_qty'] : 0);
+		let received_qty = (details[index]['received_qty'] ? details[index]['received_qty'] : "");
+		let expected_qty = details[index]['expected_qty'] ? details[index]['expected_qty'] : "";
+
+		let hscode = (details[index]['hscode'] ? details[index]['hscode'] : "");
+		let hscode301 = (details[index]['301_hscode'] ? details[index]['301_hscode'] : "");
+		// 产品名称超长处理
+		let name = details[index]['product_desc']['name'];
+		let productName = toolString.calcStringLength(name, 30).fullStr;
+		if (productName.length < name.length) {
+			productName += '...';
+		}
+		let row = `
+		<tr id="table-row-${index}">
+			<td id="itemcode-row-${index}" class="itemcode-row">
+				<!-- <input type="text" autocomplete="off"
+					disabled
+					name="filter_code"
+					id="${tableColId.input}${index}"
+					class="inline-input"
+					value="${details[index]['sku']}/${details[index]['mpn']}">
+				</input> -->
+				<div id="${tableColId.input}${index}">${details[index]['sku']}/${details[index]['mpn']}</div>
+			</td>
+			<td id="${tableColId.productname}${index}">
+				<div class="productname-cell" title="${details[index]['product_desc']['name']}">${productName}</div>
+			</td>
+			<td id="${tableColId.length}${index}">${details[index]['length'].toFixed(2)}</td>
+			<td id="${tableColId.width}${index}">${details[index]['width'].toFixed(2)}</td>
+			<td id="${tableColId.height}${index}">${details[index]['height'].toFixed(2)}</td>
+			<td id="${tableColId.weight}${index}">${details[index]['weight'].toFixed(2)}</td>
+			<td>
+			<input class="inline-input" id="${tableColId.estimatedQuan}${index}" min="0" max="9999"
+			value="${expected_qty}">
+			</input></td>
+			<td id="${tableColId.received_qty}${index}">${received_qty}</td>
+			<td id="${tableColId.defference}${index}">${difference}</td>
+			<td id="${tableColId.hscode}${index}-container"><input class="inline-input" maxlength="30" id="${tableColId.hscode}${index}" value="${hscode}"></input></td>
+			<td id="${tableColId.hscode301}${index}-container">
+				<input class="inline-input" id="${tableColId.hscode301}${index}" maxlength="30" value="${hscode301}"></input>
+			</td>
+			<td class="action">
+				<div class="icon-container">
+					<i class="giga icon-action-remove remove-icon" id="remove-icon-${index}" data-index=${index}></i>
+					<i class="giga icon-action-add add-icon" id="add-icon-${index}" data-index=${index}></i>
+				</div>
+			</td>
+		</tr>`;
+		$("#table-body").append(row);
+
+		//$(`input[id='filter-code-${index}']`).data("productid", details[index]['product_id']);
+		$(`#filter-code-${index}`).data("productid", details[index]['product_id']);
+
+		eventBind(index);
+		currentIndex = index;
+		rowIndexSet.add(index);
+	}
+	log();
+	refreshButton();
+
+  let method = $("#shippingMethod").val() || receipt.shipping_way;
+  let hide = true;
+  if (receipt && receipt.program_code != '3.0'){
+    if ((method == 1 && !receipt.shipping_order_book && receipt.status != 1) || (method == 2)){
+      hide = false;
+    }
+  }
+	refreshDetailTableCols(hide);
+}
+
+// 生成空表行
+function genTableRow(index) {
+	if (type == "apply") {
+		var row = `<tr id="table-row-${index}">
+			<td id="itemcode-row-${index}" class="itemcode-row">
+			<input type="text" autocomplete="off"
+				name="filter_code"
+				id="${tableColId.input}${index}"
+				class="inline-input">
+			</td>
+			<td id="${tableColId.productname}${index}"></td>
+			<td id="${tableColId.length}${index}"></td>
+			<td id="${tableColId.width}${index}"></td>
+			<td id="${tableColId.height}${index}"></td>
+			<td id="${tableColId.weight}${index}"></td>
+			<td><input class="inline-input" min="0" max="9999" id="${tableColId.estimatedQuan}${index}"></input></td>
+			<td id="${tableColId.hscode}${index}-container"><input class="inline-input" maxlength="30" id="${tableColId.hscode}${index}"></input></td>
+			<td id="${tableColId.hscode301}${index}-container">
+				<input class="inline-input" maxlength="30" id="${tableColId.hscode301}${index}"></input>
+			</td>
+			<td class="action">
+				<div class="icon-container">
+					<i class="giga icon-action-remove remove-icon" id="remove-icon-${index}" data-index=${index}></i>
+					<i class="giga icon-action-add add-icon" id="add-icon-${index}" data-index=${index}></i>
+				</div>
+			</td>
+		</tr>`
+	} else {
+		var row = `<tr id="table-row-${index}">
+			<td id="itemcode-row-${index}" class="itemcode-row">
+				<input type="text" autocomplete="off"
+					name="filter_code"
+					id="${tableColId.input}${index}"
+					class="inline-input">
+			</td>
+			<td id="${tableColId.productname}${index}"></td>
+			<td id="${tableColId.length}${index}"></td>
+			<td id="${tableColId.width}${index}"></td>
+			<td id="${tableColId.height}${index}"></td>
+			<td id="${tableColId.weight}${index}"></td>
+			<td><input class="inline-input" min="0" max="9999" id="${tableColId.estimatedQuan}${index}"></input></td>
+			<td id="${tableColId.received_qty}${index}"></td>
+			<td id="${tableColId.defference}${index}"></td>
+			<td id="${tableColId.hscode}${index}-container"><input class="inline-input" maxlength="30" id="${tableColId.hscode}${index}"></input></td>
+			<td id="${tableColId.hscode301}${index}-container">
+				<input class="inline-input" maxlength="30" id="${tableColId.hscode301}${index}"></input>
+			</td>
+			<td class="action">
+				<div class="icon-container">
+					<i class="giga icon-action-remove remove-icon" id="remove-icon-${index}" data-index=${index}></i>
+					<i class="giga icon-action-add add-icon" id="add-icon-${index}" data-index=${index}></i>
+				</div>
+			</td>
+		</tr>`
+	}
+
+  $("#table-body").append(row);
+	eventBind(index);
+
+  let method = $("#shippingMethod").val() || receipt.shipping_way;
+  let hide = true;
+  if (receipt && receipt.program_code != '3.0'){
+    if ((method == 1 && !receipt.shipping_order_book && receipt.status != 1) || (method == 2)){
+      hide = false;
+    }
+  }
+	refreshDetailTableCols(hide);
+}
+
+
+// 隐藏表格HScode & 301hscode （用于b2b local运送方式）
+// hide : true 表示隐藏，false：表示显示
+function refreshDetailTableCols(hide) {
+	if(hide) {
+		// 不显示hscode 301hscode
+		$("#hscode-header").hide();
+		$("#301hscode-header").hide();
+		$('[id^=hscode-]').hide();
+		$('[id^=hscode301-]').hide();
+	} else {
+		$("#hscode-header").show();
+		$("#301hscode-header").show();
+		$('[id^=hscode-]').show();
+		$('[id^=hscode301-]').show();
+	}
+}
+
+//生成行项时的数据绑定
+function eventBind(index) {
+  //清除之前的加减点击事件
+  $(`#add-icon-${index}`).off("click");
+  $(`#remove-icon-${index}`).off("click");
+	bindNumberInput();
+
+  //绑定加减点击事件
+  $(`#add-icon-${index}`).click(function(event) {
+    let index = $(this).data("index") + 1;
+    currentIndex = index;
+    genTableRow(currentIndex);
+    rowNumber ++;
+    rowIndexSet.add(currentIndex);
+    refreshButton();
+  });
+
+  $(`#remove-icon-${index}`).click(function(event) {
+    let index = $(this).data("index");
+    $(`#table-row-${index}`).off("click");
+    $(`#table-row-${index}`).remove();
+    rowNumber --;
+    rowIndexSet.delete(index);
+    refreshButton();
+  });
+
+	//入库单号清空操作
+	$(`input[id='filter-code-${index}']`).on("input propertychange", function() {
+		if ($(this).val() == '') {
+			$(`input[id='filter-code-${index}']`).data("productid", "");
+			$(`#${tableColId.productname}${index}`).empty();
+			$(`#${tableColId.length}${index}`).empty();
+			$(`#${tableColId.width}${index}`).empty();
+			$(`#${tableColId.height}${index}`).empty();
+			$(`#${tableColId.weight}${index}`).empty();
+		}
+	});
+
+	//入库单号模糊搜索
+	$(`input[id='filter-code-${index}']`).autocomplete({
+		'source': function (request, response) {
+			$.ajax({
+				url: `/index.php?route=customerpartner/warehouse/receipt/getProducts&code_mpn=${encodeURIComponent(request)}`,
+				dataType: 'json',
+				success: function (json) {
+					response($.map(json.data, function (item) {
+						return {
+							label: item['sku'] + "/" + item['mpn'],
+							value: item['product_id'],
+							data: item
+						}
+					}));
+					if(json.data.length) {
+						$(`.itemcode-row .dropdown-menu`).hide();
+						$(`#itemcode-row-${index} .dropdown-menu`).show();
+					}
+				}
+			});
+		},
+		'select': function (item) {
+			$(`input[id='filter-code-${index}']`).val(item['label']);
+			$(`input[id='filter-code-${index}']`).data("productid", item['value']);
+
+			// 产品名称超长处理
+			let name = item.data.name;
+			let productName = toolString.calcStringLength(name, 30).fullStr;
+			if (productName.length < name.length) {
+				productName += '...';
+			}
+			//let productName = item.data.name.length > 30 ? item.data.name.substr(0,30) + '...' : item.data.name;
+			$(`#${tableColId.productname}${index}`).html(`<div class="productname-cell" title="${item.data.name}">${productName}</div>`);
+			$(`#${tableColId.length}${index}`).html(str2fixed(item.data.length));
+			$(`#${tableColId.width}${index}`).html(str2fixed(item.data.width));
+			$(`#${tableColId.height}${index}`).html(str2fixed(item.data.height));
+			$(`#${tableColId.weight}${index}`).html(str2fixed(item.data.weight));
+			$(`#${tableColId.estimatedQuan}${index}`).html();
+		}
+	});
+}
+
+//默认数字保留两位小数
+function str2fixed(dataStr) {
+	if (dataStr) {
+  	return dataStr.match(/^\d+(?:\.\d{0,2})?/);
+	} else {
+		return dataStr;
+	}
+}
+
+//查询产品
+function searchCode(input) {
+	$.get(`/index.php?route=customerpartner/warehouse/receipt/getProducts&code_mpn=${input.value}`,function(result) {
+	})
+}
+
+//更新按钮属性
+function refreshButton() {
+  $('.add-icon').css("display", "block");
+  $('.remove-icon').css("display", "block");
+  var list = [...rowIndexSet].sort(function(a,b){return a-b});
+  $('.add-icon').css("display", "none");
+  $(`#table-row-${list[list.length - 1]} .add-icon`).css("display", "block");
+  if (rowNumber <= 1) {
+    $(`#table-row-${list[0]} .remove-icon`).css("display", "none");
+  }
+}
+
+function genTableDetail(row) {
+  $("#table-body").empty();
+  for (let i = 0; i < row; i++) {
+    genTableRow(i);
+    rowIndexSet.add(i);
+    currentIndex = i;
+  }
+
+  refreshButton();
+}
+
+function log() {
+
+}
+
+//构造明细项数据
+function returnTableData() {
+	// method : 1.委托海运操作 2.客户自发 3.b2b local
+	var method = $("#shippingMethod").val();
+
+	var products = [];
+	for (let index of rowIndexSet) {
+		let rowData = {};
+		rowData['product_id'] = $(`#filter-code-${index}`).data("productid");
+		rowData['expected_qty'] = $(`#${tableColId.estimatedQuan}${index}`).val();
+		rowData['hscode'] = $(`#${tableColId.hscode}${index}`).val();
+		rowData['301_hscode'] = $(`#${tableColId.hscode301}${index}`).val();
+    if (method == 3 || (receipt && (receipt.shipping_way == 3 || receipt.program_code != '2.0'))) {
+      rowData['hscode'] = "";
+      rowData['301_hscode'] = "";
+    }
+		//if (rowData['product_id'] || rowData['expected_qty'] || rowData['hscode'] || rowData['301_hscode']) {
+			products.push(rowData);
+		//}
+		
+	}
+	return products;
+}
+
+//前端验证
+function removeTableErrorTip() {
+	$(".inline-input").removeClass("input-invalid");
+}
+
+function showTableErrorTip(dom){
+	$(dom).addClass("input-invalid");
+}
+
+function saveCheck(data) {
+	var method = $("#shippingMethod").val();
+  if (!method){
+    method = receipt.departure_show;
+  }
+  var isCheckHsCode = false; //是否需要校验hs_code 与301_hscode
+  if ((method != 3 && method !='本土发货') && (receipt && receipt.program_code == '2.0' && receipt.status != 1 && !receipt.shipping_order_book) ) {
+    isCheckHsCode = true;
+  }
+	removeTableErrorTip();
+	var list = [...rowIndexSet].sort(function(a,b){return a-b});
+	return _saveCheck(data, isCheckHsCode, list);
+}
+
+function submitCheck(data) {
+	var method = $("#shippingMethod").val();
+	if (!method){
+    method = receipt.departure_show;
+  }
+  var isCheckHsCode = false; //是否需要校验hs_code 与301_hscode
+  if ((method != 3 && method !='本土发货') && (receipt && receipt.program_code == '2.0' && receipt.status != 1 && !receipt.shipping_order_book) ) {
+    isCheckHsCode = true;
+  }
+	removeTableErrorTip();
+	var list = [...rowIndexSet].sort(function(a,b){return a-b});
+  return _submitCheck(data, isCheckHsCode, list)
+}
+
+function _saveCheck(data, isCheckHsCode, list) {
+	//检查是否存在相同的item code
+	let productArr = [];
+	for (let item of data) {
+		productArr.push(item.product_id || '')
+	}
+
+	// 如果填写了内容，择验证填写内容的正确性
+	for(var i = 0; i < data.length; i ++) {
+		if (!data[i]['product_id'] && !data[i]['expected_qty'] && !data[i]['hscode'] && !data[i]['301_hscode']) {
+			continue;
+		}
+
+		//检查是否存在相同的item code
+		if(data[i].product_id && productArr.indexOf(data[i].product_id) != i) {
+			layer.msg("{{__('MPN不能重复')}}");
+			showTableErrorTip("#" + tableColId.input + list[i]);
+			return false;
+		}
+
+		// 预计入库数量验证
+		let eqReg = new RegExp("^(?:[1-9][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])$");
+		if(data[i].expected_qty !== undefined && data[i].expected_qty.trim() !== "" && !eqReg.test(data[i].expected_qty)) {
+			layer.msg("{{__('预计入库数量只能为1-9999的整数')}}");
+			showTableErrorTip("#" + tableColId.estimatedQuan + list[i]);
+			return false;
+		}
+		let reg = new RegExp("^[0-9]{10}$");
+		if(isCheckHsCode && data[i].hscode.trim() != "" && !reg.test(data[i].hscode.replace(/\.|\s/g,''))) {
+			layer.msg("{{__('HS编码格式不正确，HS编码为10位数字编码！')}}");
+			showTableErrorTip("#" + tableColId.hscode + list[i]);
+			return false;
+		}
+		let reg301 = new RegExp("^[0-9]{0,20}$");
+		if(isCheckHsCode && data[i]['301_hscode'].trim() != "" && !reg301.test(data[i]['301_hscode'].replace(/\.|\s/g,''))) {
+			layer.msg("{{__('301 HS编码格式不正确，301 HS编码为不超过20位数字编码！')}}");
+			showTableErrorTip("#" + tableColId.hscode301 + list[i]);
+			return false;
+		}
+	}
+
+	return true;
+}
+
+//submit 操作的验证
+function _submitCheck(data, isCheckHsCode, list) {
+	let filterData = data.filter(item => {
+		return item['product_id'] || item['expected_qty'] || item['hscode'] || item['301_hscode']
+	});
+	if(filterData.length == 0) {
+		layer.msg("{{__('Item Code不能为空')}}");
+		showTableErrorTip("#" + tableColId.input + list[0]);
+		return false;
+	}
+
+	let productArr = [];
+	for (let item of data) {
+		productArr.push(item.product_id || '')
+	}
+
+	for(var i = 0; i < data.length; i ++) {
+		if (!data[i]['product_id'] && !data[i]['expected_qty'] && !data[i]['hscode'] && !data[i]['301_hscode']) {
+			continue;
+		}
+
+		if(!data[i].product_id) {
+			layer.msg("{{__('Item Code不能为空')}}");
+			showTableErrorTip("#" + tableColId.input + list[i]);
+			return false;
+		}
+
+		//检查是否存在相同的item code
+		if(data[i].product_id && productArr.indexOf(data[i].product_id) != i) {
+			layer.msg("{{__('MPN不能重复')}}");
+			showTableErrorTip("#" + tableColId.input + list[i]);
+			return false;
+		}
+
+		if(data[i].expected_qty === undefined || data[i].expected_qty.trim()=== "") {
+			layer.msg("{{__('预计入库数量不能为空')}}");
+			showTableErrorTip("#" + tableColId.estimatedQuan + list[i]);
+			return false;
+		}
+
+		let eqReg = new RegExp("^(?:[1-9][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])$");
+		if(data[i].expected_qty !== undefined && data[i].expected_qty.trim() !== "" && !eqReg.test(data[i].expected_qty)) {
+			layer.msg("{{__('预计入库数量只能为1-9999的整数')}}");
+			showTableErrorTip("#" + tableColId.estimatedQuan + list[i]);
+			return false;
+		}
+
+		if(isCheckHsCode && data[i].hscode.trim() == "") {
+			layer.msg("{{__('HS编码为必填项，不能为空')}}");
+			showTableErrorTip("#" + tableColId.hscode + list[i]);
+			return false;
+		}
+
+		let reg = new RegExp("^[0-9]{10}$");
+		if(isCheckHsCode && data[i].hscode.trim() != "" && !reg.test(data[i].hscode.replace(/\.|\s/g,''))) {
+			layer.msg("{{__('HS编码格式不正确，HS编码为10位数字编码！')}}");
+
+			showTableErrorTip("#" + tableColId.hscode + list[i]);
+			return false;
+		}
+
+		let reg301 = new RegExp("^[0-9]{0,20}$");
+		if(isCheckHsCode && data[i]['301_hscode'].trim() != "" && !reg301.test(data[i]['301_hscode'].replace(/\.|\s/g,''))) {
+			layer.msg("{{__('301 HS编码格式不正确，301 HS编码为不超过20位数字编码！')}}");
+			showTableErrorTip("#" + tableColId.hscode301 + list[i]);
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+
+<style>
+.layui-layer-hui {
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.2) !important;
+}
+.table-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.red-icon::before {
+  content: "*";
+  color: #f56c6c;
+  margin-right: 4px;
+}
+
+.inline-input {
+  width: 142px;
+}
+
+#table-body .action i{
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#table-body .action i:hover {
+  cursor: pointer;
+}
+
+#table-body .action .icon-container {
+	display: flex;
+	justify-content: center;
+}
+
+#table-body .inline-input {
+	outline: none;
+	padding: 2px 4px;
+	border: 1px solid rgb(204, 204, 204);
+	border-radius: 2px;
+}
+
+#table-body .inline-input:focus {
+	outline: none;
+	border: 1px solid darkgrey;
+	border-radius: 2px;
+	  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px darkgrey;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px darkgrey;
+}
+
+
+#table-body .input-invalid:focus {
+  border-color: #d0321e;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #f0a197;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #f0a197;
+}
+
+#table-body .input-invalid{
+  border-color: #d0321e;
+}
+
+.table-wrapper{
+	display: block;
+	overflow-x: auto;
+	white-space: nowrap;
+	margin-bottom: 18px;
+}
+
+.table {
+	margin-bottom: 0px;
+}
+
+.table .productname-col {
+	max-width: 120px;
+}
+
+#table-body .action {
+	position: sticky;
+	right: 0px;
+	box-shadow: -4px 4px 4px 0px #eee;
+	background-color: #fff;
+	/*border-bottom: 2px solid #ddd; */
+}
+
+.table .oper-col {
+	position: sticky;
+	right: 0px;
+	box-shadow: -4px 4px 4px 0px #eee;
+	background-color: #fff;
+}
+
+.productname-cell {
+	width: 120px;
+	word-break: break-word;
+	white-space: normal;
+}
+</style>

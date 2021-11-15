@@ -1,0 +1,398 @@
+{{ header }}{{ separate_column_left }}
+<script src="catalog/view/javascript/layer/layer.js" type="text/javascript"></script>
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid" id="content" style="margin-left: 15%">
+  {% else %}
+  <div class="container">
+    {% endif %}
+    <ul class="breadcrumb">
+      {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+      {% endfor %}
+    </ul>
+
+    {% if error_warning %}
+      <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ error_warning }}</div>
+    {% endif %}
+    {% if success %}
+      <div class="alert alert-success"><i class="fa fa-check-circle"> </i> {{ success }}</div>
+    {% endif %}
+
+    <div class="row">{{ column_left }}
+      {% if column_left and column_right %}
+        {% set class = 'col-sm-6' %}
+      {% elseif column_left or column_right %}
+        {% set class = 'col-sm-9' %}
+      {% else %}
+        {% set class = 'col-sm-12' %}
+      {% endif %}
+      <div id="content" class="{{ class }}">
+        {{ content_top }}
+        <fieldset>
+          <legend>
+            <h1 class="col-sm-6">
+              {{ heading_title_template }}
+            </h1>
+            <div class="col-sm-6">
+              <div class="pull-right">
+                <a href="{{ add_action }}" id="insert" data-toggle="tooltip" title="{{ button_add }}"
+                   class="btn btn-primary" style="background-color: #478BFF">
+                  <i class="fa fa-plus"></i>
+                  {{ language.list_create_template }}
+                </a>
+              </div>
+            </div>
+          </legend>
+          <div id="box-shadow" style="margin-top: 0">
+            <div class="well">
+              <div class="row">
+                <div class="col-sm-10 text-left">
+                  <div class="input-group">
+                    <input type="text" value="{{ filter_sku_mpn }}" placeholder="{{ text_sku_mpn }}" id="input-sku_mpn"
+                           class="form-control"/>
+                    <span class="input-group-btn">
+                    <a onclick="filter();" class="btn btn-default fa fa-search" style="height: 36px"></a>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-sm-2">
+                  <button type="button" id="button-download" class="btn btn-default"
+                          onclick="downloadRebatesTemplate();"
+                          style="cursor: pointer;bottom: 0;left: 150px;margin-left: 10px">
+                    <i class="fa fa-download"></i>
+                    {{ language.list_download }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!--table-->
+            <div class="col-sm-12">
+              <div class="panel-body">
+                <div class="table-responsive">
+                  <table class="table table-hover ">
+                    <thead>
+                    <tr>
+                      <td style="width: 5%;" class="text-center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);"/>
+                      </td>
+                      <td class="text-left" width="10%">{{ language.list_table.column_1 }}</td>
+                      <td class="text-left" width="15%">{{ language.list_table.column_2 }}</td>
+                      <td class="text-left" width="5%">{{ language.list_table.column_3 }}</td>
+                      <td class="text-center" width="10%">{{ language.list_table.column_4 }}</td>
+                      <td class="text-center" width="10%">{{ language.list_table.column_5 }}</td>
+                      <td class="text-center" width="10%">{{ language.list_table.column_6 }}</td>
+                      <td class="text-center" width="10%">{{ language.list_table.column_7 }}</td>
+                      <td class="text-center" width="15%">{{ language.list_table.column_8 }}</td>
+                      <td class="text-center" width="10%">{{ language.list_table.column_9 }}</td>
+                    </tr>
+                    </thead>
+                  </table>
+                  {% if rebates_templates %}
+                    {% for v in rebates_templates %}
+                    <div id="collapse">
+                      <table class="table table-hover ">
+                        <tbody>
+                        <tr>
+                          <td class="text-center" style="width: 5%;">
+  {#                          <!--{% if review.review_id in selected %}-->#}
+  {#                          <!--<input type="checkbox" name="selected[]" value="{{ review.review_id }}" checked="checked" />{% else %}-->#}
+                            <input type="checkbox" name="selected[]" value="{{ v.id }}"/>
+  {#                          <!--{% endif %}-->#}
+                          </td>
+                          <td class="text-left" width="10%">{{ v.rebate_template_id }}</td>
+                          <td class="text-left" width="15%">
+                            {{ v['child'][0]['sku'] }}({{ v['child'][0]['mpn'] }})<br>
+                            {% if v['child']|length -1 > 0 %}
+                              <span>{{ v['child']|length -1 }} more items</span>
+                            {% endif %}
+                          </td>
+                          <td class="text-left" width="5%">{{ v.day }}</td>
+                          <td class="text-center" width="10%">{{ v.qty }}</td>
+                          <td class="text-center" width="10%">{{ v['exclusive_price'] }}</td>
+                          <td class="text-center" width="10%">{{ v['rebates'] }}</td>
+                          <td class="text-center" width="10%">{{ v['available_places'] }}</td>
+                          <td class="text-center" width="13%">{{ v['update_time'] }}</td>
+                          <td width="10%" class="text-right more">
+                            <a class="btn " role="button" data-toggle="collapse" href="#collapseExample{{ v.id }}"
+                               aria-expanded="false" aria-controls="collapseExample" id="open{{ v.id }}"  >
+                              <i class="giga icon-action-stretch show_tips" data-tips="{{ language.expand_tips }}"></i>
+
+                            </a>
+                            <a class="btn more coll_change" role="button" data-toggle="collapse" href="#coll{{ v.id }}" aria-expanded="false"
+                               aria-controls="collapseExample{{ v.id }}" id="change{{ v.id }}" data-coll_id="{{ v.id }}" >
+                              <i class="giga icon-action-more"></i>
+
+                            </a>
+                            <div class="collapse  coll" id="coll{{ v.id }}"  style="z-index: 999;border:none;background-color: transparent;width: 140px" >
+                              <div class="well" style="border-radius: 8px;background-color: #fff;border: 1px solid #ccc">
+                                <table id="more" style="">
+                                  <tr>
+                                    <td>Edit</td>
+                                    <td><a href="index.php?route=account/customerpartner/rebates/edit_tpl&id={{ v.id }}" class="btn "><i class="fa fa-pencil"></i></a></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Copy</td>
+                                    <td><a href="index.php?route=account/customerpartner/rebates/copy_tpl&id={{ v.id }}" class="btn "><i class="fa fa-clone"></i></a></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Delete</td>
+                                    <td><a href="javascript:confirm_one_delete('{{ v.show_items_more }}','index.php?route=account/customerpartner/rebates/del_tpl&type=one&id={{ v.id }}')" class="btn "><i class="fa fa-trash-o"></i></a></td>
+                                  </tr>
+                                </table>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                        </tbody>
+
+                      </table>
+
+
+                      <div class="collapse coll1" id="collapseExample{{ v.id }}">
+                        <div class="well">
+                          <table>
+                            <thead>
+                            <tr>
+                              <th class="text-center" width="15%">Image</th>
+                              <th class="text-center" width="15%">Item Code(MPN)</th>
+                              <th class="text-center" width="10%">Exclusive Price</th>
+                              <th class="text-center" width="10%">Rebate Amount/Unit</th>
+                              <th class="text-center" width="15%">Agreed Minimum Selling Price</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for detail_v in v['child'] %}
+                              <tr>
+                                <td class="text-center" width="15%"><img src="{{ detail_v.image }}" style="width: 50px;height: 50px"/> </td>
+                                <td class="text-center" width="15%">
+                                  <a class="a-link"  target="_blank" href="{{ detail_v.product_url }}"><span>{{ detail_v.sku }}</span>&nbsp;<i class="giga -iconfont icon-table-link"></i></a><br>
+                                  <span style="color: #b3b3b3">{{ detail_v.mpn }}</span>
+                                </td>
+                                <td class="text-center" width="10%" style="color: #8A93B5;">{{ detail_v.price }}</td>
+                                <td class="text-center" width="10%" style="color: #8A93B5;">{{ detail_v.rebate_amount }}</td>
+                                <td class="text-center" width="15%" style="color: #8A93B5;">{{ detail_v.min_sell_price }}</td>
+                              </tr>
+                            {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  {% else %}
+                    <div class="col-sm-12" style="text-align: center;font-size: 18px;margin-top: 5px;"> No records. </div>
+                  {% endif %}
+
+                </div>
+              </div>
+            </div>
+
+            {#分页#}
+            {% if rebates_templates %}
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="pull-left">
+                    {#左侧删除#}
+                    <div class="table-bottom-action">
+                      <div class="bottom-action-left">
+                        <i class="fa fa-right-angle"></i>
+                        <button type="button" data-toggle="tooltip" title="{{ button_all_delete }}"
+                                class="btn btn-danger"
+                                onclick="confirm_multiple_delete()">
+                          <i class="fa fa-trash-o"></i>
+                        </button>
+                        <span class="bottom-action-detail"></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pull-right">{{ pagination }}</div>
+                </div>
+                {#<div class="col-sm-6 text-right">#}
+                {#{{ results }}</div>#}
+              </div>
+            {% endif %}
+          </div>
+        </fieldset>
+        {{ content_bottom }}
+      </div>
+      {{ column_right }}
+    </div>
+  </div>
+</div>
+<style>
+  #more td{
+    border: none!important;
+  }
+ .more #more td a:hover i{
+   color: #fff;
+ }
+</style>
+
+<script type="text/javascript">
+    $('.coll_change').hover(
+        function(){
+            let id=$(this).data('coll_id');
+            $("#coll"+id).addClass('in').addClass('coll');
+            $("#coll"+id).hover(
+                function () {
+                    $("#coll"+id).addClass('in')
+                },
+                function(){
+                    $("#coll"+id).removeClass('in')
+                }
+            );
+        },
+        function(){
+            let id=$(this).data('coll_id');
+            $('#coll'+id).removeClass('in');
+        }
+    );
+
+
+    //tips
+    $(document).delegate('.show_tips', 'mouseover', function (e) {
+        var that = this;
+        let show_info = $(this).data('tips');
+        layer.tips(show_info, that, {tips: [1, '#000000'], area: ['auto', 'auto'], time: -1});
+    });
+
+    $(document).delegate('.show_tips', 'mouseout', function (e) {
+        layer.closeAll('tips');
+    });
+
+    $(function () {
+        $("#open{{ v.id }}").click(function () {
+            $("#coll{{ v.id }}").removeClass("bbb");
+            $("#coll{{ v.id }}").addClass("aaa");
+            $("#coll{{ v.id }}").siblings().removeClass("aaa");
+            $("#coll{{ v.id }}").siblings().addClass("bbb");
+        });
+        $("#change{{ v.id }}").click(function () {
+            $("collapseExample{{ v.id }}").removeClass("bbb");
+            $("collapseExample{{ v.id }}").addClass("aaa");
+            $("collapseExample{{ v.id }}").siblings().removeClass("aaa");
+            $("collapseExample{{ v.id }}").siblings().addClass("bbb");
+        });
+    });
+
+    layer.config({
+        skin: 'yzc_layer',
+        btn: ['Yes', 'No'],
+        btnAlign: 'c',
+    });
+
+    function filter() {
+        let url = 'index.php?route=account/customerpartner/rebates';
+        var filter_sku_mpn = $('#input-sku_mpn').val();
+        if (filter_sku_mpn) {
+            url += '&sku_mpn=' + encodeURIComponent(filter_sku_mpn);
+        }
+        window.location.href = url;
+    }
+
+    function confirm_one_delete(sku, url) {
+        // var sku = $("#" + id).text().trim();
+        var tip = "{{ text_confirm }}";
+        tip = tip.replace('%s', sku);
+        layer.confirm(tip, {
+            title: 'Message',
+            btn: ['Yes', 'No'],
+        }, function (index) {
+            window.location.href = url;
+        });
+    }
+    
+
+    function confirm_multiple_delete() {
+        var length = $("input[name='selected[]']:checked").length;
+        if (length <= 0) {
+            layer.msg('{{ error_select_one }}');
+        } else {
+            var tip = "{{ text_confirm_all }}";
+            tip = tip.replace('%s', length);
+            del_id_list=[];
+            $.each( $("input[name='selected[]']:checked"),function (k,v) {
+                del_id_list.push($(v).val());
+            });
+            del_id_txt=del_id_list.join(',');
+            layer.confirm(tip, {
+                title: 'Message',
+                btn: ['Yes', 'No'],
+            }, function (index) {
+               window.location.href='index.php?route=account/customerpartner/rebates/del_tpl&type=mult&id='+del_id_txt;
+            });
+        }
+    }
+
+    function downloadRebatesTemplate() {
+        var url = '{{ download_action }}';
+        var filter_sku_mpn = $('#input-sku_mpn').val();
+
+        if (filter_sku_mpn) {
+            url += '&sku_mpn=' + encodeURIComponent(filter_sku_mpn);
+        }
+
+        location = url;
+    }
+</script>
+
+<style>
+  .aaa{
+    display: none!important;
+  }
+  .bbb{
+    display: block!important;
+  }
+  #form .table td {
+    vertical-align: middle;
+  }
+
+  .table {
+    margin-bottom: 0;
+  }
+
+  #collapse #collapseExample {
+    width: 70%;
+    margin: 0 auto;
+  }
+
+  .btn {
+    padding: 8px;
+    height: 35px;
+    border-radius: 5px;
+    /*background-color: #eee;*/
+    text-align: center;
+  }
+
+  #more {
+    width: 100px;
+    padding: 8px;
+  }
+
+  .more:hover > #more {
+    display: block;
+  }
+
+  #more .btn {
+    color: #000;
+    font-size: 16px;
+    margin: 5px;
+  }
+
+  #collapse .coll {
+    width: 10%;
+    /*float: right;*/
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+
+  .coll .well {
+    background-color: #fff;
+  }
+</style>
+{{ footer }}

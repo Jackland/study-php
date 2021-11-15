@@ -1,0 +1,21 @@
+#account-register {
+  .button-wrapper {
+    margin-top: 60px;
+    margin-bottom: 60px;
+    text-align: center;
+
+    .btn {
+      color: #fff;
+      background: #478bff;
+      border: 1px solid darken(#478bff, 3%);
+
+      &:hover {
+        background: darken(#478bff, 10%);
+      }
+    }
+
+    p {
+      margin-top: 15px;
+    }
+  }
+}

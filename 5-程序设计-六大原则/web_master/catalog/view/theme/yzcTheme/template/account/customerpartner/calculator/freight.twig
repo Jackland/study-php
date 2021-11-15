@@ -1,0 +1,2048 @@
+{{header}}
+{{ separate_column_left }}
+<link href="/catalog/view/javascript/layer/theme/yzc/layuiOris.css" rel="stylesheet"/>
+<style>
+  .form-group label{
+    text-transform: none;
+  }
+  .nav-tabs{
+    border: 0;
+  }
+  .nav-tabs .tip-num {
+    text-align: center;
+    display: inline-block;
+    border-radius: 20px;
+    font-style: normal;
+    position: absolute;
+    padding: 2px 8px;
+    bottom: 26px;
+    right: -2px;
+    background: #fa6400;
+    border: 1px solid #fa6400;
+    color: #fff;
+    font-size: 12px;
+    line-height: 16px;
+    z-index: 99;
+  }
+  .tab-pane{
+    background: #fff;
+    box-shadow: #aaa 0 0 6px;
+    border-radius: 3px;
+  }
+  .mrt30{
+    margin-top: 30px;
+  }
+  .flex-start{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .flex-around{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .flex-between{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /*规则的css*/
+  .freight-sub-nav-tab{
+    color: #183464;
+    padding-bottom: 8px;
+    border-bottom: 2px solid transparent;
+    font-size: 16px;
+    margin-right: 40px;
+  }
+  .freight-sub-nav-tab:hover{
+    cursor: pointer;
+  }
+
+  .freight-sub-nav-tab.active{
+    color: #3A75DC;
+    border-bottom: 2px solid #3A75DC;
+  }
+  .freight-sub-nav{
+    border-bottom: 1px solid #e3e3e3;
+  }
+  .tab-table-title{
+    font-weight: bolder;
+    color: #183464;
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+  .tab-sub-table-title{
+    font-size: 12px;
+    height: 20px;
+  }
+  .weight-width{
+    width: 200px;
+  }
+  .free-width{
+    width: 200px;
+  }
+  .pad-small{
+    padding: 4px !important;
+  }
+  .table.title-table{
+    margin-bottom: 0;
+    background: #e3e3e3;
+  }
+  table thead > tr > td, .table tbody > tr > td {
+    border: none;
+    border-right: 1px solid #e3e3e3;
+    border-bottom: 1px solid #e3e3e3 ;
+  }
+
+  .platform-rules {
+    display: none;
+  }
+  .platform-rules .table-body{
+    max-height: 400px;
+    overflow: auto;
+  }
+  .platform-rules p{
+    word-break: break-word;
+  }
+  .w240{
+    width: 240px;
+  }
+  .w480{
+    width: 480px;
+  }
+  .color-org{
+    color: #fA6400 !important;
+  }
+  #thatForm .bc-white{
+    background-color: #FFFFFF !important;
+  }
+  #thatForm .bc-lightgray{
+    background-color: #f3f5f7 !important;
+  }
+  .font-weight{
+    font-weight: bolder;
+  }
+  .font-tip-small{
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .mr10{
+    margin-right: 10px !important;
+  }
+  .pt9{
+    padding-top: 9px;
+  }
+  .border-radius-none{
+    border-radius: 4px 0 0 4px !important;
+  }
+  .unit-tip{
+    width: 40px;
+    display: inline-block;
+  }
+  .btn.btn-primary.new-primary{
+    background: #3A75DC;
+    border-color: #3A75DC;
+  }
+  .btn.btn-primary.new-primary:hover{
+    background: #2d57a9;
+    border-color: #2d57a9;
+  }
+  .btn.btn-default.new-default:hover{
+    background: #3A75DC;
+    border-color: #3A75DC;
+    color: #fff;
+  }
+  #ele-item-combo{
+    margin: 25px 0;
+  }
+  .combo-list-row{
+    margin-bottom: 10px;
+  }
+  .w15{
+    width: 15%;
+  }
+  .w10{
+    width: 10%;
+  }
+  .width320{
+    width: 480px;
+  }
+  .control-label.myLabel{
+    width: 160px;
+  }
+  .remove-btn:hover,.add-btn:hover{
+    cursor: pointer;
+    color: #3A75DC;
+  }
+  .btn-con{
+    width: 480px;
+    margin-left: 160px !important;
+  }
+  .action-btn i{
+    margin-right: 8px;
+  }
+  .action-btn i:last-child{
+    margin-right: 0;
+  }
+  .action-btn i:first-child{
+    margin-left: 8px;
+  }
+  .mr2{
+    margin-right: 1%;
+  }
+  .form-control.input-error{
+    border-color: #ff414d;
+  }
+  .error-text{
+    color: #ff414d;
+    position: absolute;
+  }
+  #content-calculator .form-group{
+    padding-bottom: 16px;
+  }
+  #content-calculator .required::after{
+    content: "*";
+    color: '';
+  }
+  .index-subsku{
+    margin-left: 2px;
+  }
+  [v-cloak] {
+    display: none;
+  }
+  /*规则的css*/
+</style>
+<div class="container-fluid" id="content" style="margin-left: 235px">
+  <div class="row">
+    <div class="col-sm-12 text-center">
+      <h1 class="mrt30" data-zh="大健云仓费用计算器">Fulfillment & Storage Calculator</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+
+      <ul class="nav nav-tabs">
+        <li id="calculator_li" class="active">
+          <a href="#tab-calculator" data-toggle="tab" data-zh="费用计算器">Fee Calculation</a>
+        </li>
+        <li id="rule_li">
+          <a href="#tab-rule" data-toggle="tab" data-zh="计费规则">Fees Policy</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="tab-calculator">
+          <fieldset>
+            <div id="content-calculator" class="well">
+              <div class="row" id="app">
+                <div class="col-sm-6">
+                  <form id="thatForm" class="form-horizontal calc-width">
+
+                    <div class="form-group">
+                      <label for="hasItem" class="col-sm-3 control-label myLabel" data-zh="Item是否存在">If an Item Exists</label>
+                      <div class="col-sm-9 width320">
+                        <div class="col-sm-6 pt9">
+                          <input autocomplete="off" type="radio" name="hasItem" class="mr10" value="1" data-zh="已有Item" v-model="hasItem" v-on:change="checkItemExist">Existing Item
+                        </div>
+                        <div class="col-sm-6 pt9">
+                          <input autocomplete="off" type="radio" name="hasItem" class="mr10" value="0" data-zh="新Item" v-model="hasItem" v-on:change="checkItemExist">New Item
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group" id="eleItemCode" v-show="hasItem == '-1' || hasItem == '1'">
+                      <label for="iptItemCode" class="col-sm-3 control-label myLabel">Item  Code</label>
+                      <div class="col-sm-9 width320">
+                        <input autocomplete="off" disabled type="text" class="form-control" id="iptItemCode" name="iptItemCode"
+                               v-model="iptItemCode"
+                               v-bind:class="{'bc-lightgray': hasItem != '1', 'bc-white': hasItem == '1'}"
+                               v-bind:disabled="hasItem == '-1' || hasItem == '0'"
+                        >
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="itemType" class="col-sm-3 control-label myLabel">Item  Type</label>
+                      <div class="col-sm-9 width320">
+                        <div class="col-sm-6 pt9">
+                          <input autocomplete="off" type="radio" name="itemType" class="mr10" value="0" v-model="itemType" v-bind:disabled="hasItem==-'1' || hasItem=='1'">General Item
+                        </div>
+                        <div class="col-sm-6 pt9">
+                          <input autocomplete="off" type="radio" name="itemType" class="mr10" value="1" v-model="itemType" v-bind:disabled="hasItem=='-1' || hasItem=='1'">Combo Item
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="ele-item-general" v-show="itemType=='-1' || itemType=='0'">
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label myLabel">Length</label>
+                        <div class="col-sm-9 width320">
+                          <div class="input-group">
+                            <input autocomplete="off" type="text" class="form-control border-radius-none" name="length" placeholder="0.01~999.99" step="0.01" min="0.01" max="999.99" maxlength="7"
+                                   v-model="length"
+                                   v-bind:class="{'bc-lightgray': hasItem == '-1' || hasItem == '1' || (hasItem == '0' && itemType == '-1'), 'bc-white': hasItem == '0', 'input-error':lengthError.length>0}"
+                                   v-bind:disabled="hasItem == '-1' || hasItem == '1' || (hasItem == '0' && itemType == '-1')"
+                                   v-on:keyup="checkDecimal('length')"
+                                   v-on:change="checkDecimal('length')"
+                            >
+                            <div class="input-group-addon"><span class="unit-tip">inches</span></div>
+                          </div>
+                          <p class="error-text" v-show="lengthError.length>0" v-cloak>${lengthError}$</p>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label myLabel">Width</label>
+                        <div class="col-sm-9 width320">
+                          <div class="input-group">
+                            <input autocomplete="off" type="text" class="form-control border-radius-none" name="width" placeholder="0.01~999.99" step="0.01" min="0.01" max="999.99" maxlength="7"
+                                   v-model="width"
+                                   v-bind:class="{'bc-lightgray': hasItem == '-1' || hasItem == '1' || (hasItem == '0' && itemType == '-1'), 'bc-white': hasItem == '0', 'input-error':widthError.length>0}"
+                                   v-bind:disabled="hasItem == '-1' || hasItem == '1' || (hasItem == '0' && itemType == '-1')"
+                                   v-on:keyup="checkDecimal('width')"
+                                   v-on:change="checkDecimal('width')"
+                            >
+                            <div class="input-group-addon"><span class="unit-tip">inches</span></div>
+                          </div>
+                          <p class="error-text" v-show="widthError.length>0" v-cloak>${widthError}$</p>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label myLabel">Height</label>
+                        <div class="col-sm-9 width320">
+                          <div class="input-group">
+                            <input autocomplete="off" type="text" class="form-control border-radius-none" name="height" placeholder="0.01~999.99" step="0.01" min="0.01" max="999.99" maxlength="7"
+                                   v-model="height"
+                                   v-bind:class="{'bc-lightgray': hasItem == '-1' || hasItem == '1' || (hasItem == '0' && itemType == '-1'), 'bc-white': hasItem == '0', 'input-error':heightError.length>0}"
+                                   v-bind:disabled="hasItem == '-1' || hasItem == '1' || (hasItem == '0' && itemType == '-1')"
+                                   v-on:keyup="checkDecimal('height')"
+                                   v-on:change="checkDecimal('height')"
+                            >
+                            <div class="input-group-addon"><span class="unit-tip">inches</span></div>
+                          </div>
+                          <p class="error-text" v-show="heightError.length>0" v-cloak>${heightError}$</p>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label myLabel">Weight</label>
+                        <div class="col-sm-9 width320">
+                          <div class="input-group">
+                            <input autocomplete="off" type="text" class="form-control border-radius-none" name="weight" placeholder="0.01~9999.99" step="0.01" min="0.01" max="9999.99" maxlength="7"
+                                   v-model="weight"
+                                   v-bind:class="{'bc-lightgray': hasItem == '-1' || hasItem == '1' || (hasItem == '0' && itemType == '-1'), 'bc-white': hasItem == '0', 'input-error':weightError.length>0}"
+                                   v-bind:disabled="hasItem == '-1' || hasItem == '1' || (hasItem == '0' && itemType == '-1')"
+                                   v-on:keyup="checkWeight('weight')"
+                                   v-on:change="checkWeight('weight')"
+                            >
+                            <div class="input-group-addon"><span class="unit-tip">lbs</span></div>
+                          </div>
+                          <p class="error-text" v-show="weightError.length>0" v-cloak>${weightError}$</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="ele-item-combo" class="form-group" v-show="itemType=='1'" v-cloak>
+                      <div class="combo-list-header flex-start">
+                        <div class="w15 mr2"></div>
+                        <div class="w15 mr2" v-show="hasItem=='1'"></div>
+                        <div class="w10 mr2 text-center">Length <br> (inches)</div>
+                        <div class="w10 mr2 text-center">Width <br> (inches)</div>
+                        <div class="w10 mr2 text-center">Height <br> (inches)</div>
+                        <div class="w10 mr2 text-center">Weight  <br> (lbs)</div>
+                        <div class="w10 mr2 text-center">Quantity</div>
+                        <div class="w10 mr2 text-center"></div>
+                      </div>
+                      <div v-for="(item, key) in comboList">
+                        <div class="combo-list-row flex-start">
+                          <div class="w15 mr2 text-center">Sub-item<span class="index-subsku" v-model="key" v-cloak>${key+1}$</span></div>
+                          <div class="w15 mr2 text-center name-subsku" v-show="hasItem=='1'" v-cloak>${item.sku}$</div>
+                          <div class="w10 mr2 text-center">
+                            <input autocomplete="off" type="text" name="length" step="0.01" min="0.01" max="999.99" class="form-control text-center" maxlength="7"
+                                   v-model="item.length"
+                                   v-bind:class="{'bc-lightgray':hasItem!='0', 'bc-white':hasItem=='0', 'input-error':item.lengthError.length>0}"
+                                   v-bind:disabled="hasItem=='1'"
+                                   v-on:keyup="checkDecimal('length', key)"
+                                   v-on:change="checkDecimal('length', key)"
+                            >
+                          </div>
+                          <div class="w10 mr2 text-center">
+                            <input autocomplete="off" type="text" name="width" step="0.01" min="0.01" max="999.99" class="form-control text-center" maxlength="7"
+                                   v-model="item.width"
+                                   v-bind:class="{'bc-lightgray':hasItem!='0', 'bc-white':hasItem=='0', 'input-error':item.widthError.length>0}"
+                                   v-bind:disabled="hasItem=='1'"
+                                   v-on:keyup="checkDecimal('width', key)"
+                                   v-on:change="checkDecimal('width', key)"
+                            >
+                          </div>
+                          <div class="w10 mr2 text-center">
+                            <input autocomplete="off" type="text" name="height" step="0.01" min="0.01" max="999.99" class="form-control text-center" maxlength="7"
+                                   v-model="item.height"
+                                   v-bind:class="{'bc-lightgray':hasItem!='0', 'bc-white':hasItem=='0', 'input-error':item.heightError.length>0}"
+                                   v-bind:disabled="hasItem=='1'"
+                                   v-on:keyup="checkDecimal('height', key)"
+                                   v-on:change="checkDecimal('height', key)"
+                            >
+                          </div>
+                          <div class="w10 mr2 text-center">
+                            <input autocomplete="off" type="text" name="weight" step="0.01" min="0.01" max="999.99" class="form-control text-center" maxlength="7"
+                                   v-model="item.weight"
+                                   v-bind:class="{'bc-lightgray':hasItem!='0', 'bc-white':hasItem=='0', 'input-error':item.weightError.length>0}"
+                                   v-bind:disabled="hasItem=='1'"
+                                   v-on:keyup="checkWeight('weight', key)"
+                                   v-on:change="checkWeight('weight', key)"
+                            >
+                          </div>
+                          <div class="w10 mr2 text-center">
+                            <input autocomplete="off" type="text" name="qty" step="1" min="1" max="9999" class="form-control text-center" maxlength="4"
+                                   v-model="item.qty"
+                                   v-bind:class="{'bc-lightgray':hasItem!='0', 'bc-white':hasItem=='0', 'input-error':item.qtyError.length>0}"
+                                   v-bind:disabled="hasItem=='1'"
+                                   v-on:keyup="checkInteger('qty', key)"
+                                   v-on:change="checkInteger('qty', key)"
+                            >
+                          </div>
+                          <div class="w10 mr2 action-btn">
+                            <i class="giga icon-lajitong remove-btn" v-show="hasItem==0 && key > 0" v-on:click="removeCombo(this, key)"></i>
+                            <i class="giga icon-action-add add-btn" v-show="hasItem==0" v-on:click="addCombo"></i>
+                          </div>
+                        </div>
+                        <div class="combo-list-row flex-start">
+                          <div class="error-text" style="position: unset; margin-left: 15%;" v-show="item.itemError.length>0" v-cloak>${item.itemError}$</div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label myLabel">Quantity</label>
+                      <div class="col-sm-9 width320">
+                        <div class="input-group">
+                          <input autocomplete="off" type="text" class="form-control border-radius-none bc-white" id="iptQty" name="iptQty" placeholder="1~9999" value="1" step="1" min="1" max="9999"  maxlength="4"
+                                 v-model="qty"
+                                 v-bind:class="{'input-error':qtyError.length>0}"
+                                 v-on:keyup="checkInteger('qty')"
+                                 v-on:change="checkInteger('qty')"
+                          >
+                          <div class="input-group-addon"><span class="unit-tip">pcs</span></div>
+                        </div>
+                        <p class="error-text" v-show="qtyError.length>0" v-cloak>${qtyError}$</p>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label myLabel" data-zh="在库天数">Days in Stock</label>
+                      <div class="col-sm-9 width320">
+                        <div class="input-group">
+                          <input autocomplete="off" type="text" class="form-control border-radius-none bc-white" id="iptDay" name="iptDay" placeholder="1~9999" value="1" step="1" min="1" max="9999" maxlength="4"
+                                 v-model="day"
+                                 v-bind:class="{'input-error':dayError.length>0}"
+                                 v-on:keyup="checkInteger('day')"
+                                 v-on:change="checkInteger('day')"
+                          >
+                          <div class="input-group-addon"><span class="unit-tip">Days</span></div>
+                        </div>
+                        <p class="error-text" v-show="dayError.length>0" v-cloak>${dayError}$</p>
+                      </div>
+                    </div>
+
+                    <div class="form-group text-center btn-con">
+                      <button type="button" class="btn btn-primary new-primary" onclick="freightDo()" v-bind:disabled="hasItem=='-1' || itemType=='-1'">CALCULATE</button>
+                      <button type="reset" class="btn btn-default new-default" onclick="freightClear()">RESET</button>
+                    </div>
+                  </form>
+                </div>
+                <div class="col-sm-6">
+                  <p class="free-detail-title font-weight" data-zh="物流费用明细">Fulfillment Fee Detail：<i class="giga icon-V10-wenhaotishi font-tip-small" data-toggle="tooltip" title="Fulfillment Fee = Shipping Fee + Packing Fee" data-zh="物流费用=运费+打包费，上门取货类型只有打包费"></i> </p>
+                  <div class="one-send">
+                    <div class="tab-sub-table-title" data-zh="一件代发">Drop Shipping：</div>
+                    <div class="table-header">
+                      <table class="table title-table">
+                        <tr><th class="w240 text-center pad-small" data-zh="费用项">Fee Type</th><th class="w480 text-center pad-small" data-zh="平台云仓交易">B2B Marketplace</th><th class="w240 text-center pad-small" data-zh="第三方物流">3rd Party Logistics</th></tr>
+                      </table>
+                    </div>
+                    <div class="table-body">
+                      <table class="table table-bordered">
+                        <tr>
+                          <td class="w240 text-center pad-small" data-zh="快递运费">Parcel Carrier Fee({{ symbolLeft }}{{ symbolRight }})</td>
+                          <td class="w480 text-center pad-small color-org font-weight" id="dsExpressFreight"></td>
+                          <td class="w240 text-center pad-small color-org font-weight" id="dsExpressFreightPure"></td>
+                        </tr>
+                        <tr>
+                          <td class="w240 text-center pad-small" data-zh="LTL运费">LTL Freight Fee({{ symbolLeft }}{{ symbolRight }})</td>
+                          <td class="w480 pad-small text-center color-org font-weight" id="dsLtlFreight"></td>
+                          <td class="w240 text-center pad-small color-org font-weight" id="dsLtlFreightPure"></td>
+                        </tr>
+                        <tr>
+                          <td class="w240 text-center pad-small" data-zh="打包费">Packing Fee({{ symbolLeft }}{{ symbolRight }})</td>
+                          <td class="w480 pad-small text-center color-org font-weight" id="dsPackageFee"></td>
+                          <td class="w240 text-center pad-small color-org font-weight" id="dsPackageFeePure"></td>
+                        </tr>
+                        <tr>
+                          <td class="w240 text-center pad-small font-weight">Total({{ symbolLeft }}{{ symbolRight }})</td>
+                          <td class="w480 pad-small text-center color-org font-weight" id="dsTotal"></td>
+                          <td class="w240 text-center pad-small color-org font-weight" id="dsTotalPure"></td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="home-send">
+                    <div class="tab-sub-table-title" data-zh="上门取货">Pickup：</div>
+                    <div class="table-header">
+                      <table class="table title-table">
+                        <tr><th class="w240 text-center pad-small" data-zh="费用项">Fee Type</th><th class="w480 text-center pad-small" data-zh="平台云仓交易">B2B Marketplace</th><th class="w240 text-center pad-small" data-zh="第三方物流">3rd Party Logistics</th></tr>
+                      </table>
+                    </div>
+                    <div class="table-body">
+                      <table class="table table-bordered">
+                        <tr>
+                          <td class="w240 text-center pad-small" data-zh="打包费">Packing Fee({{ symbolLeft }}{{ symbolRight }})</td>
+                          <td class="w480 pad-small text-center color-org font-weight" id="puPackageFee"></td>
+                          <td class="w240 text-center pad-small color-org font-weight" id="puPackageFeePure"></td>
+                        </tr>
+                        <tr>
+                          <td class="w240 text-center pad-small font-weight">Total({{ symbolLeft }}{{ symbolRight }})</td>
+                          <td class="w480 pad-small text-center color-org font-weight" id="puTotal"></td>
+                          <td class="w240 text-center pad-small color-org font-weight" id="puTotalPure"></td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                  <br>
+                  <p class="free-detail-title font-weight" data-zh="仓租费明细">Storage Fee Detail</p>
+                  <div class="one-send">
+                    <div class="tab-sub-table-title">Volume：<span class="font-weight color-org" id="wrVolume"></span></div>
+                    <div class="table-header">
+                      <table class="table title-table">
+                        <tr><th class="w240 text-center pad-small" data-zh="费用项">Fee Type</th><th class="w480 text-center pad-small" data-zh="适用阶梯报价">Applicable Tiered Quote</th><th class="w240 text-center pad-small" data-zh="费用结果">Result</th></tr>
+                      </table>
+                    </div>
+                    <div class="table-body">
+                      <table class="table table-bordered">
+                        <tbody id="wrList">
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <br>
+                  <br>
+                  <p class="font-weight" data-zh="费用说明">Fee Explanation：</p>
+                  <p>1. The fullfillment fee of Giga Cloud Logistics is based on the distribution of the orders of each account. Giga Cloud reserves the right to raise fees for the following scenarios:</p>
+                  <p>① Accounts that consistently require delivery to remote areas</p>
+                  <p>② Accounts that only request Giga Cloud Fulfillment for partial orders</p>
+                  <p>③ Accounts that are not selling products to the general public.</p>
+                  <p data-zh="2. 超过快递运输中尺寸限制的产品，平台将选择LTL卡车发货，较高风险触发超规格尺寸限制的产品可以联系账户经理切换为LTL发货。">
+                    2. For products that exceed the parcel carrier size limit, the Marketplace will assign them to LTL delivery. Concerning products that are at high risk of unauthorized size limitations, please contact your Account Manager to change to LTL delivery.
+                  </p>
+                  <p data-zh="3. 以上不包含云送仓报价，若您使用平台云送仓服务，可在订单页面看到实际运费。目前云送仓的报价为：全美统一价1.5美金/每立方英尺 （必须是商业地址，包含门店和FBA仓库），100立方英尺起送，另收取打包费，打包费收取方式为60磅以下为2.86美金一件，60磅以上为3.9美金一件。">
+                    3. The above does not include Cloud Wholesale Fulfillment quotes. When using Cloud Wholesale Fulfillment, the actual fulfillment fee can be seen on Purchase Order page. Current pricing for Cloud Wholesale Fulfillment: US flat rate with $1.5/c.f. (shipping must be to a business address, which includes stores and FBA warehouses.) The minimum delivery volume is 100 cubic feet. The packing fee is charged separately at $2.86/package for less than 60lbs and $3.90/package for more than 60lbs.
+                  </p>
+                  <p data-zh="4. 配件的发货流程比较特殊，本页面暂不支持查询配件的相关费用。">
+                    4. The delivery process of accessories is relatively special. This page currently does not support the inquiry of storage fee of accessories.
+                  </p>
+                  <p data-zh="5. 本页面计算出来的运费结果仅为测算结果，最终的运费结果请查看页面详情显示或者Freight Inquiry页面">
+                    5. Note: The fulfillment fee calculated on this page is an estimate. For the final amount, please check details on the Fulfillment Inquiry page.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <!--计费规则-->
+        <div class="tab-pane" id="tab-rule">
+          <fieldset>
+            <div id="content-rule" class="well">
+              <div class="freight-sub-nav flex-start">
+                {% if account_type != 6 %}
+                  <div class="freight-sub-nav-tab active" data-id="cloudRules" data-zh="平台云仓快递报价">B2B Marketplace Parcel Carrier Quote</div>
+                  <div class="freight-sub-nav-tab " data-id="threeRules" data-zh="第三方物流快递报价">3PL Parcel Carrier Quote</div>
+                  <div class="freight-sub-nav-tab " data-id="cloudLTLRules" data-zh="平台云仓卡车LTL报价">B2B Marketplace LTL Quote</div>
+                  <div class="freight-sub-nav-tab " data-id="threeLTLRules" data-zh="第三方物流卡车LTL报价">3PL LTL Quote</div>
+                {% else %}
+                  {% if giga_seller_quote.seller_quote_flag >0 %}
+                    <div class="freight-sub-nav-tab active" data-id="sellerCloudRules" data-zh="Seller-云仓快递报价">Parcel
+                      Carrier Quote
+                    </div>
+                  {% endif %}
+                  {% if  giga_seller_quote.seller_quote_flag == 2 %}
+                    <div class="freight-sub-nav-tab " data-id="sellerLTLRules" data-zh="Seller-卡车LTL报价">LTL Quote</div>
+                  {% endif %}
+                {% endif %}
+
+                <div class="freight-sub-nav-tab {% if giga_seller_quote.seller_quote_flag == -1 %}active{% endif %} " data-id="packRules" data-zh="仓租和打包费">Storage & Packing Fee</div>
+              </div>
+              <div class="freight-rules-con">
+                {% if account_type != 6 %}
+                <div id="cloudRules" class="platform-rules">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <div class="tab-table-title" data-zh="平台云仓基础运费">B2B Marketplace Basic Shipping Fee</div>
+                      <div class="tab-sub-table-title" data-zh="体积重量计算常数">Dimensional Weight Divisors (DIM): {{ expressQuote.param.DIM.value }}</div>
+                      <div class="table-header">
+                        <table class="table title-table">
+                          <tr><th class="weight-width text-center pad-small" data-zh="计费重量">Chargeable Weight(lbs)</th><th class="free-width text-center pad-small" data-zh="基础运费">Basic Shipping Fee({{ symbolLeft }}{{ symbolRight }})</th></tr>
+                        </table>
+                      </div>
+                      <div class="table-body">
+                        <table class="table table-bordered">
+                          {% for key, item in expressQuote.quote.BASE_FREIGHT_SURCHARGE_QUOTE.value_list %}
+                            <tr>
+                              <td class="weight-width text-center pad-small">{{ item.billFreight }}</td>
+                              <td class="free-width text-center pad-small">{{ item.freight | number_format(2,'.','') }}</td>
+                            </tr>
+                          {% endfor %}
+                        </table>
+                      </div>
+                    </div>
+                    <div class="col-sm-9">
+                      <div class="tab-table-title" data-zh="平台云仓附加费">B2B Marketplace Surcharge</div>
+                      <div class="tab-sub-table-title"></div>
+
+                      <div class="table-header">
+                        <table class="table title-table">
+                          <tr><th class="w240 text-center pad-small" data-zh="收费项目">Services Type</th><th class="w480 pad-small" data-zh="收费条件">Applicable Services</th><th class="w240 text-center pad-small" data-zh="收费金额">Amount({{ symbolLeft }}{{ symbolRight }})</th></tr>
+                        </table>
+                      </div>
+                      <div class="table-body">
+                        <table class="table table-bordered">
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC-尺寸">Additional Handling Charge-Size</td>
+                            <td class="w480 pad-small" data-zh="【最长边＞{{ expressQuote.param.AHC_SIZE_LENGTH_MAX.value }}英寸】 或 【次长边＞{{ expressQuote.param.AHC_SIZE_LENGTH_SECOND.value }}英寸】">
+                              Longest Side &gt; {{ expressQuote.param.AHC_SIZE_LENGTH_MAX.value }} inches or 2nd Longest Side &gt; {{ expressQuote.param.AHC_SIZE_LENGTH_SECOND.value }} inches<br>
+                              or Longest Side + Girth &gt; {{ expressQuote.param.AHC_SIZE_LENGTH_ADD_GIRTH.value }} inches
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.AHC_SIZE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC-重量1">Additional Handling Charge-Weight 1</td>
+                            <td class="w480 pad-small" data-zh="【{{ expressQuote.param.AHC_WEIGHT_1_ACTUAL_WEIGHT_MIN.value }}磅＜实际重量≤{{ expressQuote.param.AHC_WEIGHT_1_ACTUAL_WEIGHT_MAX.value }}磅】">
+                              {{ expressQuote.param.AHC_WEIGHT_1_ACTUAL_WEIGHT_MIN.value }} lbs &lt; Actual Weight ≤ {{ expressQuote.param.AHC_WEIGHT_1_ACTUAL_WEIGHT_MAX.value }} lbs.
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.AHC_WEIGHT_1_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC-重量2">Additional Handling Charge-Weight 2 </td>
+                            <td class="w480 pad-small" data-zh="【实际重量＞{{ expressQuote.param.AHC_WEIGHT_2_ACTUAL_WEIGHT_MIN.value }}磅】">
+                              Actual Weight ＞ {{ expressQuote.param.AHC_WEIGHT_2_ACTUAL_WEIGHT_MIN.value }} lbs.
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.AHC_WEIGHT_2_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC-综合">Additional Handling Charge-Complex</td>
+                            <td class="w480 pad-small" data-zh="【实际重量＞{{ expressQuote.param.AHC_WEIGHT_TOTAL_ACTUAL_WEIGHT_MIN.value }}磅】且（【最长边＞{{ expressQuote.param.AHC_WEIGHT_TOTAL_LENGTH_MAX.value }}英寸】 或 【次长边＞{{ expressQuote.param.AHC_WEIGHT_TOTAL_LENGTH_SECOND.value }}英寸】）">
+                              Actual Weight &gt; {{ expressQuote.param.AHC_WEIGHT_TOTAL_ACTUAL_WEIGHT_MIN.value }} lbs<br>
+                              and Longest Side &gt; {{ expressQuote.param.AHC_WEIGHT_TOTAL_LENGTH_MAX.value }} inches or 2nd Longest Side &gt; {{ expressQuote.param.AHC_WEIGHT_TOTAL_LENGTH_SECOND.value }} inches<br>
+                              or Longest Side + Girth &gt; {{ expressQuote.param.AHC_WEIGHT_TOTAL_LENGTH_ADD_GIRTH.value }} inches
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.AHC_WEIGHT_TOTAL_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC-包装">Additional Handling Charge-Packaging</td>
+                            <td class="w480 pad-small" data-zh="外包装是金属或木材，<br>或产品是圆筒形（没有装入方正的纸箱），<br>或货运金属塑料打包带捆包的包裹，<br>或包裹表面松散有折痕或凸起。">
+                              The outer packaging is metal or wood.<br>
+                              or the product is cylindrical (the carton is not loaded into the square),<br>
+                              or freight metal plastic bales with bundled parcels,<br>
+                              or the surface of the package is loose with creases or bulges.
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.AHC_PACKAGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="Oversize">Oversize Charge</td>
+                            <td class="w480 pad-small" data-zh="【最长边＞{{ expressQuote.param.OVERSIZE_LENGTH_MAX.value }}英寸】<br>或【最长边+围长＞{{ expressQuote.param.OVERSIZE_LENGTH_ADD_GIRTH_MAX.value }}英寸】">
+                              Longest Side &gt; {{ expressQuote.param.OVERSIZE_LENGTH_MAX.value }} inches<br>
+                              or Longest Side + Girth &gt; {{ expressQuote.param.OVERSIZE_LENGTH_ADD_GIRTH_MAX.value }} inches
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.OVERSIZE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="超规格产品">Unauthorized Charge</td>
+                            <td class="w480 pad-small" data-zh="【最长边＞{{ expressQuote.param.OVER_SPECIFICATION_LENGTH_MAX.value }}英寸】<br>或【最长边＋围长＞{{ expressQuote.param.OVER_SPECIFICATION_LENGTH_ADD_GIRTH_MAX.value }}英寸】<br>或【实际重量＞{{ expressQuote.param.OVER_SPECIFICATION_ACTUAL_WEIGHT_MAX.value }}磅】">
+                              Longest Side + Girth &gt; {{ expressQuote.param.OVER_SPECIFICATION_LENGTH_ADD_GIRTH_MAX.value }} inches<br>
+                              or Longest Side &gt; {{ expressQuote.param.OVER_SPECIFICATION_LENGTH_MAX.value }} inches<br>
+                              or Actual Weight &gt; {{ expressQuote.param.OVER_SPECIFICATION_ACTUAL_WEIGHT_MAX.value }} lbs
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.OVER_SPECIFICATION_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="签收服务费">Signature Fee</td>
+                            <td class="w480 pad-small" data-zh="需提前申请">Need to apply in advance</td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.SIGN_SERVICE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="地址更正费">Address Change Fee</td>
+                            <td class="w480 pad-small"></td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.ADDRESS_CHANGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="危险品">Dangerous Goods</td>
+                            <td class="w480 pad-small">For specific dangerous goods classification, please make a separate consultation.</td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.DANGER_GOODS_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="住宅旺季附加费">Peak Surcharges-Residential Surcharge</td>
+                            <td class="w480 pad-small" data-zh="每个包裹">Applicable to all packages</td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.RESIDENTIAL_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC旺季附加费">Peak Surcharges-Additional Handling Surcharge</td>
+                            <td class="w480 pad-small" data-zh="产品产生任何一项AHC附加费">Packages charged with any AHC Surcharge</td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.AHC_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="Oversize旺季附加费">Peak Surcharges-Oversize Charge</td>
+                            <td class="w480 pad-small" data-zh="产品产生oversize附加费">Packages charged with Oversize Surcharge</td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.OVERSIZE_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="超规格旺季附加费">Peak Surcharges-Ground Unauthorized Package Charge</td>
+                            <td class="w480 pad-small" data-zh="产品产生超规格罚金">Packages charged with Unauthorized Surcharge</td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.OVER_SPECIFICATION_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+
+                        </table>
+                      </div>
+
+                    </div>
+                  </div>
+                  {% if expressQuote.description %}
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <br>
+                        <br>
+                        <p data-zh="快递运费报价说明">Parcel Carrier Fee Quote Explanation:</p>
+                        <p>{{ expressQuote.description | nl2br }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+                <div id="threeRules" class="platform-rules">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <div class="tab-table-title" data-zh="第三方物流基础运费">3PL Basic Shipping Fee</div>
+                      <div class="tab-sub-table-title" data-zh="体积重量计算常数">Dimensional Weight Divisors (DIM): {{ expressQuotePure.param.DIM.value }}</div>
+                      <div class="table-header">
+                        <table class="table title-table">
+                          <tr><th class="weight-width text-center pad-small" data-zh="计费重量">Chargeable Weight(lbs)</th><th class="free-width text-center pad-small" data-zh="基础运费">Basic Shipping Fee({{ symbolLeft }}{{ symbolRight }})</th></tr>
+                        </table>
+                      </div>
+                      <div class="table-body">
+                        <table class="table table-bordered">
+                          {% for key, item in expressQuotePure.quote.BASE_FREIGHT_SURCHARGE_QUOTE.value_list %}
+                            <tr>
+                              <td class="weight-width text-center pad-small">{{ item.billFreight }}</td>
+                              <td class="free-width text-center pad-small">{{ item.freight | number_format(2,'.','') }}</td>
+                            </tr>
+                          {% endfor %}
+                        </table>
+                      </div>
+                    </div>
+                    <div class="col-sm-9">
+                      <div class="tab-table-title" data-zh="第三方物流附加费">3PL Surcharge</div>
+                      <div class="tab-sub-table-title"></div>
+
+                      <div class="table-header">
+                        <table class="table title-table">
+                          <tr><th class="w240 text-center pad-small" data-zh="收费项目">Services Type</th><th class="w480 pad-small" data-zh="收费条件">Applicable Services</th><th class="w240 text-center pad-small" data-zh="收费金额">Amount({{ symbolLeft }}{{ symbolRight }})</th></tr>
+                        </table>
+                      </div>
+                      <div class="table-body">
+                        <table class="table table-bordered">
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC-尺寸">Additional Handling Charge-Size</td>
+                            <td class="w480 pad-small">Longest Side &gt; {{ expressQuotePure.param.AHC_SIZE_LENGTH_MAX.value }} inches or 2nd Longest Side &gt; {{ expressQuotePure.param.AHC_SIZE_LENGTH_SECOND.value }} inches<br>
+                              or Longest Side + Girth &gt; {{ expressQuotePure.param.AHC_SIZE_LENGTH_ADD_GIRTH.value }} inches
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.AHC_SIZE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC-重量1">Additional Handling Charge-Weight 1</td>
+                            <td class="w480 pad-small" data-zh="【{{ expressQuotePure.param.AHC_WEIGHT_1_ACTUAL_WEIGHT_MIN.value }}磅＜实际重量≤{{ expressQuotePure.param.AHC_WEIGHT_1_ACTUAL_WEIGHT_MAX.value }}磅】">{{ expressQuotePure.param.AHC_WEIGHT_1_ACTUAL_WEIGHT_MIN.value }} lbs &lt; Actual Weight ≤ {{ expressQuotePure.param.AHC_WEIGHT_1_ACTUAL_WEIGHT_MAX.value }} lbs.</td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.AHC_WEIGHT_1_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC-重量2">Additional Handling Charge-Weight 2 </td>
+                            <td class="w480 pad-small" data-zh="【实际重量＞{{ expressQuotePure.param.AHC_WEIGHT_2_ACTUAL_WEIGHT_MIN.value }}磅】">Actual Weight ＞ {{ expressQuotePure.param.AHC_WEIGHT_2_ACTUAL_WEIGHT_MIN.value }} lbs.</td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.AHC_WEIGHT_2_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC-综合">Additional Handling Charge-Complex</td>
+                            <td class="w480 pad-small" data-zh="【实际重量＞{{ expressQuotePure.param.AHC_WEIGHT_TOTAL_ACTUAL_WEIGHT_MIN.value }}磅】<br>且（【最长边＞{{ expressQuotePure.param.AHC_WEIGHT_TOTAL_LENGTH_MAX.value }}英寸】 或 【次长边＞{{ expressQuotePure.param.AHC_WEIGHT_TOTAL_LENGTH_SECOND.value }}英寸】）">
+                              Actual Weight &gt; {{ expressQuotePure.param.AHC_WEIGHT_TOTAL_ACTUAL_WEIGHT_MIN.value }} lbs<br>
+                              and Longest Side &gt; {{ expressQuotePure.param.AHC_WEIGHT_TOTAL_LENGTH_MAX.value }} inches or 2nd Longest Side &gt; {{ expressQuotePure.param.AHC_WEIGHT_TOTAL_LENGTH_SECOND.value }} inches<br>
+                              or Longest Side + Girth &gt; {{ expressQuotePure.param.AHC_WEIGHT_TOTAL_LENGTH_ADD_GIRTH.value }} inches
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.AHC_WEIGHT_TOTAL_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC-包装">Additional Handling Charge-Packaging</td>
+                            <td class="w480 pad-small" data-zh="外包装是金属或木材，<br>或产品是圆筒形（没有装入方正的纸箱），<br>或货运金属塑料打包带捆包的包裹，<br>或包裹表面松散有折痕或凸起。">
+                              The outer packaging is metal or wood.<br>
+                              or the product is cylindrical (the carton is not loaded into the square),<br>
+                              or freight metal plastic bales with bundled parcels,<br>
+                              or the surface of the package is loose with creases or bulges.
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.AHC_PACKAGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="Oversize">Oversize Charge</td>
+                            <td class="w480 pad-small" data-zh="【最长边＞{{ expressQuotePure.param.OVERSIZE_LENGTH_MAX.value }}英寸】<br>或【最长边+围长＞{{ expressQuotePure.param.OVERSIZE_LENGTH_ADD_GIRTH_MAX.value }}英寸】">
+                              Longest Side &gt; {{ expressQuotePure.param.OVERSIZE_LENGTH_MAX.value }} inches<br>
+                              or Longest Side + Girth &gt; {{ expressQuotePure.param.OVERSIZE_LENGTH_ADD_GIRTH_MAX.value }} inches
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.OVERSIZE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="超规格产品">Unauthorized Charge</td>
+                            <td class="w480 pad-small" data-zh="【最长边＞{{ expressQuotePure.param.OVER_SPECIFICATION_LENGTH_MAX.value }}英寸】<br>或【最长边＋围长＞{{ expressQuotePure.param.OVER_SPECIFICATION_LENGTH_ADD_GIRTH_MAX.value }}英寸】<br>或【实际重量＞{{ expressQuote.param.OVER_SPECIFICATION_ACTUAL_WEIGHT_MAX.value }}磅】">
+                              Longest Side + Girth &gt; {{ expressQuotePure.param.OVER_SPECIFICATION_LENGTH_ADD_GIRTH_MAX.value }} inches<br>
+                              or Longest Side &gt; {{ expressQuotePure.param.OVER_SPECIFICATION_LENGTH_MAX.value }} inches<br>
+                              or Actual Weight &gt; {{ expressQuote.param.OVER_SPECIFICATION_ACTUAL_WEIGHT_MAX.value }} lbs
+                            </td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.OVER_SPECIFICATION_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="签收服务费">Signature Fee</td>
+                            <td class="w480 pad-small" data-zh="需提前申请">Need to apply in advance</td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.SIGN_SERVICE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="地址更正费">Address Change Fee</td>
+                            <td class="w480 pad-small"></td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.ADDRESS_CHANGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="危险品">Dangerous Goods</td>
+                            <td class="w480 pad-small">For specific dangerous goods classification, please make a separate consultation.</td>
+                            <td class="w240 text-center pad-small">{{ expressQuote.quote.DANGER_GOODS_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="旺季附加费">Peak Surcharges-Residential Surcharge</td>
+                            <td class="w480 pad-small" data-zh="每个包裹">Applicable to all packages</td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.RESIDENTIAL_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="AHC旺季附加费">Peak Surcharges-Additional Handling Surcharge</td>
+                            <td class="w480 pad-small" data-zh="产品产生任何一项AHC附加费">Packages charged with any AHC Surcharge</td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.AHC_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="Oversize旺季附加费">Peak Surcharges-Oversize Charge</td>
+                            <td class="w480 pad-small" data-zh="产品产生oversize附加费">Packages charged with Oversize Surcharge</td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.OVERSIZE_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="超规格旺季附加费">Peak Surcharges-Ground Unauthorized Package Charge</td>
+                            <td class="w480 pad-small" data-zh="产品产生超规格罚金">Packages charged with Unauthorized Surcharge</td>
+                            <td class="w240 text-center pad-small">{{ expressQuotePure.quote.OVER_SPECIFICATION_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+
+                        </table>
+                      </div>
+
+                    </div>
+                  </div>
+                  {% if expressQuotePure.description %}
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <br>
+                        <br>
+                        <p data-zh="快递运费报价说明">Parcel Carrier Fee Quote Explanation:</p>
+                        <p>{{ expressQuotePure.description | nl2br }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+                <div id="cloudLTLRules" class="platform-rules">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <div class="tab-table-title" data-zh="平台云仓LTL基础运费">B2B Marketplace Basic Shipping Fee</div>
+                      <div class="tab-sub-table-title" data-zh="体积重量计算常数">Dimensional Weight Divisors (DIM): {{ truckQuote.param.DIM.value }}</div>
+                      <div class="table-header">
+                        <table class="table title-table">
+                          <tr><th class="weight-width text-center pad-small" data-zh="计费重量">Chargeable Weight(lbs)</th><th class="free-width text-center pad-small" data-zh="基础运费">Basic Shipping Fee({{ symbolLeft }}{{ symbolRight }})</th></tr>
+                        </table>
+                      </div>
+                      <div class="table-body">
+                        <table class="table table-bordered">
+                          {% for key, item in truckQuote.quote.BASE_FREIGHT_SURCHARGE_QUOTE.value_list %}
+                            <tr>
+                              <td class="weight-width text-center pad-small">{{ item.billFreight }}</td>
+                              <td class="free-width text-center pad-small">{{ item.freight | number_format(2,'.','') }}</td>
+                            </tr>
+                          {% endfor %}
+                        </table>
+                      </div>
+                    </div>
+                    <div class="col-sm-9">
+                      <div class="tab-table-title" data-zh="平台云仓LTL附加费">B2B Marketplace Surcharge</div>
+                      <div class="tab-sub-table-title"></div>
+
+                      <div class="table-header">
+                        <table class="table title-table">
+                          <tr><th class="w240 text-center pad-small" data-zh="收费项目">Services Type</th><th class="w480 pad-small" data-zh="收费条件">Applicable Services</th><th class="w240 text-center pad-small" data-zh="收费金额">Amount({{ symbolLeft }}{{ symbolRight }})</th></tr>
+                        </table>
+                      </div>
+                      <div class="table-body">
+                        <table class="table table-bordered">
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="超重附加费">Overweight Surcharge</td>
+                            <td class="w480 pad-small" data-zh="【单件实际重量大于{{ truckQuote.param.OVER_WEIGHT_FEE_ACTUAL_WEIGHT.value }}lbs】">
+                              Actual Weight of a single package ＞ {{ truckQuote.param.OVER_WEIGHT_FEE_ACTUAL_WEIGHT.value }} lbs
+                            </td>
+                            <td class="w240 text-center pad-small">{{ truckQuote.quote.OVERWEIGHT_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="超规格产品">Unauthorized Charge</td>
+                            <td class="w480 pad-small" data-zh="【多包裹计费重量超过{{ truckQuote.param.OVER_SPECIFICATION_TOTAL_WEIGHT.value }}lbs】">
+                              Multi-package Chargeable Weight ＞ {{ truckQuote.param.OVER_SPECIFICATION_TOTAL_WEIGHT.value }} lbs
+                            </td>
+                            <td class="w240 text-center pad-small" data-zh="单独询价">
+                              {% if truckQuote.quote.OVER_SPECIFICATION_SURCHARGE_QUOTE.value == '-1' %}
+                                Separate Quote
+                              {% else %}
+                                {{ truckQuote.quote.OVER_SPECIFICATION_SURCHARGE_QUOTE.value | number_format(2,'.','') }}
+                              {% endif %}
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+
+                    </div>
+                  </div>
+                  {% if truckQuote.description %}
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <br>
+                        <br>
+                        <p data-zh="LTL运费报价说明">LTL Freight Fee Quote Explanation:</p>
+                        <p>{{ truckQuote.description | nl2br }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+                <div id="threeLTLRules" class="platform-rules">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <div class="tab-table-title" data-zh="第三方物流LTL基础运费">3PL Basic Shipping Fee</div>
+                      <div class="tab-sub-table-title" data-zh="体积重量计算常数(DIM)">Dimensional Weight Divisors (DIM): {{ truckQuotePure.param.DIM.value }}</div>
+                      <div class="table-header">
+                        <table class="table title-table">
+                          <tr><th class="weight-width text-center pad-small" data-zh="计费重量">Chargeable Weight(lbs)</th><th class="free-width text-center pad-small" data-zh="基础运费">Basic Shipping Fee({{ symbolLeft }}{{ symbolRight }})</th></tr>
+                        </table>
+                      </div>
+                      <div class="table-body">
+                        <table class="table table-bordered">
+                          {% for key, item in truckQuotePure.quote.BASE_FREIGHT_SURCHARGE_QUOTE.value_list %}
+                            <tr>
+                              <td class="weight-width text-center pad-small">{{ item.billFreight }}</td>
+                              <td class="free-width text-center pad-small">{{ item.freight | number_format(2,'.','') }}</td>
+                            </tr>
+                          {% endfor %}
+                        </table>
+                      </div>
+                    </div>
+                    <div class="col-sm-9">
+                      <div class="tab-table-title" data-zh="第三方物流LTL附加费">3PL Surcharge</div>
+                      <div class="tab-sub-table-title"></div>
+
+                      <div class="table-header">
+                        <table class="table title-table">
+                          <tr><th class="w240 text-center pad-small" data-zh="收费项目">Services Type</th><th class="w480 pad-small" data-zh="收费条件">Applicable Services</th><th class="w240 text-center pad-small" data-zh="收费金额">Amount({{ symbolLeft }}{{ symbolRight }})</th></tr>
+                        </table>
+                      </div>
+                      <div class="table-body">
+                        <table class="table table-bordered">
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="超重附加费">Overweight Surcharge</td>
+                            <td class="w480 pad-small" data-zh="【单件实际重量大于{{ truckQuotePure.param.OVER_WEIGHT_FEE_ACTUAL_WEIGHT.value }}lbs】">
+                              Actual Weight of a single package ＞ {{ truckQuotePure.param.OVER_WEIGHT_FEE_ACTUAL_WEIGHT.value }} lbs
+                            </td>
+                            <td class="w240 text-center pad-small">{{ truckQuotePure.quote.OVERWEIGHT_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" data-zh="超规格产品">Unauthorized Charge</td>
+                            <td class="w480 pad-small" data-zh="【多包裹计费重量超过{{ truckQuotePure.param.OVER_SPECIFICATION_TOTAL_WEIGHT.value }}lbs】">
+                              Multi-package Chargeable Weight ＞ {{ truckQuotePure.param.OVER_SPECIFICATION_TOTAL_WEIGHT.value }} lbs
+                            </td>
+                            <td class="w240 text-center pad-small" data-zh="单独询价">
+                              {% if truckQuotePure.quote.OVER_SPECIFICATION_SURCHARGE_QUOTE.value == '-1' %}
+                                Separate Quote
+                              {% else %}
+                                {{ truckQuotePure.quote.OVER_SPECIFICATION_SURCHARGE_QUOTE.value | number_format(2,'.','') }}
+                              {% endif %}
+                            </td>
+                          </tr>
+
+                        </table>
+                      </div>
+
+                    </div>
+                  </div>
+                  {% if truckQuotePure.description %}
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <br>
+                        <br>
+                        <p data-zh="LTL运费报价说明">LTL Freight Fee Quote Explanation:</p>
+                        <p>{{ truckQuotePure.description | nl2br }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+                {% else %}
+                <!-- onsite类型seller-->
+                  {% if giga_seller_quote.seller_quote_flag > 0 %}
+                    <div id="sellerCloudRules" class="platform-rules">
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <div class="tab-table-title" data-zh="Seller云仓基础运费">Basic Shipping Fee</div>
+                          <div class="tab-sub-table-title" data-zh="体积重量计算常数">Dimensional Weight Divisors
+                            (DIM): {{ giga_seller_quote.parcel_carrier_quote.DIM.value }}</div>
+                          <div class="table-header">
+                            <table class="table title-table">
+                              <tr>
+                                <th class="weight-width text-center pad-small" data-zh="计费重量">Chargeable Weight(lbs)
+                                </th>
+                                <th class="free-width text-center pad-small" data-zh="基础运费">Basic Shipping
+                                  Fee({{ symbolLeft }}{{ symbolRight }})
+                                </th>
+                              </tr>
+                            </table>
+                          </div>
+                          <div class="table-body">
+                            <table class="table table-bordered">
+                              {% set value_list =  giga_seller_quote.parcel_carrier_quote.BASE_FREIGHT_INFO.value|json_decode %}
+                              {% for key, item in value_list %}
+                                <tr>
+                                  <td class="weight-width text-center pad-small">{{ key }}</td>
+                                  <td class="free-width text-center pad-small">{{ item | number_format(2,'.','') }}</td>
+                                </tr>
+                              {% endfor %}
+                            </table>
+                          </div>
+                        </div>
+                        <div class="col-sm-9">
+                          <div class="tab-table-title" data-zh="Seller云仓附加费">Surcharge</div>
+                          <div class="tab-sub-table-title"></div>
+
+                          <div class="table-header">
+                            <table class="table title-table">
+                              <tr>
+                                <th class="w240 text-center pad-small" data-zh="收费项目">Services Type</th>
+                                <th class="w480 pad-small" data-zh="收费条件">Applicable Services</th>
+                                <th class="w240 text-center pad-small" data-zh="收费金额">
+                                  Amount({{ symbolLeft }}{{ symbolRight }})
+                                </th>
+                              </tr>
+                            </table>
+                          </div>
+                          <div class="table-body">
+                            {% set normal_carrier = giga_seller_quote.parcel_carrier_quote %}
+                            <table class="table table-bordered">
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="AHC-尺寸">Additional Handling
+                                  Charge-Size
+                                </td>
+                                <td class="w480 pad-small"
+                                    data-zh="【最长边＞{{ normal_carrier.AHC_SIZE_LONGEST_SIDE.value }}英寸】 或 【次长边＞{{ normal_carrier.AHC_SIZE_SECOND_LONG_SIDE.value }}英寸】">
+                                  Longest Side &gt; {{ normal_carrier.AHC_SIZE_LONGEST_SIDE.value }} inches or 2nd
+                                  Longest Side &gt; {{ normal_carrier.AHC_SIZE_SECOND_LONG_SIDE.value }} inches<br>
+                                  or Longest Side + Girth &gt; {{ normal_carrier.AHC_SIZE_LONGEST_SIDE_ADD_GIRTH.value }}
+                                  inches
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.AHC_SIZE_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="AHC-重量1">Additional Handling Charge-Weight 1
+                                </td>
+                                <td class="w480 pad-small"
+                                    data-zh="【{{ normal_carrier.AHC_WEIGHT_1_WEIGHT_MIN.value }}磅＜实际重量≤{{ normal_carrier.AHC_WEIGHT_1_WEIGHT_MAX.value }}磅】">
+                                  {{ normal_carrier.AHC_WEIGHT_1_WEIGHT_MIN.value }}lbs &lt; Actual Weight ≤ {{ normal_carrier.AHC_WEIGHT_1_WEIGHT_MAX.value }} lbs.
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.AHC_WEIGHT_1_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="AHC-重量2">Additional Handling Charge-Weight 2
+                                </td>
+                                <td class="w480 pad-small"
+                                    data-zh="【实际重量＞{{ normal_carrier.AHC_WEIGHT_2_WEIGHT_MIN.value }}磅】">
+                                  Actual Weight &gt; {{ normal_carrier.AHC_WEIGHT_2_WEIGHT_MIN.value }} lbs.
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.AHC_WEIGHT_2_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="AHC-综合">Additional Handling
+                                  Charge-Complex
+                                </td>
+                                <td class="w480 pad-small"
+                                    data-zh="【实际重量＞{{ normal_carrier.AHC_COMBINE_WEIGHT_MIN.value }}磅】且（【最长边＞{{ expressQuote.param.AHC_COMBINE_LONGEST_SIDE.value }}英寸】 或 【次长边＞{{ expressQuote.param.AHC_WEIGHT_TOTAL_LENGTH_SECOND.value }}英寸】）">
+                                  Actual Weight &gt; {{ normal_carrier.AHC_COMBINE_WEIGHT_MIN.value }}
+                                  lbs<br>
+                                  and Longest Side &gt; {{ normal_carrier.AHC_COMBINE_LONGEST_SIDE.value }} inches
+                                  or 2nd Longest Side &gt; {{ normal_carrier.AHC_COMBINE_SECOND_LONG_SIDE.value }}
+                                  inches<br>
+                                  or Longest Side + Girth
+                                  &gt; {{ normal_carrier.AHC_COMBINE_LONGEST_SIDE_ADD_GIRTH.value }} inches
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.AHC_COMBINE_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="AHC-包装">Additional Handling
+                                  Charge-Packaging
+                                </td>
+                                <td class="w480 pad-small"
+                                    data-zh="外包装是金属或木材，<br>或产品是圆筒形（没有装入方正的纸箱），<br>或货运金属塑料打包带捆包的包裹，<br>或包裹表面松散有折痕或凸起。">
+                                  The outer packaging is metal or wood.<br>
+                                  or the product is cylindrical (the carton is not loaded into the square),<br>
+                                  or freight metal plastic bales with bundled parcels,<br>
+                                  or the surface of the package is loose with creases or bulges.
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.AHC_PACK_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="Oversize">Oversize Charge</td>
+                                <td class="w480 pad-small"
+                                    data-zh="【最长边＞{{ normal_carrier.OVERSIZE_LENGTH_MAX.value }}英寸】<br>或【最长边+围长＞{{ normal_carrier.OVERSIZE_LENGTH_MAX.value }}英寸】">
+                                  Longest Side &gt; {{ normal_carrier.OVERSIZE_LENGTH_MAX.value }} inches<br>
+                                  or Longest Side + Girth &gt; {{ normal_carrier.OVERSIZE_LENGTH_ADD_GIRTH_LIMIT.value }}
+                                  inches
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.OVERSIZE_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="超规格产品">Unauthorized Charge</td>
+                                <td class="w480 pad-small"
+                                    data-zh="【最长边＞{{ normal_carrier.OVER_SPECIFICATION_LONGEST_SIDE.value }}英寸】<br>或【最长边＋围长＞{{ normal_carrier.OVER_SPECIFICATION_LONGEST_SIDE.value }}英寸】<br>或【实际重量＞{{ normal_carrier.OVER_SPECIFICATION_WEIGHT.value }}磅】">
+                                  Longest Side + Girth
+                                  &gt; {{ normal_carrier.OVER_SPECIFICATION_LONGEST_SIDE_ADD_GIRTH.value }} inches<br>
+                                  or Longest Side &gt; {{ normal_carrier.OVER_SPECIFICATION_LONGEST_SIDE.value }}
+                                  inches<br>
+                                  or Actual Weight &gt; {{ normal_carrier.OVER_SPECIFICATION_WEIGHT.value }}
+                                  lbs
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.OVER_SPECIFICATION_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="签收服务费">Signature Fee</td>
+                                <td class="w480 pad-small" data-zh="需提前申请">Need to apply in advance</td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.SIGN_SERVICE_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="地址更正费">Address Change Fee</td>
+                                <td class="w480 pad-small"></td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.ADDRESS_UPDATE_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="危险品">Dangerous Goods</td>
+                                <td class="w480 pad-small">For specific dangerous goods classification, please make a separate consultation.</td>
+                                <td class="w240 text-center pad-small">{{ expressQuote.quote.DANGER_GOODS_SURCHARGE_QUOTE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="住宅旺季附加费">Peak Surcharges-Residential
+                                  Surcharge
+                                </td>
+                                <td class="w480 pad-small" data-zh="每个包裹">Applicable to all packages</td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.RESIDENCE_PEAK_SEASON_FEE.value | number_format(2,'.','') }}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="AHC旺季附加费">Peak Surcharges-Additional
+                                  Handling Surcharge
+                                </td>
+                                <td class="w480 pad-small" data-zh="产品产生任何一项AHC附加费">Packages charged with any AHC
+                                  Surcharge
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.AHC_PEAK_SEASON_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="Oversize旺季附加费">Peak Surcharges-Oversize
+                                  Charge
+                                </td>
+                                <td class="w480 pad-small" data-zh="产品产生oversize附加费">Packages charged with Oversize
+                                  Surcharge
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.OVERSIZE_PEAK_SEASON_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="超规格旺季附加费">Peak Surcharges-Ground
+                                  Unauthorized Package Charge
+                                </td>
+                                <td class="w480 pad-small" data-zh="产品产生超规格罚金">Packages charged with Unauthorized
+                                  Surcharge
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ normal_carrier.OVER_SPECIFICATION_PEAK_SEASON_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      {% if normal_carrier.DESCRIPTION.value %}
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <br>
+                            <br>
+                            <p data-zh="快递运费报价说明">Parcel Carrier Fee Quote Explanation:</p>
+                            <p>{{ normal_carrier.DESCRIPTION.value | nl2br }}</p>
+                          </div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                  {% if giga_seller_quote.seller_quote_flag == 2 %}
+                    {% set ltl_carrier = giga_seller_quote.ltl_quote %}
+                    <div id="sellerLTLRules" class="platform-rules">
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <div class="tab-table-title" data-zh="sellerLTL基础运费">Basic Shipping Fee</div>
+                          <div class="tab-sub-table-title" data-zh="体积重量计算常数(DIM)">Dimensional Weight Divisors
+                            (DIM): {{ ltl_carrier.LTL_DIM.value }}</div>
+                          <div class="table-header">
+                            <table class="table title-table">
+                              <tr>
+                                <th class="weight-width text-center pad-small" data-zh="计费重量">Chargeable Weight(lbs)
+                                </th>
+                                <th class="free-width text-center pad-small" data-zh="基础运费">Basic Shipping
+                                  Fee({{ symbolLeft }}{{ symbolRight }})
+                                </th>
+                              </tr>
+                            </table>
+                          </div>
+                          <div class="table-body">
+                            <table class="table table-bordered">
+                              {% for key, item in ltl_carrier.LTL_BASE_FREIGHT_INFO.value|json_decode %}
+                                <tr>
+                                  <td class="weight-width text-center pad-small">{{ key }}</td>
+                                  <td
+                                    class="free-width text-center pad-small">{{ item | number_format(2,'.','') }}</td>
+                                </tr>
+                              {% endfor %}
+                            </table>
+                          </div>
+                        </div>
+                        <div class="col-sm-9">
+                          <div class="tab-table-title" data-zh="seller-LTL附加费">Surcharge</div>
+                          <div class="tab-sub-table-title"></div>
+
+                          <div class="table-header">
+                            <table class="table title-table">
+                              <tr>
+                                <th class="w240 text-center pad-small" data-zh="收费项目">Services Type</th>
+                                <th class="w480 pad-small" data-zh="收费条件">Applicable Services</th>
+                                <th class="w240 text-center pad-small" data-zh="收费金额">
+                                  Amount({{ symbolLeft }}{{ symbolRight }})
+                                </th>
+                              </tr>
+                            </table>
+                          </div>
+                          <div class="table-body">
+                            <table class="table table-bordered">
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="超重附加费">Overweight Surcharge</td>
+                                <td class="w480 pad-small"
+                                    data-zh="【单件实际重量大于{{ ltl_carrier.OVER_WEIGHT_WEIGHT_LIMIT.value }}lbs】">
+                                  Actual Weight of a single package
+                                  ＞ {{ ltl_carrier.OVER_WEIGHT_WEIGHT_LIMIT.value }} lbs
+                                </td>
+                                <td
+                                  class="w240 text-center pad-small">{{ ltl_carrier.OVER_WEIGHT_FEE.value | number_format(2,'.','') }}</td>
+                              </tr>
+                              <tr>
+                                <td class="w240 text-center pad-small" data-zh="超规格产品">Unauthorized Charge</td>
+                                <td class="w480 pad-small"
+                                    data-zh="【多包裹计费重量超过{{ ltl_carrier.OVER_SPECIFICATION_WEIGHT_LIMIT.value }}lbs】">
+                                  Multi-package Chargeable Weight
+                                  ＞ {{ ltl_carrier.OVER_SPECIFICATION_WEIGHT_LIMIT.value }} lbs
+                                </td>
+                                <td class="w240 text-center pad-small" data-zh="单独询价">
+                                  {% if ltl_carrier.OVER_SEPCIFICATION_INDIVIDUAL_QUERY_PRICE.value == '1' %}
+                                    Separate Quote
+                                  {% else %}
+                                    {{ ltl_carrier.LTL_OVER_SPECIFICATION_FEE.value | number_format(2,'.','') }}
+                                  {% endif %}
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      {% if ltl_carrier.LTL_DESCRIPTION.value %}
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <br>
+                            <br>
+                            <p data-zh="seller-LTL运费报价说明">LTL Freight Fee Quote Explanation:</p>
+                            <p>{{ ltl_carrier.LTL_DESCRIPTION.value | nl2br }}</p>
+                          </div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                {% endif %}
+                <div id="packRules" class="platform-rules">
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="tab-table-title" data-zh="仓租">Storage</div>
+                      <div class="table-header">
+                        <table class="table title-table">
+                          <tr><th class="weight-width text-center pad-small" data-zh="在库天数">Days in Stock</th><th class="free-width text-center pad-small">Storage({{ symbolLeft }}{{ symbolRight }}/ft³•Days)</th></tr>
+                        </table>
+                      </div>
+                      <div class="table-body">
+                        <table class="table table-bordered">
+                          <tr>
+                            <td class="weight-width text-center pad-small">1-{{ warehouseQuote.param.DAY_RANGE.value_list[0] }} Days</td>
+                            <td class="free-width text-center pad-small">{{ warehouseQuote.quote.WAREHOUSE_RENTAL.value_list[0] }}</td>
+                          </tr>
+                          <tr>
+                            <td class="weight-width text-center pad-small">{{ warehouseQuote.param.DAY_RANGE.value_list[0] + 1}}-{{ warehouseQuote.param.DAY_RANGE.value_list[1] }} Days</td>
+                            <td class="free-width text-center pad-small">{{ warehouseQuote.quote.WAREHOUSE_RENTAL.value_list[1] }}</td>
+                          </tr>
+                          <tr>
+                            <td class="weight-width text-center pad-small">Over {{ warehouseQuote.param.DAY_RANGE.value_list[1] }} Days</td>
+                            <td class="free-width text-center pad-small">{{ warehouseQuote.quote.WAREHOUSE_RENTAL.value_list[2] }}</td>
+                          </tr>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  {% if warehouseQuote.description %}
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <br>
+                        <br>
+                        <p data-zh="仓租报价说明">Storage Fee Quote Explanation:</p>
+                        <p>{{ warehouseQuote.description | nl2br }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="tab-table-title" data-zh="打包费">Packing Fee</div>
+                      <div class="table-header">
+                        <table class="table title-table">
+                          <tr>
+                            <th class="w240 text-center pad-small" data-zh="业务类型">Business Type</th>
+                            <th class="w240 text-center pad-small" data-zh="计费重量">Chargeable Weight(lbs)</th>
+                            <th class="w240 text-center pad-small" data-zh="快递打包费($/件)">
+                              Parcel Packing Fee({{ symbolLeft }}{{ symbolRight }})
+                            </th>
+                            <th class="w240 text-center pad-small" data-zh="LTL打包费($/件)">
+                              LTL Packing Fee({{ symbolLeft }}{{ symbolRight }})
+                            </th>
+                          </tr>
+                        </table>
+                      </div>
+                      <div class="table-body">
+                        <table class="table table-bordered">
+                          <tr>
+                            <td class="w240 text-center pad-small" rowspan="2" data-zh="一件代发快递">B2B Marketplace Drop Shipping</td>
+                            <td class="w240 text-center pad-small">0-{{ DROP_SHIP_PACKAGE_WEIGHT_LIMIT }}</td>
+                            <td class="w240 text-center pad-small">{{ DROP_SHIP_LESS_THAN_PACKAGE_FEE }}/Package</td>
+                            <td class="w240 text-center pad-small">{{ DROP_SHIP_LESS_THAN_PACKAGE_FEE_LTL }}/Package</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small">Over {{ DROP_SHIP_PACKAGE_WEIGHT_LIMIT }}</td>
+                            <td class="w240 text-center pad-small">{{ DROP_SHIP_MORE_THAN_PACKAGE_FEE }}/lbs</td>
+                            <td class="w240 text-center pad-small">{{ DROP_SHIP_MORE_THAN_PACKAGE_FEE_LTL }}/lbs</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" rowspan="2" data-zh="上门取货快递">B2B Marketplace Pickup</td>
+                            <td class="w240 text-center pad-small">0-{{ HOME_PICK_UP_PACKAGE_WEIGHT_LIMIT }}</td>
+                            <td class="w240 text-center pad-small">{{ HOME_PICK_UP_LESS_THAN_PACKAGE_FEE }}/Package</td>
+                            <td class="w240 text-center pad-small">{{ HOME_PICK_UP_LESS_THAN_PACKAGE_FEE_LTL }}/Package</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small">Over {{ HOME_PICK_UP_PACKAGE_WEIGHT_LIMIT }}</td>
+                            <td class="w240 text-center pad-small">{{ HOME_PICK_UP_MORE_THAN_PACKAGE_FEE }}/lbs</td>
+                            <td class="w240 text-center pad-small">{{ HOME_PICK_UP_MORE_THAN_PACKAGE_FEE_LTL }}/lbs</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" rowspan="2" data-zh="纯物流一件代发快递">3PL Drop Shipping</td>
+                            <td class="w240 text-center pad-small">0-{{ DROP_SHIP_PACKAGE_WEIGHT_LIMIT_PURE }}</td>
+                            <td class="w240 text-center pad-small">{{ DROP_SHIP_LESS_THAN_PACKAGE_FEE_PURE }}/Package</td>
+                            <td class="w240 text-center pad-small">{{ DROP_SHIP_LESS_THAN_PACKAGE_FEE_PURE_LTL }}/Package</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small">Over {{ DROP_SHIP_PACKAGE_WEIGHT_LIMIT_PURE }}</td>
+                            <td class="w240 text-center pad-small">{{ DROP_SHIP_MORE_THAN_PACKAGE_FEE_PURE }}/lbs</td>
+                            <td class="w240 text-center pad-small">{{ DROP_SHIP_MORE_THAN_PACKAGE_FEE_PURE_LTL }}/lbs</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small" rowspan="2" data-zh="纯物流上门取货快递">3PL Pickup</td>
+                            <td class="w240 text-center pad-small">0-{{ HOME_PICK_UP_PACKAGE_WEIGHT_LIMIT_PURE }}</td>
+                            <td class="w240 text-center pad-small">{{ HOME_PICK_UP_LESS_THAN_PACKAGE_FEE_PURE }}/Package</td>
+                            <td class="w240 text-center pad-small">{{ HOME_PICK_UP_LESS_THAN_PACKAGE_FEE_PURE_LTL }}/Package</td>
+                          </tr>
+                          <tr>
+                            <td class="w240 text-center pad-small">Over {{ HOME_PICK_UP_PACKAGE_WEIGHT_LIMIT_PURE }}</td>
+                            <td class="w240 text-center pad-small">{{ HOME_PICK_UP_MORE_THAN_PACKAGE_FEE_PURE }}/lbs</td>
+                            <td class="w240 text-center pad-small">{{ HOME_PICK_UP_MORE_THAN_PACKAGE_FEE_PURE_LTL }}/lbs</td>
+                          </tr>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  {% if packageQuote.description %}
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <br>
+                        <br>
+                        <p data-zh="打包费报价说明">Packing Fee Quote Explanation:</p>
+                        <p>{{ packageQuote.description | nl2br }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <!--END 计费规则-->
+      </div>
+    </div>
+  </div>
+</div>
+
+{{footer}}
+<script>
+  var volumeDayList = {{ volumeDayList }};//Array
+  var volumeQuoteList = {{ volumeQuoteList }};//Array
+  var precision = 2;
+  var inchesMax = 999.99;
+  var inchesMin = 0.01;
+  var inchesStep = 0.01;
+  var weightMax = 9999.99;
+  var weightMin = 0.01;
+  var weightStep = 0.01;
+  var qtyMin = 1;
+  var qtyMax = 9999;
+  var qtyStep = 1;
+  var dayMin = 1;
+  var dayMax = 9999;
+  var tmpSub = {
+    sku: '',
+    ltlFlag: '',
+    dangerFlag: '',
+    length: '',
+    width: '',
+    height: '',
+    weight: '',
+    qty: '1',
+    lengthError: '',
+    widthError: '',
+    heightError: '',
+    weightError: '',
+    qtyError: '',
+    itemError: ''
+  };
+  // ready初始化
+  $(() => {
+    let that = this;
+    // 绑定标签页切换事件
+    $('.freight-sub-nav-tab').on('click',function () {
+      that.togglePlatformTabs(this);
+    });
+    // 初始化active标签页
+    let $activeInit = $('.freight-sub-nav-tab.active') || $('.freight-sub-nav-tab');
+    if ($activeInit.length > 0) {
+      that.togglePlatformTabs($($activeInit[0]));
+    }
+  })
+
+  // 标签页切换显示内容
+  function togglePlatformTabs(that) {
+    $('.platform-rules').hide();
+    $('.freight-sub-nav-tab').removeClass('active');
+    $(that).addClass('active');
+    $("#"+$(that).attr('data-id')).show();
+  };
+
+  var app = new Vue({
+    delimiters: ['${', '}$'],
+    el: '#app',
+    data: {
+      hasItem: '-1',
+      iptItemCode: '',
+      itemType: '-1',
+      comboList: [JSON.parse(JSON.stringify(tmpSub))],
+      ltlFlag: '',
+      dangerFlag: '',
+      length: '',
+      width: '',
+      height: '',
+      weight: '',
+      qty: '1',
+      day: '1',
+      lengthError:'',
+      widthError:'',
+      heightError:'',
+      weightError:'',
+      qtyError:'',
+      dayError:'',
+    },
+    methods:{
+      checkItemExist: function () {
+        if (this.hasItem == '-1' || this.hasItem == '1') {
+          this.itemType = '-1';
+        }
+        freightClearSwitchItemExist();
+      },
+      addCombo:function(){
+        this.comboList.push(JSON.parse(JSON.stringify(tmpSub)));
+      },
+      removeCombo:function(obj,index){
+        this.comboList.splice(index,1);
+      },
+      checkDecimal(name, index){
+        if(index === undefined){
+          switch (name) {
+            case "length":
+              this.length = checkDecimalProcess(this.length);
+              (this.length.toString().length > 0) ? (this.lengthError = '') : (this.lengthError = 'Required');
+              break;
+            case "width":
+              this.width = checkDecimalProcess(this.width);
+              (this.width.toString().length > 0) ? (this.widthError = '') : (this.widthError = 'Required');
+              break;
+            case "height":
+              this.height = checkDecimalProcess(this.height);
+              (this.height.toString().length > 0) ? (this.heightError = '') : (this.heightError = 'Required');
+              break;
+          }
+        } else {
+          switch (name) {
+            case "length":
+              this.comboList[index].length = checkDecimalProcess(this.comboList[index].length);
+              (this.comboList[index].length.toString().length > 0) ? (this.comboList[index].lengthError = '') : (this.comboList[index].lengthError = 'Required');
+              break;
+            case "width":
+              this.comboList[index].width = checkDecimalProcess(this.comboList[index].width);
+              (this.comboList[index].width.toString().length > 0) ? (this.comboList[index].widthError = '') : (this.comboList[index].widthError = 'Required');
+              break;
+            case "height":
+              this.comboList[index].height = checkDecimalProcess(this.comboList[index].height);
+              (this.comboList[index].height.toString().length > 0) ? (this.comboList[index].heightError = '') : (this.comboList[index].heightError = 'Required');
+              break;
+          }
+        }
+      },
+      checkWeight(name, index){
+        if(index === undefined){
+          this.weight = checkWeightProcess(this.weight);
+          (this.weight.toString().length > 0) ? (this.weightError = '') : (this.weightError = 'Required');
+        } else {
+          this.comboList[index].weight = checkWeightProcess(this.comboList[index].weight);
+          (this.comboList[index].weight.toString().length > 0) ? (this.comboList[index].weightError = '') : (this.comboList[index].weightError = 'Required');
+        }
+      },
+      checkInteger(name, index){
+        if(index === undefined){
+          switch (name) {
+            case "qty":
+              this.qty = checkIntegerProcess(this.qty);
+              break;
+            case "day":
+              this.day = checkIntegerProcess(this.day);
+              break;
+          }
+        } else {
+          switch (name) {
+            case "qty":
+              this.comboList[index].qty = checkIntegerProcess(this.comboList[index].qty);
+              break;
+            case "day":
+              this.comboList[index].day = checkIntegerProcess(this.comboList[index].day);
+              break;
+          }
+        }
+      }
+    }
+  });
+
+
+  /**
+   * @param numString  string
+   * @returns string
+   */
+  function checkDecimalProcess(numString) {
+    let intLength = lengthOfIntegerPar(inchesMax);
+    let objArr = numString.match(/^\d*(\.?\d{0,2})/g);
+    if (objArr === null) {
+      return "";
+    }
+    let numStrNew = objArr[0];
+    if (lengthOfIntegerPar(numStrNew) > intLength) {
+      numStrNew = numStrNew.substr(0, intLength);
+    }
+    return numStrNew;
+  }
+
+  /**
+   * @param numString  string
+   * @returns string
+   */
+  function checkWeightProcess(numString) {
+    let intLength = lengthOfIntegerPar(weightMax);
+    let objArr = numString.match(/^\d*(\.?\d{0,2})/g);
+    if (objArr === null) {
+      return "";
+    }
+    let numStrNew = objArr[0];
+    if (lengthOfIntegerPar(numStrNew) > intLength) {
+      numStrNew = numStrNew.substr(0, intLength);
+    }
+    return numStrNew;
+  }
+
+  /**
+   * @param numString  string
+   * @returns string
+   */
+  function checkIntegerProcess(numString) {
+    let objArr = numString.match(/^\d*/g);
+    if (objArr === null) {
+      return "";
+    }
+    let numStrNew = objArr[0];
+    if (lengthOfIntegerPar(numStrNew) > 4) {
+      numStrNew = numStrNew.substr(0, 4);
+    }
+    if (Number(numStrNew) == 0) {
+      return "";
+    }
+    return Number(numStrNew).toString();
+  }
+
+
+  $('input[name="iptItemCode"]').autocomplete({
+    'source': function(request, response) {
+      $.ajax({
+        url: "{{ url('account/customerpartner/calculator/autocompleteProducts') }}" + "&sku=" + encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          if (json.code == 200) {
+            response($.map(json.data, function (item) {
+              return {
+                label: item['sku'],
+                value: item['sku'],
+                info: item
+              }
+            }));
+          } else {
+            response($.map([], function (item) {
+              return {
+                label: item['sku'],
+                value: item['sku']
+              }
+            }));
+          }
+        }
+      });
+    },
+    'select': function(item) {
+      app.iptItemCode = item['value'];
+
+      let info = item.info;
+      if (info.combo_flag) {
+        app.itemType = "1";
+      } else {
+        app.itemType = "0";
+      }
+      app.comboList = [JSON.parse(JSON.stringify(tmpSub))];
+      if(info.hasOwnProperty("comboList")){
+        app.comboList = [];
+        for (let index = 0; index < info.comboList.length; index++) {
+          let tmpSub = {
+            sku: info.comboList[index].sku,
+            ltlFlag: info.comboList[index].ltl_flag,
+            dangerFlag: info.comboList[index].danger_flag,
+            length: info.comboList[index].length,
+            width: info.comboList[index].width,
+            height: info.comboList[index].height,
+            weight: info.comboList[index].weight,
+            qty: info.comboList[index].qty,
+            lengthError:'',
+            widthError:'',
+            heightError:'',
+            weightError:'',
+            qtyError:'',
+            itemError:''
+          };
+          app.comboList.push(tmpSub);
+        }
+      }
+      app.ltlFlag = info.ltl_flag;
+      app.dangerFlag = info.danger_flag;
+      app.length = info.length;
+      app.width = info.width;
+      app.height = info.height;
+      app.weight = info.weight;
+      app.lengthError = "";
+      app.widthError = "";
+      app.heightError = "";
+      app.weightError = "";
+      freightClearResults();
+    }
+  });
+
+  //运费计算
+  function freightDo(){
+    let appCopy = JSON.parse(JSON.stringify(app._data));
+    let hasItem = appCopy.hasItem;
+    let sku = appCopy.iptItemCode;
+    let comboFlag = appCopy.itemType;
+    let comboList = appCopy.comboList;
+    let ltlFlag = appCopy.ltlFlag;
+    let dangerFlag = appCopy.dangerFlag;
+    let length = appCopy.length;
+    let width = appCopy.width;
+    let height = appCopy.height;
+    let weight = appCopy.weight;
+    let qty = appCopy.qty;
+    let day = appCopy.day;
+
+    if (comboFlag !== "0" && comboFlag !== "1") {
+      return false;
+    }
+    if (comboFlag == "0") {
+      let isEnd = false;
+      if (length.length < 1 || isNaN(Number(length)) || Number(length) < inchesMin || Number(length) > inchesMax || lengthOfFractionalPar(length) > precision) {
+        app.lengthError = "Required";
+        if (Number(length) < inchesMin) {
+          app.lengthError = `Please enter a number greater than 0`;
+        }
+        return false;
+      } else {
+        app.lengthError = "";
+      }
+      if (width.length < 1 || isNaN(Number(width)) || Number(width) < inchesMin || Number(width) > inchesMax || lengthOfFractionalPar(width) > precision) {
+        app.widthError = "Required";
+        if (Number(width) < inchesMin) {
+          app.widthError = `Please enter a number greater than 0`;
+        }
+        return false;
+      } else {
+        app.widthError = "";
+      }
+      if (height.length < 1 || isNaN(Number(height)) || Number(height) < inchesMin || Number(height) > inchesMax || lengthOfFractionalPar(height) > precision) {
+        app.heightError = "Required";
+        if (Number(height) < inchesMin) {
+          app.heightError = `Please enter a number greater than 0`;
+        }
+        return false;
+      } else {
+        app.heightError = "";
+      }
+      if (weight.length < 1 || isNaN(Number(weight)) || Number(weight) < weightMin || Number(weight) > weightMax || lengthOfFractionalPar(weight) > precision) {
+        app.weightError = "Required";
+        if (Number(weight) < weightMin) {
+          app.weightError = `Please enter a number greater than 0`;
+        }
+        return false;
+      } else {
+        app.weightError = "";
+      }
+    } else {
+      let isEnd = false;
+      for (let index in app.comboList){//为了页面错误提示，所以这里引用原始对象
+        let item = app.comboList[index];
+        let length = item.length;
+        let width = item.width;
+        let height = item.height;
+        let weight = item.weight;
+        let dangerFlag = item.dangerFlag;
+        let qty = item.qty;
+
+        if (length.length < 1 || isNaN(Number(length)) || Number(length) < inchesMin || Number(length) > inchesMax || lengthOfFractionalPar(length) > precision) {
+          item.itemError = item.lengthError = "Required";
+          if (Number(length) < inchesMin) {
+            item.itemError = item.lengthError = `Please enter a number greater than 0`;
+          }
+          return false;
+        } else {
+          item.itemError = item.lengthError = "";
+        }
+        if (width.length < 1 || isNaN(Number(width)) || Number(width) < inchesMin || Number(width) > inchesMax || lengthOfFractionalPar(width) > precision) {
+          item.itemError = item.widthError = "Required";
+          if (Number(width) < inchesMin) {
+            item.itemError = item.widthError = `Please enter a number greater than 0`;
+          }
+          return false;
+        } else {
+          item.itemError = item.widthError = "";
+        }
+        if (height.length < 1 || isNaN(Number(height)) || Number(height) < inchesMin || Number(height) > inchesMax || lengthOfFractionalPar(height) > precision) {
+          item.itemError = item.heightError = "Required";
+          if (Number(height) < inchesMin) {
+            item.itemError = item.heightError = `Please enter a number greater than 0`;
+          }
+          return false;
+        } else {
+          item.itemError = item.heightError = "";
+        }
+        if (weight.length < 1 || isNaN(Number(weight)) || Number(weight) < weightMin || Number(weight) > weightMax || lengthOfFractionalPar(weight) > precision) {
+          item.itemError = item.weightError = "Required";
+          if (Number(weight) < weightMin) {
+            item.itemError = item.weightError = `Please enter a number greater than 0`;
+          }
+          return false;
+        } else {
+          item.itemError = item.weightError = "";
+        }
+        if (qty.length < 1 || isNaN(Number(qty)) || Number(qty) < qtyMin || Number(qty) > qtyMax || lengthOfFractionalPar(qty) > 0) {
+          item.itemError = item.qtyError = "Required";
+          if (Number(qty) < qtyMin) {
+            item.itemError = item.qtyError = `Please enter a number greater than 0`;
+          }
+          return false;
+        } else {
+          item.itemError = item.qtyError = "";
+        }
+      }
+      if (isEnd) {
+        return false;
+      }
+    }
+    if (qty.length < 1 || isNaN(Number(qty)) || Number(qty) < qtyMin || Number(qty) > qtyMax || lengthOfFractionalPar(qty) > 0) {
+      app.qtyError = "Required";
+      if (Number(qty) < qtyMin) {
+        app.qtyError = `Please enter a number greater than 0`;
+      }
+      return false;
+    } else {
+      app.qtyError = "";
+    }
+    if (day.length < 1 || isNaN(Number(day)) || Number(day) < dayMin || Number(day) > dayMax || lengthOfFractionalPar(day) > 0) {
+      app.dayError = "Required";
+      if (Number(day) < dayMin) {
+        app.dayError = `Please enter a number greater than 0`;
+      }
+      return false;
+    } else {
+      app.dayError = "";
+    }
+
+    let data = {
+      "hasItem": hasItem,
+      "sku": sku,
+      "comboFlag": comboFlag,
+      "comboList": comboList,
+      "ltlFlag": ltlFlag,
+      "dangerFlag": dangerFlag,
+      "length": length,
+      "width": width,
+      "height": height,
+      "weight": weight,
+      "qty": qty,
+      "day": day
+    };
+    freightClearResults();
+    $.ajax({
+      url: "{{ url('account/customerpartner/calculator/freightDo') }}",
+      type: 'POST',
+      contentType: "application/json;charset=UTF-8",
+      dataType: 'json',
+      data: JSON.stringify(data),
+      beforeSend: function () {
+        layer.load();
+      },
+      success: function (json) {
+        if(json.code==200){
+          if(json.data.ltlFlag == true){
+            json.data.dropShip.expressFreight="--";
+            json.data.dropShip.expressFreightPure="--";
+          }else {
+            json.data.dropShip.ltlFreight="--";
+            json.data.dropShip.ltlFreightPure="--";
+          }
+          $("#dsExpressFreight").text(json.data.dropShip.expressFreight);
+          $("#dsExpressFreightPure").text(json.data.dropShip.expressFreightPure);
+          $("#dsLtlFreight").text(json.data.dropShip.ltlFreight);
+          $("#dsLtlFreightPure").text(json.data.dropShip.ltlFreightPure);
+          $("#dsPackageFee").text(json.data.dropShip.packageFee);
+          $("#dsPackageFeePure").text(json.data.dropShip.packageFeePure);
+          $("#dsTotal").text(json.data.dropShip.total);
+          $("#dsTotalPure").text(json.data.dropShip.totalPure);
+          $("#puPackageFee").text(json.data.pickUp.packageFee);
+          $("#puPackageFeePure").text(json.data.pickUp.packageFeePure);
+          $("#puTotal").text(json.data.pickUp.total);
+          $("#puTotalPure").text(json.data.pickUp.totalPure);
+          $("#wrVolume").text(json.data.wareHouseRental.volume + "ft³");
+          let trStr = "";
+          for(let index in json.data.wareHouseRental.feeList){
+            let item = json.data.wareHouseRental.feeList[index];
+            trStr += ('<tr>' +
+              '<td class="w240 text-center pad-small">' + $.trim(volumeDayList[index]) + '</td>' +
+              '<td class="w480 pad-small text-center color-org font-weight">' + $.trim(volumeQuoteList[index]) + '</td>' +
+              '<td class="w240 text-center pad-small color-org font-weight">' + item + '</td>' +
+              '</tr>');
+          }
+          trStr += ('<tr>'+
+            '<td class="w240 text-center pad-small">' + $.trim(volumeDayList[volumeDayList.length-1]) + '</td>' +
+            '<td class="w480 pad-small text-center color-org font-weight">--</td>' +
+            '<td class="w240 text-center pad-small color-org font-weight">' + json.data.wareHouseRental.feeTotal + '</td>' +
+            '</tr>');
+          $("#wrList").html(trStr);
+        } else if (json.code == 404000){
+          layer.alert(json.msg, {
+            title: 'Message',
+            btn : 'OK',
+            skin: 'yzc_layer',
+            btnAlign: 'c',
+          });
+          freightClearSkuNotExist();
+        } else {
+          layer.alert(json.msg, {
+            title: 'Message',
+            btn : 'OK',
+            skin: 'yzc_layer',
+            btnAlign: 'c',
+          });
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError,) {
+
+      },
+      complete: function(xhr, textStatus){
+        layer.closeAll('loading');
+      }
+    })
+  }
+
+  //清空计算结果
+  function freightClear() {
+    app.hasItem = "-1";
+    app.iptItemCode = "";
+    app.itemType = "-1";
+    app.comboList = [JSON.parse(JSON.stringify(tmpSub))];
+    app.ltlFlag = "";
+    app.length = "";
+    app.width = "";
+    app.height = "";
+    app.weight = "";
+    app.qty = "1";
+    app.day = "1";
+    app.lengthError = "";
+    app.widthError = "";
+    app.heightError = "";
+    app.weightError = "";
+    app.qtyError = "";
+    app.dayError = "";
+
+    freightClearResults();
+    //隐藏自动联想
+    $("#iptItemCode").next().hide();
+  }
+  //切换旧SKU、新SKU
+  function freightClearSwitchItemExist(){
+    app.iptItemCode = "";
+    app.itemType = "-1";
+    app.comboList = [JSON.parse(JSON.stringify(tmpSub))];
+    app.length = "";
+    app.width = "";
+    app.height = "";
+    app.weight = "";
+    app.qty = "1";
+    app.day = "1";
+    app.lengthError = "";
+    app.widthError = "";
+    app.heightError = "";
+    app.weightError = "";
+    app.qtyError = "";
+    app.dayError = "";
+
+    freightClearResults();
+
+    $("#iptItemCode").next().hide();
+  }
+  //清空右侧结果
+  function freightClearResults() {
+    $("#dsExpressFreight").text("");
+    $("#dsExpressFreightPure").text("");
+    $("#dsLtlFreight").text("");
+    $("#dsLtlFreightPure").text("");
+    $("#dsPackageFee").text("");
+    $("#dsPackageFeePure").text("");
+    $("#dsTotal").text("");
+    $("#dsTotalPure").text("");
+    $("#puPackageFee").text("");
+    $("#puPackageFeePure").text("");
+    $("#puTotal").text("");
+    $("#puTotalPure").text("");
+    $("#wrVolume").text("");
+    $("#wrList").html("");
+  }
+  //输入不存在的SKU，点击查询后，清空页面
+  function freightClearSkuNotExist(){
+    app.itemType = "-1";
+    app.comboList = [JSON.parse(JSON.stringify(tmpSub))];
+    app.length = "";
+    app.width = "";
+    app.height = "";
+    app.weight = "";
+    app.qty = "1";
+    app.day = "1";
+    app.lengthError = "";
+    app.widthError = "";
+    app.heightError = "";
+    app.weightError = "";
+    app.qtyError = "";
+    app.dayError = "";
+
+    freightClearResults();
+    //隐藏自动联想
+    $("#iptItemCode").next().hide();
+  }
+
+  /**
+   * 整数部分的长度
+   * @param num  string|number
+   * @returns {number} int
+   */
+  function lengthOfIntegerPar(num) {
+    num = Number(num);
+    if (isNaN(num)) {
+      return 0;
+    }
+
+    num = Number(num).toString();
+    let point = num.indexOf(".");
+    if (point === -1) {
+      return num.toString().length;
+    }
+
+    return num.toString().substr(0, point).length;
+  }
+
+  /**
+   * 小数部分的长度
+   * @param num  string|number
+   * @returns {number} int
+   */
+  function lengthOfFractionalPar(num) {
+    num = Number(num);
+    if (isNaN(num)) {
+      return 0;
+    }
+
+    num = Number(num).toString();
+    let point = num.indexOf(".");
+    if (point === -1) {
+      return 0;
+    }
+
+    return num.substr(point + 1).length;
+  }
+</script>

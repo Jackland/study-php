@@ -1,0 +1,243 @@
+{{ header }}{{ separate_column_left }}
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid" id="content" style="margin-left: 15%">
+  {% else %}
+  <div class="container">
+    {% endif %}
+    {% if error_warning %}
+      <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ error_warning }}</div>
+    {% endif %}
+    {% if success %}
+      <div class="alert alert-success"><i class="fa fa-check-circle"> </i> {{ success }}</div>
+    {% endif %}
+    {{ column_left }}
+    {% if column_left and column_right %}
+      {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+      {% set class = 'col-sm-9' %}
+    {% else %}
+      {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div class="row {{ class }}">
+      <div>
+        <div class="page-header" style="margin: 0;border: none">
+          <div class="container-fluid">
+            <div>
+              <ul class="breadcrumb" style="margin: 8px 0 0 0">
+                {% for breadcrumb in breadcrumbs %}
+                  <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid" style="padding-bottom: 5px;margin-bottom:18px;border-bottom: 1px solid #e9e9e9">
+          <div class="pull-right">
+            <button id="submit_button" type="button" data-toggle="tooltip" title="{{ button_save }}"
+                    class="btn btn-primary">
+              <i class="fa fa-save"></i>
+            </button>
+            <a href="{{ back_action }}" data-toggle="tooltip" title="{{ button_go_back }}" class="btn btn-default">
+              <i class="fa fa-reply"></i>
+            </a>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit_seller_promotion }}</h3>
+            </div>
+            <div class="panel-body">
+              <form action="{{ save_action }}" method="post" enctype="multipart/form-data" id="form-promotion"
+                    class="form-horizontal">
+                <fieldset>
+                  <legend>{{ text_legend_status }}</legend>
+                  <div style="padding-bottom: 15px">
+                    <label class="control-label" for="seller_market_status" style="padding-left: 10px;padding-right: 40px;font-size: 15px">{{ column_status_radio }}</label>
+                    {% if seller_status == 1 %}
+                      <input type="radio" name="seller_market_status" style="margin-left: 100px" value="0"/>{{ text_disable_status }}
+                      <input type="radio" name="seller_market_status" style="margin-left: 100px" value="1" checked/>{{ text_enable_status }}
+                    {% else %}
+                      <input type="radio" name="seller_market_status" style="margin-left: 100px" value="0" checked/>{{ text_disable_status }}
+                      <input type="radio" name="seller_market_status" style="margin-left: 100px" value="1" />{{ text_enable_status }}
+                    {% endif %}
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <legend>{{ text_legend_description }}</legend>
+                  <input type="hidden" name="promotion_id" value="{{ promotion_id }}"/>
+                  <table id="promotion-value" class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                      <td class="text-left required" style="width: 20%">{{ column_mpn }}</td>
+                      <td class="text-left required" style="width: 20%">{{ column_item_code }}</td>
+                      <td class="text-left">{{ column_market_description }}</td>
+                      <td></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% set value_row = 0 %}
+                    {% for data_index,promotion_value in promotion_values %}
+                      <tr id="promotion-value-row{{ value_row }}">
+                        <td class="text-left">
+                          <input type="hidden" name="promotion_value[{{ value_row }}][product_id]"
+                                 value="{{ promotion_value.product_id }}"/>
+                          <input type="text" name="promotion_value[{{ value_row }}][mpn]"
+                                 value="{{ promotion_value.mpn }}" onblur="matchProduct('{{ value_row }}')"
+                                 class="form-control market_mpn" placeholder="{{ column_mpn }}"/>
+                          <span id="promotion_value_{{ value_row }}_alert" style="display: none;color: red;"></span>
+                        </td>
+                        <td class="text-left"><span
+                            id="promotion_value_{{ value_row }}_item_code">{{ promotion_value.sku }}</span></td>
+                        <td class="text-left">
+                          <textarea name="promotion_value[{{ value_row }}][description]"
+                                    value="{{ promotion_value.description }}"
+                                    placeholder="{{ column_market_description }}"
+                                    class="form-control"
+                                    maxlength="5000">{{ promotion_value.description }}</textarea></td>
+                        <td class="text-left">
+                          <button type="button" onclick="removePromotionRow('promotion-value-row{{ value_row }}');"
+                                  data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger"><i
+                              class="fa fa-minus-circle"></i></button>
+                        </td>
+                      </tr>
+                      {% set value_row = value_row + 1 %}
+                    {% endfor %}
+                    </tbody>
+
+                    <tfoot>
+                    <tr>
+                      <td colspan="3"></td>
+                      <td class="text-left">
+                        <button type="button" onclick="addOptionValue();" data-toggle="tooltip"
+                                title="{{ button_add }}" class="btn btn-primary"><i
+                            class="fa fa-plus-circle"></i></button>
+                      </td>
+                    </tr>
+                    </tfoot>
+                  </table>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ content_bottom }}
+    </div>
+    {{ column_right }}
+  </div>
+</div>
+<script>
+  function removePromotionRow(rowId) {
+    if (!rowId) return;
+    $("#" + rowId).remove();
+  }
+</script>
+<script type="text/javascript">
+  var value_row = {{ value_row }};
+
+  function addOptionValue() {
+    html = '<tr id="promotion-value-row' + value_row + '">';
+    html += '<td class="text-left">';
+    html += '<input type="hidden" id="promotion_value[' + value_row + '][product_id]" name="promotion_value[' + value_row + '][product_id]" value=""/>';
+    html += '<input type="text" name="promotion_value[' + value_row + '][mpn]" value="" onblur="matchProduct(\'' + value_row + '\')" class="form-control market_mpn" placeholder="{{ column_mpn }}"/>';
+    html += '<span id="promotion_value_' + value_row + '_alert" style="color:red;display: none"></span>';
+    html += '</td>';
+    html += '<td class="text-left">';
+    html += '<span id="promotion_value_' + value_row + '_item_code"></span>';
+    html += '</td>';
+    html += '<td class="text-left">';
+    html += '<textarea name="promotion_value[' + value_row + '][description]" value="" class="form-control" placeholder="{{ column_market_description }}" maxlength="5000"></textarea>';
+    html += '</td>';
+    html += '  <td class="text-left"><button type="button" onclick="removePromotionRow(\'promotion-value-row' + value_row + '\');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
+    html += '</tr>';
+    $('#promotion-value tbody').append(html);
+    value_row++;
+  }
+
+  function matchProduct(rowId) {
+    var mpn_plug = $("input[name='promotion_value[" + rowId + "][mpn]']");
+    var alert_plug = $("#promotion_value_" + rowId + "_alert");
+    var mpn = mpn_plug.val().trim();
+    if (!mpn || mpn.length === 0) {
+      return;
+    }
+    var be_repeat = checkMpnRepeat(rowId);
+    if (!be_repeat) {
+      var param = {"mpn": mpn};
+      $.ajax({
+        url: 'index.php?route=account/customerpartner/market_business/matchProduct',
+        type: 'post',
+        data: param,
+        dataType: 'json',
+        success: function (json) {
+          if (json['success']) {
+            //异步ajax会在下面的赋值语句之前，所以必须分两种情况
+            $("input[name='promotion_value[" + rowId + "][product_id]']").val(json['success']['product_id']);
+            $("#promotion_value_" + rowId + "_item_code").text(json['success']['item_code']);
+            alert_plug.css("display", "none");
+            alert_plug.text("");
+          } else if (json['error']) {
+            alert_plug.css("display", "block");
+            alert_plug.text(json['error']);
+            $("input[name='promotion_value[" + rowId + "][product_id]']").val("");
+            $("#promotion_value_" + rowId + "_item_code").text("");
+          }
+        }
+      });
+
+    }else {
+      $("input[name='promotion_value[" + rowId + "][product_id]']").val("");
+      $("#promotion_value_" + rowId + "_item_code").text("");
+    }
+  }
+
+  function checkMpnRepeat(rowId) {
+    var mpn_plug = $("input[name='promotion_value[" + rowId + "][mpn]']");
+    var alert_plug = $("#promotion_value_" + rowId + "_alert");
+    var mpn = mpn_plug.val().trim();
+
+    //验证重复
+    var be_repeat = false;
+    $("input.market_mpn").each(function (i, ele) {
+      if (!$(ele).is(mpn_plug) && $(ele).val().trim() == mpn) {
+        alert_plug.css("display", "block");
+        alert_plug.text("{{ error_mpn_repeat }}");
+        be_repeat = true;
+      }
+    });
+    return be_repeat;
+  }
+
+  function validateForm() {
+    var isValid = true;
+    for (i = 0; i <= value_row; i++) {
+      var pid_plug = $("input[name='promotion_value[" + i + "][product_id]']");
+      //存在此行，productId未指定
+      if (pid_plug.length !== 0) {
+        if (!pid_plug.val()) {
+          var alert_plug = $("#promotion_value_" + i + "_alert");
+          alert_plug.css("display", "block");
+          alert_plug.text("{{ error_correct_mpn }}");
+          isValid = false;
+        }
+      }
+    }
+    return isValid;
+  }
+
+  $('#submit_button').on('click', function () {
+    var submit_btn = $(this);
+    submit_btn.button('loading');
+    setTimeout(function () {
+      if (validateForm()) {
+        $('#form-promotion').submit();
+      } else {
+        submit_btn.button('reset');
+      }
+    },500);
+  })
+
+</script>
+{{ footer }}

@@ -1,0 +1,1596 @@
+{{ assetBundle('Seller\\VatAsset') }}
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script src="catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="catalog/view/javascript/layerOris.js?v={{ app_version }}"></script>
+<link href="catalog/view/javascript/jquery/magnific/magnific-popup.css" type="text/css" rel="stylesheet"/>
+
+<style>
+    .quick-filter {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .quick-title {
+        display: inline-block;
+        height: 45px;
+        line-height: 45px;
+        padding: 0 30px;
+    }
+
+    .my-border-right {
+        border-right: 1px solid #aaa;
+    }
+
+    .wait-number {
+        font-style: normal;
+        font-weight: bolder;
+    }
+
+    .quick-title.active, .quick-title:hover {
+        background: #F3F5F7;
+        color: #183464;
+    }
+
+    .quick-title.active .wait-number, .quick-title.active .wait-number:hover {
+        color: #FA6400;
+    }
+
+    .quick-title:hover {
+        cursor: pointer;
+        color: #225cc1;
+    }
+
+    .mr4 {
+        margin-right: 4px;
+    }
+
+    .layui-layer-dialog .layui-layer-content {
+        word-break: break-word;
+    }
+
+    .success {
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        padding: 8px 30px;
+        text-align: left;
+    }
+
+    .success i {
+        color: #2e9b01;
+        font-size: 36px;
+        margin-right: 10px;
+    }
+
+    tr td a {
+        cursor: pointer;
+        color: #0a001f;
+    }
+
+    .icon-help-inactive {
+        color: #CC00FF;
+    }
+
+    .row .pull-right .btn {
+        box-shadow: none;
+        height: 40px;
+        line-height: 22px;
+        text-transform: capitalize;
+    }
+
+    .table > thead > tr > th {
+        /*font-weight: inherit;*/
+        vertical-align: middle;
+    }
+
+    a.link {
+        color: #3A75DC;
+    }
+
+    .item i {
+        margin-left: 3px;
+        line-height: 32px;
+    }
+
+    .table .dropdown-menu {
+        left: auto;
+        right: 0;
+        min-width: 200px;
+    }
+
+    .table tbody tr td a.btn {
+        background-color: #f3f5f7;
+        border: 1px solid #eee;
+        box-shadow: none;
+        line-height: 18px;
+    }
+
+    .modal .modal-header {
+        padding: 8px 13px;
+    }
+
+    .mt-2 {
+        margin-top: 20px;
+    }
+
+    .popover-content {
+        padding: 15px;
+    }
+
+    .popover-content button {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+    }
+
+    .table tbody tr td .agreement-popover {
+        border: none;
+        font-weight: initial;
+        padding: 0;
+        background-color: transparent;
+        box-shadow: none;
+        width: 0;
+        /*height: 0;*/
+    }
+    .margin-hot-map-width{
+      width: 18%;
+    }
+    .btn.btn-primary{
+        color: #fff;
+    }
+    .btn.btn-primary:hover{
+        background-color: #2d57a9;
+    }
+    .row .pull-right .btn.btn-default{
+        width: 40px;
+        padding: 0;
+        line-height: 40px;
+    }
+    .btn.btn-default:hover{
+        color: #fff;
+        background-color: #3A75DC;
+    }
+    .claim-layer {
+        display: inline-table;
+    }
+    .claim-layer .layui-layer-content {
+        padding: 12px;
+    }
+    .yzc_layer .layui-layer-ico{
+      background: none;
+    }
+    .yzc_layer .layui-layer-close.layui-layer-close1:after{
+      content: "\e6b4";
+      font-family: 'giga';
+      color: #fff;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn0{
+        border-color: #3A75DC;
+        background-color: #3A75DC;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn0:hover{
+        background-color: #2d57a9;
+        opacity: 1;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn1{
+        color: #3A75DC;
+    }
+    .yzc_layer .layui-layer-btn .layui-layer-btn1:hover{
+        background-color: #3A75DC;
+        color: #fff;
+        opacity: 1;
+    }
+    .yzc_layer .layui-layer-content{
+      text-align: left;
+    }
+    td.item a img{
+        margin-right: 5px;
+    }
+    .layui-layer-btn a{
+        line-height: 26px;
+    }
+    .giga.icon-help-inactive{
+        font-size: 14px;
+        font-weight: initial;
+    }
+</style>
+<div role="tabpanel" class="tab-pane active" id="futures-bid">
+    <div>
+        <div class="filter-wrapper form-wrapper mt-3 mb-3">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label" for="input_futures_agreement_no">{{ column_agreement_no }}</label>
+                        <input type="" name="filter_futures_agreement_no" value="{{ agreement_no }}"
+                               placeholder="Agreement ID " id="input_futures_agreement_no" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="input_futures_item_code">{{ column_item_code_seller }}</label>
+                        <input type="text" name="filter_futures_item_code" value="{{ item_code }}"
+                               placeholder="Item Code/MPN"
+                               id="input_futures_item_code" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label" for="input_futures_name">{{ column_name }}</label>
+                        <input type="text" name="filter_futures_name" value="{{ name }}" placeholder="Name"
+                               id="input_futures_name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">{{ column_delivery_date }}</label>
+                        <div class="datetimepicker-range">
+                            <div class="datetimepicker">
+                                <input type="text" name="filter_futures_delivery_date_from"
+                                       value="{{ delivery_date_from }}" placeholder="Pick a date..."
+                                       id="delivery_date_from" class="form-control"/>
+                                <span class="title">From</span>
+                                <span class="icon"><i class="giga icon-date-icon"></i></span>
+                            </div>
+                            <div class="datetimepicker">
+                                <input type="text" name="filter_futures_delivery_date_to" value="{{ delivery_date_to }}"
+                                       placeholder="Pick a date..."
+                                       id="delivery_date_to" class="form-control"/>
+                                <span class="title">To</span>
+                                <span class="icon"><i class="giga icon-date-icon"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label"
+                               for="input_futures_agreement_status">{{ column_agreement_status }}</label>
+                        <select name="filter_futures_agreement_status" id="input_futures_agreement_status"
+                                class="form-control" onchange="delivery_disable(this)">
+                            <option value="0">--- {{ __('请选择', {}, 'common') }} ---</option>
+                            {% for k,v in agreement_status_list %}
+                                <option value="{{ k }}" {% if k == agreement_status %} selected {% endif %}> {{ v.name }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">{{ column_date_from_to }}</label>
+                        <div class="datetimepicker-range">
+                            <div class="datetimepicker">
+                                <input type="text" name="filter_futures_date_from" value="{{ date_from }}"
+                                       placeholder="Pick a date..."
+                                       id="input_futures_date_from" class="form-control"/>
+                                <span class="title">From</span>
+                                <span class="icon"><i class="giga icon-date-icon"></i></span>
+                            </div>
+                            <div class="datetimepicker">
+                                <input type="text" name="filter_futures_date_to" value="{{ date_to }}"
+                                       placeholder="Pick a date..."
+                                       id="input_futures_date_to" class="form-control"/>
+                                <span class="title">To</span>
+                                <span class="icon"><i class="giga icon-date-icon"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="control-label"
+                               for="input_futures_delivery_status">{{ column_delivery_status }}</label>
+                        <select name="filter_futures_delivery_status" id="input_futures_delivery_status"
+                                onchange="agreement_disable(this)" class="form-control">
+                            <option value="0">--- {{ __('请选择', {}, 'common') }} ---</option>
+                            {% for k,v in delivery_status_list %}
+                                <option value="{{ k }}" {% if k == delivery_status %} selected {% endif %}> {{ v.name }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group pull-right " style="margin-bottom: 0">
+                        <label class="control-label" for="input_futures_Name"></label>
+                        <div class="">
+                            <a onclick="filterFutures(this);" class="btn btn-primary" data-toggle="tooltip"
+                               title="Filter" id="quote_futures_filter_btn">{{ button_filter }} </a>
+                            <button type="button" onclick="downloadFuturesBid()" class="btn btn-default"
+                                    data-toggle="tooltip" title="Download"><i class="giga icon-xiazai"></i></button>
+                            <button  style="width: auto;height: 40px;padding:0 9.6px" type="button" onclick="cleanFilterFutures(this);" class="btn btn-default"
+                                  data-toggle="tooltip" title="Reset"><i class="giga icon-reset3"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="quick-filter">
+
+            <div class="row" style="display: flex">
+                <div style="width: 14%"></div>
+                <div style="padding: 0 0 10px 0" class="margin-hot-map margin-hot-map-width {% if 6 == status %} active {% endif %} " onclick="filterFutures('', 6)">
+                    <div class="hot-map-status" style="align-items: center;height: 45px">To be processed
+                        <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html="true" title="" data-original-title="Waiting to be reviewed." style="margin-left: 5px"></i>
+                    </div>
+                    <div class="hot-map-num">{{ to_be_processed_count }}</div>
+                </div>
+                <div style="padding: 0 0 10px 0" class="margin-hot-map margin-hot-map-width {% if 2 == status %} active {% endif %} " onclick="filterFutures('', 2)">
+                    <div class="hot-map-status" style="align-items: center;height: 45px">
+                        <span>To be delivered</span>
+                        <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html="true" title="" data-original-title="Waiting to arrive at the warehouse." style="margin-left: 5px"></i>
+                    </div>
+                    <div class="hot-map-num">{{ to_be_delivered_count }}</div>
+                </div>
+                <div  style="padding: 0 0 10px 0" class="margin-hot-map margin-hot-map-width {% if 7 == status %} active {% endif %} " onclick="filterFutures('', 7)">
+                    <div class="hot-map-status" style="align-items: center;height: 45px">To be paid
+                      <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html="true" title="" data-original-title="Buyer needs to pay the amount due for the agreement, or pay the difference between the future goods and margin deposit in order to transfer to margin transaction." style="margin-left: 5px"></i>
+                    </div>
+                    <div class="hot-map-num">{{ to_be_paid_count }}</div>
+                </div>
+                <div  style="padding: 0 0 10px 0" class="margin-hot-map margin-hot-map-width {% if 8 == status %} active {% endif %} " onclick="filterFutures('', 8)">
+                  <div class="hot-map-status" style="align-items: center;height: 45px">To be expired
+                    <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-html="true" title="" data-original-title="<div style='word-wrap:normal'>Delivery date will arrive soon.</div>" style="margin-left: 5px"></i>
+                  </div>
+                  <div class="hot-map-num">{{ to_be_expired_count }}</div>
+                </div>
+            </div>
+
+        </div>
+
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-futures">
+            <div class="table-responsive overflow-visible">
+                <table class="table main table-hover" style="font-size: 12px">
+                    <thead>
+                    <tr>
+                        <th class="text-left">
+                            <span style="cursor: pointer;"
+                                  onclick="futuresSort('agreement_id','{{ sort_agreement_id == "desc"?"asc":"desc" }}','{{ sort_update_time }}')">
+                                {{ column_agreement_no }}
+                                <span style="position: relative;margin-left: 3px;color: #aaa;">
+                                    <i class="gcl gcldown-solid" style="font-size: 12px;position: absolute;bottom: 3px;
+                                    {% if column == 'agreement_id' %}
+                                      {{ sort_agreement_id == 'desc'?'':'color: #333;' }}
+                                    {% else %}
+                                      {{ sort_agreement_id == 'desc'?'':'color: #333;' }}
+                                    {% endif %}
+                                      "></i>
+                                    <i class="gcl gcliup" style="font-size: 12px;position: absolute;bottom: -4px;
+                                    {% if column == 'agreement_id' %}
+                                      {{ sort_agreement_id == 'desc'?'color: #333;':'' }}
+                                    {% else %}
+                                      {{ sort_agreement_id == 'desc'?'color: #333;':'' }}
+                                    {% endif %}
+                                      "></i>
+                                </span>
+                            </span>
+                        </th>
+                        <th class="text-left">{{ column_name }}</th>
+                        <th class="text-left" style="width: 140px">{{ column_item_code_seller }}</th>
+                        <th class="text-left">{{ column_delivery_date }} </th>
+                        <th class="text-left">Settlement Method</th>
+                        <th class="text-left">Purchased Quantity /<br> Agreement Quantity</th>
+                        <th class="text-left">Agreement Status</th>
+                        <th class="text-left">Delivery Status</th>
+                        <th class="text-left" style="cursor: pointer;"
+                            onclick="futuresSort('update_time','{{ sort_update_time == "desc"?"asc":"desc" }}','{{ sort_agreement_id }}')"
+                        >{{ column_last_modified }}
+                          <span style="position: relative;margin-left: 3px;color: #aaa;">
+                              <i class="gcl gcldown-solid" style="font-size: 12px;position: absolute;bottom: 3px;
+                              {% if column == 'update_time' %}
+                                {{ sort_update_time == 'desc'?'':'color: #333;' }}
+                              {% else %}
+                                {{ sort_update_time == 'desc'?'':'color: #333;' }}
+                              {% endif %}
+                                "></i>
+                              <i class="gcl gcliup" style="font-size: 12px;position: absolute;bottom: -4px;
+                              {% if column == 'update_time' %}
+                                {{ sort_update_time == 'desc'?'color: #333;':'' }}
+                              {% else %}
+                                {{ sort_update_time == 'desc'?'color: #333;':'' }}
+                              {% endif %}
+                                "></i>
+                          </span>
+                        </th>
+                        <th class="text-left" style="width: 100px">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if agreement_list %}
+                        {% for item in agreement_list %}
+                            {% if item.contract_id == 0 %}
+                                <tr>
+                                    <td class="text-left" v="1" version="{{ item.version }}">
+                                        {{ item.agreement_no }}
+                                    </td>
+                                    <td class="text-left">
+                                        <div  style="display: flex;align-items: center">
+                                            <span>{{ item.nickname }}<br>({{ item.user_number }})</span>
+                                            <img data-toggle="tooltip" style="padding-left:5px"
+                                                 src="{{ item.is_homepick ? asset('image/icons/HomePickup/home_pickup-15x15.png') : asset('image/icons/HomePickup/drop_shipping-15x15.png') }}"
+                                                 data-original-title="{{ item.img_tips }}">
+                                            {{ item.ex_vat }}
+                                        </div>
+                                    </td>
+                                    <td class="text-left item ">
+                                      <div  style="display: flex;align-items: center">
+                                          <a class="link"
+                                             href="index.php?route=product/product&product_id={{ item.product_id }}"
+                                             target="_blank"> {{ item.sku }} <br>{{ item.mpn }}</a>&nbsp;&nbsp;
+                                          {% if item.tag %}
+                                              {% for tagDetail in item.tag %}
+                                                  {{ tagDetail }}
+                                              {% endfor %}
+                                          {% endif %}
+                                      </div>
+                                    </td>
+                                    <td class="text-left">
+                                        {{ item.show_delivery_date }}<br>
+                                        {% if  item.days > 1 and item.delivery_status == 1 and item.days <= 7 %}
+                                          <span style="color: #FF414D">{{ item.days }} Days Left</span>
+                                        {% elseif item.days == 1 and item.delivery_status == 1 and item.days <= 7 %}
+                                          <span style="color: #FF414D">{{ item.days }} Day Left</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left">{{ item.delivery_type_name }}</td>
+                                    {# 期货付尾款的时候买一个加一个，期货转现货  #}
+                                    <td class="text-left">
+                                      {# 期货中转现货的，只要没有completed的都置为0数量  #}
+                                      {{ item.purchase_num_show }}/{{ item.num }}</td>
+                                    <td class="text-left">
+                                        <span style="color: {{ item.agreement_status_color }}">{{ item.agreement_status_name }}</span>
+                                        {% if item.time_tips and 1 != item.delivery_status %}
+                                            <br>
+                                          <span data-toggle="tooltip" title="Disabled Countdown" style="cursor: pointer">
+                                              <i class="giga icon-daojishi" style="color: #FF414D;margin-left: 3px"></i>
+                                              <span style="color: #ff414d">{{ item.time_left }}</span>
+                                          </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left" style="color: {{ item.delivery_status_color }}">
+                                        {{ item.delivery_status_name }}
+                                        {% if 7 == item.delivery_status %}
+                                            <i class="fa fa-exclamation-circle" data-toggle="tooltip"
+                                               style="color: sandybrown;font-size: 12px"></i>
+                                        {% endif %}
+                                        {% if item.time_tips and 1 == item.delivery_status %}
+                                            <br>
+                                            <span data-toggle="tooltip" title="Disabled Countdown" style="cursor: pointer">
+                                              <i class="giga icon-daojishi" style="color: #FF414D;margin-left: 3px"></i>
+                                              <span style="color: #ff414d">{{ item.time_left }}</span>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left text-price">{{ item.update_time }}</td>
+                                    <td class="text-left">
+                                        <a class="btn btn-primary"
+                                           href="index.php?route=account/product_quotes/futures/sellerBidDetail&id={{ item.id }}"
+                                           target="_blank" class="" data-toggle="tooltip" title="View">
+                                            <i class="giga icon-chakan1"></i>
+                                        </a>
+                                        {% if item.delivery_status==1 %}
+                                            <a class="btn btn-primary"
+                                               href="index.php?route=account/product_quotes/futures/sellerBidDetail&id={{ item.id }}"
+                                               target="_blank" class="" data-toggle="tooltip" title="Delivery">
+                                                <i class="fa fa-handshake-o" style="font-size: 14px"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if item.delivery_status==5 %}
+                                            <a class="btn btn-primary"
+                                               href="index.php?route=account/product_quotes/futures/sellerBidDetail&id={{ item.id }}"
+                                               target="_blank" class="" data-toggle="tooltip"
+                                               title="Review settlement methods">
+                                                <i class="fa fa-hand-pointer-o"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td class="text-left" v="2" version="{{ item.version }}">
+                                        {{ item.agreement_no }}
+                                    </td>
+                                    <td class="text-left">
+                                       <div>
+                                            <span>
+                                          {{ item.nickname }}<br>({{ item.user_number }})
+                                        </span>
+                                           <img data-toggle="tooltip" style="padding-left: 5px"
+                                                src="{{ item.is_homepick ? asset('image/icons/HomePickup/home_pickup-15x15.png') : asset('image/icons/HomePickup/drop_shipping-15x15.png') }}"
+                                                data-original-title="{{ item.img_tips }}">
+                                         {{ item.ex_vat }}
+                                       </div>
+                                    </td>
+                                    <td class="text-left item" >
+                                       <div style="display: flex;align-items: center">
+                                           <a class="link"
+                                              href="index.php?route=product/product&product_id={{ item.product_id }}"
+                                              target="_blank"> {{ item.sku }} <br>{{ item.mpn }}</a>&nbsp;&nbsp;
+                                           {% if item.tag %}
+                                               {% for tagDetail in item.tag %}
+                                                   {{ tagDetail }}
+                                               {% endfor %}
+                                           {% endif %}
+                                       </div>
+                                    </td>
+                                    <td class="text-left">
+                                        {% if  item.days and item.delivery_status == 1 and item.days <= 7 %}
+                                            <span>
+                                              {{ item.show_delivery_date }}<br>
+                                              {% if item.days > 1 %}
+                                                <span style="color: #FF414D">{{ item.days }} Days Left</span>
+                                              {% else %}
+                                                <span style="color: #FF414D">{{ item.days }} Day Left</span>
+                                              {% endif %}
+                                            </span>
+                                            <span style="position: relative;top:-7px;">
+                                              <i class="giga icon-icn--n"
+                                                 data-toggle="tooltip" data-html="true" title="" data-original-title="The delivery date of the future goods agreement will be due soon, please complete the delivery in time."
+                                                 style="color: #FF414D;font-size: 14px;cursor: pointer" ></i>
+                                            </span>
+                                        {% else  %}
+                                          {{ item.show_delivery_date }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left">{{ item.delivery_type_name }}</td>
+                                    {#                期货付尾款的时候买一个加一个，期货转现货  #}
+                                    <td class="text-left">{# 期货中转现货的，只要没有completed的都置为0数量  #}
+                                      {{ item.purchase_num_show }}/{{ item.num }}</td>
+                                    <td class="text-left">
+                                        <span style="color: {{ item.agreement_status_color }}">{{ item.agreement_status_name }}</span>
+                                        {% if item.time_tips and 7 != item.agreement_status %}
+                                            <br>
+                                          <span data-toggle="tooltip" title="Disabled Countdown" style="cursor: pointer">
+                                            <i class="giga icon-daojishi" style="color: #FF414D;margin-left: 3px"></i>
+                                            <span style="color: #ff414d">{{ item.time_left }}</span>
+                                          </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left" style="color: {{ item.delivery_status_color }}">
+                                        {{ item.delivery_status_name }}
+                                        {% if 7 == item.delivery_status %}
+                                            <i class="fa fa-exclamation-circle" data-toggle="tooltip"
+                                               style="color: sandybrown;font-size: 12px"></i>
+                                        {% endif %}
+
+                                        {% if item.time_tips and 7 == item.agreement_status %}
+                                            <br>
+                                          <span data-toggle="tooltip" title="Disabled Countdown" style="cursor: pointer">
+                                            <i class="giga icon-daojishi" style="color: #FF414D;margin-left: 3px"></i>
+                                            <span style="color: #ff414d">{{ item.time_left }}</span>
+                                          </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-left text-price">{{ item.update_time }}</td>
+                                    <td class="text-left">
+                                        <a class="btn btn-primary"
+                                           href="index.php?route=account/product_quotes/futures/sellerFuturesBidDetail&id={{ item.id }}"
+                                           target="_blank" data-toggle="tooltip" title="View">
+                                            <i class="giga icon-chakan1"></i>
+                                        </a>
+                                        {# 根据状态划分出不同的button #}
+                                        {% if item.agreement_status == 1 or item.agreement_status == 2 %}
+                                            <div class="dropdown" style="display: inline-block;margin-left: 5px">
+                                                <a id="btn-group" class="btn btn-primary" data-target="#"
+                                                   data-toggle="dropdown" role="button" aria-haspopup="true"
+                                                   aria-expanded="false">
+                                                    <i class="giga icon-action-more"></i>
+                                                </a>
+                                                <ul class="dropdown-menu" aria-labelledby="btn-group">
+                                                    <li><a class="btn-agree"
+                                                           onclick="saveBidList(3,'{{ item.id }}','{{ item.update_time }}','{{ item.nickname_escape }}','{{ item.user_number }}','{{ item.agreement_no }}','{{ item.need_alarm }}','{{ item.amount_status }}','{{ item.contract_no }}')">
+                                                            <i class="giga icon-complete-order"></i> Approve
+                                                        </a></li>
+                                                    <li><a class="btn-refuse"
+                                                           onclick="saveBidList(4,'{{ item.id }}','{{ item.update_time }}','{{ item.nickname_escape }}','{{ item.user_number }}','{{ item.agreement_no }}','{{ item.need_alarm }}','{{ item.amount_status }}','{{ item.contract_no }}')">
+                                                            <i class="giga icon-refuse"></i> Reject
+                                                        </a></li>
+                                                </ul>
+                                            </div>
+                                        {% elseif
+                                            item.agreement_status == 3
+                                            or item.agreement_status == 4
+                                            or item.agreement_status == 5
+                                            or item.agreement_status == 6 %}
+                                            {# 无按钮 #}
+                                        {% elseif  item.agreement_status ==  7 and item.delivery_status == 1 %}
+                                            {% if item.delivery_action == 1 %}
+                                                {#                            <a class="btn btn-primary btn-approval" onclick="approvalInfo('{{ item.id }}','{{ item.delivery_action }}','{{ item.remark }}','{{ item.update_time }}','{{ item.agreement_no }}')" data-toggle="tooltip" title="审批">#}
+                                                {#                              <i class="giga icon-shenpi"></i>#}
+                                                {#                            </a>#}
+                                            {% elseif item.delivery_action == 2 %}
+                                            {% elseif item.delivery_action == 3 %}
+                                                <div class="dropdown" style="display: inline-block;margin-left: 5px">
+                                                    <a id="btn-group" class="btn btn-primary" data-target="#"
+                                                       data-toggle="dropdown" role="button" aria-haspopup="true"
+                                                       aria-expanded="false">
+                                                        <i class="giga icon-action-more"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu" aria-labelledby="btn-group">
+                                                        <li>
+                                                            <a class="btn-agree" onclick="savePaidBidList(1,'{{ item.id }}','{{ item.update_time }}','{{ item.num }}','{{ item.days }}','{{ item.agreement_no }}')">
+                                                              <i class="giga icon-jiaohuo"></i>&nbsp;Deliver ahead of time
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="btn-agree" onClick="submitClaimAlert('{{ item.id }}','{{item.agreement_no}}','{{item.show_delivery_date}}')">
+                                                                <i class="giga icon-shiwu-chuizi"></i>&nbsp;Submit Claim
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            {% elseif item.delivery_action == 4 %}
+                                                <a class="btn btn-primary" style="display: inline-block;"
+                                                   onclick="savePaidBidList(5,'{{ item.id }}','{{ item.update_time }}','{{ item.num }}','{{ item.days }}','{{ item.agreement_no }}')"
+                                                   data-toggle="tooltip" title="Complete Delivery" >
+                                                  <i class="giga icon-jiaohuo"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% elseif  item.agreement_status ==  7 and item.delivery_status == 6 %}
+                                            {#                          {% if item.delivery_action == 5 %}#}
+                                            {#                            <a class="btn btn-primary btn-consult" data-toggle="tooltip" title="协商终止协议"#}
+                                            {#                               onclick="terminateAgreement(0,'{{ item.id }}','{{ item.update_time }}','{{ item.agreement_no }}','{{ item.delivery_action }}')"#}
+                                            {#                            >#}
+                                            {#                              <i class="giga icon-change-consulta"></i>#}
+                                            {#                            </a>#}
+                                            {#                          {% elseif item.delivery_action == 6 or item.delivery_action == 7 %}#}
+                                            {#                            <a class="btn btn-primary btn-over" data-toggle="tooltip" title="终止协议"#}
+                                            {#                               onclick="terminateAgreement(1,'{{ item.id }}','{{ item.update_time }}','{{ item.agreement_no }}','{{ item.delivery_action }}')"#}
+                                            {#                            >#}
+                                            {#                              <i class="giga icon-zhongzhitoudi"></i>#}
+                                            {#                            </a>#}
+                                            {#                          {% elseif item.delivery_action == 8 %}#}
+                                            {#                            <a class="btn btn-primary btn-approval"#}
+                                            {#                               onclick="approvalInfo('{{ item.id }}','{{ item.delivery_action }}','{{ item.remark }}','{{ item.update_time }}','{{ item.agreement_no }}')"#}
+                                            {#                               data-toggle="tooltip" title="审批">#}
+                                            {#                              <i class="giga icon-shenpi"></i>#}
+                                            {#                            </a>#}
+                                            {#                          {% endif %}#}
+                                        {% elseif item.agreement_status ==  7
+                                            and item.delivery_status == 2
+                                            and item.seller_apply == false
+                                            and item.complain_time_out == false
+                                            and item.cancel_appeal_apply == 0 %}
+{#                                            <a class="btn btn-primary  btn-appeal"#}
+{#                                               onclick="complainInfo('{{ item.id }}','{{ item.update_time }}')"#}
+{#                                               data-toggle="tooltip" title="申诉"#}
+{#                                            >#}
+{#                                                <i class="giga icon-shiwu-chuizi"></i>#}
+{#                                            </a>#}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="10" class="text-center">No records.</td>
+                        </tr>
+                    {% endif %}
+
+                    </tbody>
+                </table>
+            </div>
+            {# last modified time & agreement id 进行排序#}
+            <input id='input_column'  name="input_column" type="hidden" value="{{ column }}">
+            <input id='input_sort_agreement_id'  name="input_sort_agreement_id" type="hidden" value="{{ sort_agreement_id }}">
+            <input id='input_sort_update_time'  name="input_sort_update_time" type="hidden" value="{{ sort_update_time }}">
+        </form>
+
+        {{ page_view }}
+
+    </div>
+</div>
+
+<div id='approval_info' style="display: none">
+    <div class="row" style="padding-left: 10px;">
+        <div class="request" style="text-align: left">
+            <span id='notice' style="color: grey"></span>
+        </div>
+        <div class="request" style="text-align: left">
+            <span style="color: grey;float:left">审核原因</span>
+
+        </div>
+        <div style="position: relative">
+            <textarea id="" onkeyup="changeNum(this)" minlength="1" maxlength="2000" style="resize: none;height: 120px"
+                      class="form-control" placeholder=""></textarea>
+            <span style="position: absolute;
+           right: 5px;
+           bottom: 0px;
+          color: #1e91cf">0/2000</span>
+            <span class="red"></span>
+        </div>
+    </div>
+</div>
+
+<div id='terminate_agreement' style="display: none">
+    <div class="row" style="padding-left: 10px;">
+        <div class="request" style="text-align: left">
+            <span id='notice_terminate' style="color: grey"></span>
+        </div>
+        <div class="request remove" style="text-align: left">
+            <span style="color: grey;float:left">Reason</span>
+            <span style="color: red;float:right">Reason field cannot be left blank.</span>
+        </div>
+        <div class="remove" style="position: relative">
+            <textarea id="" onkeyup="changeNum(this)" minlength="1" maxlength="2000" style="resize: none;height: 120px"
+                      class="form-control" placeholder=""></textarea>
+            <span style="position: absolute;
+           right: 5px;
+           bottom: 0px;
+          color: #1e91cf">0/2000</span>
+            <span class="red"></span>
+        </div>
+    </div>
+</div>
+{% include 'yzcTheme/template/account/product_quotes/futures/appeal.twig' %}
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover({container: 'body',})
+    });
+
+</script>
+<script>
+
+    $('#input_futures_date_from').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD 00:00:00'
+    });
+    $('#input_futures_date_to').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD 23:59:59'
+    });
+    $('#delivery_date_from').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD 00:00:00'
+    });
+    $('#delivery_date_to').datetimepicker({
+        pickDate: true,
+        pickTime: false,
+        format: 'YYYY-MM-DD 23:59:59'
+    });
+    $(function () {
+        block.unBlockUI();
+        let agreement_status = '{{ agreement_status }}';
+        if (agreement_status != 7) {
+            $('#input_futures_delivery_status').attr('disabled', true);
+        }
+    });
+
+
+    function handlePage(event, originalEvent, type, page) {
+        block.blockUI();
+        let url = getUrlForFutures(page,'{{ status }}');
+        $('#bid-future').load(url, "page_limit=" + originalEvent['page_info']['page_limit']);
+    }
+
+    //切换热区状态
+    $(".quick-title").click(function () {
+        $(".quick-title").removeClass('active');
+        $(this).addClass("active");
+    });
+
+    function getUrlForFutures(page, status, download = false) {
+        let url = 'index.php?route=account/product_quotes/futures/sellerBidList';
+        if (download) {
+            url = 'index.php?route=account/product_quotes/futures/downloadFutureBid';
+        }
+        let filter_futures_agreement_no = $.trim($("#input_futures_agreement_no").val());
+        let filter_futures_item_code = $.trim($("#input_futures_item_code").val());
+        let filter_futures_agreement_status = $.trim($("#input_futures_agreement_status").val());
+        let filter_futures_delivery_status = $.trim($("#input_futures_delivery_status").val());
+        let filter_futures_name = $.trim($("#input_futures_name").val());
+        let filter_futures_date_from = $.trim($("#input_futures_date_from").val());
+        let filter_futures_date_to = $.trim($("#input_futures_date_to").val());
+        let filter_futures_delivery_date_from = $.trim($("#delivery_date_from").val());
+        let filter_futures_delivery_date_to = $.trim($("#delivery_date_to").val());
+        let filter_futures_column = $.trim($("#input_column").val());
+        let filter_futures_sort_agreement_id = $.trim($("#input_sort_agreement_id").val());
+        let filter_futures_sort_update_time = $.trim($("#input_sort_update_time").val());
+
+        if (status) {
+            url += "&status=" + status;
+        } else {
+
+            if (filter_futures_agreement_no) {
+                url += "&agreement_no=" + encodeURIComponent(filter_futures_agreement_no);
+            }
+            if (filter_futures_item_code) {
+                url += "&item_code=" + encodeURIComponent(filter_futures_item_code);
+            }
+            if (filter_futures_agreement_status) {
+                url += "&agreement_status=" + encodeURIComponent(filter_futures_agreement_status);
+            }
+            if (filter_futures_delivery_status) {
+                url += "&delivery_status=" + encodeURIComponent(filter_futures_delivery_status);
+            }
+            if (filter_futures_name) {
+                url += "&name=" + encodeURIComponent(filter_futures_name);
+            }
+            if (filter_futures_date_from) {
+                url += "&date_from=" + encodeURIComponent(filter_futures_date_from);
+            }
+            if (filter_futures_date_to) {
+                url += "&date_to=" + encodeURIComponent(filter_futures_date_to);
+            }
+
+            if (filter_futures_delivery_date_from) {
+                url += "&delivery_date_from=" + encodeURIComponent(filter_futures_delivery_date_from);
+            }
+
+            if (filter_futures_delivery_date_to) {
+                url += "&delivery_date_to=" + encodeURIComponent(filter_futures_delivery_date_to);
+            }
+
+        }
+
+        if(filter_futures_column){
+          url += "&column=" + encodeURIComponent(filter_futures_column);
+        }
+
+        if(filter_futures_sort_agreement_id){
+          url += "&sort_agreement_id=" + encodeURIComponent(filter_futures_sort_agreement_id);
+        }
+
+        if(filter_futures_sort_update_time){
+          url += "&sort_update_time=" + encodeURIComponent(filter_futures_sort_update_time);
+        }
+
+        if (page) {
+            url += "&page=" + page;
+        }
+        return url;
+    }
+
+    function downloadFuturesBid() {
+        let url = getUrlForFutures(1, '{{ status }}', true);
+        location.href = url;
+
+    }
+
+    function futuresSort(column, sort,sort_origin) {
+        block.blockUI();
+        var status = '{{ status }}';
+        var page_limit = '{{ page_limit }}';
+        if(column == 'agreement_id'){
+          $('#input_column').val(column);
+          $('#input_sort_agreement_id').val(sort);
+          $('#input_sort_update_time').val(sort_origin);
+        }else{
+          $('#input_column').val(column);
+          $('#input_sort_agreement_id').val(sort_origin);
+          $('#input_sort_update_time').val(sort);
+        }
+        var url = getUrlForFutures('', status);
+        $('#bid-future').load(url, "page_limit={{ page_limit }}");
+    }
+
+    function filterFutures(button, status) {
+        block.blockUI();
+        var url = getUrlForFutures(1, status);
+        $('#bid-future').load(url, "page_limit={{ page_limit }}");
+        $(button).button('loading');
+    }
+
+    function cleanFilterFutures(button) {
+        $("#input_futures_agreement_no").val("");
+        $("#input_futures_item_code").val("");
+        $("#input_futures_agreement_status").val(0);
+        $("#input_futures_delivery_status").val(0);
+        $("#input_futures_name").val("");
+        $("#input_futures_date_from").val("");
+        $("#input_futures_date_to").val("");
+        $("#delivery_date_from").val("");
+        $("#delivery_date_to").val("");
+        $("#input_column").val("");
+        $("#input_sort_agreement_id").val("");
+        $("#input_sort_update_time").val("");
+
+        block.blockUI();
+        var url = getUrlForFutures();
+        $('#bid-future').load(url, "page_limit={{ page_limit }}");
+        $(button).button('loading');
+    }
+
+    function delivery_disable(obj) {
+        if ($(obj).val() == 7) {
+            $('#input_futures_delivery_status').attr('disabled', false);
+        } else {
+            $('#input_futures_delivery_status').attr('disabled', true);
+        }
+    }
+
+    function agreement_disable(obj) {
+        if ($(obj).val() != 0) {
+            $('#input_futures_agreement_status').attr('disabled', true);
+        } else {
+            $('#input_futures_agreement_status').attr('disabled', false);
+        }
+    }
+
+    // seller 申诉
+    function complainInfo(agreement_id, update_time) {
+        let textarea_id = agreement_id + '_textarea';
+        let template = $('#terminate_agreement').clone();
+        let notice = 'Please fill in the reason for reason to cancel the termination request.';
+        template.find('#notice_terminate').html(notice);
+        template.find('textarea').attr('id', textarea_id);
+        layer.open({
+            type: 1,
+            area: ['700px', '300px'],
+            title: 'Appeal',
+            fixed: false, //不固定Change
+            maxmin: false,
+            skin: 'yzc_layer',
+            scrollbar: false,
+            content: template.html(),
+            btnAlign: 'c',
+            btn: ['Submit', 'Cancel'],
+            yes: function (index, layero) {
+                var remark_seller = $('#' + textarea_id).val();
+                remark_seller = remark_seller.replace(/(^\s*)|(\s*$)/g, "");
+                if (remark_seller.length == 0) {
+                    $.toast({
+                      heading: false,
+                      text: 'Reason cannot be left blank.',
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                    });
+
+                    return false;
+                }
+                let formData = {
+                    update_time: update_time,
+                    agreement_id: agreement_id,
+                    remark: remark_seller,
+                    type: 7, // 页面 back order 申诉
+                    apply_status: 4, // 申诉
+                };
+                let send_url = 'index.php?route=account/product_quotes/futures/sellerFuturesProcessApply';
+                sendRequest(formData, send_url);
+                block.blockUI();
+                let url = getUrlForFutures('{{ page }}', '');
+                $('#bid-future').load(url, "page_limit={{ page_limit }}");
+            },
+            btn2: function (index, layero) {
+            },
+            end: function (index, layero) {
+
+            },
+
+        });
+    }
+
+    // 终止协议 type  0 协商终止 1 终止协议
+    function terminateAgreement(type, agreement_id, update_time, agreement_no, action_id) {
+        let textarea_id = agreement_id + '_textarea';
+        let template = $('#terminate_agreement').clone();
+        let notice = '';
+        if (type) {
+            notice = '确认终止协议ID为' + agreement_no + '的期货协议吗? 一旦终止期货协议，需要向buyer退回期货保证金，同时Seller的期货保证金也会赔付给Buyer';
+            var area = ['500px', '200px'];
+            var btn = ['Submit', 'Cancel'];
+            template.find('.remove').remove();
+        } else {
+            notice = '确认向Buyer发起协议ID为' + agreement_no + '的协商终止协议的申请吗? Buyer一旦同意终止协商申请，会将Buyer支付的期货保证金退回。';
+            var area = ['700px', '300px'];
+            var btn = ['Yes', 'No'];
+            template.find('textarea').attr('id', textarea_id);
+        }
+        template.find('#notice_terminate').html(notice);
+        layer.open({
+            type: 1,
+            area: area,
+            title: 'Attention',
+            fixed: false, //不固定Change
+            maxmin: false,
+            skin: 'yzc_layer',
+            scrollbar: false,
+            content: template.html(),
+            btnAlign: 'c',
+            btn: btn,
+            yes: function (index, layero) {
+                if (type) {
+                    var remark_seller = '已成功终止协议，已向Buyer退回期货保证金，同时Seller的期货保证金赔付给Buyer。';
+                } else {
+                    var remark_seller = $('#' + textarea_id).val();
+                    remark_seller = remark_seller.replace(/(^\s*)|(\s*$)/g, "");
+                    if (remark_seller.length == 0) {
+                        $.toast({
+                          heading: false,
+                          text: 'Reason cannot be left blank.',
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'error',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                        return false;
+                    }
+                }
+                let formData = {
+                    update_time: update_time,
+                    agreement_id: agreement_id,
+                    action_id: action_id,
+                    remark: remark_seller,
+                    type: 6, // seller协商终止
+                    apply_status: 3, // 协商终止
+                };
+                let send_url = 'index.php?route=account/product_quotes/futures/sellerFuturesProcessApply';
+                sendRequest(formData, send_url);
+                block.blockUI();
+                let url = getUrlForFutures('{{ page }}', '');
+                $('#bid-future').load(url, "page_limit={{ page_limit }}");
+            },
+            btn2: function (index, layero) {
+            },
+            end: function (index, layero) {
+
+            },
+
+        });
+    }
+
+    // seller 审核buyer的终止协议
+    function approvalInfo(agreement_id, action_id, remark, update_time, agreement_no) {
+        let textarea_id = agreement_id + '_textarea';
+        let template = $('#approval_info').clone();
+        let notice = 'Buyer向您发起了协商终止协议申请，原因如下：' + remark + ' 请审批。';
+        template.find('#notice').html(notice);
+        template.find('textarea').attr('id', textarea_id);
+        let area = ['700px', '300px'];
+        layer.open({
+            type: 1,
+            area: ['700px', '300px'],
+            title: 'Attention',
+            fixed: false, //不固定Change
+            maxmin: false,
+            skin: 'yzc_layer',
+            scrollbar: false,
+            content: template.html(),
+            btnAlign: 'c',
+            btn: ['同意', '拒绝'],
+            yes: function (index, layero) {
+                let confim_msg = '确认同意BUyer发起的协议ID为' + agreement_no + '的终止协议申请吗?';
+                layer.confirm(confim_msg,
+                    {btnAlign: 'c',btn: ['Yes', 'No'], title: "Confirm", skin: 'yzc_layer'},
+                    function (index) {
+                        let remark_seller = $('#' + textarea_id).val();
+                        let formData = {
+                            update_time: update_time,
+                            agreement_id: agreement_id,
+                            action_id: action_id,
+                            remark: remark_seller,
+                            type: 5, // 审核buyer终止
+                            apply_status: 3, // 协商终止
+                            result: 1,
+                        };
+                        let url = 'index.php?route=account/product_quotes/futures/sellerFuturesProcessApply';
+                        sendRequest(formData, url);
+                    }, function (index) {
+
+                    }
+                );
+            },
+            btn2: function (index, layero) {
+                let confim_msg = '确认拒绝BUyer发起的协议ID为' + agreement_no + '的终止协议申请吗?';
+                layer.confirm(confim_msg,
+                    {btnAlign: 'c',btn: ['Yes', 'No'], title: "Confirm", skin: 'yzc_layer'},
+                    function (index) {
+                        let remark_seller = $('#' + textarea_id).val();
+                        let formData = {
+                            update_time: update_time,
+                            agreement_id: agreement_id,
+                            action_id: action_id,
+                            remark: remark_seller,
+                            type: 5, // 审核
+                            apply_status: 3, // 协商终止
+                            result: 0,
+                        };
+                        let url = 'index.php?route=account/product_quotes/futures/sellerFuturesProcessApply';
+                        sendRequest(formData, url);
+                    }, function (index) {
+
+                    }
+                );
+                return false;
+
+            },
+            end: function (index, layero) {
+                block.blockUI();
+                let url = getUrlForFutures('{{ page }}', '');
+                $('#bid-future').load(url, "page_limit={{ page_limit }}");
+            },
+
+        });
+    }
+
+    // 待入仓 操作 提前交付 取消交付 当天交付
+    function savePaidBidList(apply_status, agreement_id, update_time, num, days, agreement_no) {
+        let notice = '';
+        let remark = '';
+        var textarea_id = agreement_id + '_textarea';
+        if(apply_status == 1 || apply_status == 5){
+            let amount_flag = 1;
+            // 首先要判断数量是否足够
+            $.ajax({
+              url: "{{ url('account/product_quotes/futures/checkFuturesAgreementNum') }}",
+              type: 'post',
+              async:false,
+              dataType: 'json',
+              data: { agreement_id: agreement_id },
+              beforeSend: function () {
+                layer.load(1,{shade: [0.3,'#000']});
+              },
+              success: function (json) {
+                layer.closeAll('loading');
+                if(!json.code){
+                  amount_flag = 0;
+                  layerConfirm('The delivery of Future Goods Agreement (ID '+ agreement_no +') cannot be completed due to the delivered quantity is greater than the inventory quantity minus the locked inventory.',{
+                      btn: ['OK'],
+                    })
+                    .then(function () {
+                      layer.closeAll();
+                    })
+                    .catch(function () {
+                      layer.closeAll();
+                    });
+                }
+              },
+              error: function (xhr, ajaxOptions, thrownError) {
+                layer.closeAll('loading');
+              }
+            });
+            if(!amount_flag){
+              return false;
+            }
+        }
+
+
+        if (days > 1) {
+            if (apply_status == 1) {
+                notice = 'To deliver products ahead of time for the Future Goods Agreement (Agreement ID ' + agreement_no + '), please write a reason below and submit a deliver ahead of time request to the Marketplace. Please check back for updates on the status of your request. ';
+            } else if (apply_status == 2) {
+                notice = '确认向Buyer发送协议ID为' + agreement_no + '的期货协议取消交付的申请吗? 请填写理由，并及时查看处理结果。';
+            }
+
+            var html = '<div class="row" style="padding-left: 10px;">\n' +
+                '          <div class="request" style="text-align: left">\n' +
+                '            <span style="color: grey">' + notice + '</span>\n' +
+                '          </div>\n' +
+                '          <div class="request" style="text-align: left">\n' +
+                '             <span style="color: grey;float:left">Reason</span>\n' +
+                '             <span style="color: red;float:right">Reason field cannot be left blank.</span>\n' +
+                '               </div>\n' +
+                '          <div style="position: relative">\n' +
+                '            <textarea id="' + textarea_id + '" onkeyup="changeNum(this)" minlength="1" maxlength="2000" style="resize: none;height: 120px" class="form-control" placeholder=""></textarea>\n' +
+                '            <span style="position: absolute;\n' +
+                '             right: 5px;\n' +
+                '             bottom: 0px;\n' +
+                '             color: #1e91cf" id="countStrList">0/2000</span>\n' +
+                '            <span id="enterMessageError" class="red"></span>\n' +
+                '          </div>\n' +
+                '        </div>';
+            var area = ['700px', 'auto'];
+            var btn = ['Submit', 'Cancel'];
+        } else {
+            if (apply_status == 5) {
+                notice = 'Are you sure you wish to complete delivery for the ' + num + ' products in the Future Goods Agreement (Agreement ID: ' + agreement_no + ')?';
+            } else if (apply_status == 2) {
+                notice = '确认取消交付期货协议ID为' + agreement_no + '的' + num + '个产品吗?';
+            }
+
+            var html = '<div class="row" style="padding-left: 10px;">\n' +
+                '          <div class="request" style="text-align: left">\n' +
+                '            <span style="color: grey">' + notice + '</span>\n' +
+                '          </div>\n' +
+                '        </div>';
+            var area = ['400px', '180px'];
+            var btn = ['Yes', 'No'];
+        }
+
+        layer.open({
+            type: 1,
+            fixed: false, //不固定Change
+            maxmin: false,
+            skin: 'yzc_layer',
+            scrollbar: false,
+            title: 'Reminder',
+            area: area,
+            content: html,
+            btnAlign: 'c',
+            btn: btn,
+            yes: function (index, layero) {
+                if (days > 1) {
+                    remark = $('#' + textarea_id).val();
+                    remark = remark.replace(/(^\s*)|(\s*$)/g, "");
+                    if (remark.length == 0) {
+                        $.toast({
+                          heading: false,
+                          text: 'Reason cannot be left blank.',
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'error',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                        return false;
+                    }
+                } else {
+                    if (apply_status == 5) {
+                        remark = 'The delivery for the ' + num + ' PC(S) in the future goods agreement (Agreement ID: ' + agreement_no + ') has been completed successfully.';
+                    } else if (apply_status == 2) {
+                        remark = '已取消交付期货协议ID为' + agreement_no + '的' + num + '个产品';
+                    }
+                }
+                let formData = {
+                    update_time: update_time,
+                    agreement_id: agreement_id,
+                    day: days,
+                    remark: remark,
+                    type: 4, // tab 页面提交
+                    apply_status: apply_status
+                };
+                let url = 'index.php?route=account/product_quotes/futures/sellerFuturesProcessApply';
+                sendRequest(formData, url);
+            },
+            btn2: function (index, layero) {
+
+            }
+        });
+    }
+
+    function sendRequest(formData, url) {
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            data: formData,
+            beforeSend: function () {
+                layer.load(1, {shade: [0.3, '#000']});
+            },
+            success: function (json) {
+                layer.closeAll();
+                if (json.code == 200) {
+                    if (json.msg) {
+                        $.toast({
+                          heading: false,
+                          text: json.msg,
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'success',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    }
+                    setTimeout(function(){
+                        block.blockUI();
+                        let url = getUrlForFutures('{{ page }}', '');
+                        $('#bid-future').load(url, "page_limit={{ page_limit }}");
+                    }, 5000);
+                } else {
+                    $.toast({
+                      heading: false,
+                      text: json.msg,
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                layer.closeAll();
+                $.toast({
+                  heading: false,
+                  text: thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText,
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'error',
+                  hideAfter: 5000,
+                  allowToastClose: false,
+                  loader: false
+                });
+            }
+        });
+    }
+
+    //监听输入
+    var checkStrLengths = function (str, maxLength) {
+        var maxLength = maxLength;
+        var result = 0;
+        result = str.length;
+        return result;
+    }
+
+    function changeNum(obj) {
+        //获取输入内容
+        var userDesc = $(obj).val();
+        //判断字数
+        var len;
+        if (userDesc) {
+            len = checkStrLengths(userDesc, 2000);
+        } else {
+            len = 0
+        }
+        //显示字数
+        $(obj).next().html(len + '/2000');
+        if (len > 2000) {
+            $(obj).next().addClass('red');
+        } else {
+            $(obj).next().removeClass('red');
+        }
+    }
+
+    // seller 同意或者拒绝了期货协议
+    function saveBidList(agreement_status, agreement_id, update_time, user_name, user_number, agreement_no,need_alarm,amount_status,contract_no) {
+        let action_type = '';
+        let message = '';
+        let notice = '';
+        user_name = user_name.replaceAll('&quot;', '"');
+        user_name = user_name.replace(/\s/g, "");
+        if (agreement_status == 3) {
+            notice = 'Are you sure you want to approve the request of future goods agreement (Agreement ID ' + agreement_no + ') from '+ user_name + '(' + user_number + ') ?';
+            message = "The Seller has approved Buyer's request of future goods agreement.";
+        } else if (agreement_status == 4) {
+            notice = 'Are you sure you want to reject the request of future goods agreement (Agreement ID ' + agreement_no + ') from '+ user_name + '(' + user_number + ') ?';
+            message = "The Seller has rejected Buyer\'s request of future goods agreement.";
+        }
+        let formData = {
+            agreement_status: agreement_status,
+            message: message,
+            agreement_id: agreement_id,
+            update_time: update_time,
+            type: 2,
+        };
+        let layer_alarm_price = (need_alarm == 1 && (agreement_status == 3))
+          ? layerConfirm : layerConfirmResolve;
+        let layer_alarm_amount = (amount_status == false && (agreement_status == 3))
+          ? layerConfirm : layerConfirmResolve;
+        // 保证金不足，只需要弹框提示,满足条件进行freight判断
+        let contractNotice = 'Seller cannot approve this Future Goods Agreement request due to insufficient estimated deposit totals for the Future Goods Contract (ID '+ contract_no + '). You must pay additional deposit for the Future Goods Contract, otherwise you would not be able to approve this Future Goods Agreement request.';
+        if(amount_status == false && (agreement_status == 3)){
+          layer_alarm_amount(contractNotice)
+            .then(function () {
+              layer.closeAll();
+            })
+            .catch(function () {
+              layer.closeAll();
+            });
+        }else{
+          layer_alarm_price('{{ is_show_cwf_notice ? error_product_price_approve_cwf : error_product_price_approve }}')
+            .then(function () {
+              let tmplayer = layer.confirm(notice, {
+                title: 'Reminder',
+                skin: 'yzc_layer',
+                btnAlign: 'c',
+                btn: ['Yes', 'No'] //按钮
+              }, function () {
+                  layer.close(tmplayer);
+                  $.ajax({
+                    url: 'index.php?route=account/product_quotes/futures/sellerFuturesProcessBid',
+                    type: 'post',
+                    dataType: 'json',
+                    data: formData,
+                    beforeSend: function () {
+                      layer.load(1, {shade: [0.3, '#000']});
+                    },
+                    success: function (json) {
+                      layer.closeAll('loading');
+                      $('.cansub').attr({disabled: false});
+                      if (json.code == 200) {
+                        if (json.msg) {
+                          $.toast({
+                            heading: false,
+                            text: json.msg,
+                            position: 'top-center',
+                            showHideTransition: 'fade',
+                            icon: 'success',
+                            hideAfter: 5000,
+                            allowToastClose: false,
+                            loader: false
+                          });
+                        }
+                        setTimeout(function(){
+                          block.blockUI();
+                          let url = getUrlForFutures('{{ page }}', '');
+                          $('#bid-future').load(url, "page_limit={{ page_limit }}");
+                        }, 5000);
+                      } else {
+                        $.toast({
+                          heading: false,
+                          text: json.msg,
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'error',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                      }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                      layer.closeAll('loading');
+                      $.toast({
+                        heading: false,
+                        text: thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText,
+                        position: 'top-center',
+                        showHideTransition: 'fade',
+                        icon: 'error',
+                        hideAfter: 5000,
+                        allowToastClose: false,
+                        loader: false
+                      });
+                    }
+                  });
+                }, function () {
+                  layer.close(tmplayer);
+                });
+              })
+            .catch(function () {
+              layer.closeAll();
+            });
+        }
+
+    }
+
+    function noRemind(apply_id) {
+
+        $.ajax({
+            url: 'index.php?route=account/product_quotes/futures/sellerFutureUpdateApply',
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            data: {apply_id: apply_id},
+            beforeSend: function () {
+                layer.load(1, {shade: [0.3, '#000']});
+            },
+            success: function (json) {
+                layer.closeAll();
+                if (json.code == 200) {
+                    if (json.msg) {
+                        $.toast({
+                          heading: false,
+                          text: json.msg,
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'success',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    }
+                    $('#apply_id' + apply_id).popover('hide');
+                    $('#apply_id' + apply_id).hide();
+                } else {
+                    $.toast({
+                      heading: false,
+                      text: json.msg,
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                layer.closeAll();
+                $.toast({
+                  heading: false,
+                  text: thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText,
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'error',
+                  hideAfter: 5000,
+                  allowToastClose: false,
+                  loader: false
+                });
+            }
+        });
+    }
+
+    // Submit Claim 弹框
+    function submitClaimAlert(id, agreeNo, agreeDate) {
+        var $claim = $('#force-claim-layer');
+        // 弹框之前清空弹框内容
+        $claim.find('textarea').val('').next().html('0/2000');;
+        $claim.find('#inputFiles').html('');
+        $claim.find('span.wrong-tips').hide();
+        $claim.find('span.agreeID').html(agreeNo);
+        $claim.find('span.agreeDate').html(agreeDate);
+        fileList = [];
+        var optionsLtl = {
+            skin: 'yzc_layer claim-layer',
+            area: ['600px', '420px'],
+            btn: ['Submit', 'Cancel'],
+            title: 'Submit Force Majuere Claim',
+            content: $('#force-claim-layer'),
+        };
+        layerOris.confirmLayer(optionsLtl, function (index, layero) {
+          // 点击提交
+          // 校验申请原因是否为空
+          var claimReason = $claim.find('textarea').val()
+          if (!claimReason) {
+            return $claim.find('span.wrong-tips').show();
+          }
+          // 校验文件大小
+          if (checkFilesSize(fileList)) {
+            return layerOris.confirmLayer({title: 'Error',content:'File size exceeds limit, please re-upload again.</br>File size limit: Image files less than 20M.', btn:['OK']});
+          }
+          let formData = new FormData();
+          $.each(fileList, function (k, v) {
+            formData.append('files[]', v);
+          });
+          formData.append('agreement_id', id);
+          formData.append('message', claimReason);
+          let loading = layer.load();
+          $.ajax({
+            url: '{{ url('account/product_quotes/futures/doSellerAppeal') }}',
+            type: 'post',
+            dataType: 'json',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                layer.close(index);
+                layer.close(loading);
+                if (res.code == 200) {
+                    $.toast({
+                      heading: false,
+                      text: 'The request has been sent to the Marketplace and is now being processed. Please check the status of your request for the latest updates.',
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'success',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                    });
+                } else {
+                    $.toast({
+                      heading: false,
+                      text: res.code == 0 ? res.msg : 'The request was unable to be sent. Please try again.',
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false,
+                      afterHidden: function() {
+                        filterFutures('')
+                      }
+                    });
+                }
+            },
+            error: function (err) {
+                layer.closeAll();
+                $.toast({
+                    heading: false,
+                    text: 'Failed. Please contact with our customer service to argue.',
+                    position: 'top-center',
+                    showHideTransition: 'fade',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    allowToastClose: false,
+                    loader: false,
+                    afterHidden: function() {
+                      filterFutures('')
+                    }
+                });
+            },
+          });
+        });
+    }
+</script>
+<script>
+    $(function () {
+        $("[data-toggle='popover']").popover();
+    });
+</script>

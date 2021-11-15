@@ -1,0 +1,21 @@
+@charset "UTF-8";
+
+//
+// @copyright        2019 opencart.cn - All Rights Reserved
+// @link             http://www.guangdawangluo.com
+// @author           Sam Chen <sam.chen@opencart.cn>
+// @created          2019-11-11 15:43:44
+// @modified         2019-11-11 15:46:23
+//
+
+#page-inventory-items {
+  span {
+    &.number-positive {
+      color: #db0200;
+    }
+
+    &.number-negative {
+      color: #6dd400;
+    }
+  }
+}

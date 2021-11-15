@@ -1,0 +1,225 @@
+{% trans_default_category 'catalog/view/customerpartner/tripartite_agreement/index' %}
+
+{{ this.title('Sales and Purchase Agreement') }}
+{{ this.params('breadcrumbs', [
+  {
+    text: 'Buyer Management',
+    href: 'javasctipt:void(0)',
+  },
+  'current'
+]) }}
+
+{{ this.params('pageTitle', {backUrl: false}) }}
+{{ js(['js/common/toolString.js']) }}
+{{ jsOrigin(['/catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js',
+  'catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js',
+  '/catalog/view/javascript/user_portrait/user_portrait.js']) }}
+{{ cssOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css',
+  '/catalog/view/javascript/user_portrait/user_portrait.css']) }}
+{{ assetBundle('Seller\\VatAsset') }}
+<style>
+  .special-note{
+    padding: 2px 8px;
+    background: rgba(230, 69, 69, 0.06);
+    color:#E64545 ;
+    border-radius: 100px;
+    display: inline-block;
+  }
+  .special-note1{
+    background-color:#F7F8FA ;
+    color: #666666;
+  }
+  .min-w180{
+    min-width: 180px !important;
+  }
+  .max-w300{
+    max-width: 300px;
+  }
+</style>
+<div id="salesAgreement" class="main-content">
+  <div class="oris-row">
+    <div class="oris-col-3">
+      <label  class="text-weight-normal" for="agreementName">Agreement Name</label>
+      <input type="text" name="agreementName" placeholder="Please Input" id="agreementName" class="oris-input"
+             autocomplete="off" value="{{ search.name }}"/>
+    </div>
+    <div class="oris-col-3">
+      <label  class="text-weight-normal" for="agreementShop">Agreement Buyer</label>
+      <input type="text" name="agreementShop" placeholder="Please Input" id="agreementShop" class="oris-input"
+             value="{{ search.buyer }}"/>
+    </div>
+    <div class="oris-col-3 oris-select">
+      <label class="text-weight-normal" for="status">Status</label>
+      <select id="status" class="selectpicker" title="{{ __('请选择', {}, 'common') }}" name="status">
+        <option value="0" selected>{{ __('请选择', {}, 'common') }}</option>
+        {% for key,val in filter_status %}
+          <option value="{{ key }}" {% if key ==search.status %}selected{% endif %} >{{ val }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="oris-col-3 search-btn m24-t">
+      <button id="filterBtn" type="button" class="oris-button oris-button-bigger width80" data-toggle="tooltip"
+              title="Filter">Filter
+      </button>
+    </div>
+  </div>
+  <table class="oris-table m20-t" id="agreementListTab">
+    <thead>
+    <tr>
+      <th class="text-left">Agreement ID</th>
+      <th class="max-w300 text-left">Agreement Name</th>
+      <th class="max-w300 text-left">Agreement Buyer</th>
+      <th class="min-w180 text-left">Agreement Validity</th>
+      <th class="min-w180 text-left">Signing Time</th>
+      <th class="oris-w264 text-left">Status</th>
+      <th class="text-left oris-w120">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if list|length %}
+      {% for e,item in list %}
+        <tr>
+          <td class="text-left">{{ item.agreement_no }}</td>
+          <td class="text-left">
+            <div class="max-line2" title="{{ item.title }}"> {{ item.title }}</div>
+          </td>
+          <td class="text-left">
+            <span class="action-userinfo pointer" data-user_customer_id="{{ item.buyer_id }}" data-toggle="popover" data-placement="top" data-content="" data-html="true"  data-trigger="manual" data-container="body">
+              <span class="name-color max-line1" title="{{ item.buyer.nickname }}">{{ item.buyer.nickname }}</span>
+              <span>{{ item.buyer.user_number }}</span>
+              {% if item.buyer.buyer_type == 1 %}
+                <span class="account-type atype-wc">Will Call</span>
+              {% else %}
+                <span class="account-type atype-ds">Drop Shipping</span>
+              {% endif %}
+            </span>
+            {{ item.ex_vat }}
+          </td>
+          <td class="text-left">
+            {{ item.effect_time |formatZone(country,null,'Y-m-d')  }} - {{ item.expire_time |formatZone(country,null,'Y-m-d')  }}
+          </td>
+          <td class="text-left">
+            {% if item.seller_approved_time %}
+              {{ item.seller_approved_time|default('') }}
+            {% else %}
+              --
+            {% endif %}
+          </td>
+          <td class="text-left">
+            <div class="flex-layout">
+              <span class="oris-circle {{ item.status_color }}"></span>
+              {{ item.status_name }}
+            </div>
+            {% if item.seven_remind > 0 %}
+              <div class="special-note m04-t">Due in {{ item.seven_remind }} day(s)</div>
+              <br>
+            {% endif %}
+            {% if item.terminate_handle_request == true %}
+              <div class="special-note m04-t">Buyer termination request</div>
+              <br>
+            {% endif %}
+            {% if item.cancel_handle_request == true %}
+              <div class="special-note m04-t">Buyer cancellation request</div>
+              <br>
+            {% endif %}
+            {% if item.terminate_send_request == true %}
+              <div class="special-note special-note1 m04-t">Termination request submitted</div>
+              <br>
+            {% endif %}
+            {% if item.cancel_send_request == true %}
+              <div class="special-note special-note1 m04-t">Cancellation request submitted</div>
+              <br>
+            {% endif %}
+          </td>
+          <td class="text-left">
+            <a href="{{ url('customerpartner/tripartite_agreement/detail', {id:item.id}) }}" target="_blank"
+               data-index="{{ e }}" class="btn-text action-view">
+              <span><i class="giga icon-V10_chakan" data-toggle="tooltip" title="View"></i></span>
+            </a>
+            {% if item.can_tripartite_handle %}
+              <a href="{{ url('customerpartner/tripartite_agreement/detail', {id:item.id}) }}" target="_blank"
+                 data-index="{{ e }}" class="btn-text action-handle">
+                <span><i class="giga icon-V10_xianhuobaozhengjin-quchuli-01" data-toggle="tooltip" title="Process"></i></span>
+              </a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr class="no-records">
+        <td colspan="7">No records.</td>
+      </tr>
+    {% endif %}
+    </tbody>
+  </table>
+  {% if list|length %}
+    {# 分页 #}
+    <div class="oris-row oris-pagination">
+      <ul id="tablePagination"></ul>
+    </div>
+  {% endif %}
+</div>
+
+{% apply script %}
+  <script type="text/javascript">
+    $(function () {
+      salesAgreement.initComponents();
+      salesAgreement.bindClick();
+      $('#status').selectpicker();
+    });
+    var salesAgreement = {
+      fitlerData: null,
+      // 初始化组建
+      initComponents: function () {
+        block.unBlockUI();
+        window.history.pushState({}, 0, 'index.php?route=customerpartner/tripartite_agreement');
+        // 初始化分页
+        $('#tablePagination').bootstrapPaginator({
+          bootstrapMajorVersion: 3,
+          size: 'normal',
+          currentPage: {{ paginator.getPage() }},
+          totalPages: {{ max(paginator.getPageCount(), 1) }},
+          numberOfPages: 5,
+          pageRange: [10, 20, 30, 50, 100],
+          rowsOfPage: {{ paginator.getPageSize() }},
+          total: {{ paginator.totalCount }},
+          onPageClicked: function(event, originalEvent, type, page) {
+            block.blockUI();
+            salesAgreement.loadPage('{{ paginator.getUrlWithNoPage() }}&page_limit=' + originalEvent['page_info']['page_limit'] + '&page=' + page);
+          }
+        });
+      },
+      bindClick: function () {
+        $("#salesAgreement").on('click', '#filterBtn', function () {
+          salesAgreement.fitlerData = salesAgreement.getUrlTabList();
+        })
+      },
+      loadPage: function (url) {
+        block.blockUI();
+        window.location.href = url;
+      },
+      //按条件查询列表
+      getQueryParams: function() {
+        let params = {};
+        let agreementName = $('input[name=\'agreementName\']').val().trim();
+        if (agreementName) {
+          params['name'] = agreementName;
+        }
+        let agreementShop = $('input[name=\'agreementShop\']').val().trim();
+        if (agreementShop) {
+          params['buyer'] = agreementShop;
+        }
+        let status = $('select[name=\'status\']').val().trim();
+        if (status > 0) {
+          params['status'] = status;
+        }
+        return params;
+      },
+      getUrlTabList: function(){
+        let url = "{{ url('customerpartner/tripartite_agreement') }}";
+        url= url + '&' +  $.param(salesAgreement.getQueryParams());
+        salesAgreement.loadPage(url);
+      },
+    };
+  </script>
+{% endapply %}

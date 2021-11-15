@@ -1,0 +1,344 @@
+{{header}}{{ separate_column_left }}
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid" id="content" style="margin-left: 18%">
+    {% else %}
+  <div class="container">
+      {% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{breadcrumb.href}}">{{breadcrumb.text}}</a></li>
+    {% endfor %}
+  </ul>
+  <div class="row">{{column_left}}
+    {% if column_left and column_right %}
+    {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div ng-app="app" ng-cloak>
+      <div id="content" class="{{class}}">{{content_top}}
+        <h1>{{title_communication}}</h1>
+        {% if error_warning %}
+          <div class="alert alert-danger">
+            <i class="fa fa-exclamation-circle"></i>
+           {{error_warning}}
+          </div>
+        {% endif %}
+        <div ng-controller="messageController">
+          <div class="row">
+            <div class="col-sm-6">
+              <!-- Communication Tabs -->
+                <ul class="nav nav-tabs communication">
+                  <li  ng-class="{'active inbox':active=='inbox'}">
+                    <a id="tab-inbox" ng-init="query('inbox')" ng-click="query('inbox')" data-toggle="tab">
+                      <i class="fa fa-inbox"></i>
+                      <span class="tab_space">{{text_inbox}}</span>
+                      <span class="badge">{{ '{{total.inbox}}' }}</span>
+                    </a>
+                  </li>
+                  <li ng-class="{'active sent':active=='sent'}">
+                    <a id="tab-sent" ng-click="query('sent')" data-toggle="tab">
+                      <i class="fa fa-level-up"></i>
+                      <span class="tab_space">{{text_sent}}</span>
+                      <span class="badge">{{ '{{total.sent}}' }}</span>
+                    </a>
+                  </li>
+                  <li ng-class="{'active trash':active=='trash'}">
+                    <a id="tab-trash" ng-click="query('trash')" data-toggle="tab">
+                      <i class="fa fa-trash" aria-hidden="true"></i>
+                      <span class="tab_space">{{text_trash}}</span>
+                      <span class="badge">{{ '{{total.trash}}' }}</span>
+                    </a>
+                  </li>
+                </ul>
+            </div>
+            <div class="col-sm-4">
+              <!-- Search box -->
+              <div class="pull-right" ng-show="!selection">
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="{{text_search}}" ng-keyup="count()" ng-model="search">
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-2">
+              <!-- Delete + Back-->
+                <div class="pull-right">
+                  <button onclick="clickActiveTab()" style="margin-left:10px" type="button" class="btn btn-default"> <i class="fa fa-reply"></i></button>
+                  <button class="btn btn-danger pull-left" data-toggle="tooltip" data-original-title="{{text_delete}}"  ng-click="delete()" ng-show="!selection">
+                    <i class="fa fa-trash-o"></i>
+                  </button>
+              </div>
+          </div>
+        </div>
+
+        <!-- Loder -->
+          <div ng-show="loading" aria-hidden="true">
+            <i class="fa fa-cog fa-spin fa-3x fa-fw spinner"></i>
+          </div>
+
+          <div id="message" ng-show="!selection">
+            <table class="table table-hover table-bordered table-striped" name="message" ng-show="!loading" style="table-layout:fixed;">
+              <thead>
+                <tr>
+                  <td  style="text-align: center;width: 3%;"/><input type="checkbox" onclick="$('input[name=\'selectedMessages\']').prop('checked', this.checked);" /></td>
+                    <td class="text-left col-sm-5" >
+                      <a ng-click="order('message_subject')">{{text_subject}}</a>
+                    </td>
+                <td class="text-left col-sm-2">
+                  <a ng-click="order('user_name')">{{text_name}}</a>
+                </td>
+                <td class="text-left col-sm-2">
+                  <a ng-click="order('message_date')">{{text_date}}</a>
+                </td>
+                <td class="text-left col-sm-2">{{text_action}}</td>
+              </tr>
+            </thead>
+            <tr ng-repeat="message in messages |filter:search as filtered">
+              <td style="text-align: center;width: 3%;"><input type="checkbox" value="{{ '{{message.message_id }}' }}" name="selectedMessages" ng-model="checkboxes[message.message_id].isChecked"></td>
+              <td class="text-left col-sm-5" title="{{'{{message.message_subject}}'}}">{{'{{message.message_subject|lengthFilter:35}}'}}
+                    <input type="hidden" ng-value="message.message_subject">
+              </td>
+              <td class="text-left col-sm-2" title="{{'{{message.user_name}}'}}">{{'{{message.user_name|lengthFilter:15}}'}}
+                    <input type="hidden" ng-value="message.user_name">
+              </td>
+              <td class="text-left col-sm-2">{{'{{message.message_date}}'}}&nbsp;&nbsp;&nbsp;&nbsp;<span class="badge badge-lg badge-default">{{ '{{ message.reply}}' }}
+                 {{text_replies}}</span>
+              </td>
+              <td class="text-left col-sm-1">
+                <button type="button" ng-model="selection" ng-click="route(message.message_id)" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="View">
+                  <i class="fa fa-eye" aria-hidden="true"></i>
+                </button>
+                <button ng-if=" message.message_subject == '{{ text_establish }}' && message.message_body == '{{ text_establish_message }}' && message.placeholder_id == '{{ text_placeholderId }}' && message.show_flag != 0" type="button" ng-model="selection" ng-click="returnEstablishResult(1,message.message_id)" data-toggle="tooltip" title="" class="btn btn-success" data-original-title="Agree">
+                  <i class="fa fa-check" aria-hidden="true"></i>
+                </button>
+                <button ng-if=" message.message_subject == '{{ text_establish }}' && message.message_body == '{{ text_establish_message }}' && message.placeholder_id == '{{ text_placeholderId }}' && message.show_flag != 0" type="button" ng-model="selection" ng-click="returnEstablishResult(0,message.message_id)" data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="Disagree">
+                  <i class="fa fa-close" aria-hidden="true"></i>
+                </button>
+              </td>
+            </tr>
+            <tr ng-if="messages.length==0">
+              <td colspan="5" class="text-center">{{text_no_records}}</td>
+            </tr>
+          </table>
+        </div>
+        <div id="messageinfo" ng-hide="!selection" ng-include="'catalog/view/theme/default/template/account/wk_messageinfo.twig'"></div>
+        <div id="message_form">
+          <form method="POST" id="messageform" name="replyform" ng-hide="!selection" enctype="multipart/form-data">
+            <div id="seller-contact">
+              <input type="hidden" value="" name="to" id="to">
+              <input type="hidden" value="" name="parent_message" ng-model="parent" id="parent">
+              <div class="form-group">
+                <span style="color: red">*</span>
+                <label>
+                 {{text_subject}}
+                </label>
+                <input type="text" id="subject" name="subject" value="Re :{{message_info.message_subject}}" class="form-control"/>
+              </div>
+              <div class="form-group">
+                <textarea id="body" name="message"></textarea>
+              </div>
+              <div class="form-group">
+                <div class="form-group fileDiv" style="display:inline-block">
+                  <label class="attach-file pointer" name="upload_files[]">
+                    <i class="fa fa-upload" style="margin-top: 37%;"></i>
+                    <input type="file" name='file[]' id="files" style="display:none" onchange="validate_fileupload(this);">
+                    <i class="fa fa-times remove-file pointer" style="display: inline-block;"></i>
+                  </label>
+                </div>
+                  <a id="addFile" class="label-right pointer">+ {{text_attach}} </a>
+              </div>
+            </div>
+            <div class="pull-right">
+              <button type="Submit" id="submit" ng-click="submitQuery()" class="btn btn-primary">Reply</button>
+            </div>
+          </form>
+        </div>
+      </div>
+     {{content_bottom}}
+    </div>
+   {{column_right}}
+  </div>
+</div>
+</div>
+{{footer}}
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#body').summernote({
+    height: 300,
+    callbacks: {
+      onImageUpload: function(files, editor, welEditable) {
+        sendFile(files[0], this);
+      }
+    }
+  });
+});
+
+function sendFile(file, el) {
+  data = new FormData();
+  data.append("file", file);
+  $.ajax({
+    data: data,
+    type: "POST",
+    url: "index.php?route=account/wk_communication/upload",
+    cache: false,
+    contentType: false,
+    processData: false,
+    success: function(url) {
+      $(el).summernote('editor.insertImage', url);
+    }
+  });
+}
+</script>
+<style type="text/css">
+label.attach-file {
+  display: inline-block;
+  width: 65px;
+  height: 65px;
+  background: #F1F1F1;
+  border: 1px dashed #DDD;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 50px;
+  overflow: hidden;
+  /*background-image: url('');*/
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+}
+.label-right {
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
+  margin: 22px 10px;
+  color: #325896;
+  font-weight: 600;
+}
+#body {
+  display: none;
+}
+#attachment {
+  margin-left: 70%;
+}
+#messageinfo,
+.left-panel {
+  margin-top: 6%;
+}
+.communication > li {
+  float: left;
+  height: 40px;
+  line-height: 37px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 600;
+  color: #434a54;
+}
+.communication > li.active {
+  border-bottom: 0;
+  background: none;
+  line-height: 33px;
+  cursor: pointer;
+
+}
+.inbox {
+  border-top: 3px solid #337ab7;
+}
+.sent {
+  border-top: 3px solid #F1BB52;
+}
+.trash {
+  border-top: 3px solid #D9534F;
+}
+.drafts {
+  border-top: 3px solid #58C7AB;
+}
+.nav-tabs > li > a {
+  margin-right: 0;
+  border: 1px solid #bbb;
+  border-radius: 0;
+}
+.communication li.active .badge {
+  background-color: #3bafda;
+}
+#message .badge-default {
+  padding: 6px 12px;
+  border: 1px dashed #888F99;
+  line-height: 12px;
+  margin-right: 2px;
+}
+/*#message .badge {*/
+  /*background-color: none;*/
+/*}*/
+.remove-file {
+  margin-left: 10px;
+  position: absolute;
+  display: none;
+}
+.tab_space {
+  margin-left: 13px;
+  margin-right: 13px;
+}
+.spinner {
+  font-size: 60px;
+  margin-left: 39%;
+  margin-top: 15%;
+}
+
+</style>
+<script type="text/javascript">
+var limit = 1;
+var active = "inbox";
+var max = '{{max}}';
+$('#addFile').on('click', function() {
+  if (limit < max) {
+    let html = '<label class="attach-file pointer attach"  style="margin-left: 5px; margin-right: 5px;">' +
+        '<i class="fa fa-upload" style="margin-top: 37%;"></i>' +
+        '<input type="file" name="file[]"  class="files" style="display:none"  onchange="validate_fileupload(this);">' +
+        '<i class="fa fa-times remove-file pointer" style="display: inline-block;"></i></label>';
+    $(this).prev().append(html);
+    $(this).removeAttr('id');
+  } else {
+    alert("maximum limit of attachment is " + max);
+  }
+});
+
+// $(document.body).on('mouseenter', '.attach-file', function() {
+//   $(this).children().last().css("display", "inline-block");
+// });
+// $(document.body).on('mouseleave', '.attach-file', function() {
+//   $(this).children().last().css("display", "none");
+// });
+
+$(document.body).on('click', '.remove-file', function(event) {
+  event.preventDefault();
+  $(this).parent().remove();
+});
+function clickActiveTab() {
+    $('.active [data-toggle=tab]').trigger('click');
+}
+function validate_fileupload(thisthis) {
+  var size = thisthis.files[0].size / 1000;
+  var maxsize ={{size}};
+  var allowed_extensions ={{extension|json_encode()}};
+  if (thisthis.type == 'file') {
+    fileName = thisthis.value;
+    var file_extension = fileName.split('.').pop();
+    for (var i = 0; i <= allowed_extensions.length && limit <= max; i++) {
+      if (allowed_extensions[i] == file_extension && size < maxsize) {
+        var getImagePath = URL.createObjectURL(thisthis.files[0]);
+        $(thisthis).parent().css('background-image', 'url(' + getImagePath + ')');
+        $(thisthis).parent().append('<span class="ex">' + file_extension + '</span>');
+        limit++;
+        return true;
+      }
+    }
+  }
+  if (limit > max)
+    alert('Maximum Number of file is ' + max);
+  else
+    alert("invalid file type or size");
+  thisthis.value = "";
+  return false;
+}
+</script>

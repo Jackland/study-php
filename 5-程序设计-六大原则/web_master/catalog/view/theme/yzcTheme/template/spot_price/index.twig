@@ -1,0 +1,97 @@
+{# start header column-left #}
+{{ header }}{{ separate_column_left }}
+{# end header column-left #}
+
+{% set container_info='class="container giga-content"' %}
+{% if separate_view is defined and separate_view %}
+  {% set container_info='class="container-fluid giga-content" id="content" style="margin-left: 235px;"' %}
+{% endif %}
+<div {{ container_info }}>
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li>
+        <a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <h1>{{ heading_title }}</h1>
+  <legend></legend>
+  <div >{{ column_left }}
+    {% if column_left and column_right %}
+      {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+      {% set class = 'col-sm-9' %}
+    {% else %}
+      {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div class="{{ class }}" style="padding: 0">{{ content_top }}
+      {% if tab_name == 'negotiated-price' %}
+      <ul class="nav nav-tabs" style="margin-bottom: 0;margin-left: 0">
+        <li class="active">
+          <a
+            href="#tab-negotiated-price"
+            id="tab_tab-negotiated-price"
+            data-toggle="tab">
+            {{ title_negotiated_pricing }}
+          </a>
+        </li>
+        <li class="">
+          <a href="#tab-tiered-price" id="tab_tab-tiered-price" data-toggle="tab">{{ title_tiered_pricing }}</a>
+        </li>
+      </ul>
+      <div class="content-wrap">
+        <div class="tab-content">
+          {# rma-management start #}
+          <div class="tab-pane active" id="tab-negotiated-price"></div>
+          {# rma-management end #}
+          {# tab-reshipment start #}
+          <div class="tab-pane " id="tab-tiered-price"></div>
+          {# tab-reshipment end #}
+        </div>
+      </div>
+      {% endif %}
+      {% if tab_name == 'tiered-price' %}
+        <ul class="nav nav-tabs" style="margin-bottom: 0;margin-left: 0">
+          <li class="">
+            <a
+              href="#tab-negotiated-price"
+              id="tab_tab-negotiated-price"
+              data-toggle="tab">
+              {{ title_negotiated_pricing }}
+            </a>
+          </li>
+          <li class="active">
+            <a href="#tab-tiered-price" id="tab_tab-tiered-price" data-toggle="tab">{{ title_tiered_pricing }}</a>
+          </li>
+        </ul>
+        <div class="content-wrap">
+          <div class="tab-content">
+            {# rma-management start #}
+            <div class="tab-pane" id="tab-negotiated-price"></div>
+            {# rma-management end #}
+            {# tab-reshipment start #}
+            <div class="tab-pane active " id="tab-tiered-price"></div>
+            {# tab-reshipment end #}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<script>
+    layer.config({
+        skin: 'yzc_layer',
+        btnAlign: 'c'
+    });
+    $(function () {
+        $('#tab-negotiated-price').load('index.php?route=customerpartner/spot_price/negotiated_price');
+        $('#tab-tiered-price').load('index.php?route=customerpartner/spot_price/tiered_price');
+        $('body').tooltip({selector: '[data-toggle=\'tooltip\']'});
+        // nav tabs
+        $('.nav-tabs a').on('click', function () {
+            let item = $(this);
+            $.cookie('SPOT_PRICE_TAB', item.attr('href').substring(5));
+        })
+    })
+</script>
+{{ footer }}

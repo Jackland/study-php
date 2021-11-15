@@ -1,0 +1,49 @@
+.agreement-box{
+    background-color: #fff;
+    margin-bottom: 10px;
+}
+.agreement-box .status-msg .oris-circle.padding2{
+    padding: 2px;
+    margin-bottom: 2px;
+}
+.agreement-box .status-msg .oris-circle.color-dc{
+    background: #333;
+}
+.agreement-header{
+    width: 828px;
+    margin-left: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.agreement-container{
+    width: 828px;
+    height: 100%;
+    margin: 0 24px 16px 24px;   
+}
+.agreement-container-content{
+    padding: 24px;
+    position: relative;
+    min-height: 816px;
+    background: #FAFAFA;
+}
+.hint_modal_text{
+    margin-top: 12px;
+    min-height: 104px;
+    font-size: 16px;
+    color: #333333;
+    padding: 24px;
+}
+.buyer-fixed-btn{
+    height: 60px;
+    text-align: center;
+    margin-left: 0;
+    width: 100%;
+    margin-top: 6px;
+}
+.agreement-box .AgreementDate-input.text-input {
+    width: 230px;
+}
+.agreement-box .oris-radio-mini{
+    margin-top: 2px;
+}

@@ -1,0 +1,363 @@
+{# 以下是店铺头部 #}
+{{ css(['css/layout/buyer_seller_store.css']) }}
+{{ cssOrigin(['/catalog/view/javascript/jquery/swiper/css/swiper.min.css'])}}
+{{ jsOrigin(['/catalog/view/javascript/jquery/swiper/js/swiper.jquery.min.js'], 1) }}
+<div class="buyer-seller-store">
+  <div class="store-name">
+    <span class="center-module store-line text-left">
+      {% if seller.avatar_show %}
+      <span class="store-image"><img src="{{ seller.avatar_show }}"></span>
+      {% endif %}
+      <div class="flex-group-cloum">
+        {% if is_giga_onsite %}
+        <div class="onsite-flag store-onsite pop-down-new store-onsite-top">
+          <span class="onsite-tag">On-Site</span>
+          <div class="pop-down top-25 small-triangle">
+            <div class="popover-content">
+              This sign means that all the products in this store are shipped from the Seller's own warehouse.
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        <div class="flex-group-cloum-top">
+          <span class="pop-down-new my-store">
+          <span class="text-larger text-bold p8-lr store-name-display-inherit">{{ seller.screenname }}
+            <i class="giga icon-V10_shouyeyouxiadown text-small text-bold"></i>
+            <i class="giga icon-V10_shouyeyouxiaTOP text-small text-bold none"></i>
+          </span>
+          <div class="pop-down text-small t-20">
+            <div class="arrow"></div>
+            <div class="default-flex">
+              <div class="interactions">
+                <div class="text-bold">Seller Performance:</div>
+                <div class="text-light score-list m10-t">
+                  <div class="flex-layout">
+                    <img class="mr-octal1" src="image/icons/return-rate.png">
+                    <span> Return Rate:&nbsp;</span>
+                    <span class="text-color-normal">
+                      {{ return_info.store_return_rate_mark }}
+                    </span>
+                    {% if return_info.store_return_rate_mark == 'N/A' %}
+                    &nbsp;<i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title="The volume of total units sold is not enough for judging return rate."></i>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="text-light score-list m10-t">
+                  <div class="flex-layout">
+                    <img class="mr-octal1" src="image/icons/return-arate.png">
+                    <span> Return Approval Rate:&nbsp;</span>
+                    <span class="text-color-normal">
+                      {% if return_info.return_approval_rate == 0 %}
+                        N/A
+                      {% elseif return_info.return_approval_rate > 90 %}
+                        High
+                      {% elseif return_info.return_approval_rate > 60 %}
+                        Moderate
+                      {% else %}
+                        Low
+                      {% endif %}
+                    </span>
+                    {% if return_info.return_approval_rate == 0 %}
+                    &nbsp;<i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" title="No RMA records."></i>
+                    {% endif %}
+                  </div>
+                </div>
+                {% if return_info.store_response_rate_mark %}
+                <div class="text-light score-list m10-t">
+                  <div class="flex-layout">
+                    <img class="mr-octal1" src="image/icons/response-rate.png">
+                    <span> Response Rate:&nbsp;</span>
+                    <span class="text-color-normal">
+                      {{ return_info.store_response_rate_mark }}
+                    </span>
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+              {# 评分数据展示 #}
+              {% if comprehensive|length > 0 %}
+              <div class="right-pop">
+                <div class="text-bold">GIGA Index:</div>
+                <div class="text-light score-list m10-t">
+                  {% for k,v in comprehensive %}
+                    <div class="m4-t flex-layout default-flex">
+                      <span>{{ v.title }}: </span>
+                      <div class="text-color-normal image-des">
+                        {% if v.compare == 0 %}
+                          <img src="image/icons/xia.png"> Below Average
+                        {% elseif v.compare == 1 %}
+                          <img src="image/icons/weibian.png"> Equal to Average
+                        {% else %}
+                          <img src="image/icons/shang.png"> Above Average
+                        {% endif %}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </span>
+        {% if score %}
+        <div class="store-score">
+          <span class="score text-less">{{ score }}</span>
+        </div>
+        {% endif %}
+        <div class="button-group flex-layout">
+          {% if needContactSeller %}
+          <a id="establish_btn" class="btn flex-layout" onclick="establishContact()"  title="If you want to contact this seller,please click this button to apply.">
+            <img class="m4-r" src="image/icons/jianlilianxi.png">&nbsp;
+            <span class="underline">Seller Affiliation</span>
+          </a>
+          {% endif %}
+          <a href="{{ url('message/seller/addMessage', {receiver_id: seller.customer_id}) }}" class="btn flex-layout">
+            <img class="m4-r" src="image/icons/xinfeng.png">&nbsp;
+            <span class="underline">Message Seller</span>
+          </a>
+          <a class="btn flex-layout onlineChatSellerTrigger" style="display: none">
+            <img class="m4-r" src="image/icons/xiaoxi.png">&nbsp;
+            <span class="underline">Online Chat</span>
+          </a>
+        </div>
+        </div>
+        {% if seller.store_code %}
+        <div class="flex-group-cloum-buttom p8-lr store-code">Store Code: {{ seller.store_code }}</div>
+        {% endif %}
+      </div>
+      {# 客户折扣 #}
+      {% if big_client_discount > 0 %}
+      <div class="right-discount" id="right-discount">
+        <div class="my-count"><span class="discount-content">{{100 - big_client_discount}}%</span><span>OFF</span></div>
+        <div>Exclusive discount</div>
+        <i class="giga icon-bangzhuzhongxin oris-tooltip" data-toggle="tooltip" title="The discount is not applicable to custom price, Rebates transactions and agreement reached via BID; only applicable to direct purchase via Quick View of Normal, Margin, Future Goods and Spot Price transactions."></i>
+      </div>
+      {% endif %}
+    </span>
+  </div>
+  {# 标记吸顶位置 #}
+  <div id="storeMenuMark"></div>
+  <div class="store-menu" id="storeMenu">
+    <div class="center-module">
+      <div class="store-menus">
+        {% for menu in menus %}
+          {% if menu.visible %}
+            <span class="store-tab {{ menu.active ? ' active' : '' }}">
+              <a href="{{ menu.url }}">{{ menu.name }}
+                {% if menu.isMarketingTime == 1 %}
+                <img src="{{ asset('image/marketing_time_limit/hot.png') }}" class="limit-store-png">
+                {% endif %}</a>
+            </span>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="pos-rela pull-right side-list">
+        <input id="MenuSearch" type="text" name="storeSearch" class="btn-outline-clear"  value='{{ search }}' placeholder="Search in This Store" autocomplete="off" />
+        <span class="menu-search">
+          <i class="giga icon-V10_sousuotubiao"></i>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+{# 面包屑导航 #}
+{% set _breadcrumbs = this.params('breadcrumbs') == 'hide' ? {} : (this.params('breadcrumbs') ?: ['storeHome', 'current']) %}
+{% if _breadcrumbs and has_store_home %}
+  <ul class="breadcrumb center-module">
+    {% for breadcrumb in _breadcrumbs %}
+      {% if breadcrumb == 'storeHome' %}
+        <li><a href="{{ url('seller_store/home', {id: seller.customer_id}) }}">Store Home</a></li>
+      {% elseif breadcrumb == 'current' %}
+        <li><a href="{{ url('') }}">{{ this.getTitle() }}</a></li>
+      {% else %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+{% endif %}
+{# 大客户折扣弹框 #}
+{% if big_client_discount > 0 %}
+<div class="modal fade big-client-modal" id="bigClientDisModal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="client-title">
+    <div class="dialog-close-btn" data-dismiss="modal"></div>
+      Exclusive Discount For This Store
+    </div>
+    <div class="client-discount">
+      <div class="font-num">{{ 100 - big_client_discount }}</div>
+      <div class="num-per">
+        <span>%</span>
+        <span>OFF</span>
+      </div>
+    </div>
+    <div class="client-subtitle">The discount is not applicable to custom price, Rebates transactions and agreement reached via BID; only applicable to direct purchase via Quick View of Normal, Margin, Future Goods and Spot Price transactions.</div>
+  </div>
+</div>
+{% endif %}
+{% apply script %}
+<script type="text/javascript">
+  $(initStoreMenu);
+
+  function initStoreMenu() {
+    // bigClientDiscountShowed每个窗口刷新只弹出一次
+    if (!sessionStorage.getItem('bigClientDiscountShowed')) {
+      initClientDisModal();
+    }
+    $('.oris-tooltip').tooltip();
+    // 店铺menu吸顶
+    fixStoreMenu();
+    initSearch();
+    initSwiper();
+  }
+  // 店铺大客户折扣弹框
+  function initClientDisModal() {
+    var bigDiscount = {{ big_client_discount }};
+    if (bigDiscount && bigDiscount > 0) {
+      // 首先禁止页面滚动
+      $('#bigClientDisModal').modal();
+      // 三秒动效消失
+      setTimeout(()=>{
+        $('body,html').animate({
+          scrollTop: 0
+        }, 200);
+        var left = $('#right-discount').offset().left ? $('#right-discount').offset().left - 80 : 100;
+        $('#bigClientDisModal').find('.modal-dialog').animate({
+          top: 0,
+          left: left + 'px',
+          opacity: 0,
+        }, 500, function() {
+          $('#bigClientDisModal').modal('hide');
+          sessionStorage.setItem('bigClientDiscountShowed', true);
+        }).addClass('animat-modal');
+
+      },3000)
+
+    }
+  }
+
+  function fixStoreMenu() {
+    $(window).scroll(function(e) {
+      // 目标元素
+      var $menu = $('#storeMenu');
+      // 元素距离顶部的距离
+      var toTop = $('#storeMenuMark').offset().top - $(window).scrollTop();
+      if (toTop <= 0) {
+        // 吸顶
+        $('#storeMenuMark').addClass('mark-h40');
+        $menu.addClass('fixed-menu');
+      } else {
+        $('#storeMenuMark').removeClass('mark-h40');
+        $menu.removeClass('fixed-menu');
+      }
+    })
+  }
+
+  // 店铺内搜索
+  function initSearch() {
+    // enter键触发查询
+    $('body').on('keyup', '#MenuSearch', function(event) {
+      if (event.keyCode === 13) {
+        doSearchInStore();
+      }
+    }).on('click', '#storeMenu .menu-search', function() {
+      console.log('initSearch');
+      doSearchInStore();
+    })
+  }
+
+  function doSearchInStore() {
+    // 店铺内搜索
+    let url = '{{ url('seller_store/products', {id: seller.customer_id}) }}';
+    let value = $('#MenuSearch').val().trim();
+    let limit = 100;
+    if (value.length > 0) {
+      if (value.length > limit) {
+        value = $.trim(value.substr(0, limit));
+      }
+      url += ('&search=' + value);
+      window.location.href = url;
+    }
+  }
+
+  // 图片轮播初始化
+  function initSwiper() {
+    // 首先判断页面是否有swiper-container
+    if ($('.swiper-container').length === 0) {
+      return;
+    }
+    // 获取swiper-container所在范围
+    $('.swiper-container').each(function() {
+      // 最近一层父级section
+      var moduleSwiper = []; // 轮播空数组
+      var $section = $(this).closest('section');
+      var mIndex = $(this).closest('section')[0].getAttribute('data-mIndex');
+      swiperEachDom(mIndex, moduleSwiper);
+    })
+  }
+
+  function swiperEachDom(mIndex, moduleSwiper) {
+    var sectionId = `#module${mIndex}`;
+    moduleSwiper[mIndex] = new Swiper(`${sectionId} .swiper-container`, {
+      slidesPerView: 1,
+      pagination: `${sectionId} .action-pagination`,
+      paginationClickable: true,
+      nextButton: `${sectionId} .swiper-button-next`,
+      prevButton: `${sectionId} .swiper-button-prev`,
+      spaceBetween: 0,
+      autoplay: 5000,
+      autoplayDisableOnInteraction: true,
+      loop: true
+    });
+    var that = this;
+    $(`${sectionId} .swiper-container`).mouseenter(function() {
+      moduleSwiper[mIndex].stopAutoplay();
+    }).mouseleave(function() {
+      moduleSwiper[mIndex].startAutoplay();
+    });
+  }
+
+  {% if needContactSeller %}
+  function establishContact() {
+    var postData = {
+      'subject': 'Establish Contact',
+      'message': 'The other party requests to establish contact with you, do you agree?',
+      'seller_id': '{{seller.customer_id}}'
+    };
+    //发送站内信
+    $.ajax({
+      url: '{{ url('customerpartner/profile/establishContact') }}',
+      data: postData,
+      async: false,
+      type: 'POST',
+      dataType: 'json',
+      success: function(json) {
+        if (json['error']) {
+          $.toast({
+            heading: false,
+            text: json['error'],
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false
+          });
+        } else if (json['success']) {
+          $.toast({
+            heading: false,
+            text: json['success'],
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false
+          });
+        }
+      },
+    })
+  }
+  {% endif %}
+
+</script>
+{% endapply %}

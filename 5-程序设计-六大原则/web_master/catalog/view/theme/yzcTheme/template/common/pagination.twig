@@ -1,0 +1,23 @@
+<div class="row" style="margin-right: 0">
+  <div class="col-sm-12 text-right">
+    <ul id="{{ page_id }}"></ul>
+  </div>
+</div>
+<script>
+    //分页
+    $('#{{ page_id }}').bootstrapPaginator({
+        /*当前使用的是3版本的bootstrap*/
+        bootstrapMajorVersion: 3,
+        /*当前页*/
+        currentPage: {{ page }},
+        /*一共多少页*/
+        totalPages: {{ total_page }},
+        /*页面上最多显示几个含数字的分页按钮*/
+        numberOfPages: 5,
+        total: {{ total_num }},
+        rowsOfPage: {{ page_limit }},
+        onPageClicked: function (event, originalEvent, type, page) {
+            handlePage(event, originalEvent, type, page);
+        }
+    });
+</script>

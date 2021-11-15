@@ -1,0 +1,136 @@
+.list-box{
+    padding: 20px !important;
+    margin-right: 0 !important;
+}
+.list-title{
+    background: rgba(236, 241, 252, 1);
+    border-style: solid;
+    border-color: rgba(191, 212, 247, 1);
+    border-radius: 4px;
+    color: #183464;
+    padding: 10px 10px 0 10px;
+    border-width: 1px;
+}
+.list-echart{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+.display-flex{
+    display: flex;
+}
+.list-btn-box{
+    padding-right: 50px;
+}
+.list-tab-btn{
+    height: 34px;
+    background-color: rgba(255, 255, 255, 1);
+    box-sizing: border-box;
+    border: 1px solid  rgba(215, 215, 215, 1);
+    color: #333;
+    padding:8px 20px;
+    line-height: 16px;
+    display: block;
+    cursor: pointer;
+}
+.list-tab-btn-active{
+    border: 1px solid  rgba(58, 117, 220, 1);
+    color: #3A75DC;
+}
+.echart-box{
+    width: 75%;
+    height: 300px;
+}
+.echart-info{
+    width: 25%;
+}
+.echart-info .table thead > tr > td, .table tbody > tr > td{
+    border-bottom: none;
+    height: 40px;
+}
+.echart-info .table tbody > tr > td,
+.echart-info .table tfoot > tr > td{
+    color: #183464;
+    border: unset !important;
+}
+.echart-info .table tbody > tr td:first-child{
+    font-weight: 400;
+    font-size: 14px;
+}
+.echart-info .table tbody > tr td:last-child,
+.echart-info .table tfoot > tr td:last-child{
+    font-weight: bold;
+    text-align: right;
+    padding-right: 60px;
+}
+.echart-info .table tbody > tr:last-child td{
+  padding-bottom: 16px;
+}
+.echart-info .table tfoot{
+    border-top: 2px solid #183464;
+}
+.echart-info .table tfoot > tr:first-child td{
+    padding-top: 16px;
+}
+.list-bill-title{
+    color: #333;
+    font-weight: 700;
+    font-size: 12px;
+}
+#myListEchart{
+    width: 100%;
+    height: 300px;
+    margin-top: 40px;
+}
+.list-table{
+    margin-top: 20px !important;
+}
+
+.margin10{
+    margin:20px 0;
+}
+
+.table-btn{
+    height: 40px;
+    line-height: 22px;
+    margin-left: 20px;
+}
+
+.font-size14{
+    font-size: 14px;
+}
+
+.font-word{
+    font-weight: 700;
+    color: #333;
+}
+
+#myTable thead tr th{
+    font-weight: 700;
+    color: #333;
+    font-size: 14px;
+}
+.amount-color{
+    color: #183464B2;
+}
+.table-bordered{
+    border: none;
+}
+.table > thead > tr > th,table > tbody > tr >td{
+    border: none;
+    border-bottom: 1px solid rgb(238, 238, 238) !important;
+}
+
+.fixed-table-pagination{
+    display: inline-block;
+    float: right;
+}
+
+.bootstrap-select .dropdown-menu{
+    max-height: 200px !important;
+}
+
+.loading-text{
+    font-size: 20px !important;
+}

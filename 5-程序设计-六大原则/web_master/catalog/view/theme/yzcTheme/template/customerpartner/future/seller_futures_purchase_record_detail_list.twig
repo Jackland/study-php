@@ -1,0 +1,54 @@
+{% for key,value in lists %}
+  <div class="delivery-list-detail" style="">
+    <div style="width: 12%">
+      <a class="link" href="index.php?route=account/customerpartner/orderinfo&order_id={{ value.order_id }}"
+         target="_blank">{{ value.order_id }}</a>
+      {% if value.delivery_type == 2 %}
+        <i class="giga icon-cwf" style="color:#1f5268;" data-toggle="tooltip" data-original-title="{{ cwf }}"></i>
+      {% endif %}
+    </div>
+    <div style="width: 11%">{{ value.quantity }}</div>
+    <div style="width: 12%">
+      {#{% if is_europe %}
+        <i class="giga icon-vat"></i>
+      {% endif %}#}
+      {{ value.unit_price_show }}
+    </div>
+    {% if is_europe %}
+      <div style="width: 12%">{{ value.service_fee_show }}</div>
+    {% endif %}
+    <div class="freight-price" style="width: 12%;position: relative">
+      <span> {{ value.freight_show }}<span class="caret"></span></span>
+      <div class="dropshipping-service">
+        {% if value.isCollectionFromDomicile %}
+          <div class="list-title">Fulfillment for pickup service</div>
+        {% elseif (value.delivery_type==2) %}
+          <div class="list-title">Fulfillment for Cloud Wholesale Fulfillment</div>
+        {% else %}
+          <div class="list-title">Fulfillment for drop shipping service</div>
+        {% endif %}
+        <div><span class="col-sm-7">{{ base_freight_label }}</span> <span class="col-sm-5 list-value">{{ value.freight_tips_show }}</span>
+        </div>
+        <div><span class="col-sm-7">{{ package_fee_label }}</span> <span class="col-sm-5 list-value">{{ value.package_fee_tips_show }}</span>
+        </div>
+      </div>
+    </div>
+    <div style="width: 12%">
+      <span> {{ value.campaign_discount_total_price_show }}</span>
+      {% if value.campaign_discount_total_price_show != value.total_price_show %}
+        <br><span style="font-size: 13px; text-decoration: line-through;color: #888;"> {{ value.total_price_show }}</span>
+      {% endif %}
+    </div>
+    <div style="width: 15%">
+      {% for k,v in value.r_order_id_list %}
+        <div>
+          <a class="link" href="index.php?route=account/customerpartner/rma_management/rmaInfo&rmaId={{ value.r_id_list[k] }}"
+             target="_blank">{{ v }}</a>
+        </div>
+      {% endfor %}
+    </div>
+    <div style="width: 15%">
+      {{ value.update_day }} <span class="text-update-hour" style="color: #aaa">{{ value.update_hour }}</span>
+    </div>
+  </div>
+{% endfor %}

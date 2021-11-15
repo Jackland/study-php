@@ -1,0 +1,149 @@
+<style>
+    .fr {
+        float: right;
+    }
+
+    .seller-msg, .buyer-msg {
+        overflow: hidden;
+    }
+
+    .talk .logo img {
+        height: 40px;
+        width: 40px;
+        border-radius: 20px;
+        background: #aaa;
+        margin: 0 6px;
+    }
+
+    .talk .logo span {
+        display: inline-block;
+        height: 40px;
+        width: 40px;
+        border-radius: 20px;
+        background: #A1ACC0;
+        color: #fff;
+        text-align: center;
+        line-height: 40px;
+        font-weight: bold;
+    }
+
+    .talk {
+        margin-bottom: 10px;
+        color: #676767;
+    }
+
+    .inner {
+        /*min-width: 48%;*/
+        /*max-width: 85%;*/
+        width: 48%;
+    }
+
+    .fl .subject-content{
+        background-color:#fff0e6 ;
+        border: 1px solid #FA6400;
+    }
+    .fr .subject-content{
+        background-color:#F0F7e8 ;
+        border: 1px solid #65b017;
+    }
+    .subject-content {
+        position: relative;
+        border-radius: 5px;
+        padding: 5px 5px 50px 5px;
+        word-break: break-word;
+    }
+
+    .subject-author {
+        font-size: 14px;
+        padding-right: 10px;
+        margin: 10px 0 4px 0;
+    }
+
+    .fr .subject-author {
+        text-align: right;
+    }
+
+    .subject-author strong {
+        margin-right: 5px;
+    }
+
+    .fl {
+        float: left;
+
+    }
+
+    .frbg {
+        background: #fbfbfb;
+        border: 1px solid #afa7a7;
+    }
+
+    .fr {
+        float: right;
+    }
+
+    .clearfix {
+        zoom: 1;
+    }
+
+    .clearfix:after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+
+    .talk-list {
+        max-height: 500px;
+        overflow: auto;
+        border-radius: 4px;
+        border: 1px solid #c4cad5;
+        padding: 0 15px;
+    }
+    .fr .icon{
+        float: right;
+        margin-left: 5px;
+    }
+</style>
+
+<div class="message">
+    <div class="title">Message</div>
+
+    {% if messages %}
+        <div class="talk-list" style="">
+            {% for message in  messages %}
+                <div class="talk clearfix">
+                    <div class="inner {% if  customerId==message.customer_id %} fr {% else %}  fl {% endif %}  ">
+                        <h2 class="subject-author">
+                            <i class="giga icon-account-blue icon"></i>
+                            {% if  customerId==message.customer_id %}
+                                <strong>&nbsp;&nbsp;Me</strong>
+                                <i class="giga icon-Action-Time"></i>
+                                {{ message.create_time }}
+                            {% else %}
+                                {{ message.create_time }}
+                                <i class="giga icon-Action-Time"></i>
+                                <strong>
+                                    {% if message.customer.username %}
+                                        {{ message.customer.username }}
+                                        {% if  message.customer.user_number %}
+                                            ({{ message.customer.user_number }})
+                                        {% endif %}
+                                    {% else %}
+                                        System
+                                    {% endif %}
+                                </strong>
+                            {% endif %}
+                        </h2>
+                        <div class="subject-content frbg  ">
+                            {{ message.message }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-record">
+            No records
+        </div>
+    {% endif %}
+
+</div>

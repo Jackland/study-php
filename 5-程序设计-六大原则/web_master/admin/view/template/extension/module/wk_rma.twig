@@ -1,0 +1,363 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right" style="position:relative;">
+        <a onclick="confirm('{{ text_refresh_module }}') ? document.location.href='{{ refresh }}' : false;" data-toggle="tooltip" class="btn btn-warning" title="{{ button_refresh }}" >
+          <i class="fa fa-refresh"></i>
+        </a>
+        <a onclick="confirm('{{ text_drop_module }}') ? document.location.href='{{ uninstall }}' : false;" data-toggle="tooltip" class="btn btn-danger" title="{{ button_drop }}" >
+          <i class="fa fa-trash"></i>
+        </a>
+        <a href="http://webkul.com/blog/opencart-product-return-rma-2" target="_blank" title="Blog" data-toggle="tooltip" class="btn btn-lg mp-button">Blog</a>
+        <a href="https://webkul.uvdesk.com/" target="_blank" title="Generate Ticket" data-toggle="tooltip" class="btn btn-lg mp-button mp-demo">Generate Ticket</a>
+        <button type="submit" form="form-account" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <button class="btn btn-default dropdown-toggle" type="button" id="rma-option" data-toggle="dropdown" aria-expanded="true">
+          <span><i class="fa fa-cogs"></i></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="rma-option">
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ manage_rma }}">{{ text_rma_manage }}</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ status_rma }}">{{ text_rma_add_status }}</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ reason_rma }}">{{ text_rma_add_reasons }}</a></li>
+        </ul>
+
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    {% if (error_warning) %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% for key,value in error %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ value }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endfor %}
+    {% if (success) %}
+    <div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+            <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-account" class="form-horizontal">
+              <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab-general" data-toggle="tab">{{ tab_general }}</a></li>
+                <li><a href="#tab-mail" data-toggle="tab">{{ tab_mail }}</a></li>
+                <li><a href="#tab_mailkeyowrds" data-toggle="tab">{{ tab_mailkeyowrds }}</a></li>
+              </ul>
+
+              <div class="tab-content">
+                <div class="tab-pane active" id="tab-general">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-status">{{ text_rma_enable }}</label>
+                    <div class="col-sm-10">
+                      <select name="wk_rma_status" id="input-status" class="form-control">
+                        {% if (wk_rma_status) %}
+                        <option value="1" selected="selected">{{ text_enabled }}</option>
+                        <option value="0">{{ text_disabled }}</option>
+                        {% else %}
+                        <option value="1">{{ text_enabled }}</option>
+                        <option value="0" selected="selected">{{ text_disabled }}</option>
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-time"><span data-toggle="tooltip" title="{{ text_rma_time_info }}">{{ text_rma_time }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-10">
+                      <input type="number" min="0" step="1" name="wk_rma_system_time" id="input-time" value="{{ wk_rma_system_time }}" class="form-control"/>
+                    </div>
+                  </div>
+
+                  <div class="form-group required {% if (error['error_system_orders'] is defined and error['error_system_orders']) %} {{ "has-error" }} {% endif %}">
+                    <label class="col-sm-2 control-label" for="input-order-status"><span data-toggle="tooltip" title="{{ text_order_status_info }}">{{ text_order_status }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-10">
+                      <div class="well well-sm" style="height: 150px; overflow: auto;">
+                        {% if (order_status) %}
+                          {% for orders in order_status %}
+                            <div class="checkbox">
+                              <label>
+                                {% if ((wk_rma_system_orders is iterable) and (orders['order_status_id'] in wk_rma_system_orders)) %}
+                                <input type="checkbox" name="wk_rma_system_orders[]" value="{{ orders['order_status_id'] }}" checked="checked" />
+                                {{ orders['name'] }}
+                                {% else %}
+                                <input type="checkbox" name="wk_rma_system_orders[]" value="{{ orders['order_status_id'] }}" />
+                                {{ orders['name'] }}
+                                {% endif %}
+                              </label>
+                            </div>
+                          {% endfor %}
+                        {% endif %}
+                      </div>
+                      <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{{ text_select_all }}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{{ text_unselect_all }}</a>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-ex-type">{{ text_image_extenstion }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="wk_rma_system_image" id="input-ex-type" value="{{ wk_rma_system_image }}" placeholder="{{ text_extenstion_holder }}" class="form-control"/>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-ex-type">{{ text_file_extenstion }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="wk_rma_system_file" id="input-ex-type" value="{{ wk_rma_system_file }}" placeholder="{{ text_extenstion_holder }}" class="form-control"/>
+                    </div>
+                  </div>
+
+                  <div class="form-group required {% if (error['error_system_size'] is defined and error['error_system_size']) %} {{ "has-error" }} {% endif %}">
+                    <label class="col-sm-2 control-label" for="input-ex-size"><span data-toggle="tooltip" title="{{ text_size_info }}">{{ text_extenstion_size }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-10">
+                      <input type="text" name="wk_rma_system_size" id="input-ex-size" value="{{ wk_rma_system_size }}" placeholder="200" class="form-control"/>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-information"><span data-toggle="tooltip" title="{{ text_rma_info_policy_info }}">{{ text_rma_info_policy }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-10">
+                      <select name="wk_rma_system_information" class="form-control" id="input-information">
+                          <option value=""></option>
+                          {% if (information) %}
+                            {% for info in information %}
+                              <option value="{{ info['information_id'] }}" {% if (wk_rma_system_information == info['information_id']) %} {{ 'selected' }}{% endif %} > {{ info['title'] }} </option>
+                            {% endfor %}
+                          {% endif %}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-theme">{{ entry_theme }}</label>
+                    <div class="col-sm-10">
+                      <select name="wk_rma_voucher_theme" id="input-theme" class="form-control">
+                        {% for voucher_theme in voucher_themes %}
+                        {% if (voucher_theme['voucher_theme_id'] == wk_rma_voucher_theme) %}
+                        <option value="{{ voucher_theme['voucher_theme_id'] }}" selected="selected">{{ voucher_theme['name'] }}</option>
+                        {% else %}
+                        <option value="{{ voucher_theme['voucher_theme_id'] }}">{{ voucher_theme['name'] }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group required {% if (error['error_address'] is defined and error['error_address']) %} {{ "has-error" }} {% endif %}">
+                    <label class="col-sm-2 control-label" for="input-policy"><span data-toggle="tooltip" title="{{ text_rma_return_add_info }}">{{ text_rma_return_add }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-10">
+                      <textarea name="wk_rma_address" class="form-control" id="input-policy" rows="5">{{ wk_rma_address }}</textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane" id="tab-mail">
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-new_return_admin_mail"><span data-toggle="tooltip" title="{{ entry_new_return_admin_mail_info }}">{{ entry_new_return_admin_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_new_return_admin_mail" id="input-new_return_admin_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_new_return_admin_mail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-new_return_seller_mail"><span data-toggle="tooltip" title="{{ entry_new_return_seller_mail_info }}">{{ entry_new_return_seller_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_new_return_seller_mail" id="input-new_return_seller_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_new_return_seller_mail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-new_return_customer_mail"><span data-toggle="tooltip" title="{{ entry_new_return_customer_mail_info }}">{{ entry_new_return_customer_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_new_return_customer_mail" id="input-new_return_customer_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_new_return_customer_mail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-status_to_customer_mail"><span data-toggle="tooltip" title="{{ entry_status_to_customer_mail_info }}">{{ entry_status_to_customer_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_status_to_customer_mail" id="input-status_to_customer_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_status_to_customer_mail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-status_to_seller_mail"><span data-toggle="tooltip" title="{{ entry_status_to_seller_mail_info }}">{{ entry_status_to_seller_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_status_to_seller_mail" id="input-status_to_seller_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_status_to_seller_mail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-status_to_admin_mail"><span data-toggle="tooltip" title="{{ entry_status_to_admin_mail_info }}">{{ entry_status_to_admin_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_status_to_admin_mail" id="input-status_to_admin_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_status_to_admin_mail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-message_to_seller_mail"><span data-toggle="tooltip" title="{{ entry_message_to_seller_mail_info }}">{{ entry_message_to_seller_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_message_to_seller_mail" id="input-message_to_seller_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_message_to_seller_mail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-message_to_admin_mail"><span data-toggle="tooltip" title="{{ entry_message_to_admin_mail_info }}">{{ entry_message_to_admin_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_message_to_admin_mail" id="input-message_to_admin_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_message_to_admin_mail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-message_to_customer_mail"><span data-toggle="tooltip" title="{{ entry_message_to_customer_mail_info }}">{{ entry_message_to_customer_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_message_to_customer_mail" id="input-message_to_customer_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_message_to_customer_mail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-message_to_seller_adminmail"><span data-toggle="tooltip" title="{{ entry_message_to_seller_adminmail_info }}">{{ entry_message_to_seller_adminmail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_message_to_seller_adminmail" id="input-message_to_seller_adminmail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_message_to_seller_adminmail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-label_to_customer_mail"><span data-toggle="tooltip" title="{{ entry_label_to_customer_mail_info }}">{{ entry_label_to_customer_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_label_to_customer_mail" id="input-label_to_customer_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_label_to_customer_mail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label" for="input-message_to_admin_seller_mail"><span data-toggle="tooltip" title="{{ entry_message_to_admin_seller_mail_info }}">{{ entry_message_to_admin_seller_mail }}<i class="giga icon-V10-wenhaotishi"></i></span></label>
+                    <div class="col-sm-9">
+                      <select name="wk_rma_message_to_admin_sellermail" id="input-message_to_admin_seller_mail" class="form-control">
+                        <option value=""></option>
+                        {% if (mails is defined and mails) %}
+                          {% for mail in mails %}
+                            <option value="{{ mail['id'] }}" {% if (wk_rma_message_to_admin_sellermail == mail['id']) %} {{ 'selected' }}{% endif %}>  {{ mail['name'] }} </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane" id="tab_mailkeyowrds">
+                  <table class="table table-hover">
+                    <thead>
+                    <tr>
+                      <td>{{ entry_for }}</td>
+                      <td>{{ entry_code }}</td>
+                    </tr>
+                    </thead>
+                    {% for help in mail_help %}
+                      <tr>
+                        <td>{{ help|replace({'}':'','{':'','_':' ','config':'store'})|capitalize }}</td>
+                        <td>{{ help }}</td>
+                      </tr>
+                    {% endfor %}
+                  </table>
+                </div>
+             </div>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}
+<style type="text/css">
+    .mp-button{
+    background-color: #0667B4;
+    color: white;
+    border-radius: 2px;
+    font-size: 12px;
+  }
+
+  .mp-button:focus{
+    outline: none !important;
+  }
+
+  .mp-demo{
+    background-color: #2196F3;
+  }
+</style>

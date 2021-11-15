@@ -1,0 +1,513 @@
+{% trans_default_category 'catalog/view/account/seller_bill/bill' %}
+{{ header }}
+<script src="catalog/view/javascript/echarts/echarts.min.js?v={{ app_version }}" type="text/javascript"></script>
+{#<script src="/catalog/view/javascript/bootstrap-table/bootstrap-table.min.js?v={{ app_version }}"></script>#}
+{#<link rel="stylesheet" href="/catalog/view/javascript/bootstrap-table/bootstrap-table.min.css?v={{ app_version }}">#}
+<link rel="stylesheet" href="catalog/view/javascript/bootstrap-table/bootstrap-table-1.15.2.css">
+<script type="text/javascript" src="catalog/view/javascript/bootstrap-table/bootstrap-table-1.15.2.js"></script>
+{{ cssOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css',
+    'admin/view/stylesheet/totalStyle.css',
+]) }}
+{{ jsOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js',
+]) }}
+{{ cssOrigin(['catalog/view/theme/yzcTheme/stylesheet/account/seller_bill/list.css']) }}
+
+{{ css(['/css/admin/app.css','/css/common/common.css']) }}
+
+
+
+{{ separate_column_left }}
+<div class="container-fluid giga-content" id="content" style="margin-left: 235px">
+    <!-- layer panels end -->
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <h1>{{ __('结算列表', [], 'catalog/document') }}</h1>
+
+    <div id="box-shadow" class="list-box">
+        <div class="list-title">
+            {% if is_onsite_seller %}
+                <p>{{ __('oniste_seller_notice_one') }}</p>
+                <p>{{ __('oniste_seller_notice_one_one') }}</p>
+                <p>{{ __('oniste_seller_notice_one_two') }}</p>
+                <p>{{ __('oniste_seller_notice_one_three') }}</p>
+                <p>{{ __('oniste_seller_notice_two') }}</p>
+                <p>{{ __('oniste_seller_notice_three') }}</p>
+                <p>{{ __('oniste_seller_notice_four') }}</p>
+                <p>{{ __('oniste_seller_notice_four_one') }}</p>
+                <p>{{ __('oniste_seller_notice_four_two') }}</p>
+                <p>{{ __('oniste_seller_notice_four_five') }}</p>
+                <p>{{ __('oniste_seller_notice_four_six') }}</p>
+                <p>{{ __('oniste_seller_notice_four_seven') }}</p>
+            {% else %}
+                <p>{{ __('notice_one') }}</p>
+                <p>{{ __('notice_two') }}</p>
+                <p>{{ __('notice_three') }}</p>
+            {% endif %}
+        </div>
+
+        {#   图表   #}
+        <div class="list-echart" id="myChartBox" style="display: none">
+            {#   柱状图    #}
+            <div class="echart-box">
+                <div class="list-btn-box">
+                    <span class="pull-left"><span class="font-size14 font-word">{{ __('费用趋势') }}</span>{{ __('（单位：美元）') }}</span>
+                    <span class="pull-right display-flex">
+                        <span class="list-tab-btn list-tab-btn-active" data-id="1">{{ __('近三月') }}</span>
+                        <span class="list-tab-btn" data-id="2">{{ __('近半年') }}</span>
+                    </span>
+                </div>
+                <div id="myListEchart"></div>
+            </div>
+            {#   账单详情     #}
+            <div class="echart-info">
+                <p class="list-bill-title"><span id="settlementTime"></span><span id="status_format"></span></p>
+                <table class="table border-none" id="billInfo"></table>
+            </div>
+        </div>
+    </div>
+
+    {#   列表   #}
+    <div class="m20-t">
+        <div id="box-shadow" class="list-table list-box">
+            {#    查询条件    #}
+            <div class="oris-row">
+                <div class="oris-col-4 oris-select">
+                    <label for="input-period">{{ __('结算周期') }}</label>
+                    <select name="input-period" id="input-period" class="selectpicker">
+                        <option value="">{{ __('全部结算周期') }}</option>
+                        {% for item in settlement_list %}
+                            <option value="{{ item.id }}">{{ item.date_format }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="oris-col-4">
+                    <label for="orderId">{{ __('结算单编号') }}</label>
+                    <input type="text" name="orderId" placeholder="{{ __('请输入结算单编号') }}"
+                           id="orderId" class="oris-input">
+                </div>
+                <div class="oris-col-4 oris-select">
+                    <label for="status">{{ __('结算单状态') }}</label>
+                    <select name="status" id="status" class="selectpicker" multiple>
+                        {% for key,value in settlement_status %}
+                            <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="oris-row pull-right m20-t">
+                <button type="button" class="oris-button oris-button-bigger width80" onclick="searchList()">{{ __('筛选') }}</button>
+                <button type="button" class="oris-button oris-button-default" id="downloadFile"><i class="giga icon-xiazai1"></i></button>
+            </div>
+            {#    表格    #}
+            <table class="table table-hover" id="myTable" style="width: 100%;"></table>
+        </div>
+    </div>
+</div>
+<script>
+    // 选中的柱状图下标
+    var clickIndex = '';
+    // 图表数据
+    var tableList = [];
+    // 表格数据
+    var tableData = [];
+
+    // series
+    var seriesData = [];
+    // xAxis
+    var xAxisData = [];
+
+    var minNum = 0;
+    var maxNum = 0;
+
+    var total = 0;
+
+    $(function () {
+        $('.status').selectpicker();
+        $('#status').selectpicker('val', [0,1,2,3]);
+        getEchartData();
+        searchList();
+    });
+
+    // 加载echart图表
+    function loadEchart() {
+        var myEchart = echarts.init(document.getElementById('myListEchart'));
+        // 渲染之前清空之前的数据
+        myEchart.clear();
+        var option = getOption();
+        myEchart.setOption(option);
+
+        // 柱状图点击事件
+        myEchart.on('click',params => {
+            //点击的柱子的名称
+            clickIndex = params.dataIndex;
+            //柱形图重构
+            myEchart.setOption(getOption());
+        });
+    };
+
+    // 获取图表数据
+    function getOption() {
+        return option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'none'        // 默认为直线，可选为：'line' | 'shadow'
+                },
+                position: function(point, params, dom, rect, size) {
+                   if(tableList.length==1){
+                       return ['53%', '30%'];
+                   }
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: xAxisData,
+                axisTick : {show: false},//去掉刻度
+                axisLine:{	//---坐标轴 轴线
+                    show: true ,
+                    lineStyle:{
+                        color: '#dcdcdc',
+                        width:2,
+                        type:'solid',
+                    },
+                },
+                axisLabel: {
+                    interval:(i,v)=>true,
+                    // rotate:15,
+                    color: '#7f7f7f',
+                    margin: 20,
+                    borderWidth:0,
+                    formatter:function (params) {
+                        var arr = params.split(' - ');
+                        return arr[0] + '\n'+ '~' + '\n'+arr[1];
+                    }
+                },
+            },
+            yAxis: {
+                // min: minNum,
+                // maxNum: minNum,
+                axisLine: {show:false},
+                axisTick : {show: false},//去掉刻度
+                splitLine:{      //去掉背景水平网格线
+                    show:true,
+                    lineStyle:{
+                        color: '#dcdcdc',
+                        width:1,
+                        type:'dashed',
+                        opacity: 0.5
+                    },
+                },
+            },
+            grid: {
+                bottom: 10,
+                x: 50,
+                x2: 50,
+                y: 20,
+                containLabel: true
+            },
+            series: [
+                {
+                    type: 'bar',
+                    stack: 'one',
+                    barWidth: '25px',
+                    data: seriesData.map(item =>{
+                        return {
+                            value: item,
+                            label: {
+                                // 设置显示label
+                                show: true,
+                                // 设置label的位置
+                                position: Number(item)>=0?'top':'bottom',
+                                color: '#7F7F7F'
+                            },
+                        }
+                    }),
+                    itemStyle:{
+                        normal: {
+                            color:function(params){
+                                if(clickIndex!=params.dataIndex){
+                                    return "#3A75DC";
+                                }
+                                // 根据点击事件产生的name来判断，设置背景色
+                                if (clickIndex === params.dataIndex&&params.value) {
+                                    // 改变右侧的数据
+                                    changeRightDetail(params.dataIndex);
+                                    return '#677999';
+                                }
+                                return "#3A75DC";
+                            },
+                        }
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            color: '#375acd',   //hover时改变柱子颜色
+                            borderWidth: 4,
+                            borderColor: '#375acd',
+                            borderType: 'solid'
+                        }
+                    },
+                }
+            ]
+        }
+    };
+
+    // 监听图表切换（近三月，近半年）
+    $(".list-tab-btn").on('click',function () {
+       $(".list-tab-btn").removeClass('list-tab-btn-active');
+       $(this).addClass('list-tab-btn-active');
+       var type = $(this).attr('data-id');
+        // 获取查询数据，重新渲染图表
+        getEchartData(type);
+    });
+
+    // 切换图表右侧明细
+    function changeRightDetail(i) {
+        if(tableList.length>0){
+            $("#settlementTime").text();
+            var data = tableList[i].list;
+            var html,tbody,tfoot;
+            for(var key in data){
+                tbody+= `<tr><td>${data[key].item_name}</td><td>${data[key].amount_total_format}</td></tr>`;
+            }
+            tbody=`<tbody>${tbody}</tbody>`;
+            tfoot+=`<tr><td>${tableList[i].ending_balance_name}</td><td>${tableList[i].ending_balance_format}</td></tr>`;
+            if('{{ is_onsite_seller }}'){
+              tfoot+=`<tr><td>{{ __('本期订单冻结金额') }}</td><td>${tableList[i].frozen_total_format}</td></tr>`;
+              tfoot+=`<tr><td>{{ __('本期剩余冻结金额') }}</td><td>${tableList[i].last_frozen_format}</td></tr>`;
+            }
+            tfoot=`<tfoot>${tfoot}</tfoot>`;
+            html=`${tbody}${tfoot}`;
+
+            $("#billInfo").html(html);
+            $("#status_format").text('（'+tableList[i].status_format+'）');
+            $("#settlementTime").text(tableList[i].date_format);
+        }else{
+            $("#billInfo").html('');
+            $("#status_format").text('');
+            $("#settlementTime").text('');
+        }
+    };
+
+    var downloadQuery = {};
+
+    // 获取查询参数
+    function getQuery(){
+        let params = {
+            bill_id: $("#input-period").val(),
+            bill_no: $("#orderId").val().trim(),
+            status: $("#status").val()!=null?$("#status").val().toString():''
+        };
+        downloadQuery = params;
+        return params;
+    }
+
+    // 查询
+    function searchList() {
+        let data = getQuery();
+        let column = [];
+        if('{{ is_onsite_seller }}'){
+            column = [{
+                field: 'serial_number',
+                title: '{{ __('结算单编号') }}'
+            },{
+                title:'{{ __('结算周期') }}',
+                field: 'date_format',
+            },{
+                title:'{{ __('本期剩余冻结金额') }}',
+                field: 'frozen_total_format',
+                formatter: function (value, row, index) {
+                  return `<span class="amount-color">${row.last_frozen_format}</span>`
+                }
+            },{
+                field: 'total_format',
+                title: '{{ __('期末金额') }}',
+                formatter: function (value, row, index) {
+                  return `<span class="amount-color">${value}</span>`
+                }
+            },{
+                field: 'settlement_total_format',
+                title: '{{ __('结算金额') }}',
+                formatter: function (value, row, index) {
+                    return `<span class="amount-color">${value}</span>`
+                }
+            },{
+                field: 'confirm_date',
+                title: '{{ __('账单确认结算时间') }}',
+            },{
+                field: 'status_format',
+                title: '{{ __('结算单状态') }}'
+            },{
+                field: '',
+                title: '{{ __('操作') }}',
+                formatter: function (value, row, index) {
+                    var result = "";
+                    result += '<button class="btn detail-info" onclick="showDetail('+row.id+')">\n' +
+                        '<i class="giga icon-chakan1"></i>\n' +
+                        '</button>';
+                    return result;
+                }
+            }]
+        }else{
+            column = [{
+                field: 'serial_number',
+                title: '{{ __('结算单编号') }}'
+            },{
+                title:'{{ __('结算周期') }}',
+                field: 'date_format',
+            },{
+                field: 'total_format',
+                title: '{{ __('期末金额') }}',
+                formatter: function (value, row, index) {
+                    return `<span class="amount-color">${value}</span>`
+                }
+            },{
+                field: 'settlement_total_format',
+                title: '{{ __('结算金额') }}',
+                formatter: function (value, row, index) {
+                    return `<span class="amount-color">${value}</span>`
+                }
+            },{
+                field: 'confirm_date',
+                title: '{{ __('账单确认结算时间') }}',
+            },{
+                field: 'status_format',
+                title: '{{ __('结算单状态') }}'
+            },{
+                field: '',
+                title: '{{ __('操作') }}',
+                formatter: function (value, row, index) {
+                    var result = "";
+                    result += '<button class="btn detail-info" onclick="showDetail('+row.id+')">\n' +
+                        '<i class="giga icon-chakan1"></i>\n' +
+                        '</button>';
+                    return result;
+                }
+            }]
+        }
+
+        // 渲染前先销毁
+        $("#myTable").bootstrapTable('destroy');
+        $("#myTable").bootstrapTable({
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            url: "{{ url('account/seller_bill/bill_list/getSettlementList') }}",
+            method: 'post',
+            queryParams: function (params) {
+                params.page_size = params.limit;
+                params.page = parseInt((params.offset + 1) / params.limit + 1);
+                return {page_size:params.page_size,page:params.page,...data};
+            },
+            formatNoMatches:function(){
+                return "{{ __('暂无结算数据') }}";
+            },
+            onLoadSuccess: function (res) {
+                tableData = res.rows;
+                return false;
+            },
+            sidePagination: "server",
+            striped: true, // 是否显示行间隔色
+            pagination: true,
+            pageNumber: 1,
+            pageSize: 20,
+            pageList: [15, 20, 50, 100],
+            columns: column
+        });
+    };
+
+    // 下载
+    $("#downloadFile").on('click',function () {
+        if(tableData.length==0){
+            $.toast({
+                heading: false,
+                text: '{{ __('无下载数据，请重新筛选') }}',
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: 5000,
+                allowToastClose: false,
+                loader: false
+            });
+        }else{
+            var data = downloadQuery;
+            window.location.href = '{{ url('account/seller_bill/bill_list/download') }}'+'&bill_id='+data.bill_id+'&bill_no='+data.bill_no+'&status='+data.status;
+        }
+    });
+
+    // 查看账单明细-路由跳转
+    function showDetail(id) {
+        window.open('index.php?route=account/seller_bill/bill&bill_id='+id);
+    };
+
+    // 获取图表数据 type 1 近三月 2 近半年
+    function getEchartData(type) {
+        $.ajax({
+            type: 'post',
+            url: '{{ url('account/seller_bill/bill_list/getSettlementTrend') }}',
+            data: {type: type},
+            success:function (res) {
+                seriesData = [];
+                xAxisData = [];
+                if(res.code == 200){
+                    if(res.data){
+                        $("#myChartBox").show();
+                        var data =res.data.list;
+                        tableList=res.data.list;
+                        clickIndex = data.length-1;
+                        for(var i in data){
+                            if(data[i].ending_balance<minNum){
+                                minNum = data[i].ending_balance;
+                            }
+                            if(data[i].ending_balance>maxNum){
+                                maxNum = data[i].ending_balance;
+                            }
+                            seriesData.push(data[i].ending_balance);
+                            xAxisData.push(data[i].date_sub_format);
+                        };
+                        loadEchart();
+                        changeRightDetail(clickIndex);
+                    }else{
+                        $("#myChartBox").hide();
+                    }
+
+                }
+                else{
+                    $("#myChartBox").hide();
+                }
+            }
+        })
+    };
+
+    // 监听结算周期下拉框
+    $("#input-period").on('change',function () {
+        var list = JSON.parse('{{ settlement_list|json_encode }}');
+        var val = $(this).val();
+        $('#status').selectpicker('refresh');
+        if(val==''){
+            $('#status').selectpicker('val', [0,1,2,3]);
+        }else{
+            for(var i=0;i<list.length;i++){
+                if(list[i].id==val){
+                    // 进行中
+                    if(list[i].settlement_status==0){
+                        $('#status').selectpicker('val', 0);
+                    }else if(list[i].settlement_status==1){ // 结算中
+                        $('#status').selectpicker('val', 1);
+                    }else if(list[i].settlement_status==2){
+                        if(list[i].settle_type==0){ // 直接计算
+                            $('#status').selectpicker('val', 2);
+                        }else{ // 转期初余额
+                            $('#status').selectpicker('val', 3);
+                        }
+                    }
+
+                }
+            }
+        }
+    });
+
+</script>
+{{ footer }}
+

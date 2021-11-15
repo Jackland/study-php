@@ -1,0 +1,169 @@
+{% trans_default_category 'catalog/view/customerpartner/product/lists_ltlWindow' %}
+
+{# 6446 超大件LTL弹框提示 #}
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <style type="text/css">
+    html, body {
+      font-family: Arial, "Roboto", Helvetica, serif !important;
+      font-size: 14px;
+      height: auto;
+    }
+    .ltl-layer .ltl-tips {
+      padding: 10px 15px 40px 15px;
+      background: #fee8ec;
+      border: 1px solid #ff414d;
+      border-radius: 4px;
+    }
+    .ltl-layer .longest-color {
+      font-weight: bold;
+      color: #fb1f4b;
+    }
+    .ltl-layer table {
+      width: 100%;
+      padding: 20px;
+      border-spacing: 0;
+    }
+    .ltl-layer table tr {
+      min-height: 40px;
+    }
+    .ltl-layer table th,
+    .ltl-layer table td{
+      font-size: 16px;
+      padding: 8px;
+      text-align: center;
+      font-weight: normal;
+    }
+    .ltl-layer table td {
+      border: 1px solid #ebebeb;
+    }
+    .ltl-layer table td:not(:last-child) {
+      border-right: none;
+    }
+    .ltl-layer .check-submit {
+      position: fixed;
+      bottom: 0px;
+      width: 100%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ltl-layer .bold-weight {
+      font-weight: bold;
+    }
+    .ltl-layer input {
+      outline-style: none;
+    }
+  </style>
+</head>
+<body class="ltl-layer" id="ltl-window">
+<div class="ltl-tips">
+  {{ __('敬爱的卖家，当产品尺寸符合以下任何条件时，FedEx（UPS）将生成Unauthorized Charge，这将导致$ :price /包裹的额外费用：', {price: over_specification_quote}) }}</br>
+  {{ __('最长边+周长＞ 165英寸') }}</br>
+  {{ __('或最长边> 108英寸') }}</br>
+  {{ __('或实际重量＞ 150磅') }}</br>
+  {{ __('平台会将满足以上尺寸的产品标记为LTL产品，并对这些产品收取LTL配送费用。') }}</br>
+  {{ __('根据平台的历史记录，总结了触发Unauthorized Charge风险的几率和相应的高风险产品特征：') }}</br>
+  {{ __('当153英寸<[最长边+周长]≤162英寸时，触发Unauthorized Charge风险的可能性小于3％。') }}</br>
+  {{ __('当[实际重量]> 148磅时，触发Unauthorized Charge风险的可能性大于10％。') }}</br>
+  {{ __('当[最长边]> 105英寸时，触发Unauthorized Charge风险的机会大于18％。') }}</br>
+  {{ __('当[最长边+周长]> 162英寸时，触发Unauthorized Charge风险的可能性大于50％。') }}</br>
+  {{ __('为了最大程度地减少损失，建议为较高触发风险的包裹选择LTL交付。如果您想使用LTL交付，请选中下面的确认框并单击“提交”以更改交付方式。') }}</br>
+  {{ __('由您决定是否使用零担交付。如果您确认不更改为LTL交付，则一旦发生Unauthorized Charge，平台会通过消息中心将这笔费用通知您，该费用将由您承担，并添加到您的最终账单中。任何产生的费用的通知将每周及时转发到您的消息中心。') }}
+</div>
+<table id="ltl-table">
+  <thead>
+  <tr>
+    {% if show_checkbox %}
+      <th><input type="checkbox" name="selectAll"></th>
+    {% endif %}
+    <th>{{ __('MPN') }}</th>
+    <th>{{ __('长') }}({{ __('英寸') }})</th>
+    <th>{{ __('宽') }}({{ __('英寸') }})</th>
+    <th>{{ __('高') }}({{ __('英寸') }})</th>
+    <th>{{ __('重') }}({{ __('磅') }})</th>
+    <th>{{ __('最长边') }} + {{ __('周长') }}({{ __('英寸') }})</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for item in lists %}
+    <tr>
+      {% if show_checkbox %}
+        <td><input type="checkbox" name="selectOne" data-id="{{ item.product_id }}"></td>
+      {% endif %}
+      <td>{{ item.mpn }}</td>
+      <td class="{% if 'length_side' in item.remind_volumes %}longest-color{% endif %}">{{ item.length }}</td>
+      <td class="{% if 'width_side' in item.remind_volumes %}longest-color{% endif %}">{{ item.width }}</td>
+      <td class="{% if 'height_side' in item.remind_volumes %}longest-color{% endif %}">{{ item.height }}</td>
+      <td class="{% if 'weight' in item.remind_volumes %}longest-color{% endif %}">{{ item.weight }}</td>
+      <td class="{% if 'girth-longest_side' in item.remind_volumes %}longest-color{% endif %}">{{ item.girt_longest_side }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<div class="check-submit" id="check-submit-ltl">
+  <input type="checkbox" name="isSubmitLTL">
+  {% set delivery_type =  isExpress ? __('快递') : __('LTL') %}
+  {{ __('我确认为上述产品选择<span class="bold-weight">:type</span>配送', {type: delivery_type}) }}
+</div>
+</body>
+<script type="text/javascript" src="admin/view/javascript/jquery/jquery-2.1.1.min.js"></script>
+<script type="text/javascript">
+  $().ready(function(){
+    initLtlLayer();
+  })
+  function initLtlLayer() {
+    // 控制父级window的submit 按钮
+    var $submitBtn = $("a.layui-layer-btn0",window.parent.document);
+    $submitBtn.on('click.disable', false).css('opacity', '0.8');
+
+    // 监听checkbox
+    $('#check-submit-ltl').find('input[name=isSubmitLTL]').click(function() {
+      checkSubmit();
+    })
+
+    $('#ltl-table').find('input[name=selectAll]').click(function() {
+      $('#ltl-table').find('input[name=selectOne]').prop('checked', this.checked);
+      checkSubmit();
+    })
+
+    $('#ltl-table').find('input[name=selectOne]').click(function() {
+      checkSubmit();
+      var $table= $('#ltl-table');
+      if (this.checked) {
+        // 判断是否全部选中
+        var $selectOne = $table.find('input[name=selectOne]');
+        var $selectOneChecked = $table.find('input[name=selectOne]:checked');
+        if ($selectOne.length === $selectOneChecked.length) {
+          $table.find('input[name=selectAll]').prop('checked', true);
+        }
+      } else {
+          $table.find('input[name=selectAll]').prop('checked', false);
+      }
+    })
+    // submit按钮亮起条件：同意政策并且如果有多选selectOne则至少选中一项
+    function checkSubmit(){
+      var $ltlWin = $('#ltl-window')
+      var isSubmitPolice = $ltlWin.find('input[name=isSubmitLTL]')[0].checked;
+      var $selectOne = $ltlWin.find('input[name=selectOne]');
+      var isSelectOne = false;
+      if (isSubmitPolice && $selectOne.length === 0) {
+        isSelectOne = true;
+      } else {
+        var checkOne = $ltlWin.find('input[name=selectOne]:checked');
+        if (isSubmitPolice && checkOne && checkOne.length>0) {
+          isSelectOne = true;
+        }
+      }
+       if (isSelectOne) {
+        $submitBtn.css('opacity', '1');
+      } else {
+        $submitBtn.css('opacity', '0.8');
+      }
+    }
+  }
+</script>
+</html>

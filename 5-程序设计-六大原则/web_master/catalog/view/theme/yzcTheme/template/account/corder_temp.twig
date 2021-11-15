@@ -1,0 +1,611 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OrderTemplateInterpretation</title>
+    <link rel="stylesheet" href="catalog/view/javascript/corderTemp/reset.css">
+    <link rel="stylesheet" href="catalog/view/javascript/corderTemp/head.css">
+    {% if is_japan %}
+      <link rel="stylesheet" href="catalog/view/javascript/corderTemp/content_jp.css">
+    {% else %}
+      <link rel="stylesheet" href="catalog/view/javascript/corderTemp/content_reset.css">
+    {% endif %}
+    <link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet"/>
+    <link type="text/css" href="/public/fonts/giga/iconfont.css?v={{ app_version }}" rel="stylesheet">{#B2B页面改版 图标字体#}
+</head>
+<body>
+{#<style>#}
+{#.content-box .entry {#}
+{#  word-break: break-word;#}
+{#}#}
+{#</style>#}
+<div style="background-color: #229ac8; width: 1328px; padding: 16px 16px; margin: 30px auto">
+  <div style="background-color: #f5f5f5; width: 1294px; padding: 16px 16px; margin: 0 auto">
+    <div class="title-box">
+      <h1 class="title">Order field name explanation</h1>
+      <div class="reqFlag">
+        <p>If the field is required?</p>
+        <div class="reqTable">
+          <table class="reqFlagTable">
+            <tr>
+              <td class="circle circle-red">
+                <div class="red"></div>
+              </td>
+              <td class="flag">YES</td>
+            </tr>
+          </table>
+          <table class="reqFlagTable">
+            <tr>
+              <td class="circle circle-black">
+                <div class="black"></div>
+              </td>
+              <td class="flag">NO</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="content-box">
+      <div class="content-title">
+        <div class="title1">No.</div>
+        <div class="title2">Field Name</div>
+        <div class="title3">Entry requirements</div>
+        <div class="title4">Explanation</div>
+        <div class="title5">Remarks</div>
+      </div>
+      {% if country_id == 223 %}
+        <div class="content content1" style="height: 210px">
+          <div class="title1 number">
+            <div class="circle circle-red">
+              <div class="black">1</div>
+            </div>
+          </div>
+          <div class="title2 fieldName">ShipFrom</div>
+          <div class="title3 entry">
+            Entry limit:<br/>
+            Within 30 characters
+          </div>
+          <div class="title4 exp">
+            Record the buyer store name and other information corresponding to the order, and the information will be
+            printed on the label. The value filled in this field is not required.
+          </div>
+          <div class="title5 remark">Please do not fill in Chinese, otherwise the package may not be shipped out
+            normally.
+          </div>
+        </div>
+      {% else %}
+        <div class="content content1" style="height: 210px">
+          <div class="title1 number">
+            <div class="circle circle-red">
+              <div class="black">1</div>
+            </div>
+          </div>
+          <div class="title2 fieldName">SalesPlatform</div>
+          <div class="title3 entry">
+            Entry limit:<br/>
+            Within 20 characters
+          </div>
+          <div class="title4 exp">
+            Record the sales platform corresponding to the order. The value filled in this field is not required
+            value.
+          </div>
+          <div class="title5 remark"></div>
+        </div>
+      {% endif %}
+      <div class="content content2">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="red">2</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">OrderId</div>
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 40 characters
+        </div>
+        <div class="title4 exp">
+          On the B2B platform, the corresponding order can be queried through this order number.Must include
+          only letters,numbers , -, _
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+
+      <div class="content content3">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="red">3</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">LineItemNumber</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 50 characters
+        </div>
+        <div class="title4 exp">
+          This ID is used to distinguish the different details.Such as 1, 2, 3
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content4">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="black">4</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">OrderDate</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 25 characters
+        </div>
+        <div class="title4 exp">
+          Record the customer order date
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content5" style="height:450px;">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="black">5</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">BuyerBrand</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 30 characters
+        </div>
+        <div class="title4 exp">
+          1) There is a buyer brand center function on the Giga Cloud. If the buyer wants the Giga Cloud to
+          affix its own brand image on the shipped goods, the buyer is required to enter their own brand name
+          and brand image in the brand center function;<br/>
+          <br/>
+          2) When the buyer imports the customer order to the Giga Cloud, if an order needs to specify the
+          brand, the name of the brand needs to be written in this field, and the name corresponds to the
+          brand name entered into the B2B in the first step;<br/>
+          <br/>
+          3) If the seller's products buyer selected is allowed to post buyer's brand, buyer's brand will be
+          posted on the products. If not, the seller's brand will be posted;<br/>
+          <br/>
+          4) If this field is not entered, the seller's brand will be posted by default.
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content6">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="black">6</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">BuyerPlatformSku</div>
+
+        <div class="title3 entry">
+          Entry limit: <br/>
+          Within 25 characters
+        </div>
+        <div class="title4 exp">
+          Record the SKU of buyer's products
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content7">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="red">7</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">B2BItemCode</div>
+
+        <div class="title3 entry">
+          Entry limit: <br/>
+          Within 30 characters
+        </div>
+        <div class="title4 exp">
+          1) When customer's order needs to be purchased and shipped on the Giga Cloud, the platform needs to
+          the product code corresponding to the product's SKU in the order, so that the platform can recommend
+          the corresponding product for the customer according to the corresponding product code;<br/>
+          <br/>
+          2) After the customer orders are purchased on Giga Cloud, the subsequent shipment is to prepare
+          according to ItemCode.<br/>
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content8">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="black">8</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">BuyerSkuDescription</div>
+
+        <div class="title3 entry">
+          Entry limit: <br/>
+          Within 100 characters
+        </div>
+        <div class="title4 exp">
+          Record product description of buyer's
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content9">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="black">9</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">BuyerSku<br/>CommercialValue</div>
+
+        <div class="title3 entry">
+          Format: A number with up to two decimal places.<br/>
+          Such as 1, 2, 3, 3.15
+        </div>
+        <div class="title4 exp">
+          Record the Business value of every products
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content10">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="black">10</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">BuyerSkuLink</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 50 characters:<br/>
+          input of ASIN is allowed for Amazon.
+        </div>
+        <div class="title4 exp">
+          The product detail could be accessed directly through this link
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content11">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="red">11</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">ShipToQty</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Digital,1,2,3
+        </div>
+        <div class="title4 exp">
+          Record the quantity of the products to be shipped
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content12" style="display: flex;height: auto">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="black">12</div>
+          </div>
+        </div>
+        {% if country_id == 223 %}
+          <div class="title2 fieldName">ShipToService</div>
+
+          <div class="title3 entry">
+            Fixed value.<br/>
+            Options：ASR
+          </div>
+          <div class="title4 exp">
+            Record the delivery signature service method ,
+            for example, FedEx Delivery Signature Service(ASR)
+          </div>
+          <div class="title5 remark">
+            Enter ‘ASR’ in this field if you intend to purchase FedEx Signature Service for this order.
+            Otherwise, leave blank.If ‘ASR’ has been entered for any ItemCode field in this order, the entire
+            order will be charged with the FedEx ASR payment.
+            {% if disable_ship_to_service %}
+              <p style="color: #ff414d;font-size: 14px">
+                <i class="giga icon-gantanhaojinggao" style="font-size: 14px"></i>
+                FedEx has temporarily suspended signature services until further notice
+              </p>
+            {% endif %}
+          </div>
+        {% else %}
+          <div class="title2 fieldName">Delivery to FBA Warehouse</div>
+
+          <div class="title3 entry">
+            Fixed value.<br/>
+            Options：Yes，No
+          </div>
+          <div class="title4 exp">
+            Record whether this sales order needs to be delivered to the FBA warehouse in batches.
+          </div>
+          <div class="title5 remark">
+            If you plan to delivery the order to the FBA warehouse,
+            please enter "Yes" in this field. Otherwise, leave it blank or enter "No".
+            If you have entered "Yes" in any ItemCode field of this order,
+            the entire order will be marked for delivery to the FBA warehouse.
+          </div>
+        {% endif %}
+
+      </div>
+      <div class="content content13">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="black">13</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">ShipToServiceLevel</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 50 characters
+        </div>
+        <div class="title4 exp">
+          Record the delivery service level, such as two-day shipping, SFP, HOMEDELIVERY,HOMEGROUND
+        </div>
+        <div class="title5 remark">The delivery service level is assigned by the Giga Cloud at present.</div>
+      </div>
+      <div class="content content14">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="black">14</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">ShippedDate</div>
+
+        <div class="title3 entry">
+          Format: YYYY/MM/DDThh:mm-hh:mm
+          or YYYY-MM-DDThh:mm-hh:mm<br/>
+          <br/>
+          Options for time periods:<br/>
+          08:00-12:00<br/>
+          12:00-14:00<br/>
+          14:00-16:00<br/>
+          16:00-18:00<br/>
+          18:00-20:00<br/>
+          Example:2019/6/4T08:00-12:00
+          or 2019-06-04T08:00-12:00
+        </div>
+        <div class="title4 exp">
+          Expected Delivery Date.This field is valid for Japan only.<br/>
+          For orders with shipped date: Normally the sales platform will require to upload the tracking number
+          before the shipped date.
+          GigaCloud will provide the tracking number before the shipped date.<br/>
+          If the customer appointed a shipped date privately with the seller instead of selecting a shipped
+          date.
+          The sales platform will still require the tracking number several business days after the customer
+          places the order rather than before the shipped date.<br/>
+          For orders with shipped date, you’d better complete the payment on the day of the order is imported
+          to ensure the on time delivery on the shipped date.
+        </div>
+        <div class="title5 remark">The current delivery date is based on the actual delivery date of Giga
+          Cloud.
+        </div>
+      </div>
+      <div class="content content15">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="black">15</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">ShipToAttachmentUrl</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 800 characters
+        </div>
+        <div class="title4 exp">
+          Some platforms need to download some attachment to be delivery with the products. such as packing
+          slip.
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content16">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="red">16</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">ShipToName</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 40 characters
+        </div>
+        <div class="title4 exp">
+          Record the name of the Receiver
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content17">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="red">17</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">ShipToEmail</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 90 characters
+        </div>
+        <div class="title4 exp">
+          Record Receiver's Email
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content18">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="red">18</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">ShipToPhone</div>
+
+                <div class="title3 entry">
+                    Entry limit:<br/>
+                    Within 45 characters
+{#                    10-15 characters, and only digits and ‘-’ are allowed.#}
+                    {% if is_japan %}
+                      <br/>電話番号。  (例) 01234567890
+                    {% endif %}
+                </div>
+                <div class="title4 exp">
+                    Record Receiver's telephone
+                </div>
+                <div class="title5 remark"></div>
+            </div>
+            <div class="content content19">
+                <div class="title1 number">
+                    <div class="circle circle-red">
+                        <div class="red">19</div>
+                    </div>
+                </div>
+                <div class="title2 fieldName">ShipToPostalCode</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 18 characters
+{#          Only a 5-digit number is allowed.#}
+          {% if is_japan %}
+            <br/>郵便番号。  (例) 123-4567
+          {% endif %}
+        </div>
+        <div class="title4 exp">
+          Record Receiver's zipcode. Please refer to Shipping Information for areas we don’t service.
+          ShipToPostalCode must Include only numbers,-.
+{#          ShipToPostalCode must Include only numbers.#}
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content20">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="red">20</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">ShipToAddressDetail</div>
+        {# 根据账号国别显示不同的地址限制字段 #}
+        {# US #}
+        {% if country_id == country_us_id %}
+          <div class="title3 entry">
+            Entry limit:<br/>
+            Non LTL delivery (Drop Shipping): within 70 characters<br/>
+            Others: within 100 characters <br/>
+          </div>
+        {% elseif country_id == country_jp_id %}
+          {# JP #}
+          <div class="title3 entry">
+            Entry limit:<br/>
+            within 100 characters <br/>
+            番地,建物名,部屋番号。  (例) 中区本牧元町62ー51ー1
+          </div>
+        {% else %}
+          {# 欧洲 #}
+          <div class="title3 entry">
+            Entry limit:<br/>
+            UK Site - Within 56 characters<br/>
+            DE Site - Within 35 characters <br/>
+          </div>
+        {% endif %}
+        <div class="title4 exp">
+          Record Receiver's address.
+          Does not contain userShipToName, ShipToPostalCode, ShipToCity, ShipToState, or ShipToCountry.
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+      <div class="content content21">
+        <div class="title1 number">
+          <div class="circle circle-red">
+            <div class="red">21</div>
+          </div>
+        </div>
+        <div class="title2 fieldName">ShipToCity</div>
+
+                <div class="title3 entry">
+                    Entry limit:<br/>
+                    Within 30 characters
+                    {% if is_japan %}
+                      <br/>市区町村。 (例) 横浜市，大田区，南岩国町
+                    {% endif %}
+                </div>
+                <div class="title4 exp">
+                    Record Receiver's city
+                </div>
+                <div class="title5 remark"></div>
+            </div>
+            <div class="content content22">
+                <div class="title1 number">
+                    <div class="circle circle-red">
+                        <div class="red">22</div>
+                    </div>
+                </div>
+                <div class="title2 fieldName">ShipToState</div>
+
+                <div class="title3 entry">
+                    Entry limit:<br/>
+                    Within 30 characters<br/>
+{#                    The State should be an abbreviation only.<br/>#}
+                    {% if is_japan %}
+                      <br/>
+                      都道府県。 (例) 東京都，北海道，大阪府，神奈川県
+                    {% else %}
+                      <br/>
+                      The United States’ non-delivery range：(Only support continental United States, not overseas
+                      territories such as Alaska, Puerto Rico, etc) PR, AK, HI, GU, AA, AE, AP
+                      (DE,UK not required)
+                    {% endif %}
+
+                </div>
+                <div class="title4 exp">
+                    Record Receiver's state
+                </div>
+                <div class="title5 remark"></div>
+            </div>
+            <div class="content content23">
+                <div class="title1 number">
+                    <div class="circle circle-red">
+                        <div class="red">23</div>
+                    </div>
+                </div>
+                <div class="title2 fieldName">ShipToCountry</div>
+
+                <div class="title3 entry">
+                    Entry limit:<br/>
+                    {% if is_japan %}
+                      国。 (例) JP
+                    {% else %}
+                      USA order :US<br/>
+                      GBR order :UK<br/>
+                      DEU order :DE<br/>
+                      JPN order :JP<br/>
+                    {% endif %}
+
+                </div>
+                <div class="title4 exp">
+                    Record Receiver's country
+                </div>
+                <div class="title5 remark"></div>
+            </div>
+            <div class="content content24">
+                <div class="title1 number">
+                    <div class="circle circle-red">
+                        <div class="black">24</div>
+                    </div>
+                </div>
+                <div class="title2 fieldName">OrderComments</div>
+
+        <div class="title3 entry">
+          Entry limit:<br/>
+          Within 1500 characters
+        </div>
+        <div class="title4 exp">
+          Record the order Comment
+        </div>
+        <div class="title5 remark"></div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

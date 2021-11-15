@@ -1,0 +1,357 @@
+{% trans_default_category 'catalog/view/customerpartner/seller_store/introduction/index' %}
+
+{{ this.title(__('店铺介绍页设计', {}, 'catalog/document')) }}
+{{ this.params('breadcrumbs', [
+  {
+    text: __('店铺管理', {}, 'catalog/document'),
+    href: 'javascript:;',
+  },
+  'current'
+]) }}
+
+{{ css(['css/common/common.css','static/customerpartner/seller_store/introduction/index.css']) }}
+
+{# vue相关引用 #}
+{# TODO: 目前存放在 catalog/view/javascript 后期统一转移至 public/js (可能) #}
+{{ cssOrigin([
+  'catalog/view/javascript/product/element-ui.css'
+] ,3) }}
+
+{# element 组件编写的form使用的公共样式 #}
+{{ css([
+  'css/common/element-common.css',
+  'static/customerpartner/seller_store/home/components/modules/modules_common.css'
+], 3) }}
+
+{{ jsOrigin([
+  'catalog/view/javascript/product/vue.min.js',
+  'catalog/view/javascript/product/element-ui.js',
+  'catalog/view/javascript/product/element-ui-en.js',
+  'catalog/view/javascript/product/axios.min.js',
+], 1) }}
+
+{{ js([
+    'js/common/lodash.js',
+    'static/customerpartner/seller_store/util/publish_helper.js',
+    'js/common/sortable/Sortable.min.js',
+    'js/common/sortable/vuedraggable.umd.min.js',
+  ])
+}}
+
+{# 发布部分翻译 #}
+{% include 'yzcTheme/template/customerpartner/seller_store/publish_config.twig' %}
+
+{# 分类选择框 #}
+{% include 'yzcTheme/template/customerpartner/seller_store/components/category_select_input.twig' %}
+
+<div id="page-index" v-loading="loading">
+  <div class="introduction-container">
+    {# <div class="ele header-title">{{ __('店铺介绍') }}</div> #}
+    <div class="ele card-container">
+      <div class="status-container" v-if="defaultInfo && defaultInfo.audit_info.status">
+        <div class="status-text" v-if="defaultInfo && defaultInfo.audit_info.status != 30">
+          ${defaultInfo.updated_time} {{__('修改')}}
+        </div>
+        <div class="status-text" v-else>
+          ${defaultInfo.updated_time} {{__('发布')}}
+        </div>
+        <div class="status-state" v-if="defaultInfo && defaultInfo.audit_info.status == 20">
+          <i class="giga icon-Action-Time"></i>
+          {{__('正在审核中')}}
+        </div>
+        <div class="status-state success-icon" v-if="defaultInfo && defaultInfo.audit_info.status == 30">
+          <i class="giga icon-V10_danchuangchenggong"></i>
+          {{__('已发布')}}
+        </div>
+        <div class="status-state error-icon" v-if="defaultInfo && defaultInfo.audit_info.status == 40">
+          <i class="giga icon-Group-1"></i>
+          {{__('已驳回')}}
+        </div>
+        <div class="status-refuse-reason" v-if="defaultInfo.audit_info.refuse_reason">
+          <el-tooltip class="item" effect="dark" placement="top">
+            <i class="giga icon-V10-wenhaotishi"></i>
+            <template slot="content">
+              <div class="ele ele-tooltip-content">
+                ${defaultInfo.audit_info.refuse_reason}
+              </div>
+            </template>
+          </el-tooltip>
+        </div>
+        <div class="status-cancel-audit" v-if="defaultInfo.audit_info.status == 20">
+          <div class="cancel-audit-btn" @click="handlerCancelAudit">{{__('取消审核')}}</div>
+        </div>
+      </div>
+      <el-form :rules="rules" :model="model" class="ele ele-form" ref="form" label-position="top">
+        <div class="form-container">
+          <el-form-item class="ele ele-upload" id="intro-images" prop="images" label="">
+            <template slot='label'>
+              <div class="introimage-label-container">
+                <div class="introimage-title ele ele-required">{{ __('图片介绍') }}</div>
+              </div>
+            </template>
+            {{
+            dynamicWidget('upload_image', {
+              _id: 'introImageUpload',
+              upload_options: {
+                maxCount: 5,
+                width: '116px',
+                height: '75px',
+                accept: 'image/jpg,image/png,image/jpeg',
+              }
+            })
+            }}
+          </el-form-item>
+          <div class="introimage-tip">{{__('最多可上传:num张，建议上传产品或生产图片，图片要求宽度:width，高度:height，格式为:ext。', {num: 5, width: '580px', height: '375px', ext: '.jpg/.png/.jpeg'})}}</div>
+          <el-form-item prop="intro" label="{{ __('店铺介绍') }}">
+            <el-input class="intro-input" id="intro-textarea" @input="inputIntroTextarea" v-model="model.intro" type="textarea" maxlength="2000"
+              show-word-limit resize="none" placeholder="{{ __('请输入介绍文案，:num字以内', {num:'2000'}) }}"></el-input>
+          </el-form-item> 
+          <el-form-item prop="categories" class="ele-form-item-required" label="{{ __('主营品类') }}">
+            <category-select-input @change="updateCategory" :limit="6" :default="defaultCategories"></category-select-input>
+          </el-form-item>
+          <el-form-item prop="email" label="{{ __('联系邮箱') }}">
+            <el-input v-model="model.email" class="half-input" placeholder="{{ __('请输入') }}"></el-input>
+          </el-form-item>
+          <el-form-item prop="phone" label="{{ __('联系电话') }}">
+            <el-input v-model="model.phone" class="half-input" placeholder="{{ __('请输入') }}"></el-input>
+          </el-form-item>
+          <el-form-item class="ele ele-upload" id="wechat-image" prop="wechat" label="{{ __('微信二维码') }}">
+            {{
+            dynamicWidget('upload_image', {
+              _id: 'wechatImageUpload',
+              upload_options: {
+                maxCount: 2,
+                singleAdd: true,
+                width: '118px',
+                height: '118px',
+                accept: 'image/jpg,image/png,image/jpeg',
+              }
+            })
+            }}
+          </el-form-item>
+        </div>
+        <div class="btn-group-container">
+          <el-form-item class="ele ele-btn">
+            <el-button class="bottom-btn" @click="preview">{{ __('预览') }}</el-button>
+            <el-button class="bottom-btn" type="primary" @click="publish">{{ __('去发布') }}</el-button>
+          </el-form-item>
+        </div>
+      </el-form>
+    </div>
+  </div>
+</div>
+
+<script>
+const INTRODUCTION_TRANSLATE = {
+  IMAGES_REQUIRED: "{{ __('请上传图片') }}",
+  CATEGORY_REQUIRED: "{{ __('请输入:field', {field: __('主营品类')}) }}",
+  INTRO_REQUIRED: "{{ __('请输入:field', {field: __('店铺介绍')}) }}",
+  EMAIL_FORMAT: "{{ __('请输入正确的邮箱') }}",
+  PHONE_FORMAT: "{{ __('仅允许输入:from-:to位数字', {from: 3, to: 32}) }}"
+}
+</script>
+
+<script>
+
+// 页面入口vue对象
+new Vue({
+  el: '#page-index',
+  delimiters: ['${', '}'], //修改变量标识，避免与twig冲突
+  data() {
+    // 自定义表单验证部分
+    // 介绍图片
+    var validateIntroFiles = (rule, value, callback) => {
+      if (introImageUpload.getImageList().length <= 0) {
+        callback(INTRODUCTION_TRANSLATE.IMAGES_REQUIRED);
+      } else {
+        callback();
+      }
+    };
+    var validateCategories = (rule, value, callback) => {
+      if (this.model.categories.length <= 0) {
+        callback(INTRODUCTION_TRANSLATE.CATEGORY_REQUIRED);
+      } else {
+        callback();
+      }
+    };
+    var validateEmail = (rule, value, callback) => {
+      if (this.model.email.trim() && !/^[0-9a-zA-Z_.-]+[@][0-9a-zA-Z_.-]+([.][a-zA-Z]+){1,2}$/.test(this.model.email.trim())) {
+        callback(INTRODUCTION_TRANSLATE.EMAIL_FORMAT);
+      } else {
+        callback();
+      }
+    };
+    var validatePhone = (rule, value, callback) => {
+      if (this.model.phone.trim() && (this.model.phone.length < 3 || this.model.phone.length > 32)) {
+        callback(INTRODUCTION_TRANSLATE.PHONE_FORMAT);
+      } else {
+        callback();
+      }
+    };
+    return {
+      //获取门店信息接口
+      getInfoApi: '{{ url('customerpartner/seller_store/introduction/getStoreInfo') }}',
+      //取消发布接口
+      auditCancelApi: '{{ url('customerpartner/seller_store/introduction/auditCancel') }}',
+      typeList: [], //类型下拉选项
+      axios: null,
+      loading: false, //加载中动画
+      sellerId: null, 
+      model: {
+        intro: '',
+        categories: [],
+        email: '',
+        phone: ''
+      },
+      rules: {
+        images: {validator: validateIntroFiles, trigger: 'change'},
+        intro: {message: INTRODUCTION_TRANSLATE.INTRO_REQUIRED ,required: true, trigger: 'blur'},
+        categories: {validator:validateCategories, required: true, trigger: 'change'},
+        email: {validator: validateEmail, trigger: 'blur'},
+        phone: {validator: validatePhone, trigger: 'blur'},
+      },
+      defaultCategories: [], // 默认显示的分类
+      defaultInfo: null,
+    }
+  },
+  created(){
+    this.axios = axios.create({});
+    this.getStoreInfo();
+  },
+  methods: {
+    // 获取列表信息
+    async getStoreInfo() {
+      this.loading = true;
+      let res = await this.axios.post(this.getInfoApi)
+      this.defaultInfo = res.data.data;
+      this.loading = false;
+      this.setDefaultData(this.defaultInfo);
+    },
+
+    // 初始化默认值
+    setDefaultData(data) {
+      this.sellerId = data.seller_id;
+      this.defaultCategories = [];
+
+      PublishHelper.instance('introduction').auditRejectedDialog(data);
+
+      if(data.saved_info) {
+        this.model = {
+          intro: data.saved_info.store_intro.trim(),
+          email: data.saved_info.email.trim(),
+          phone: data.saved_info.phone.trim()
+        }
+        let that = this;
+        this.model.categories = _.map(data.saved_info.categories, 'id');
+        _.map(data.saved_info.categories, function(item) {
+          that.defaultCategories.push({
+            value: item.id,
+            label: item.name
+          })
+        })
+        //设置图片介绍默认内容
+        data.saved_info.pics.map(function(item, index) {
+          introImageUpload.setImageList({
+            url: item['pic_show'],
+            path: item['pic'],
+          })
+        })
+
+        //微信二维码默认内容
+        data.saved_info.wechat_pics.map(function(item, index) {
+          wechatImageUpload.setImageList({
+            url: item['pic_show'],
+            path: item['pic'],
+          })
+        })
+      }
+    },
+
+    // 统一构造请求参数
+    // -> src\Catalog\Forms\CustomerPartner\SellerStore\Enums\SaveType.php
+    _getReqData(type) {
+      const data = {
+        store_intro: this.model.intro,
+        categories: this.model.categories,
+        email: this.model.email.trim(),
+        phone: this.model.phone.trim(),
+        tab: "published",
+        type: type,
+      }
+      data['pics'] = introImageUpload.getImageList().map(item => item.path)
+      data['wechat_pics'] = wechatImageUpload.getImageList().map(item => item.path)
+      return data
+    },
+
+    // 预览
+    preview() {
+      let data = this._getReqData("preview");
+      if(this.$refs['form'].validate((valid) => {
+        if (valid) {
+          PublishHelper.instance('introduction').publish(data, (preview_key) => {
+            let url = `index.php?route=seller_store/introduction&id=${this.sellerId}&preview_key=${preview_key}`
+            window.open(url,'_blank');
+          })
+        }
+      }));
+    },
+
+    // 发布
+    async publish() {
+      let data = this._getReqData("publish");
+      let valid = await this.$refs['form'].validate();
+      if (valid) {
+        let that = this;
+        PublishHelper.instance('introduction').publish(data, () => {
+          window.location.reload();
+        });
+      }
+    },
+
+    //跟新分类部分
+    updateCategory(categories) {
+      if(categories.length > 6) {
+        this.$message({  
+          customClass: "ele-alert",
+          showClose: false,
+          duration: 2000,
+          type: 'toast', message: "{{__('最多选择:num项，以选择先后顺序展示', {num: 6})}}"});
+        return 
+      }
+      this.model.categories = _.map(categories, 'value');
+      this.$refs['form'].validateField('categories');
+    },
+
+    // 取消发布
+    handlerCancelAudit() {
+      // TODO 取消发布操作
+      let msg = "{{__('是否取消审核')}}"
+      let that = this;
+      layer.confirm(msg ,{title: "{{__('确认')}}", skin: 'oris-layer', btn: ["{{__('确定(yes)')}}", "{{__('取消(no)')}}"]}, (index) => {
+        let data = {
+          id: that.defaultInfo.audit_info.id,
+          confirm_cancel: 1
+        };
+        that.axios.post(that.auditCancelApi, data).then(res => {
+          if(res.data.code == 200) {
+            let conf = {
+              customClass: "ele-alert",
+              showClose: false,
+              duration: 2000,
+              type: 'toast'
+            }
+            that.$message({...conf, message: "{{__('取消成功')}}" });
+            layer.closeAll();
+            window.location.reload();
+          }
+        });
+      })
+    },
+
+    inputIntroTextarea () {
+      var textarea = document.getElementById('intro-textarea');
+      textarea.scrollTop = textarea.scrollHeight;
+    }
+  }
+})
+</script>

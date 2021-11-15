@@ -1,0 +1,202 @@
+{% set titleStr = 'Suggestions on Specific Scenario Corpus' %}
+{{ this.title(titleStr) }}
+{{ this.params('breadcrumbs', [
+    'home',
+    {
+        text: 'Message Center',
+        href: url('account/message_center/seller'),
+    },
+    {
+        text: titleStr,
+        href: url('account/message_center/suggest'),
+    }
+]) }}
+
+{{ css([
+  'css/common/common.css',
+  'css/common/common-ext.css',
+  'static/message/message-common.css',
+  'static/message/buyer-message-common.css',
+  'static/message/setting/suggest.css'
+]) }}
+
+{{ js([
+  'js/common/toolString.js', 
+  'js/common/orisComponents.js'
+]) }}
+
+{% if separate_view is defined and separate_view %}
+<div class="container-fluid" id="content" style="margin-left: 235px">
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="container" id="buyer-suggest-container">
+        {% endif %}
+        <div class="row">{{ column_left }}
+            {% if column_left and column_right %}
+                {% set class = 'col-sm-6' %}
+            {% elseif column_left or column_right %}
+                {% set class = 'col-sm-9' %}
+            {% else %}
+                {% set class = 'col-sm-12' %}
+            {% endif %}
+            {% if separate_view == 0 %}
+                {% set table_div_class = 'overflow: hidden;' %}
+            {% endif %}
+            <div ng-app="app">
+                <div id="content" class="{{ class }}">{{ content_top }}
+                    {{ message_column }}
+                    
+                    {# 右侧编辑内容部分 #}
+                    <div class="msgcent msg-card" style="{{ table_div_class }}">
+                      <div id="page-words" class="msgcent msg-page-container">
+                          <div class="msgb msg-card__title msgcent msg-detail__header">
+                              Suggestions on Specific Scenario Corpus
+                          </div>
+                          <div class="msgcent msg-form__container">
+                              <div class="msgcent msg-form__tip">
+                                  Welcome to provide suggestions on our Specific
+                                  Scenario Corpus, and your comments are of value to
+                                  improve this function. Please fill in the following contents and submit it to the Marketplace for approval.
+                                  Thank you for your suggestions.
+                              </div>
+                              <div class="msgcent msg-form__item">
+                              <div class="msgcent msg-form__label suggest-content-label">
+                                  Suggested Content
+                              </div>
+                              <div class="msgcent msg-form__content">
+                                  <div class="oris-comments">
+                                  <textarea rows="4" class="oris-input suggested-content" id="suggested-content" placeholder="Please enter content..."></textarea>
+                                  <span class="letter-count"><span id="suggested-len" class="link-color">0</span>/500</span>
+                                  </div>
+                              </div>
+                              </div>
+                              <div class="msgcent msg-form__item">
+                              <div class="msgcent msg-form__label choose-type-label">
+                                  Select applied scenarios
+                              </div>
+                              <div class="msgcent msg-form__content">
+                                  {% if types %}
+                                  {% for type in types %}
+                                      <span class="type-checkbox-item" style="padding-right: 16px;"><input type="checkbox" name="type" class="oris-checkbox-mini" value="{{ type.id }}"/><span class="type-name">{{ type.en_name }}</span></span>
+                                  {% endfor %}
+                                  {% endif %}
+                              </div>
+                              </div>
+                          </div>
+                          <div class="btn-container msgb msg-card__bottom">
+                              <button class="oris-button oris-button-bigger oris-button-default oris-w120 msg-card__bottom-btn" onclick="handleEmpty()">Empty</button>
+                              <button class="oris-button oris-button-bigger oris-w120 msg-card__bottom-btn" onclick="handleSubmit()" id="submit-btn">Submit</button>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ footer }}
+
+<script>
+  //计算word 数量
+  $("#suggested-content").bind('input propertychange change', function () {
+    var val = $("#suggested-content").val();
+    var data = toolString.calcStringLength(val, 500);
+    $("#suggested-content").val(data.fullStr);
+    $("#suggested-len").text(data.len)
+  });
+
+  function handleEmpty() {
+    $('.oris-checkbox').removeAttr('checked');
+    $("#suggested-content").val('');
+    window.location.reload();
+  }
+
+  var submitLimit = false;
+  function handleSubmit() {
+    if (submitLimit === true) {
+      return ;
+    }
+
+    let content = $("#suggested-content").val();
+    if (content.trim() === '') {
+      $.toast({
+        heading: false,
+        text: 'Please fill in all the required fields.',
+        position: 'top-center',
+        showHideTransition: 'fade',
+        icon: 'error',
+        hideAfter: 3000,
+        allowToastClose: false,
+        loader: false,
+      });
+      return;
+    }
+
+    let types = [];
+    $("input[name='type']:checked").each(function () {
+      types.push($(this).val());
+    });
+    if (types.length === 0) {
+      $.toast({
+        heading: false,
+        text: 'Please fill in all the required fields.',
+        position: 'top-center',
+        showHideTransition: 'fade',
+        icon: 'error',
+        hideAfter: 3000,
+        allowToastClose: false,
+        loader: false,
+      });
+      return;
+    }
+
+    submitLimit = true;
+    block.blockUI();
+    $("#submit-btn").prop('disabled', true);
+    $.ajax({
+      url: "{{ url('account/message_center/suggest/saveSuggest') }}",
+      type: 'post',
+      data: {types: types, content: content},
+      dataType: 'json',
+      success: function (json) {
+        submitLimit = false
+        if (json.code == 200) {
+          $.toast({
+            heading: false,
+            text: 'Submitted successfully. Thank you for your suggestions.',
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 2000,
+            allowToastClose: false,
+            loader: false,
+            afterHidden: function () {
+              handleEmpty();
+            }
+          });
+        } else {
+          $.toast({
+            heading: false,
+            text: 'Submitted Failed! ',
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+          });
+          $("#submit-btn").prop('disabled', false);
+        }
+        block.unBlockUI();
+      },
+      error: function() {
+        block.unBlockUI();
+        $("#submit-btn").prop('disabled', false);
+      }
+    });
+  }
+</script>

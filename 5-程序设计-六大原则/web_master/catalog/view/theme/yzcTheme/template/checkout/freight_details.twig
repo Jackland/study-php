@@ -1,0 +1,136 @@
+<div class="modal-body">
+  <div class="container-fluid">
+    <div class="form-group">
+      <table class="table table-condensed table-hover">
+        <thead style="text-align: center;font-weight: bold">
+        <tr style="background: #fff">
+          <td>#</td>
+          <td>Image</td>
+          <td>Item Code</td>
+          <td>Store</td>
+          <td>QTY</td>
+          <td>Calculated Weight<br>(per package)</td>
+          <td>Length<br>(per package)</td>
+          <td>Width<br>(per package)</td>
+          <td>Height<br>(per package)</td>
+          <td> Volume<br>(per package)
+            <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" style="cursor: pointer;font-size: 12px" title="" data-placement="right"
+               data-original-title="{{ tips_volume }}"></i>
+          </td>
+        </tr>
+        </thead>
+          <tbody style="text-align: center;">
+          {{ test }}
+          {% for freightDetail in freightDetails %}
+              <tr style="background: #fff">
+                  <td> {{ loop.index }}</td>
+                  <td>
+                      {% if freightDetail.thumb %}
+                          <a href="{{ freightDetail.href }}">
+                              <img src="{{ freightDetail.thumb }}" alt="{{ freightDetail.name }}" title="{{ freightDetail.name }}"
+                                   class="img-thumbnail" style="max-width: 40px;"/>
+                          </a>
+                      {% endif %}
+                  </td>
+                  <td>
+                      <a href="{{ freightDetail.href }}">
+                          {{ freightDetail.item_code }}
+                          <i class="giga icon-table-link" style="font-size: 12px"></i>
+                      </a>
+                      {% if freightDetail.tag %}
+                          {% for tagDetail in freightDetail.tag %}
+                              {{ tagDetail }}
+                          {% endfor %}
+                      {% endif %}
+                  </td>
+                  <td>{{ freightDetail.store }}</td>
+                  <td>{{ freightDetail.qty }}</td>
+                  {% if freightDetail.comoboFlag %}
+                      <td>- -</td>
+                      <td>- -</td>
+                      <td>- -</td>
+                      <td>- -</td>
+                      <td>- -</td>
+                  {% else %}
+                      <td>{{ freightDetail.weight }}&nbsp;{{ weight_class }}</td>
+                      <td>{{ freightDetail.length }}&nbsp;{{ length_class }}</td>
+                      <td>{{ freightDetail.width }}&nbsp;{{ length_class }}</td>
+                      <td>{{ freightDetail.height }}&nbsp;{{ length_class }}</td>
+                      <td>{{ freightDetail.volume }}&nbsp;{{ volume_class }}</td>
+                  {% endif %}
+              </tr>
+              {% if freightDetail.comoboFlag %}
+                  {% for key,setProductInfo in freightDetail.setProductInfos %}
+                      <tr style="background: #fff">
+                          <td   colspan="2" class="text-right"><span style="background: rgba(138, 221, 51, 0.2);color: #009900;font-size: 13px;padding: 0px 3px;border-radius: 2px;">package{{ loop.index }}</span></td>
+                          <td>
+                              {#<a href="index.php?route=product/product&product_id={{ key }}">#}
+                              {{ setProductInfo.item_code }}
+                              {#<i class="giga icon-table-link" style="font-size: 12px"></i>#}
+                              {#</a>#}
+                          </td>
+                          <td >{{ freightDetail.store }}</td>
+                          <td >{{ setProductInfo.qty }}</td>
+                          <td>{{ setProductInfo.weight }}&nbsp;{{ weight_class }}</td>
+                          <td>{{ setProductInfo.length_inch }}&nbsp;{{ length_class }}</td>
+                          <td>{{ setProductInfo.width_inch }}&nbsp;{{ length_class }}</td>
+                          <td>{{ setProductInfo.height_inch }}&nbsp;{{ length_class }}</td>
+                          <td>{{ setProductInfo.volume_inch }}&nbsp;{{ volume_class }}</td>
+                      </tr>
+                  {% endfor %}
+              {% endif %}
+          {% endfor %}
+          </tbody>
+      </table>
+    </div>
+    <div class="row">
+      <div class="col-sm-4 col-sm-offset-8">
+        <table class="table">
+          {% for total in totals %}
+            {% if total.title == 'Total Volume(ft³)' %}
+              <tr style="background: #fff">
+                <td class="text-right" style="padding: 8px 8px">
+                  <strong>{{ total.title }}:</strong><br>
+                </td>
+                <td class="text-right" style="padding: 8px 8px">{{ total.text }}</td>
+              </tr>
+              {% if show_notice %}
+              <tr style="background: #fff">
+              <td colspan="2" style="border: none !important;padding: 0 0">
+                <span style="font-size: 12px;color:#FA6400 ">The minimum volume requirement of {{ lowerVolume }}{{ volume_class }} has not been reached.</span>
+              <a href="{{ cwf_href }}" target="_blank"><i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" style="cursor: pointer;font-size: 12px" title=""
+                                                           data-original-title="Click to learn more about cloud wholesale fulfillment."></i></a>
+              </td>
+              </tr>
+              {% endif %}
+            {% elseif total.title == 'Total Shipping Fee(USD)' %}
+              <tr style="background: #fff">
+                <td class="text-right" style="padding: 8px 8px">
+                  <strong>{{ total.title }}:</strong><br>
+                </td>
+                <td class="text-right" style="padding: 8px 8px">{{ total.text }}
+                  <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" style="cursor: pointer;font-size: 12px" title=""
+                     data-original-title="${{ cloud_freight_rate }}/{{ volume_class }}"></i>
+                </td>
+              </tr>
+            {% else %}
+            <tr style="background: #fff">
+              <td class="text-right">
+                <strong>{{ total.title }}:</strong><br>
+              </td>
+              <td class="text-right">{{ total.text }}</td>
+            </tr>
+            {% endif %}
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  tbody td{
+    border-top: 1px solid #eee !important;
+  }
+</style>
+
+

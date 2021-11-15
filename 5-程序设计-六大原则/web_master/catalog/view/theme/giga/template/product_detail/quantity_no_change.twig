@@ -1,0 +1,15 @@
+{#库存数量 只做展示不可更改#}
+<div class="quantity">
+    <label class="mr-2 key text-muted">{{ entry_qty }}</label>
+    {% if quantity > 100 %}
+        <span><b>100+ </b>  <span class="text-muted">{{ text_qty_available }}</span></span>
+    {% else %}
+        <span><b id="qty_available">{{ quantity }} </b>  <span class="text-muted">{{ text_qty_available }}</span></span>
+    {% endif %}
+    {% if stock_tip_html %}
+      {{ stock_tip_html }}
+    {% endif %}
+    {% if receipt_html %}
+      {{ receipt_html }}
+    {% endif %}
+</div>

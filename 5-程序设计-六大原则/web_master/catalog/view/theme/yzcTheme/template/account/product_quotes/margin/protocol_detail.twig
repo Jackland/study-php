@@ -1,0 +1,556 @@
+<style>
+    .redStart{
+        color:#FF0000;
+    }
+    .redFont{
+        color: #FF0000;
+    }
+    .greenFont{
+        color: #008000;
+    }
+    .title-bg help{
+        color:#228CCA;
+
+    }
+    .readonly-color{
+        background-color: #f5f5f5;
+    }
+    .margin-table-head{
+    }
+    .margin-message-content{
+        padding-bottom: 10px;
+        max-height: 300px;
+        overflow-y: scroll;
+    }
+    .conversational-message-wrapper {
+       overflow-y: unset;
+    }
+    .message-store{
+        text-align: left;
+        padding-top: 5px;
+    }
+    .message-me{
+        text-align: right;
+        padding-top: 5px;
+    }
+    .message-sender{
+        margin-right: 5px;
+    }
+    .message-info-store{
+        border: 1px solid #FFCC33;
+        background-color: #FFFFCC;
+        padding: 5px 5px 5px 0px;
+        display: inline-block;
+    }
+    .message-info-me{
+        border: 1px solid #5FB878;
+        background-color: #BBF9CF;
+        padding: 5px 0px 5px 5px;
+        display: inline-block;
+    }
+    .panel-title-help{
+        display: inline-block;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        font-size: 14px;
+    }
+    #editMarginAgreementBtn{
+        position: absolute;
+        right: 5px;
+        top: 7px;
+        box-shadow: 0 0 0 0 #eee;
+    }
+    .content-title{
+      color:#183464;
+    }
+    .margin-agreement-head-body-border{
+      border-top-color: #183464;
+      border-top-width: 1px;
+      border-top-style: solid;
+    }
+    .btn-editMargin{
+        width: 28px !important;
+        height: 28px !important;
+        padding: 0 !important;
+        line-height: 28px !important;
+    }
+</style>
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script src="catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/magnific/magnific-popup.css" type="text/css" rel="stylesheet"/>
+
+
+<div role="tabpanel" class="tab-pane active">
+  <div class="bg-white p-2">
+    {% if no_data %}
+        <div class="text-center mt-4 mb-4">{{ text_no_results }}</div>
+    {% else %}
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="position: relative;">
+                <h3 class="panel-title">Agreement ID: {{ detail.agreement_id }} ({{ detail.screenname }})&emsp;<a href="{{ send_message_link }}" target="_blank" style="color:#FA6400;" data-toggle="tooltip" title="Message to Seller"><i class="giga icon-email-messages"></i></a></h3>
+            </div>
+            {% if isShowValidity %}
+                <div class="panel-body margin-agreement-head-body-border">
+                    <span style="color: #666666;font-weight: bold;">Margin Valid</span>&nbsp;(PST):&nbsp;
+                    {{ detail.effect_time }}~{{ detail.expire_time }}
+                </div>
+            {% endif %}
+            {% for item in performer_list %}
+                <div class="panel-body margin-agreement-head-body-border">
+                  <span style="color: #666666;font-weight: bold;">{{ item.partner }}</span>&nbsp;:&nbsp;{{ item.email }} ({{ item.user_number }})&nbsp;
+                  {% if item.check_result ==0 and (item.seller_approval_status == 0 or item.seller_approval_status == 1 )%}
+                    <span class="giga icon-seal_active" data-toggle="tooltip" title="{{ tip_add_partner_pending }}" style="font-size: 20px"></span>
+                  {% elseif item.check_result ==1 %}
+                    <span class="giga icon-seal_positive" data-toggle="tooltip" title="{{ tip_add_partner_approved }}" style="font-size: 20px"></span>
+                  {% elseif item.check_result ==2 or item.seller_approval_status  == 2 %}
+                    <span class="giga icon-seal_nagative" data-toggle="tooltip" title="{{ tip_add_partner_rejected }}" style="font-size: 20px"></span>
+                  {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+
+        <div class="panel panel-default">
+            <div class="panel-heading" style="background-color: #ffffff;">
+                <h3 class="panel-title content-title">Agreement Information</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table main table-hover">
+                    <thead>
+                    <tr class="margin-table-head">
+                        {#<th>MPN</th>#}
+                        <th>Item code</th>
+                        <th>{{ margin_bid_num }}</th>
+                        <th>{{ margin_bid_price }}</th>
+                        <th>{{ margin_bid_day }}</th>
+                        <th>{{ margin_total_product_value }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        {#<td>{{ detail.mpn }}</td>#}
+                        <td>{{ detail.sku }}</td>
+                        <td class="greenFont">{{ detail.num }}</td>
+                        <td class="greenFont">{{ detail.price_show }}</td>
+                        <td class="greenFont">{{ detail.day }}</td>
+                        <td class="greenFont">{{ detail.money_show }}</td>
+                    </tr>
+                    <tr class="readonly-color">
+                        <td colspan="1" style="text-align: center;"><label><span class="redStart">*</span><b>Comments</b></label></td>
+                        <td colspan="5">
+                            <textarea class="form-control" rows="6" style="width: 100%; resize:none;" class="readonly-color" readonly>{{ firstMessage.message }}</textarea>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ margin_bid_message }}</h3>
+            </div>
+            <div id="margin-message-content" class="panel-body margin-message-content">
+                <div class="conversational-message-wrapper message-section mt-2">
+                    {% for item in otherMessage %}
+                        {% if item.customer_id == 0 or item.customer_id == -1 %}
+                            {#System#}
+                            <div class="message-item incoming">
+                                <div class="left">
+                                    <div style="width: 36px;height: 36px;border: 1px solid black;font-size: 12px;border-radius: 50%;">&nbsp;&nbsp;SYS<br>&nbsp;&nbsp;TEM</div>
+                                </div>
+                                <div class="right">
+                                    <div class="info">
+                                        <span>{{ item.screenname }}</span>
+                                        <span><i class="giga icon-Action-Time"></i>{{ item.create_time }}</span>
+                                    </div>
+                                    <div class="content">
+                                        {{ item.message }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            {#Seller 和 Buyer#}
+                            {% if item.is_partner %}
+                                <div class="message-item incoming">
+                                    <div class="left">
+                                      <i class="giga icon-account-blue" style="font-size: 26px;"></i>
+                                    </div>
+                                    <div class="right">
+                                        <div class="info">
+                                            <span>{{ item.screenname }}</span>
+                                            <span><i class="giga icon-Action-Time"></i>{{ item.create_time }}</span>
+                                        </div>
+                                        <div class="content">
+                                            {{ item.message }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="message-item outgoing">
+                                    <div class="left">
+                                      <i class="giga icon-account-blue" style="font-size: 26px;"></i>
+                                    </div>
+                                    <div class="right">
+                                      <div class="info">
+                                          <span>{{item.fullname_show}}&emsp;<i class="giga icon-Action-Time"></i>{{ item.create_time }}</span>
+                                      </div>
+                                      <div class="content">
+                                          {{ item.message }}
+                                      </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+        {% if is_show_edit %}
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="position: relative;">
+                <h3 class="panel-title">Edit Margin Agreement</h3>
+                <button id="editMarginAgreementBtn" type="button" class="btn btn-primary btn-editMargin" onclick="editMarginAgreementBlockShow()"><i class="fa fa-pencil"></i></button>
+            </div>
+            <div id="editMarginAgreementBlock" class="panel-body" style="display: none">
+                <table class="table">
+                    <thead>
+                    <tr class="margin-table-head">
+                        <td>MPN</td>
+                        <td>Item code</td>
+                        <td>Modify the Quantity of Agreement</td>
+                        <td>Modify the Unit Price of Agreement</td>
+                        <td>Modify the Days of Agreement</td>
+                        <td>Amount of Margin</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{ detail.mpn }}</td>
+                        <td>{{ detail.sku }}</td>
+                        <td>
+                            <input type="hidden" id="input_margin_qty_max" value="{{ sold_qty }}">
+                            <input type="number" name="num" min="5" step="1" class="form-control redFont" value="{{ detail.num }}" onchange="calculateMarginPrice(1)">
+                            <div id="error_margin_qty" style="color: red; display: none;">{{ error_margin_bid_qty }}</div>
+                        </td>
+                        <td>
+                            <input type="number" name="price" min="0.01" step="0.01" class="form-control redFont" value="{{ detail.price }}" onchange="calculateMarginPrice(2)">
+                            <div id="error_margin_price" style="color: red;display: none">{{ error_margin_bid_price }}</div>
+                            <div id="error_margin_price_japan" style="color: red;display: none">{{ error_margin_bid_price_japan }}</div>
+                        <div id="error_margin_price_too_few" style="color: red;display: none">{{ error_margin_bid_price_too_few }}</div>
+                        </td>
+                        <td>
+                            <input type="number" name="day" min="1" step="1" class="form-control redFont" value="{{ detail.day }}" onchange="calculateMarginPrice(3)">
+                            <div id="error_margin_day" style="color: red;display: none">{{ error_margin_bid_day }}</div>
+                        </td>
+                        <td class="redFont readonly-color"><span class="margin_compute_money">{{ detail.money }}</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" style="text-align: center;"><label><span
+                                        class="redStart">*</span><b>Message</b></label></td>
+                        <td colspan="6">
+                            <textarea name="message" class="form-control" rows="6" style="width: 100%; resize:none;"></textarea>
+                            <div id="error_margin_message" style="color: red;display: none;">{{ error_margin_bid_message }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="7" style="text-align: center;">
+                            <button type="button" class="btn btn-default" id="editMarginAgreementCancelBtn" onclick="editMarginAgreementBlockHide()">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="editMarginAgreementSubmitBtn" onclick="editMarginAgreementSubmitBtn()">Submit</button>
+                            <input type="hidden" name="id" value="{{ detail.id }}">
+                            <input type="hidden" name="payment_ratio" value="{{ detail.payment_ratio }}">
+                            <input type="hidden" name="last_update_time" value="{{ detail.update_time }}">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+
+<script>
+    var margin_decimal_place='{{ decimal_place|default(2) }}';
+
+
+    $(function () {
+        $("#margin-message-content").scrollTop($("#margin-message-content").find(".conversational-message-wrapper").height()+500);
+        margin_detail_page_position();
+        block.unBlockUI();
+    });
+
+
+    function calculateMarginPrice(i) {
+        let that = $("#editMarginAgreementBlock");
+        let price = $.trim($(that).find('input[name="price"]').val());
+        let qty     = $.trim($(that).find('input[name="num"]').val());
+        let qty_max = $.trim($(that).find('#input_margin_qty_max').val());
+        let day = $.trim($(that).find('input[name="day"]').val());
+        let payment_ratio = $.trim($(that).find('input[name="payment_ratio"]').val());
+        let isValid = true;
+        var country_id = '{{ country_id }}';
+
+
+        //数据格式化
+        price = Number.parseFloat(price).toFloor(margin_decimal_place);
+        $(that).find('input[name="price"]').val(price);
+        qty = Number.parseInt(qty).toFloor(0);
+        $(that).find('input[name="num"]').val(qty);
+        day = Number.parseInt(day).toFloor(0);
+        $(that).find('input[name="day"]').val(day);
+
+        switch (i){
+            case 1:
+                if (qty.length > 9) {
+                    $(that).find('input[name="num"]').val(qty.substr(0, 9));
+                }
+                if (qty.length > 9 || !qty || !checkPositiveInteger(qty) || Number(qty) < 5 || Number(qty)>Number(qty_max)){
+                    isValid = false;
+                    layer.confirm('The agreement quantity shall not exceed <br>the available quantity and not less than 5.',{
+                        btn: ['Yes'],
+                        title: 'Message',
+                        skin: 'yzc_layer',
+                    });
+                }
+                break;
+            case 2:
+                if (price.length > 12) {
+                    $(that).find('input[name="price"]').val(price.substr(0, 12));
+                }
+                if(price.length > 12 || !price || (107 != country_id && !checkDecimalNumber(price))) {
+                    isValid = false;
+                    layer.confirm('Unit Price of Agreement should round off up to 2 decimal place and not be less than 0.',{
+                        btn: ['Yes'],
+                        title: 'Message',
+                        skin: 'yzc_layer',
+                    });
+                    break;
+                }else if (107 == country_id && !checkPositiveInteger(price)){
+                    isValid = false;
+                    layer.confirm('Exclusive Price shall be a positive integer.',{
+                        btn: ['Yes'],
+                        title: 'Message',
+                        skin: 'yzc_layer',
+                    });
+                    break;
+                }else if (price < 0){
+                  isValid = false;
+                  layer.confirm('Unit Price of Agreement should round off up to 2 decimal place and not be less than 0.',{
+                      btn: ['Yes'],
+                      title: 'Message',
+                      skin: 'yzc_layer',
+                  });
+                  break;
+                }
+                break;
+            case 3:
+                if (day.length > 9) {
+                    $(that).find('input[name="day"]').val(day.substr(0, 9));
+                }
+                if (day.length > 9 || !day || !checkPositiveInteger(day) || day <= 0 || day > 120){
+                    isValid = false;
+                    layer.confirm('Agreement Days is required. <br>Please enter an integer number <br>greater than 0 and equal or less than 120.',{
+                        btn: ['Yes'],
+                        title: 'Message',
+                        skin: 'yzc_layer',
+                    });
+                }
+                break;
+        }
+
+        if (isValid){
+          payment_ratio = Number(payment_ratio) / 100;
+          let precision = 2;
+          if (107 == country_id){
+            precision = 0;
+          }
+          let amount_per = operation(price, payment_ratio, 'multiply', precision);
+          let amount_sum = operation(amount_per, qty, 'multiply', precision);
+
+          $(".margin_compute_money").text(amount_sum);
+        }
+    }
+
+
+
+    function editMarginAgreementBlockShow() {
+        $("#editMarginAgreementBlock").slideDown("slow");
+    }
+    function editMarginAgreementBlockHide() {
+        $("#editMarginAgreementBlock").slideUp("slow");
+    }
+
+
+    function validateParam() {
+        let isValid = true;
+        let that = $("#editMarginAgreementBlock");
+        let input_margin_qty = $.trim($(that).find('input[name="num"]').val());
+        let input_margin_price = $.trim($(that).find('input[name="price"]').val());
+        let input_margin_day = $.trim($(that).find('input[name="day"]').val());
+        let input_margin_message = $.trim($(that).find('textarea[name="message"]').val());
+        let country_id = '{{ country_id }}';
+
+        if(!input_margin_day || !checkPositiveInteger(input_margin_day) || input_margin_day <= 0 || input_margin_day > 120){
+            isValid = false;
+            layer.confirm('Agreement Days is required. <br>Please enter an integer number <br>greater than 0 and equal or less than 120.',{
+                btn: ['Yes'],
+                title: 'Message',
+                skin: 'yzc_layer',
+            });
+            return false;
+        }
+        if(!input_margin_qty || !checkPositiveInteger(input_margin_qty) || input_margin_qty > Number('{{ sold_qty }}') || input_margin_qty<5 ){
+            isValid = false;
+            layer.confirm('The agreement quantity shall not exceed <br>the available quantity and not less than 5.',{
+                btn: ['Yes'],
+                title: 'Message',
+                skin: 'yzc_layer',
+            });
+            return false;
+        }
+
+
+        if(!input_margin_price || (107 != country_id && !checkDecimalNumber(input_margin_price))) {
+            isValid = false;
+            layer.confirm('Unit Price of Agreement should round off up to 2 decimal place and not be less than 0.',{
+                btn: ['Yes'],
+                title: 'Message',
+                skin: 'yzc_layer',
+            });
+            return false;
+        }else if (107 == country_id && !checkPositiveInteger(input_margin_price)){
+            isValid = false;
+            layer.confirm('Exclusive Price shall be a positive integer.',{
+                btn: ['Yes'],
+                title: 'Message',
+                skin: 'yzc_layer',
+            });
+            return false;
+        }else if (input_margin_price < 0){
+            isValid = false;
+            layer.confirm('Unit Price of Agreement should round off up to 2 decimal place and not be less than 0.',{
+                btn: ['Yes'],
+                title: 'Message',
+                skin: 'yzc_layer',
+            });
+            return false;
+        }
+
+
+        if(input_margin_message.length > 2000 || input_margin_message.length < 1){
+            isValid = false;
+            if(input_margin_message.length > 2000){
+                $('#error_margin_message').text('Comments can not be more than 2000 characters.');
+            } else if(input_margin_message.length < 1){
+                $('#error_margin_message').text('Comments can not be left blank.');
+            }
+            $('#error_margin_message').css('display','block');
+            return false;
+        }else{
+            $('#error_margin_message').css('display','none');
+        }
+
+        return isValid;
+    }
+
+
+    function editMarginAgreementSubmitBtn(){
+        if (!validateParam()) {
+            return false;
+        }
+
+
+        let button = $("#editMarginAgreementSubmitBtn");
+        let that = $("#editMarginAgreementBlock");
+        let id = $.trim($(that).find('input[name="id"]').val());
+        let num = $.trim($(that).find('input[name="num"]').val());
+        let price = $.trim($(that).find('input[name="price"]').val());
+        let day = $.trim($(that).find('input[name="day"]').val());
+        let message = $.trim($(that).find('textarea[name="message"]').val());
+        let payment_ratio = $.trim($(that).find('input[name="payment_ratio"]').val());
+        let last_update_time = $.trim($(that).find('input[name="last_update_time"]').val());
+
+        let sendData={};
+        sendData.id=id;
+        sendData.num=num;
+        sendData.price=price;
+        sendData.day=day;
+        sendData.message=message;
+        sendData.last_update_time=last_update_time;
+        sendData.actionother = actionother;//父页面变量
+
+
+
+        block.blockUI();
+        $(button).button('loading');
+        $.ajax({
+            url:"{{ protocol_edit_link }}",
+            type:'POST',
+            data:sendData,
+            dataType:'json',
+            success:function(result,status,xhr){
+                if(result.ret == 1){
+                    actionother = undefined;
+                    layer.msg(result.msg);
+                    setTimeout(function () {
+                        window.location.href = result.redirect_url;
+                    }, 2000);
+                } else {
+                    layer.open({
+                        title: 'Failed'
+                        ,content: result.msg
+                        ,btn: ['OK']
+                    });
+                    setTimeout(function () {
+                        $('#bid-protocol_detail').load('index.php?route=account/product_quotes/margin/protocol_detail&id='+id);
+                    }, 2000);
+                }
+            },
+            error:function(xhr,status,error){
+                layer.msg('error');
+            },
+            complete:function(xhr,status){
+                $(button).button('reset');
+                block.unBlockUI();
+            }
+        });
+    }
+
+
+    function checkPositiveInteger(value) {
+
+        //必填正整数校验
+        if(!(/^[1-9]*[1-9][0-9]*$/.test(value)) || value <= 0){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    function checkDecimalNumber(value) {
+        //校验货币 两位小数
+        if(!(/^[0-9]+(.[0-9]{1,2})?$/.test(value))){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
+    function margin_detail_page_position() {
+      if(actionother == 'reapplied'){
+        editMarginAgreementBlockShow();
+
+        //定位到Edit
+        if($("#editMarginAgreementBtn").length){
+          $('html,body').animate({scrollTop:$('#editMarginAgreementBtn').offset().top-200}, 1000);
+        }
+      }
+    }
+</script>

@@ -1,0 +1,203 @@
+{#{% trans_default_category 'catalog/view/customerpartner/margin/agreement_partner' %}#}
+<div class="oris-row max-1080">
+  <div class="module-row">
+    <div class="module-title">
+      <span class="Y-axis"></span>{{ __('Partner') }}
+    </div>
+    <div class="summary-list">
+      <div class="summary-details">
+        <span class="title">{{ __('Name') }}:</span>
+        <span class="txt action-userinfo pointer" data-user_customer_id="{{ agreement.buyer_id }}"
+              data-toggle="popover" data-placement="top" data-content="" data-html="true"  data-trigger="manual" data-container="body">
+          <span class="name-color">{{ partner_detail.nickname }}</span>&nbsp;&nbsp;{{ partner_detail.user_number }}
+          <span class="account-type {% if partner_detail.buyer_account_type == 2 %} atype-ds{% elseif partner_detail.buyer_account_type == 1 %} atype-wc{% endif %}">{{ partner_detail.buyer_account_name }}</span>
+        </span>
+        {{ partner_detail.ex_vat }}
+      </div>
+      <div class="summary-details">
+        <span class="title">{{ __('Reason') }}:</span>
+        <span class="txt white-preW break-word" >{{ partner_detail.reason }}</span>
+      </div>
+      <div class="log-list m30-t">
+        <div class="change-record">
+          <div class="basic-msg flex-layout">
+            <span class="mark-icon icon-checked"></span>
+            <div class="">
+              <span class="title">{{ __('Seller Result') }}:</span>
+              <span class="txt text-bold">{{ partner_detail.seller_approval_status_show }}</span>{#根据状态不同颜色#}
+            </div>
+          </div>
+          <div class="record-detail" style="
+            {% if partner_detail.check_result > 0 %}border-left-color: #375ACD;{% endif %}
+            {% if partner_detail.program_code == 'v2' %}border-left: 0 solid #ccc;{% endif %}
+            ">
+            {% if partner_detail.seller_check_reason %}
+              <div>
+                <span class="title">{{ __('Message') }}:</span>
+                <span class="txt break-word">{{ partner_detail.seller_check_reason }}</span>{#为空则消息全部不显示#}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        {% if partner_detail.program_code != 'v2' %}
+        <div class="change-record">
+          <div class="basic-msg flex-layout">
+            <span class="mark-icon {% if partner_detail.check_result > 0  %}icon-checked{% endif %}"></span>
+            <div><span class="title">{{ __('Marketplace Result') }}:</span>
+              <span class="txt">{{ partner_detail.check_result_show }}</span></div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% if partner_detail.seller_approval_status == 0 %}
+    <div class="module-row">
+      <div class="module-title"><span class="Y-axis"></span>{{ __('Processed Result') }}</div>
+      <div class="processed-result">
+        <div>
+          <span style="margin-right: 80px">
+            <input type="radio" name="pResult" value="1"> {{ __('Approved') }}
+          </span>
+          <span>
+            <input type="radio" name="pResult" value="2"> {{ __('Rejected') }}
+          </span>
+        </div>
+        <div class="m20-t">
+          <div class="required-before text-bold">{{ __('Message to Buyer') }}</div>
+          <div class="m10-t oris-comments">
+            <textarea id="addPartnerVal" class="oris-input msg-to" placeholder="Please enter your message..."></textarea>
+            <div class="letter-count"><span id="addLen" class="link-color">0</span>/2000</div>
+          </div>
+        </div>
+        <div class="text-center m24-t">
+          <button id="addPartner" class="oris-button oris-button-bigger width120" disabled>Send</button>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+<script>
+  //计算word 数量
+  $("#addPartnerVal").bind('input propertychange change', function () {
+    var addPartnerVal = $("#addPartnerVal").val();
+    var calcReturn = toolString.calcStringLength(addPartnerVal, 2000);
+    $("#addPartnerVal").val(calcReturn.fullStr);
+    $("#addLen").text(calcReturn.len);
+    var pResult = $('input:radio[name="pResult"]:checked').val();
+    if ((calcReturn.len > 0) &&(pResult!=null)){
+      $("#addPartner").removeAttr('disabled')
+    }else{
+      $("#addPartner").attr('disabled',true)
+    }
+  });
+
+  //监听Processed Result的选择
+  $("input[type=radio][name=pResult]").on('change',function () {
+    var pResult = $('input:radio[name="pResult"]:checked').val();
+    var addPartnerVal = $("#addPartnerVal").val().trim();
+    if((pResult!=null) && addPartnerVal){
+      $("#addPartner").removeAttr('disabled')
+    }else {
+      $("#addPartner").attr('disabled',true)
+    }
+  })
+
+  // 给buyer发消息
+  $("#addPartner").on('click', function () {
+    var that = this;
+    $(that).button('loading');
+    var pResult = $('input:radio[name="pResult"]:checked').val();
+    var addPartnerVal = $("#addPartnerVal").val().trim();
+    if (pResult == null) {
+      layer.open({
+        type: 1,
+        title: 'Alter',
+        closeBtn: 1,
+        skin: 'oris-layer',
+        shadeClose: true,
+        offset: 'auto',
+        area: ['400px', 'auto'],
+        // 需要翻译
+        content: '{{ __('Processed Result is required.') }}',
+        btn: 'OK',
+      });
+      $("#addPartner").button('reset');
+      return
+    } else if (!addPartnerVal) {
+      layer.open({
+        type: 1,
+        title: 'Alter',
+        closeBtn: 1,
+        skin: 'oris-layer',
+        shadeClose: true,
+        offset: 'auto',
+        area: ['400px', 'auto'],
+        // 需要翻译
+        content: '{{ __('Message to buyer is required.') }}',
+        btn: 'OK',
+      });
+      $("#addPartner").button('reset');
+      return
+    } else if (Number($("#addLen").text()) > 2000) {
+      layer.open({
+        type: 1,
+        title: 'Alter',
+        closeBtn: 1,
+        skin: 'oris-layer',
+        shadeClose: true,
+        offset: 'auto',
+        area: ['400px', 'auto'],
+        content: '{{ __('The message text is too long.') }}',
+        btn: 'OK',
+      });
+      $("#addPartner").button('reset');
+      return
+    }else {
+      //发送
+      var param = {
+        'performer_apply_id': '{{ partner_detail.id }}',
+        'margin_id': '{{ agreement.id }}',
+        'process': pResult,
+        'message': addPartnerVal,
+      };
+      $.ajax({
+        url: "{{ url('account/product_quotes/margin_contract/auditPerformerRequest') }}",
+        dataType: 'json',
+        type: 'post',
+        data: param,
+        success: function (json) {
+          if (json['code'] == 200) {
+            $.toast({
+              heading: false,
+              text: json['msg'],
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'success',
+              hideAfter: 3000,
+              allowToastClose: false,
+              loader: false,
+              afterHidden: function () {
+                $('#margin-partner').load("{{ url('account/product_quotes/margin_contract/partner', {id:agreement.id}) }}");
+              }
+            });
+          } else {
+            $.toast({
+              heading: false,
+              text: json['msg'],
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: 3000,
+              allowToastClose: false,
+              loader: false,
+            });
+          }
+        },
+        complete: function (XMLHttpRequest, textStatus) {
+          $("#addPartner").button('reset');
+        }
+      });
+    }
+  })
+</script>

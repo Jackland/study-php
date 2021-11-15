@@ -1,0 +1,411 @@
+<div id="box-shadow" style="overflow: hidden;">
+  <div class="col-sm-12" style="margin:0 -15px;padding: 0">
+    <div class="panel panel-default" style="margin-bottom: 0;border: none;box-shadow: none;">
+
+      <div class="panel-body">
+        <form id="rma-management-form" onkeydown="keydown0()">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" for="input-rmaId">{{ entry_rma_id }}</label>
+              <input
+                type="text"
+                name="filter_rma_id"
+                placeholder="{{ entry_rma_id }}"
+                id="input-rmaId"
+                class="form-control"/>
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="input-status">{{ entry_status }}</label>
+              <select name="filter_status" id="input-status" class="form-control">
+                <option value="0">Select from the list...</option>
+                <option value="1">Applied</option>
+                <option value="3">Pending</option>
+                <option value="2">Processed</option>
+                <option value="4">Canceled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="input-apply-for-reshipment">{{ entry_apply_for_reshipment }}</label>
+              <select name="filter_apply_for_reshipment" id="input-apply-for-reshipment" class="form-control">
+                <option value="-1">Select from the list...</option>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group" style="overflow: hidden">
+              <label class="control-label col-sm-12" style="padding: 0">{{ entry_rma_date }}</label>
+              <div class="input-group date col-sm-6" style="float: left">
+                <input type="text" name="filter_rmaDateFrom" data-date-format="YYYY-MM-DD 00:00:00"
+                       placeholder="Pick a date..." class="form-control date">
+                <span class="input-group-btn">
+                   <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                </span>
+              </div>
+              <div class="input-group date col-sm-6" style="float: left">
+                <input type="text" name="filter_rmaDateTo" value="" data-date-format="YYYY-MM-DD 23:59:59"
+                       placeholder="Pick a date..." class="form-control date">
+                <span class="input-group-btn">
+                      <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                </span>
+
+              </div>
+
+            </div>
+            <div class="form-group" style="overflow: hidden">
+              <label class="control-label col-sm-10" style="padding: 0">{{ entry_processed_date }}</label>
+              <div class="input-group date col-sm-6" style="float: left">
+                <input type="text" name="filter_processedDateFrom" data-date-format="YYYY-MM-DD 00:00:00"
+                       placeholder="Pick a date..." class="form-control date">
+                <span class="input-group-btn">
+                   <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                </span>
+              </div>
+              <div class="input-group date col-sm-6" style="float: left">
+                <input type="text" name="filter_processedDateTo" value="" data-date-format="YYYY-MM-DD 23:59:59"
+                       placeholder="Pick a date..." class="form-control date">
+                <span class="input-group-btn">
+                      <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                </span>
+
+              </div>
+
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="input-apply-for-refound">{{ entry_apply_for_refound }}</label>
+              <select name="filter_apply_for_refound" id="input-apply-for-refound" class="form-control">
+                <option value="-1">Select from the list...</option>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" for="input-mpn-sku">{{ entry_mpn_sku }}</label>
+              <input name="filter_mpn_sku" id="input-mpn-sku" class="form-control" placeholder="MPN/Item Code"/>
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="input-nick-name">{{ entry_nick_name }}</label>
+              <input name="filter_nick_name" id="input-nick-name" class="form-control" placeholder="Name"/>
+            </div>
+            <div class="form-group text-right" style="margin-top: 25px">
+              <button
+                type="button"
+                id="rma-management-filter"
+                class="btn btn-primary btn1"
+                data-loading-text="Loading...">
+                Filter
+              </button>
+              <a class="btn btn-default btn1" id="rma-management-refresh" data-toggle="tooltip"
+                 data-original-title="Reset"> <i class="fa fa-refresh"></i> </a>
+              <button type="button"
+                id="rma-management-download"
+                class="btn btn-default"
+                data-toggle="tooltip"
+                title="download"
+                data-original-title="download">
+                <i class="fa fa-download"></i>
+              </button>
+            </div>
+
+          </div>
+
+        </form>
+      </div>
+    </div>
+    <div class="col-sm-12" style="padding: 0;">
+      <div class="panel panel-default" style="border: none;margin-bottom: 0;box-shadow: none">
+        <div class="panel-body">
+          <table id="rma_management_table"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  let rma_management_table = $('#rma_management_table');
+  let rma_management_form = $('#rma-management-form');
+  let url = '{{ url('account/customerpartner/rma_management/rma_manage/getRmaManagementList') }}';
+
+  function resolveRmaManagementParam(params) {
+    let data = {};
+    let newParams = rma_management_form.serializeArray();
+    data['sort'] = params['sort'];
+    data['order'] = params['order'];
+    data['page'] = (params['offset'] / params['limit'] + 1);
+    data['per_page'] = params['limit'];
+    newParams.forEach(function (val, key) {
+      data[val['name']] = val['value'];
+    });
+    return data;
+  }
+
+  $(function () {
+    $('.date').datetimepicker({
+      pickDate: true,
+      pickTime: false,
+      format: 'YYYY-MM-DD HH'
+    });
+    let $option = null;
+      $option={
+      url: url,
+      queryParams: resolveRmaManagementParam,
+      sidePagination: "server",
+      pagination: true,
+      pageNumber: 1,
+      pageSize: 15,
+      classes: "table table-hover",
+      pageList: [10, 15, 50, 100],
+      columns: [
+        {
+          field: 'id',
+          title: 'No.',
+          formatter: function (value, row, index) {
+            return index + 1;
+          },
+          align: 'center'
+        },
+        {
+          field: 'nickName',
+          title: 'Name',
+          align: 'center',
+          formatter: function (value, row, index) {
+            // let html = row.nickName;
+            let html = '<span class="user_portrait" data-user_customer_id="' + row.buyer_id + '">' + row.nickName + '</span>';
+            if (row.is_home_pickup) {
+              img_url = img_home_pickup;
+              tip_content = tip_home_pickup_logo;
+            } else {
+              img_url = img_drop_shipping;
+              tip_content = tip_drop_shipping_logo;
+            }
+            html += '<span class="img_logo"><img data-toggle="tooltip" style="padding-left: 1px" src="' + img_url + '" data-original-title="' + tip_content + '"></span>';
+            return html + row.ex_vat;
+          }
+        },
+        {
+          field: 'rma_order_id',
+          title: 'RMA ID',
+          align: 'center',
+          formatter: function (value, row, index) {
+            let rma_name = '';
+            rma_name += row['rma_order_id'];
+            return rma_name;
+          }
+        },
+        {
+          title: 'MPN</br>Item Code',
+          align: 'center',
+          widthUnit: 'px',
+          formatter: function (value, row, index) {
+            let str = '';
+            let tag = row['tag'];
+            let sku = row['sku'];
+            let mpn = row['mpn'];
+            let refundMpn = '';
+            let refundSku = '';
+            if (row['apply_for_reshipment'] === 'No') {
+              refundSku += row['refundSku'];
+              refundMpn += row['refundMpn'];
+            } else {
+              refundSku += sku.slice(0, Math.min(sku.length, tag.length)).join(',');
+              refundMpn += mpn.join(',');
+            }
+            if (row['marginFlag']) {
+              refundMpn = row['margin_agreement_link'] + refundMpn;
+            }
+            if (row['futuresFlag']) {
+              refundMpn = row['futures_agreement_link'] + refundMpn;
+            }
+            str += '<span>' + refundMpn + '</span></br>'
+              + '<span>' + refundSku + '</span>';
+            if (tag[0].length > 0) {
+              str += '<div style="' +
+                '    display: inline-block;' +
+                '">';
+              for (let i in tag) {
+                str += tag[i].join('');
+              }
+              str += '</div>';
+            }
+            str += '</div>';
+
+            return str;
+          }
+        },
+        {
+          field: 'apply_for_reshipment',
+          title: 'Apply Type',
+          align: 'center',
+          formatter: function (value, row, index) {
+            if (row['apply_for_reshipment'] === 'No') {
+              return row['apply_for_refund'];
+            }
+            return row['apply_for_reshipment'] + '</br>' + row['apply_for_refund'];
+          }
+        },
+        {
+          title: 'RMA Status',
+          align: 'center',
+          formatter: function (value, row, index) {
+            const Mappings = {
+              Applied: 1,
+              Processed: 2,
+              Pending: 3,
+              Canceled: 4
+            };
+            let str = 'UNKNOWN';
+            for (let i in Mappings) {
+              if (Mappings[i] === parseInt(row['name'])) {
+                str = i;
+              }
+            }
+            return str;
+          }
+        },
+        {
+          title: 'RMA Date</br>Processed Date',
+          align: 'center',
+          formatter: function (value, row) {
+            if(!row['processed_date']){
+              return row['create_time']+ '</br>-' ;
+            }
+            return row['create_time'] + '</br>' + row['processed_date'];
+          }
+        },
+        {
+          title: 'Waiting Period <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" data-original-title="{{ tip_waiting_period }}"></i>',
+          align: 'center',
+          formatter: function (value, row) {
+            return '<div class="waiting-period show' +
+              row['id']+'" data-date="'+row['create_time'] +
+              '"  data-cancelrma="'+row['cancel_rma']+'"  ' +
+              'data-sellerstatus="'+row['seller_status']+'"  ' +
+              'data-is-new-apply-rma="'+ (row['isNewApplyRma'] ? 1 : 0) +'"  ' +
+              'data-id="'+row['id']+'">-</div>'
+          }
+        },
+        {
+          title: 'Action',
+          align: 'center',
+          formatter: function (value, row, index) {
+            let str = '';
+            if (parseInt(row['name']) === 4) {
+              str = '<a class="btn btn-primary "data-loading-text="..." disabled="true"><i class="fa fa-eye"></i></a>';
+            } else {
+              str = '<a target="_blank" class="btn btn-primary btn1" data-loading-text="..."' +
+                ' href="index.php?route=account/customerpartner/rma_management/rmaInfo&rmaId=' +
+                +row['id'] +
+                '"><i class="fa fa-eye"></i></a>';
+              let endDate = new Date(row['create_time'] ).getTime() + 30 * 24 * 60 * 60 * 1000;
+              let now = new Date('{{ date }}').getTime();
+              if ([2].includes(row['name']) && endDate > now) {
+                str += '<a class="btn btn-primary btn1"  data-toggle="tooltip"  data-original-title="Arbitration"  onclick="showModal(' + row['rma_order_id'] + ')" data-loading-text="..." style="margin-left: 5px" ' +
+                        '"><i class="gcl gclshiwu-chuizi"></i></a>';
+              }
+            }
+            return str;
+          }
+        }
+      ],
+      formatNoMatches: function () {
+        return 'No records.';
+      },
+      onLoadSuccess: function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        let t;
+        var now;
+        clearTimeout(t);
+        $.ajax({
+          url: 'index.php?route=account/customerpartner/rma_management/rma_manage/getDateTime',
+          async: false,
+          success: function (res) {
+            if (res.code == 200) {
+              now = new Date(res.data).getTime();
+            } else {
+              now = new Date().getTime();
+            }
+          }
+        })
+        $('.waiting-period').each(function () {
+          let id = $(this).data('id');
+          let cancelRma = parseInt($(this).data('cancelrma'));
+          let isNewApplyRma = parseInt($(this).attr('data-is-new-apply-rma'));
+          let sellerStatus = $(this).data('sellerstatus');
+          let date = $(this).data('date');
+          let endDate = new Date(date).getTime() + (isNewApplyRma ? 7 * 24 * 60 * 60 * 1000 : 14 * 24 * 60 * 60 * 1000);
+          if ([1, 3].includes(sellerStatus) && cancelRma === 0) {
+            if (endDate > now) {
+              t = TimeDown("show" + id, now, endDate);
+            } else {
+              $(this).html('<span style="color: red"> Timeout but didn’t process</span>');
+            }
+          }
+        })
+      }
+    }
+    rma_management_table.bootstrapTable($option);
+
+    $('#rma-management-filter').on('click', function () {
+      rma_management_table.bootstrapTable('destroy');
+      rma_management_table.bootstrapTable($option);
+    })
+  });
+  $('#rma-management-download').on('click', function () {
+    let form = $('#rma-management-form');
+    let rUrl = 'index.php?route=account/customerpartner/rma_management/rma_manage/downloadRmaHistory';
+    let params = form.serializeArray();
+    for (let val of params) {
+      if (val['value'] !== null) {
+        rUrl += '&' + val['name'] + '=' + val['value'];
+      }
+    }
+    location.href = rUrl;
+    return false;
+  });
+  $('#rma-management-refresh').on('click', function () {
+    $('#tab-rma-management').load('index.php?route=account/customerpartner/rma_management/rma_manage/getRmaManagementInfo');
+  });
+
+
+  function TimeDown(classname, startDate, endDate) {
+    //相差的总秒数
+    let totalSeconds = parseInt((endDate - startDate) / 1000);
+    //天数
+    let days = Math.floor(totalSeconds / (60 * 60 * 24));
+    //取模（余数）
+    let modulo = totalSeconds % (60 * 60 * 24);
+    //小时数
+    let hours = Math.floor(modulo / (60 * 60));
+    modulo = modulo % (60 * 60);
+    //分钟
+    let minutes = Math.floor(modulo / 60);
+    //秒
+    let seconds = modulo % 60;
+
+    let str = days + "D</br>" + hours + "H" + minutes + "M" + seconds + "S";
+    if (seconds < 0) {
+      str = '-';
+    }
+    //输出到页面
+    var domTime = document.getElementsByClassName(classname);
+    if (domTime.length) {
+     domTime[0].innerHTML = str;
+    }
+    //延迟一秒执行自己
+    let t=setTimeout(function () {
+      TimeDown(classname, startDate+1000, endDate);
+    }, 1000)
+    return t;
+  }
+
+  function keydown0 (){
+    if(event.keyCode==13){
+      $("#rma-management-filter").trigger("click");
+    }
+  }
+</script>

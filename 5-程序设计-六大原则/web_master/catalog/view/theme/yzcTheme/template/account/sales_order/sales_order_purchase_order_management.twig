@@ -1,0 +1,1299 @@
+{{ header }}
+{{ css(['/css/admin/app.css','/css/common/common.css']) }}
+{{ cssOrigin([
+  'catalog/view/theme/yzcTheme/stylesheet/checkout/cart.css',
+  'catalog/view/theme/yzcTheme/stylesheet/sales_order/sales_order_purchase_order_management.css',
+]) }}
+{{ js(['js/common/mathematical.js']) }}
+{#菜单#}
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  {#END 菜单#}
+{% set isShowPromise = 0 %}
+<div class="container page-seller-portal mb-3-i pre-order-page sales-order-purchase-management">
+  <div class="top-title"><h1>My Purchase List</h1></div>
+  <div class="main-con">
+{#    这边是新写的#}
+    {% if header_tips_is_show and purchaseRecords|length > 1 %}
+    <div class="top-tip">
+      <span class="giga icon-icn--n"></span><span>{{ tips_all_order_confirm_to_pay |format(purchaseRecords|length,url('account/sales_order/sales_order_management'))}}</span>
+      <span class="giga icon-sidebar-clear clear-top" onclick="closeTopTip(this)"></span>
+    </div>
+    {% endif %}
+
+    {#    保障服务全选#}
+    <div class="checkbox-all-wrapper" style="display: none">
+      {% if safeguardConfigs %}
+        {% for safeguardConfig in safeguardConfigs %}
+          <span class="guarantee-total-item">
+            <input style="display: none" type="checkbox" autocomplete="off" onclick="event.preventDefault()" class="oris-checkbox oris-checkbox-disabled" data-toggle="tooltip" title="No sales order is eligible for Protection Service purchase." id="actionTotalCheckboxDisabled{{ safeguardConfig.config.id }}">
+            <input style="display: none" type="checkbox"  data-id="{{ safeguardConfig.config.id }}" autocomplete="off"  id="actionTotalcheckbox{{ safeguardConfig.config.id }}"
+              {% if second_payment %}
+                onclick="event.preventDefault()"
+                data-toggle="popover-html" data-html-el="#secondPayDisabledTip{{ safeguardConfig.config.id }}" data-placement="bottom"
+                class="oris-checkbox  safeguard-total-checkbox oris-checkbox-disabled"
+              {% else %}
+                class="oris-checkbox blue-theme safeguard-total-checkbox"
+              {% endif %}
+            >
+            <i class="font-style-normal guarantee-name">{{ safeguardConfig.config.title}} for All Sales Orders Below:</i>
+            <i class="font-style-normal guarantee-money text-bold font-16" id="safeguardConfigAll{{ safeguardConfig.config.id }}"></i>
+            <i class="giga icon-V10-wenhaotishi help-tooltip" data-toggle="tooltip" title="" data-original-title="Total Protection Service fees of all sales orders that can be purchased with Protection Service."></i>
+          </span>
+          <div style="display: none" id="secondPayDisabledTip{{ safeguardConfig.config.id }}">
+            <p class="nowrap">The Protection Service is unable to be modifed  when <br> the Purcahse Order is in the 'To be Paid' status. </p>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    {#    保障服务全选#}
+
+    <div class="order-list">
+      {% for salesOrderId, salesOrder in purchaseRecords%}
+        <div class="order-one">
+          <div class="order-top-title">
+            <div class="order-top-left">
+                <div class="sales-order-ID">{{ text_sales_order_id }}: {{ salesOrder.order_id }}</div>
+            </div>
+            <div class="order-top-right">
+                <div class="icon-address"><i class="giga icon-v10bzfwdw-01"></i></div>
+                <div class="sales-order-des">{{ salesOrder.ship_info }}</div>
+            </div>
+          </div>
+          <div class="order-main-con">
+            <div class="order-main-title">
+              <div class="row-left no-padding-i">
+                <div class="tab-code p20-l-i text-color-normal text-bold text-small text-center">{{ text_item_code }}</div>
+              </div>
+              <div class="row-right no-padding-i">
+                <div class="tab-house text-color-normal text-bold text-small text-left">Inventory Status</div>
+                <div class="tab-qty text-color-normal text-bold text-small text-center">{{ text_qty }}</div>
+                <div class="tab-item-cost text-color-normal text-bold text-small text-right">{{ text_item_cost }}</div>
+                {# {% if isEurope %}
+                  <div class="tab-item-cost text-color-normal text-bold text-small text-right">{{ text_service_fee }}</div>
+                {% endif %}#}
+                <div class="tab-freight-cost text-color-normal text-bold text-small text-right">{{ text_freight_cost }}</div>
+                <div class="tab-storage-fee text-color-normal text-bold text-small text-right">
+                  {{ text_storage_fee }}
+                  <i class="giga icon-V10-wenhaotishi help-tooltip" data-toggle="tooltip" title="{{ tips_storage_fee }}"></i>
+                </div>
+                <div class="tab-total text-color-normal text-bold text-small text-right">{{ text_total }}</div>
+              </div>
+              <div class="row-act">
+                <div class="tab-action text-center"></div>
+              </div>
+            </div>
+            <div class="order-main-row">
+              {% for lineIndex,line in salesOrder.lines %}
+                <div class="order-main-row-outer">
+                  <div class="row-left no-padding-i">
+                    <div class="tab-code p10-tb p20-l-i tab-code-val text-center">
+                      <div class="order-image">
+                        <img src="{{ line.image }}" alt="" class="tab-image-currect">
+                      </div>
+                      <div class="order-code text-left">
+                        {% if line.product_id is not empty %}
+                          <a href="{{ url('product/product', {'product_id': line.product_id}) }}" target="_blank"
+                             class="tab-code-txt" title="{{ line.item_code }}">{{ line.item_code }}</a>
+                        {% else %}
+                          {{ line.item_code }}
+                        {% endif %}
+                        {% for tag in line.tags %}
+                          {{ tag }}
+                        {% endfor %}
+                        {% if line.freight_flag == 1 %}
+                          <span style="background:#ffebde;font-size:12px;color: #ff6600;text-align: center;width: 48px;height: 20px;line-height: 20px;display: inline-block">Freight</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row-right p10-tb">
+                    {% if line.quantity_available > 0 %}
+                      {# 这里展示已有库存的 #}
+                      <div class="row-right-item p10-tb">
+                        <div class="tab-house text-left">
+                          <span class="tag-has-house">{{ text_in_stock }}</span>
+                        </div>
+                        <div class="tab-qty text-center">
+                          <span class="text-color-normal text-bold">{{ line.quantity_available }}</span>
+                        </div>
+                        {% if isEurope %}
+                          <div class="tab-item-cost text-right">
+                            <span
+                              class="text-tips">{{ (line.purchase_order_product_service_total + line.purchase_order_product_cost_total)|formatPrice(currency) }} (Paid)</span>
+                          </div>
+                        {% else %}
+                          <div class="tab-item-cost text-right">
+                            <span class="text-tips">{{ line.purchase_order_product_cost_total|formatPrice(currency) }} (Paid)</span>
+                          </div>
+                        {% endif %}
+                        <div class="tab-freight-cost text-right">
+                          <span class="text-tips">{{ line.purchase_order_product_freight_total|formatPrice(currency) }}  (Paid)</span>
+                        </div>
+                        <div class="tab-storage-fee pr-20 text-right">
+                          <span>{{ line.line_need_pay_storage_fee_in_stock|formatPrice(currency) }}</span>
+                        </div>
+                        <div class="tab-total text-right">
+                          <span>{{ line.line_need_pay_storage_fee_in_stock|formatPrice(currency) }}</span>
+                        </div>
+                      </div>
+                    {% endif %}
+                    {% if line.quantity > 0 %}
+                      {# 这里展示需要购买的#}
+                      {% set isShowPromise = 1 %}
+                      <div class="row-right-item p10-tb">
+                        <div class="tab-house text-left">
+                          <span class="tag-to-paid">{{ text_to_be_paid }}</span>
+                        </div>
+                        <div class="tab-qty text-center">
+                          <span class="text-color-normal text-bold">{{ line.quantity }}</span>
+                        </div>
+                        <div class="tab-item-cost text-right">
+                         {# {% if isEurope %}
+                            <i class="giga icon-vat"></i>
+                          {% endif %}#}
+                          {% if  isEurope %}
+                            <span>{{ (line.line_product_price + line.line_service_fee)|formatPrice(currency) }}</span>
+                          {% else %}
+                            <span>{{ line.line_product_price|formatPrice(currency) }}</span>
+                          {% endif %}
+                        </div>
+                       {# {% if isEurope %}
+                          <div class="tab-item-cost text-right">
+                            <span>{{ line.line_service_fee|formatPrice(currency) }}</span>
+                          </div>
+                        {% endif %}#}
+                        <div class="tab-freight-cost text-right">
+                          <span>{{ line.line_freight|formatPrice(currency) }}</span>
+                        </div>
+                        <div class="tab-storage-fee pr-20 text-right">
+                          {% if line.line_need_pay_storage_fee_not_stock > 0 %}
+                            <span>{{ line.line_need_pay_storage_fee_not_stock|formatPrice(currency) }}</span>
+                          {% else %}
+                            <span>{{ text_no_storage_fee }}</span>
+                          {% endif %}
+                        </div>
+                        <div class="tab-total text-right">
+                          <span>{{ line.line_total_cost_freight|formatPrice(currency) }}</span>
+                        </div>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="row-act p10-tb">
+                    {% if line.line_total_fee > 0 %}
+                      {#总费用大于0才显示下拉箭头#}
+                      <div class="tab-action text-center">
+                        <a class="list-down" role="button" data-toggle="collapse" href="#collapse{{ salesOrderId }}-{{ lineIndex }}" aria-expanded="false" aria-controls="collapse{{ salesOrderId }}-{{ lineIndex }}">
+                          <i class="giga icon-V10_shouyeyouxiadown"></i>
+                        </a>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+                {% if line.line_total_fee > 0 %}
+                  {#总费用大于0才显示下拉箭头#}
+                  <div id="collapse{{ salesOrderId }}-{{ lineIndex }}" class="collapse order-main-row-inner">
+                    <div class="grid-con"></div>
+                    <div class="order-main-row-inner-con">
+                      <div class="top-arrow"></div>
+                      {% if line.line_item_cost > 0 %}
+                        {#有需要购买的才显示#}
+                        {#货款详情#}
+                        <div class="inner-detail-title detail-storage">
+                          <div>
+                            <span class="inner-detail-title-txt">{{ text_items_cost_detail }}</span>
+                          </div>
+                          <div class="detail-tip"></div>
+                        </div>
+                        <div class="inner-detail-table">
+                          <table class="table table-bordered ">
+                            <thead>
+                            <tr>
+                              <th class="no-weight width-200 vertical-middle text-left">{{ text_item_code }}</th>
+                              <th class="no-weight width-80 vertical-middle">{{ text_qty }}</th>
+                              <th class="no-weight width-220 vertical-middle ">{{ text_seller }}</th>
+                              <th class="no-weight width-128 vertical-middle text-left line-height-14">{{ text_transaction_type }}</th>
+                              <th class="no-weight vertical-middle text-right line-height-14">{{ text_unit_price_after_discount }}</th>
+                              {% if isEurope %}
+                                <th class="no-weight vertical-middle text-right line-height-14">{{ text_service_fee_per_unit_after_discount }}</th>
+                              {% endif %}
+                              <th class="no-weight vertical-middle text-right line-height-14">{{ text_total_items_cost }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                              <td class="text-left">
+                                {% if line.product_id is not empty %}
+                                  <a href="{{ url('product/product', {'product_id': line.product_id}) }}" target="_blank"
+                                     class="tab-code-txt" title="{{ line.item_code }}">{{ line.item_code }}
+                                  </a>
+                                {% else %}
+                                  {{ line.item_code }}
+                                {% endif %}
+                              </td>
+                              <td><span>{{ line.quantity }}</span></td>
+                              <td class="break-word width-220"><span>{{ line.screenname }}</span></td>
+                              <td class="text-left">
+                                  <span>
+                                     {% if line.type_id == 0 %}
+                                       Normal
+                                     {% elseif line.type_id == 1 %}
+                                       Rebate:{{ line.agreement_code }}
+                                     {% elseif line.type_id == 2 %}
+                                       Margin:{{ line.agreement_code }}
+                                     {% elseif line.type_id == 3 %}
+                                       Future:{{ line.agreement_code }}
+                                     {% elseif line.type_id == 4 %}
+                                       Spot Price:{{ line.agreement_code }}
+                                     {% endif %}
+                                  </span>
+                              </td>
+                              <td class="text-right">
+                               {# {% if isEurope %}
+                                  <i class="giga icon-vat"></i>
+                                {% endif %}#}
+                                {{ line.product_price_per|formatPrice(currency) }}
+                              </td>
+                              {% if isEurope %}
+                                <td class="text-right">{{ line.service_fee_per|formatPrice(currency) }}</td>
+                              {% endif %}
+                              <td class="text-right">{{ line.line_item_cost|formatPrice(currency) }}</td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      {% endif %}
+                      {% if line.freight_flag == 0 and line.line_freight_cost > 0 %}
+                        {#运费详情#}
+                        {#欧洲补运费#}
+                        <div class="inner-detail-title detail-storage">
+                          <div>
+                            <span class="inner-detail-title-txt">{{ text_freight_detail }}</span>
+                          </div>
+                          <div class="detail-tip"></div>
+                        </div>
+                        <div class="inner-detail-table">
+                          <table class="table table-bordered ">
+                            <thead>
+                            <tr>
+                              <th class="no-weight width-200 vertical-middle text-left">{{ text_item_code }}</th>
+                              <th class="no-weight width-80 vertical-middle">{{ text_qty }}</th>
+                              <th class="no-weight vertical-middle text-right">{{ text_shipping_fee_per_unit }}</th>
+                              <th class="no-weight vertical-middle text-right">{{ text_packageing_fee_per_unit }}</th>
+                              <th class="no-weight vertical-middle text-right">{{ text_total_freight_cost }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <tr>
+                              <td class="text-left">
+                                {% if line.product_id is not empty %}
+                                  <a href="{{ url('product/product', {'product_id': line.product_id}) }}" target="_blank"
+                                     class="tab-code-txt" title="{{ line.item_code }}">{{ line.item_code }}
+                                  </a>
+                                {% else %}
+                                  {{ line.item_code }}
+                                {% endif %}
+                              </td>
+                              <td><span>{{ line.quantity }}</span></td>
+                              <td class="text-right"><span>{{ line.freight|formatPrice(currency) }}</span></td>
+                              <td class="text-right"><span>{{ line.package_fee|formatPrice(currency) }}</span></td>
+                              <td class="text-right">{{ line.line_freight|formatPrice(currency) }}</td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      {% endif %}
+                      {% if line.is_storage_fee %}
+                        {#仓租详情#}
+                        <div class="inner-detail-title detail-storage">
+                          <div>
+                            <span class="inner-detail-title-txt">{{ text_storage_fee_detail }}</span>
+                          </div>
+                          {% if storage_fee_description_id %}
+                            <a href="{{ url('information/information',{'information_id':storage_fee_description_id}) }}" class="detail-tip" target="_blank">{{ text_storage_fee_description }}</a>
+                          {% endif %}
+                        </div>
+                        <div class="inner-detail-table">
+                          <table class="table table-bordered ">
+                            <thead>
+                            <tr>
+                              <th class="no-weight width-200 vertical-middle text-left">{{ text_item_code }}</th>
+                              <th class="no-weight vertical-middle text-left">{{ text_size }}</th>
+                              <th class="no-weight vertical-middle text-right">{{ text_volume }}({{ text_volume_symbol }})</th>
+                              <th class="no-weight width-160 vertical-middle">{{ text_qty }}</th>
+                              <th class="no-weight vertical-middle text-right">{{ text_storage_days }}</th>
+                              <th class="no-weight vertical-middle text-right">{{ text_total_storage_fee }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for storageFeeKey,storageFee in line.storage_fee_infos %}
+                              {% if storageFee.need_pay > 0 %}
+                                <tr>
+                                  <td class="text-left">
+                                    <a href="{{ url('product/product', {'product_id': storageFee.product_id}) }}"
+                                       target="_blank"
+                                       class="tab-code-txt" title="{{ storageFee.item_code }}">{{ storageFee.item_code }}
+                                    </a>
+                                  </td>
+                                  <td class="text-left">
+                                    {% for sizeInfo in storageFee.size_info %}
+                                      <p>
+                                        {{ sizeInfo.length|round(2) }}" * {{ sizeInfo.width|round(2) }}"
+                                        * {{ sizeInfo.height|round(2) }}
+                                        " {{ storageFee.is_combo ? " × #{sizeInfo.qty}" : '' }}
+                                      </p>
+                                    {% endfor %}
+                                  </td>
+                                  <td class="text-right"><span>{{ storageFee.volume|round(4) }}</span></td>
+                                  <td><span>{{ storageFee.qty }}</span></td>
+                                  <td class="text-right">
+                                    <a data-toggle="popover-html"
+                                       data-html-el="#warehouse-day-{{ salesOrder.id }}-{{ line.item_code }}-{{ storageFeeKey }}"
+                                       href="javascript:void(0);" data-toggle="popover" data-placement="bottom"
+                                       data-original-title title>
+                                      {{ storageFee.days }}
+                                      <i class="giga icon-V10_shouyeyouxiadown download-cart"></i>
+                                    </a>
+                                  </td>
+                                  <td class="text-right">
+                                    <a data-toggle="popover-html"
+                                       data-html-el="#total-storage-fee-popover-{{ salesOrder.id }}-{{ line.item_code }}-{{ storageFeeKey }}"
+                                       href="javascript:void(0);" data-toggle="popover" data-placement="bottom"
+                                       data-original-title title>
+                                      {{ storageFee.need_pay|formatPrice(currency) }}
+                                      <i class="giga icon-V10_shouyeyouxiadown download-cart"></i>
+                                    </a>
+                                  </td>
+                                </tr>
+                              {% endif %}
+                            {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+              <div class="guarantee-con">
+              {% if safeguardConfigs %}
+                <div class="guarantee-info">
+                  <div class="guarantee-list">
+                    {% for safeguardConfig in safeguardConfigs %}
+                       <span class="guarantee-item oris-buyer">
+                         {# 计算保障服务费 #}
+                         {% set safeguardFee = (salesOrder.costAndFreightAmount*safeguardConfig.config.service_rate)|round(2) %}
+                         {% if safeguardConfig.config.order_product_max!=-1 and  (salesOrder.sale_order_qty_max)>safeguardConfig.config.order_product_max %}
+                           <input type="checkbox" autocomplete="off" onclick="event.preventDefault()" class="oris-checkbox size-small oris-checkbox-disabled" name="safeguard" data-toggle="tooltip" title="Do not meet the requirements of purchasing this Protection Service" value="{{ salesOrder.id }}-{{ safeguardConfig.config.id }}">
+                         {% else %}
+                           <input type="checkbox" autocomplete="off"
+                                  {% if second_payment %}
+                                    onclick="event.preventDefault()"
+                                    data-toggle="popover-html" data-html-el="#guarantee-fee-detail-disabled-{{ salesOrder.id }}-{{ safeguardConfig.config.id }}" data-placement="bottom"
+                                    class="oris-checkbox size-small action-vaild safeguard-checkbox oris-checkbox-disabled"
+                                    {% if safeguardConfig.config.id in salesOrder.safeguard_config_ids %}
+                                      checked
+                                    {% endif %}
+                                  {% else %}
+                                    class="oris-checkbox size-small action-vaild safeguard-checkbox"
+                                  {% endif %}
+                                  name="safeguard" value="{{ salesOrder.id }}-{{ safeguardConfig.config.id }}" data-safeguard-fee="{{ safeguardFee|formatPrice(currency,{'japan':'ceil','is_symbol' : false,'need_format':false})  }}">
+                         {% endif %}
+                         <i class="font-style-normal guarantee-name">{{ safeguardConfig.config.title}}:</i>
+
+                        <i class="font-style-normal guarantee-money text-bold"  id="item-safeguard-fee-{{ salesOrder.id }}" data-safeguard-fee="{{ safeguardFee|formatPrice(currency,{'japan':'ceil','is_symbol' : false,'need_format':false}) }}">{{safeguardFee|formatPrice(currency,{'japan':'ceil'}) }}</i>
+                        <a data-toggle="popover-html" data-html-el="#guarantee-fee-detail-{{ salesOrder.id }}-{{ safeguardConfig.config.id }}" href="javascript:void(0);" data-toggle="popover" data-placement="bottom"
+                           data-original-title title>
+                          <i class="giga icon-V10-wenhaotishi help-tooltip"></i>
+                        </a>
+                      </span>
+                      <div style="display: none" id="guarantee-fee-detail-disabled-{{ salesOrder.id }}-{{ safeguardConfig.config.id }}">
+                        <p class="nowrap">The Protection Service is unable to be modifed when <br> the Purcahse Order is in the 'To be Paid' status. </p>
+                      </div>
+                      <div style="display: none" id="guarantee-fee-detail-{{ salesOrder.id }}-{{ safeguardConfig.config.id }}">
+                        <p><span class="black-color">Base of Protection Service Fee: </span><span class="text-bold">{{ salesOrder.costAndFreightAmount|formatPrice(currency) }}</span></p>
+                        <p class="text-tip">(The sum of total items cost (including deposit) and total fulfillment fee)</p>
+                        <p class="m5-t"><span class="black-color">Protection Service Rate: </span><span  class="text-bold">{{ safeguardConfig.config.service_rate*100 }}%</span></p>
+                        <p class="m5-t"><span class="black-color">Total Protection Service Fee: </span><span  class="text-bold">{{safeguardFee|formatPrice(currency,{'japan':'ceil'}) }}</span></p>
+                      </div>
+                    {% endfor %}
+
+                  </div>
+                  <div class="guarantee-tip">
+                    <span class="text-light"><span class="no-style">By ticking the Protection Service, you shall be deemed to have read and agreed to be bound by the  terms and conditions of </span> <br> <a href="/index.php?route=information/information&information_id=169" target="_blank" class="guarantee-sub-tip">[GigaCloud Protection Service Statement]</a></span>
+                  </div>
+                </div>
+                {% endif %}
+
+                <div class="amount-info flex1 text-right">
+                  <span class="text-bold">Total Amount:</span>
+                  <span class="text-bold text-bigger order-total-amount"  id="item-total-{{ salesOrder.order_id }}" data-item-total="{{ salesOrder.total_amount }}">{{ salesOrder.total_amount|formatPrice(currency) }}</span>
+                </div>
+
+              </div>
+            </div>
+            {#创建popover#}
+            <div style="display: none">
+              {% for line in salesOrder.lines %}
+                {% if line.is_storage_fee %}
+                  {% for storageFeeKey,storageFee in line.storage_fee_infos %}
+                    {% if storageFee.need_pay > 0 %}
+                      {# 在库天数 #}
+                      <div id="warehouse-day-{{ salesOrder.id }}-{{ line.item_code }}-{{ storageFeeKey }}">
+                        <div class="warehouse-day">
+                          <div>
+                            <div class="text">{{ text_purchase_time }}:</div>
+                            <div class="value">{{ storageFee.purchase_paid_time }}</div>
+                          </div>
+                          <div>
+                            <div class="text">{{ text_purchase_order }}:</div>
+                            <a href="{{ url('account/order/purchaseOrderInfo', {'order_id': storageFee.purchase_order_id}) }}" target="_blank" class="link-color value">#{{ storageFee.purchase_order_id }}</a>
+                          </div>
+                        </div>
+                      </div>
+                      {# 总费用明细 #}
+                      <div id="total-storage-fee-popover-{{ salesOrder.id }}-{{ line.item_code }}-{{ storageFeeKey }}">
+                        <div>
+                          <table class="table table-bordered feel-tip-table">
+                            <thead>
+                            <tr>
+                              <th class="vertical-middle"><span class="pop-table-title">{{ text_storage_days }}</span> <br> <span class="pop-table-title-sub">(day)</span></th>
+                              <th class="vertical-middle"><span class="pop-table-title">{{ text_storage_fee_rate }}</span> <br><span class="pop-table-title-sub"> ({{ currency_symbol }}/{{ text_volume_symbol }} per day)</span></th>
+                              <th class="vertical-middle"><span class="pop-table-title">{{ text_total }}</span><br><span class="pop-table-title-sub">({{ currency_symbol }})</span></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for feeDetail in storageFee.fee_detail_range %}
+                              <tr>
+                                <td class="font14">{{ feeDetail.start }}-{{ feeDetail.end }}</td>
+                                <td class="font14">{{ feeDetail.storage_fee }}</td>
+                                <td class="font14">{{ feeDetail.total|formatPrice(currency,{is_symbol:false}) }}</td>
+                              </tr>
+                            {% endfor %}
+                            </tbody>
+                          </table>
+                          {% if storageFee.paid > 0 %}
+                            <div class="pay-tip">
+                              <div class="text">{{ text_paid }}:</div>&nbsp;
+                              <a
+                                href="{{ url('account/fee_order/fee_order/paidFeeOrderJump',{'storage_id': storageFee.storage_fee_ids|join(',')}) }}"
+                                target="_blank">
+                                <div class="value link-color">
+                                  {{ storageFee.paid|formatPrice(currency) }}
+                                </div>
+                              </a>
+                            </div>
+                          {% endif %}
+                          {% if storageFee.need_pay > 0 %}
+                            <div class="pay-tip">
+                              <div class="text">{{ text_storage_fee_need_paid }}:</div>&nbsp;
+                              <div class="value">{{ storageFee.need_pay|formatPrice(currency) }}</div>
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+{#    这边是新写的#}
+{#    触底标志#}
+    <div id="buttomFlag"></div>
+{#    触底标志#}
+  </div>
+  <div class="list-check-con" id="listCheckCon">
+    {% if isShowPromise %}
+    <div class="oris-buyer">
+      <input checked type="checkbox" autocomplete="off" name="required" class="oris-checkbox">
+      <span class="state">I promise that all the products I acquire on the Giga Cloud Platform or through Giga Cloud Services will be for resale purposes only.</span>
+    </div>
+    {% endif %}
+    {# 1452优惠券删选优惠券 #}
+    {% if coupon.coupons|length!=0 or selected_coupon.denomination %}
+    <div class="price-right-con priceList">
+       <table class="table" style="width: auto;float:right;margin-bottom: 0;">
+           <tr>
+              <td colspan="2" class="coupon-input text-right" {% if not order_id %} id="couponListChoose" {% endif %}>
+                {% if not order_id %}
+                  <input type="" name="checked_coupon_value" value="{{ coupon.checked_coupon_values }}" disabled  placeholder="{{ __('请选择', {}, 'common') }}" />
+                  <span class="caret"></span>
+                {% elseif selected_coupon.value %}
+                  <input type="" name="checked_coupon_value" value="{{ selected_coupon.denomination|formatPrice(currency) }} OFF Order Over {{ selected_coupon.order_amount|formatPrice(currency) }}" disabled  placeholder="{{ __('请选择', {}, 'common') }}" class="dis-input" />
+                {% endif %}
+                  <div id="coupons-choose" class="coupons-choose {%if coupon.coupons|length==1 %} coupons1{% endif %} {%if coupon.coupons|length==2 %} coupons2{% endif %}">
+                    <div class="coupon-title">GIGA Coupon<span class="pull-right">Coupon cannot be used for deposit or freight or transaction fee</span></div>
+                    <div class="coupon-content">
+                        {% for c in  coupon.coupons %}
+                        <div class="mycoupon{% if c.checked_coupon %} coupon-selected{% endif %} mycoupon-{{ c.id }}" data-id="{{ c.id }}" data-value="{{ c.denomination }}">
+                            <span><span class="link-price">{{ c.format_denomination }} OFF</span> Order Over {{ c.format_order_amount }}</span><span>{{ c.expiration_time }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="coupon-btn text-center">
+                          <button type="button" class="btn-confirm" data-id="{{ coupon.checked_coupon_ids }}">OK</button>
+                          <button type="button" class="btn-cancel" data-id="{{ coupon.checked_coupon_ids }}">Cancel</button>
+                    </div>
+                  </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+    <div class="price-right-con priceList">
+      <table>
+        <tbody>
+        {# 1452优惠券 #}
+        <tr style="{% if gifts|length == 0 %}display:none{% endif %}">
+          <td colspan="2" class="text-right">
+            <span class="font-bold">
+            <div class="gift-line">Gift:&nbsp;</span>
+              <span id="gift-content">
+                {% for key,gift in gifts %}
+                  {% if gift.is_coupon %}
+                    <span class="link-price">{{ gift.format_coupon_price }}</span> coupon&nbsp;<img
+                    src="image/coupon/coupon.png">
+                    <span data-toggle="tooltip"  data-html="true" data-original-title="This order qualifies for a&nbsp;{{ gift.format_coupon_price }} off coupon that you can use on your next purchase" class="toggle-mark">
+                        <i class="giga icon-V10-wenhaotishi"></i>
+                    </span>
+                  {% else %}
+                    {{ gift.condition_remark }}
+                  {% endif %}
+                  {% if key < gifts|length-1 %}
+                  </div><div class="gift-line">
+                  {% endif %}
+                {% endfor %}
+               </span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="text-right right-grid">
+            {#{% if isEurope %}<i class="giga icon-vat"></i>{% endif %}#}
+            <span class="check-title">{{ text_total_items }}: </span></td>
+          <td class="text-right"><span class="check-money" id="sub_item_total" data-value="{{ itemPriceTotal }}">{{ itemPriceTotal|formatPrice(currency) }}</span></td>
+        </tr>
+        {% if isEurope %}
+          <tr>
+            <td class="text-right right-grid"><span class="check-title">{{ text_total_general_service_fee }}: </span></td>
+            <td class="text-right"><span class="check-money">{{ totalServiceFee|formatPrice(currency) }}</span></td>
+          </tr>
+        {% endif %}
+        <tr>
+          <td class="text-right right-grid"><span class="check-title">{{ text_freight_cost }}: </span></td>
+          <td class="text-right"><span class="check-money">{{ totalFreight|formatPrice(currency) }}</span></td>
+        </tr>
+        {% if totalStorageFee > 0 %}
+          <tr>
+            <td class="text-right right-grid"><span class="check-title">{{ text_total_storage_fee }}: </span></td>
+            <td class="text-right"><span class="check-money">{{ totalStorageFee|formatPrice(currency) }}</span></td>
+          </tr>
+        {% endif %}
+      <tr id="protectionServiceFeeCon" style="display: none">
+        <td class="text-right right-grid"><span class="check-title">{{ text_total_safeguard_fee }}: </span></td>
+        <td class="text-right"><span class="check-money" id="protectionServiceFee" data-protection-fee="0">{{ symbolLeft }}0{{ symbolRight }}</span></td>
+      </tr>
+        {# 1452Promotion #}
+        <tr class="promotion-hover" style="{% if not campaigns %}display:none{% endif %}">
+            <td class="text-right font-bold promotion-dis right-grid check-title">Promotion Discount:
+              <div class="promotion-content">
+                <div class="line-table">
+                    <div class="text-center text-size-normal">Promotion Name</div>
+                    <div class="text-left text-size-normal">Discount Amount</div>
+                </div>
+                <div id="promotion-discount-content">
+                  {% for campaign in campaigns %}
+                    <div class="line-table">
+                        <div class="text-left">{{ campaign.promotion_content }}</div>
+                        <div class="text-left">{{ campaign.conditions[campaign.id].minus_amount|formatPrice(currency) }}</div>
+                    </div>
+                  {% endfor %}
+                </div>
+
+              </div>
+          </td>
+          <td class="text-right check-money relative">
+            <span class="green-color" id="promotion" data-value="{{ campaign_discount }}">{{ campaign_discount|formatPrice(currency) }}</span>
+            <i class="giga icon-V10_shouyeyouxiadown "></i>
+          </td>
+        </tr>
+
+        {# 1452 GIGA Coupon #}
+        {% if selected_coupon.value %}
+        <tr class="coupon-tr">
+          <td class="text-right right-grid"><span class="check-title">GIGA Coupon: </span></td>
+          <td class="text-right"><span class="check-money green-color" id="selected_coupon_value">{{ selected_coupon.value|formatPrice(currency) }}</span></td>
+        </tr>
+        {% endif %}
+        {# 1452优惠券End#}
+        <tr>
+          <td class="text-right right-grid"><span class="check-title check-title-total">{{ text_total_order|format(purchaseRecords|length) }}: </span></td>
+          <td class="text-right"><span class="check-money check-total" id="sub_total" data-value="{{ originSubTotal }}"  data-total-fee="{{ subTotal }}">{{ subTotal|formatPrice(currency) }}</span></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+{#    <p>{% if isEurope %}<i class="giga icon-vat"></i>{% endif %}<span class="check-title">Items: </span><span class="check-money">{{ itemPriceTotal }}</span></p>#}
+{#    <p><span class="check-title">Freight Cost: </span><span class="check-money">{{ totalFreight }}</span></p>#}
+{#    {% if isEurope %}#}
+{#      <p><span class="check-title">General Service Fee: </span><span class="check-money">{{ totalServiceFee }}</span></p>#}
+{#    {% endif %}#}
+{#    <p><span class="check-title check-title-total">Order Total: </span>#}
+{#      <span class="check-money check-total">{{ subTotal }}</span></p>#}
+    <div class="check-btn">
+      <button style="font-size: 18px;height: 50px" class="btn btn-check" onclick="confirmToPay('{{ run_id }}','{{ is_fee_order }}')">Confirm to Pay</button>
+    </div>
+  </div>
+</div>
+<div class="check-footer" id="checkFooter" style="display: none">
+  <div class="container">
+    {% if isShowPromise %}
+    <div class="text-left oris-buyer mt-04">
+      <input checked type="checkbox" autocomplete="off" name="required" class="oris-checkbox ">
+      <span class="state">I promise that all the products I acquire on the Giga Cloud Platform or through Giga Cloud Services will be for resale purposes only.</span>
+    </div>
+    {% endif %}
+    <div style="display: flex;justify-content: flex-end;align-items: center">
+      <div style="margin-right: 10px">
+        <p style="font-size: 18px ;color: #333;font-weight: bolder">{{ text_total_order|format(purchaseRecords|length) }}: <span class="money-all" id="bottom_sub_total" data-total-fee="{{ subTotal }}">{{ subTotal |formatPrice(currency) }}</span></p>
+        <p class="money-detail" >
+         {# {% if isEurope %}<i class="giga icon-vat"></i>{% endif %}#}
+          {{ text_total_items }}: <span style="font-weight: bolder">{{ itemPriceTotal|formatPrice(currency) }}</span>
+          {% if isEurope and totalServiceFee !=0 %}
+            ,{{ text_total_general_service_fee }}: <span style="font-weight: bolder">{{ totalServiceFee|formatPrice(currency) }}</span>
+          {% endif %}
+            ,{{ text_freight_cost }}: <span style="font-weight: bolder">{{ totalFreight|formatPrice(currency) }}</span>
+          <span class="other-fee-con" style="display: none">, Other Fees: </span> <span class="other-fee-con" style="display: none; font-weight: bolder" id="otherFee" data-other-fee="{{ totalStorageFee }}">{{ totalStorageFee|formatPrice(currency) }}</span>
+          {# 1452优惠券 Save#}
+          {% if totalSave != 0 %}
+            <span class="total_save">
+            , {{ text_total_save }}: <span style="font-weight: bolder" id="total_save">{{ totalSave|formatPrice(currency) }}</span>
+                </span>
+          {% endif %}
+        </p>
+      </div>
+      <div>
+        <button style="" class="btn btn-check" onclick="confirmToPay('{{ run_id }}','{{ is_fee_order }}')">Confirm to Pay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $("input[type=checkbox][name=required]").on('change',function () {
+    if ($(this).is(":checked")){
+      $("input[type=checkbox][name=required]").prop("checked",true);
+      $(".btn-check").removeAttr('disabled');
+    }else{
+      $("input[type=checkbox][name=required]").prop("checked",false);
+      $(".btn-check").attr('disabled','disabled');
+    }
+  })
+</script>
+
+{#吸底#}
+<script>
+  let checkTop = $("#buttomFlag").offset()['top']; //confirm to pay 距離頂部的距離
+  let winHeight = $(window).height();  //可視化的高度
+  let symbolLeft = '{{ symbolLeft }}'
+  let symbolRight = '{{ symbolRight }}'
+  $(document).ready(function () {
+    initSafeAmount();
+    initAllCheck();
+    setTimeout(()=>{
+      checkTop = $("#buttomFlag").offset()['top']+15; //confirm to pay 距離頂部的距離
+      if (checkTop > winHeight) {
+        $("#checkFooter").show();
+        $("#listCheckCon").hide();
+      } else {
+        $("#checkFooter").hide();
+        $("#listCheckCon").show();
+      }
+      $(window).scroll(function () {
+        //为了保证兼容性，这里取两个值，哪个有值取哪一个
+        //scrollTop就是触发滚轮事件时滚轮的高度
+        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        if (checkTop-scrollTop<winHeight) {
+          $("#checkFooter").hide();
+          $("#listCheckCon").show();
+        } else {
+          $("#checkFooter").show();
+          $("#listCheckCon").hide();
+        }
+      })
+    },400)
+  });
+</script>
+{#吸底#}
+<script>
+  var orderId = {{ order_id }};
+
+  function confirmToPay(runId, isFeeOrder) {
+
+
+    //校验销售订单状态
+    $.ajax({
+      url: "{{ judgePurchaseSalesOrderCanPayUrl }}",
+      async: false,
+      type: 'GET',
+      dataType: "json",
+      data: {run_id: runId},
+      complete: function () {
+        $('#button-cart').button('reset');
+      },
+      success: function (json) {
+        if (json.code != 200) {
+          errorTips(json.msg, json.data.url);
+        } else {
+          let originalSubTotal = '{{ subTotal }}';
+          let subTotal = $('#sub_total').data('value');
+          let totalFee = $('#sub_total').attr('data-total-fee');
+          // 获取保单需要支付的费用单
+          if (totalFee <= 0 && subTotal <= 0 && originalSubTotal <= 0) {
+            noToPay();
+            return;
+          }
+          //通过继续执行
+          if (isFeeOrder) {
+            // 纯费用单
+            createStorageFeeOrder(runId, 0);
+          } else {
+            if (orderId) {
+              //采购单+费用单二次支付
+              createStorageFeeOrder(runId, orderId);
+            } else {
+              // 采购单+费用单
+              addCartAndToPay(runId);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function addCartAndToPay(runId) {
+    $.ajax({
+      url: '{{ addCartUrl }}',
+      type: 'post',
+      data: {'run_id':runId},
+      dataType: 'json',
+      beforeSend: function () {
+        $('#button-cart').button('loading');
+      },
+      success: function (json) {
+        if(json['status']){
+          checkCartInfo(json['cart_id_str']);
+        }else{
+          errorTips(json['error'], '', 'refresh');
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $('#button-cart').button('reset');
+        var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+          title: 'Message',
+          btn: 'OK',
+          skin: 'yzc_layer' //样式类名
+          , closeBtn: 0
+        }, function () {
+          layer.close(tmplayer);
+        });
+      }
+    });
+  }
+
+  function checkCartInfo(cart_id_str) {
+    $.ajax({
+      url: "{{ checkCartUrl }}",
+      async: false,
+      type: 'post',
+      data: {cart_id_str:cart_id_str,delivery_type:0},
+      dataType: "json",
+      success: function (json) {
+        if (json['success']) {
+          createOrder(cart_id_str);
+        }else {
+          $('#button-cart').button('reset');
+          errorTips(json['msg'], '', 'refresh');
+        }
+      }
+    });
+  }
+
+  // 获取选择的保障服务
+  function getCheckedSafeguard() {
+    let safeguards = {};
+    $('input[name="safeguard"]:checked').each(function () {
+      let arr = $(this).val().split('-')
+      if (safeguards[arr[0]]) {
+        safeguards[arr[0]]['safeguard_config_id'].push(arr[1]);
+      } else {
+        safeguards[arr[0]] = {'sale_order_id': arr[0], 'safeguard_config_id': [arr[1]]}
+      }
+    });
+    return safeguards;
+  }
+
+  function createOrder(cart_id_str) {
+    let coupon_id = $('.btn-confirm').data('id');
+    let safeguards = getCheckedSafeguard();
+    if (cart_id_str){
+      $.ajax({
+        url: "{{ createOrderUrl }}",
+        async: false,
+        type: 'POST',
+        dataType: "json",
+        data: {
+          cart_id_str: cart_id_str,
+          delivery_type: 0,
+          total_storage_fee:{{ totalStorageFee }} ,
+          'coupon_id': coupon_id,
+          'safeguards': safeguards,
+          'sub_item_total': $('#sub_item_total').data('value')
+        },
+        complete: function () {
+          $('#button-cart').button('reset');
+        },
+        success: function (json) {
+          if (json.code == 200) {
+            toPay(json.data.order_id, json.data.fee_order_list);
+          } else if (json.code == 1) {
+            $('#button-cart').button('reset');
+            let url = '{{ url('account/sales_order/sales_order_management', {'filter_orderStatus':1}) }}'
+            errorTips(json.msg, url, 'go back');
+          } else {
+            $('#button-cart').button('reset');
+            errorTips(json.msg, json.data.url);
+            //location.href = json.data.url;
+          }
+        }
+      });
+    }
+  }
+
+
+  // 一件代发销售订单无需支付的情况
+  function noToPay() {
+    let safeguards = getCheckedSafeguard();
+    $.ajax({
+      url: '{{ url('account/sales_order/match_inventory_window/dropShipCheckNeedToPay') }}',
+      async: false,
+      type: 'POST',
+      dataType: "json",
+      data: {runId: '{{ run_id }}',safeguards:safeguards},
+      complete: function () {
+        $('#button-cart').button('reset');
+      },
+      success: function (json) {
+        if (json.code == 200) {
+          location.href = '{{ url('checkout/success') }}';
+        } else {
+          errorTips(json.msg, '', json.data.redirect_type);
+        }
+      }
+    });
+  }
+
+
+  /**
+   * 只创建费用单去支付
+   * @param runId
+   * @param orderId 如果有要一起支付的采购单就传
+   */
+  function createStorageFeeOrder(runId,orderId) {
+    var checkOrder = true;
+    if (orderId) {
+      $.ajax({
+        url: '{{ url('account/order/judgeSalesOrderStatus') }}',
+        type: 'post',
+        data: {order_id : orderId},
+        async: false,
+        dataType: 'json',
+        success: function(result) {
+          if (result.error) {
+            errorTips('This purchase Order is no longer valid.');
+            checkOrder = false;
+          }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+          layerToast(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        },
+
+      });
+    }
+    if (checkOrder) {
+      // 获取选择的保障服务
+      let safeguards = {};
+      $('input[name="safeguard"]:checked').each(function () {
+        let arr = $(this).val().split('-')
+        if (safeguards[arr[0]]) {
+          safeguards[arr[0]]['safeguard_config_id'].push(arr[1]);
+        } else {
+          safeguards[arr[0]] = {'sale_order_id': arr[0], 'safeguard_config_id': [arr[1]]}
+        }
+      });
+
+      $.ajax({
+        url: "{{ createStorageFeeOrderUrl }}",
+        async: false,
+        type: 'POST',
+        dataType: "json",
+        data: {run_id: runId, total_storage_fee:{{ totalStorageFee }},'safeguards': safeguards },
+        complete: function () {
+          $('#button-cart').button('reset');
+        },
+        success: function (json) {
+          if (json.code == 200) {
+            toPay(orderId, json.data.fee_order_list);
+          } else if (json.code == 1) { // 囤货预绑有误，需要调整到销售订单列表to be paid
+            $('#button-cart').button('reset');
+            let url = '{{ url('account/sales_order/sales_order_management', {'filter_orderStatus':1}) }}'
+            errorTips(json.msg, url, 'go back');
+          } else {
+            $('#button-cart').button('reset');
+            errorTips(json.msg, '', 'refresh');
+          }
+        }
+      });
+    }
+  }
+
+  //去支付
+  function toPay(orderId,feeOrderId) {
+    let url = "{{ toPayUrl }}";
+    if (orderId) {
+      url += '&order_id=' + orderId;
+    }
+    if (feeOrderId) {
+      url += '&fee_order_list=' + feeOrderId;
+    }
+    location.href = url + '&order_source=sale';
+  }
+
+</script>
+
+{#这里是新写的#}
+<script>
+  $(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+
+    initPopover();
+  })
+
+  // 切换向上或向下箭头
+  $('body').on('click', '.list-down', function () {
+    let $orderMainRowOuter=$(this).parent().parent().parent();
+    if ($(this).children('.giga').hasClass('icon-V10_shouyeyouxiadown')) {//展开操作
+      $(this).children('.giga').removeClass('icon-V10_shouyeyouxiadown').addClass('icon-V10_shouyeyouxiaTOP');
+      $orderMainRowOuter.addClass("no-border-bottom");
+      if( $orderMainRowOuter.next().next().hasClass("order-main-row-outer")||$orderMainRowOuter.next().hasClass("order-main-row-outer")){
+        $orderMainRowOuter.next(".order-main-row-inner").addClass("border-bottom")
+      }else {
+        $orderMainRowOuter.siblings('.guarantee-con').addClass("border-top");
+      }
+      setTimeout(()=>{
+        checkTop = $("#buttomFlag").offset()['top']+15; //confirm to pay 距離頂部的距離
+        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        if (checkTop-scrollTop<winHeight) {
+          $("#checkFooter").hide();
+          $("#listCheckCon").show();
+        } else {
+          $("#checkFooter").show();
+          $("#listCheckCon").hide();
+        }
+      },400)
+    } else {//收起操作
+      $(this).children('.giga').removeClass('icon-V10_shouyeyouxiaTOP').addClass('icon-V10_shouyeyouxiadown');
+      setTimeout(()=>{ $orderMainRowOuter.removeClass("no-border-bottom")},400)
+      if( $orderMainRowOuter.next().next().hasClass("order-main-row-outer")||$orderMainRowOuter.next().hasClass("order-main-row-outer")){
+        $orderMainRowOuter.next(".order-main-row-inner").removeClass("border-bottom")
+      }else {
+        $orderMainRowOuter.siblings('.guarantee-con').removeClass("border-top");
+      }
+      setTimeout(()=>{
+        checkTop = $("#buttomFlag").offset()['top']+15; //confirm to pay 距離頂部的距離
+        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        if (checkTop-scrollTop<winHeight) {
+          $("#checkFooter").hide();
+          $("#listCheckCon").show();
+        } else {
+          $("#checkFooter").show();
+          $("#listCheckCon").hide();
+        }
+      },400)
+    }
+  })
+
+  function errorTips(content,url = '',redirectType = '') {
+    var btn = "Ok";
+    if (redirectType == 'refresh' || !url) {
+      btn = 'Refresh Page'
+      url = '';// 重新赋值，防止显示刷新按钮点击后还跳转
+    }
+    if (redirectType === 'go back') {
+      btn = 'Go Back'
+    }
+    layer.open({
+      title: 'Attention',
+      content: `<div>`+content+`</div>`,
+      btnAlign: 'c',
+      skin: 'oris-layer'
+      ,btn: [btn]
+      ,yes: function(index, layero){
+        if(url){
+          location.href = url;
+        } else {
+          //刷新页面
+          location.reload();
+        }
+      }
+    });
+  }
+
+  //关闭顶部提示框
+  function closeTopTip(obj) {
+    $(obj).parent().hide();
+  }
+  //优惠券操作
+  $(document).ready(function () {
+        // 弹出优惠券选择
+        $('body').on('click', '#couponListChoose', function(e) {
+            $('#coupons-choose').show();
+             e.stopPropagation();
+        })
+        // 选取优惠券
+        $('#couponListChoose').on('click', '.mycoupon', function(e) {
+            if ($(this).hasClass('coupon-selected')) {
+                $(this).removeClass('coupon-selected');
+                $("input[name='checked_coupon_value']").val('');
+                return ;
+            }
+            $('.mycoupon').removeClass('coupon-selected');
+            $(this).addClass('coupon-selected');
+            $("input[name='checked_coupon_value']").val($(this).children('span').eq(0).text().replace(/(^\s*)|(\s*$)/g, ""));
+
+        })
+        // 优惠券弹出框ok
+        $('#couponListChoose').on('click', '.btn-confirm', function(e){
+            $('#coupons-choose').hide();
+            e.stopPropagation();
+            let counponId = $('#couponListChoose').find('div.coupon-selected').data('id')
+            if(counponId==undefined){
+              counponId=0
+            }
+            $('.btn-confirm').data('id', counponId);
+            let couponAmount = 0;
+            let promotionAmount = $('#promotion').data('value');
+            let protectionServiceFee =  $('#protectionServiceFee').attr('data-protection-fee');
+            let subTotal = $('#sub_total').data('value');
+            let calcTotal=$('#sub_total').attr('data-total-fee');
+            let precision = {{ precision }};
+            if (counponId) {
+              couponAmount = Number($('#couponListChoose').find('div.coupon-selected').data('value'))
+            }
+            if(couponAmount==0){
+              $('.coupon-tr').hide()
+            }else{
+              $('.coupon-tr').show()
+            }
+
+            let oldCouponAmount=mathematical.accSub(Number(subTotal),mathematical.accAdd(mathematical.accSub(Number(calcTotal),Number(protectionServiceFee)),Math.abs(promotionAmount)));//切换优惠券之前的券值
+            let disSubtotal=mathematical.accSub(mathematical.accAdd(Number(calcTotal),Number(oldCouponAmount)),Number(couponAmount));//现在的总额
+            let discount= mathematical.accSub(promotionAmount,couponAmount);
+            disSubtotal = Number(disSubtotal).toFixed(precision);
+            discount = Number(discount).toFixed(precision);
+            couponAmount = Number(couponAmount).toFixed(precision);
+            if(discount==0){
+              $('.total_save').hide()
+            }else{
+              $('.total_save').show()
+            }
+            $('#selected_coupon_value').text('-'+symbolLeft + couponAmount + symbolRight);
+            $('#sub_total').text(symbolLeft + disSubtotal + symbolRight);
+            $('#bottom_sub_total').text(symbolLeft + disSubtotal + symbolRight);
+            $('#sub_total').attr("data-total-fee",disSubtotal);
+            $('#bottom_sub_total').text(symbolLeft + disSubtotal + symbolRight);
+            $('#bottom_sub_total').attr("data-total-fee",disSubtotal);
+            $('#total_save').text('-' + symbolLeft + Math.abs(discount) + symbolRight);
+        })
+        // 优惠券弹出框cancel
+        $('#couponListChoose').on('click', '.btn-cancel', function(e){
+            $('#coupons-choose').hide();
+            e.stopPropagation();
+            let couponId = $('#couponListChoose').find('button.btn-confirm').data('id');
+            $('.mycoupon').removeClass('coupon-selected');
+            $('.mycoupon-' + couponId).addClass('coupon-selected');
+            $("input[name='checked_coupon_value']").val($('.mycoupon-' + couponId).children('span').eq(0).text().replace(/(^\s*)|(\s*$)/g, ""));
+        })
+        $(document).click(function(){
+            var $couponBox = $('#coupons-choose');
+            if (!$couponBox.is(":hidden")){
+                $couponBox.hide();
+                $('#couponListChoose').find('button.btn-cancel').trigger('click');
+            }
+        })
+  })
+
+  //init amount 保障金额默认刷新一遍（只在初始化是调用）
+    function initSafeAmount(){
+      let safeCheckboxList=$('.safeguard-checkbox');
+      safeCheckboxList.each((i,ele)=>{
+        calcSafeAmount(ele,'init')
+      })
+    }
+  // total金额计算 checkbox change触发
+    $('body').on('change','.safeguard-checkbox',function () {
+      calcSafeAmount(this,'change')
+
+      //单个服务取消，全选取消
+      if(!$(this).is(":checked")){
+        let configId=$(this).val().split("-")[1];
+        $("#actionTotalcheckbox"+configId).prop("checked", false);
+      }else{
+        let checkAllResult=checkAllSelect($(this).val().split("-")[1]);
+        if(checkAllResult){
+          let configId=$(this).val().split("-")[1];
+          $("#actionTotalcheckbox"+configId).prop("checked", true);
+        }
+      }
+    })
+  // calcSafeAmount--type:init/change
+    function calcSafeAmount(el,type) {
+      let precision = {{ precision }};
+      let safeFee=$(el).attr("data-safeguard-fee");
+      const GUARANTEECON=$(el).parent().parent().parent().parent();
+      const ORDERTOTALAMOUNT=GUARANTEECON.find('.order-total-amount');
+      let orderTotalAmount=ORDERTOTALAMOUNT.attr('data-item-total')?ORDERTOTALAMOUNT.attr('data-item-total'):0;
+      let protectionServiceFee=$("#protectionServiceFee").attr("data-protection-fee")?$("#protectionServiceFee").attr("data-protection-fee"):0;
+      let subTotalAmount=$("#sub_total").attr("data-total-fee")?$("#sub_total").attr("data-total-fee"):0;
+      let otherFee=$("#otherFee").attr("data-other-fee")?$("#otherFee").attr("data-other-fee"):0;
+      if($(el)[0].checked){
+        orderTotalAmount=Number(mathematical.accAdd(Number(orderTotalAmount),Number(safeFee))).toFixed(precision);
+        protectionServiceFee=Number(mathematical.accAdd(Number(protectionServiceFee),Number(safeFee))).toFixed(precision);
+        subTotalAmount=Number(mathematical.accAdd(Number(subTotalAmount),Number(safeFee))).toFixed(precision);
+        otherFee=Number(mathematical.accAdd(Number(otherFee),Number(safeFee))).toFixed(precision);
+      }else if(type=='change'){
+        orderTotalAmount=Number(mathematical.accSub(Number(orderTotalAmount),Number(safeFee))).toFixed(precision);
+        protectionServiceFee=Number(mathematical.accSub(Number(protectionServiceFee),Number(safeFee))).toFixed(precision);
+        subTotalAmount=Number(mathematical.accSub(Number(subTotalAmount),Number(safeFee))).toFixed(precision);
+        otherFee=Number(mathematical.accSub(Number(otherFee),Number(safeFee))).toFixed(precision);
+      }
+      ORDERTOTALAMOUNT.attr('data-item-total',orderTotalAmount);
+      ORDERTOTALAMOUNT.html(symbolLeft + mathematical.MathToFixed(orderTotalAmount, precision) + symbolRight);
+      $("#protectionServiceFee").attr("data-protection-fee",protectionServiceFee);
+      $("#protectionServiceFee").html(symbolLeft + mathematical.MathToFixed(protectionServiceFee, precision) + symbolRight);
+      if(protectionServiceFee>0){
+        $("#protectionServiceFeeCon").show();
+      }else{
+        $("#protectionServiceFeeCon").hide();
+      }
+      $("#sub_total").attr("data-total-fee",subTotalAmount);
+      $("#sub_total").html(symbolLeft + mathematical.MathToFixed(subTotalAmount, precision) + symbolRight);
+      $("#bottom_sub_total").attr("data-total-fee",subTotalAmount);
+      $("#bottom_sub_total").html(symbolLeft + mathematical.MathToFixed(subTotalAmount, precision) + symbolRight);
+      $("#otherFee").attr("data-other-fee",otherFee);
+      $("#otherFee").html(symbolLeft + mathematical.MathToFixed(otherFee, precision) + symbolRight);
+      if(otherFee>0){
+        $(".other-fee-con").show();
+      }else{
+        $(".other-fee-con").hide();
+      }
+    }
+
+  {#关于全选的逻辑#}
+  function initAllCheck(){
+    let precision = {{ precision }};
+    let vaildCheckAll=false;
+    let safeguardConfigList= {{ safeguardConfigs |js_json}};
+    let orderList= {{ purchaseRecords |js_json}};
+    let orderListArr=[];
+    for(let key in orderList){
+      orderListArr.push(orderList[key])
+    }
+    if(orderListArr.length>1&&(safeguardConfigList&&safeguardConfigList.length&&safeguardConfigList.length>0)){
+      $(".checkbox-all-wrapper").show();
+      vaildCheckAll=true;
+    }
+    // 全部可购买所累计的费用
+    if(vaildCheckAll){
+      let checkBoxVaild=$(".action-vaild");
+      let checkAllmoney={};
+      safeguardConfigList.forEach((item,index)=>{
+        checkAllmoney[item.config.id]={money:0,isable:false};
+      })
+      checkBoxVaild.each((index,item)=>{
+        let configId=$(item).val().split("-")[1];
+        let safeguardFee=$(item).attr("data-safeguard-fee");
+        checkAllmoney[configId].money=Number(mathematical.accAdd(Number(safeguardFee),Number( checkAllmoney[configId].money))).toFixed(precision);
+      })
+      //全部不可用全选也不可用
+      checkAllmoney=checkAllSelectIsDisabled(checkAllmoney);
+      for (let key in checkAllmoney){
+        $("#safeguardConfigAll"+ key ) .html(symbolLeft +  mathematical.number_format(checkAllmoney[key].money,{{ precision }})+ symbolRight);
+        if(checkAllmoney[key].isable){
+          $("#actionTotalcheckbox"+key).show();
+        }else{
+          $("#actionTotalCheckboxDisabled"+key).show();
+          $("#safeguardConfigAll"+ key ) .html(symbolLeft + 0 + symbolRight);
+        }
+      }
+    }
+
+    //全选的点击
+    $('body').on("change",".safeguard-total-checkbox",function(){
+      let checkAllConfigId=$(this).attr("data-id");
+      $(".action-vaild").each((index,item)=>{
+        let configId=$(item).val().split("-")[1];
+        if(configId==checkAllConfigId){
+          if($(this).is(":checked")){
+            if(!$(item).is(":checked")){
+              $(item).click();
+            }
+          }else{
+            if($(item).is(":checked")){
+              $(item).click();
+            }
+          }
+        }
+      })
+    })
+  }
+
+  function checkAllSelect(id) {
+    let checkBoxVaildArr=[];
+    let checkedBoxVaildArr=[];
+    $(".action-vaild").each((index,item)=>{
+      let configId=$(item).val().split("-")[1];
+      if(id==configId){
+        checkBoxVaildArr.push(item);
+        if($(item).is(":checked")){
+          checkedBoxVaildArr.push(item);
+        }
+      }
+    })
+    let checkBoxVaildNum=checkBoxVaildArr.length;
+    let checkedBoxVaildNum=checkedBoxVaildArr.length;
+    if(checkBoxVaildNum==checkedBoxVaildNum){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  function checkAllSelectIsDisabled(checkAllmoney) {
+    let vaildArr= $(".action-vaild");
+    if(vaildArr&&vaildArr.length&&vaildArr.length>0){
+      vaildArr.each((index,item)=>{
+        let configId=$(item).val().split("-")[1];
+        checkAllmoney[configId].isable=true
+      })
+    }
+    return checkAllmoney
+  }
+
+  {#关于全选的逻辑#}
+</script>
+{{ footer }}

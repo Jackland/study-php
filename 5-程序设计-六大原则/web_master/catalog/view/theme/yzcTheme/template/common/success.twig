@@ -1,0 +1,33 @@
+{{ header }}
+<div class="breadcrumb-wrapper text-center clearfix">
+  <h1>Success</h1>
+  {% include 'giga/template/_parts/breadcrumb.twig' %}
+</div>
+
+
+<div id="page-my-account" class="page-seller-portal">
+
+  <div class="container mb-4">
+    <div class="col-md-12 form-wrapper">
+      <div class="tab-content main">
+        <div role="tabpanel" class="tab-pane active" id="upload">
+          <div class="bg-white pt-2 pb-3">
+            <h1>{{ heading_title }}</h1>
+            {{ text_success_prefix }}
+            {% if asr_order_ids %}
+              {{ asr_order_ids }}
+            {% endif %}
+            {{ text_message }}
+            {% if view_bp_list %}
+              <a href="{{ view_bp_list }}" style="cursor: pointer">View pending orders</a>
+            {% endif %}
+            <div class="text-center">
+              <div ><a href="{{ continue }}" class="btn btn-primary">{{ button_continue }}</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}

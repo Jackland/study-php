@@ -1,0 +1,329 @@
+{% trans_default_category 'catalog/view/customerpartner/seller_store/home/index' %}
+{# @file 轮播图 #}
+
+{{ css([
+  'static/customerpartner/seller_store/home/components/modules/banner.css'
+]) }}
+
+<script type="text/x-template" id="banner-module">
+  <div class="banner-module-container" v-loading="loading">
+    {# 首次进入显示骨架图 #}
+    <div v-if="isInit"> 
+      <div class="banner-module">
+        <img class="banner-image" src="{{ asset('static/customerpartner/seller_store/home/images/blanks/banner.png') }}">
+      </div>
+    </div>
+    {# 编辑后内容显示模块 #}
+    <div v-else>
+      <div class="banner-module m20-b" v-if="data&&data.banners&&data.banners.length>0">
+        <div class="swiper-container">
+          <div class="swiper-slide">
+            <div class="banner-image" v-bind:style="{backgroundImage: 'url(' + data.banners[0].pic_show + ')'}"></div>
+          </div>
+        </div>
+        <div class="swiper-pagination action-pagination swiper-pagination-clickable swiper-pagination-bullets">
+          <span v-for="(banner,bIndex) of data.banners" class="swiper-pagination-bullet" :class="{'swiper-pagination-bullet-active':bIndex==0}"></span>
+        </div>
+        <div class="swiper-pager">
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+      </div>
+    </div>
+    {# 编辑弹窗部分 #}
+    <div>
+      <el-dialog v-if="showEdit" class="banner-modal ele ele-modal module-modal" :class="{'active-modal': showEdit}" title="{{__('全屏轮播图设置')}}" :visible="showEdit" :close-on-click-modal="false"
+        @close="closeEdit" append-to-body destory-on-close modal-append-to-body="false" width="800px"> 
+        <div class="content-container">
+          <div class="module-modal-tip">
+            <ul>
+              <li>{{__('本模块适用于做活动Banner、商品大图展示等，可以自动轮播图片，最多支持<strong>:pics张</strong>图轮播，每张图可添加1个链接。', {pics: 5})}}</li>
+              <li>{{__('图片要求宽度:width，高度:height，格式为:ext。为避免核心内容被剪辑，请将核心内容放在中间区域（建议中间:media内）。', {width: '1920px', height: '480px', ext: '.jpg/.png/.jpeg', media: '1200px'})}}</li>
+              <li>{{__('链接必须是以:site开头的站内链接。', {site: site_url})}}</li>
+            </ul>
+          </div>
+
+          <div class="banner-edit-container module-edit-container">
+            <el-tabs v-modal="activeTab" class="ele ele-tabs">
+              <el-tab-pane label="{{__('内容设置')}}" name="">
+                <div class="banner-table-header">
+                  <div class="image-col ele ele-required">{{__('图片')}}</div>
+                  <div class="address-col ele ele-required">{{__('链接地址')}}</div>
+                  <div class="action-col">{{__('操作')}}</div>
+                </div>
+                <div class="banner-table-body ele ele-form scrollable-container">
+                  <div class="banner-table-row" v-for="(banner,index) of banners" :key="index">
+                    <div class="image-col ele ele-upload" :id="'banner-img-' + index">
+                      <div class="error-tip" :class="{errorimage: errors[index][0]}">{{__('请上传图片！')}}</div>
+                      {{
+                      dynamicWidget('upload_image', {
+                        autoInit: false,
+                        quickInitFn: 'quickInitBannerUpload',
+                        upload_options: {
+                          maxCount: 1,
+                          width: '120px',
+                          height: '40px',
+                          accept: 'image/jpg,image/png,image/jpeg',
+                        }
+                      })
+                      }}
+                      <div :id="'banner-upload-' + index"></div>
+                    </div>
+                    <div class="address-col">
+                      <div class="error-tip" :class="{errorinput: errors[index][1]}">{{__('请输入链接地址！')}}</div>
+                      <el-input @blur="handleInputBlur" v-model="banner.link" maxlength="200" clearable></el-input>
+                    </div>
+                    <div class="action-col">
+                      <i class="giga icon-xiangshangjiantou-01" :class="{icondisabled: index <= 0}" @click="upBanner(index)"></i>
+                      <i class="giga icon-xiangxiajiantou-01" :class="{icondisabled: index >= banners.length - 1}" @click="downBanner(index)"></i>
+                      <i class="giga icon-co_lajitong" :class="{icondisabled: banners.length <= 1}" @click="delBanner(index)"></i>
+                    </div>
+                  </div>
+                  <div class="banner-table-footer ele ele-btn">
+                    <div class="banner-add-tip">
+                      {{ __('还可添加:num张轮播图', {num: '<span class="strong-tip">${ 5 - banners.length }</span>'}) }}
+                    </div>
+                    <el-button class="outline add-product-btn" @click="handleAddBanner"
+                      :disabled="banners.length >= 5"><i class="giga icon-iconfonticon02-copy btn-icon"></i>{{__('添加')}}</el-button>
+                  </div>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+        </div>
+        <template slot="footer">
+          <div class="ele ele-btn ele-btn-group">
+            <el-button class="oper-btn" @click="closeEdit">{{__('取消')}}</el-button>
+            <el-button class="oper-btn" type="primary" :loading="btnLoading" @click="saveEdit">{{__('保存')}}</el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </div>
+  </div>
+</script>
+<script>
+const BANNER_TRANSLATE = {
+  FOTBIT_MULTIPLE: "{{__('超出最大上传张数')}}"
+}
+</script>
+<script>
+  Vue.component('banner', {
+    template: '#banner-module',
+    delimiters: ['${', '}'],
+    props: {
+      data: {
+        type: Object,
+        default: () => ({})
+      }
+    },
+    data: () => {
+      return {
+        showEdit: false,
+        activeTab: '',
+        banners: [{files:[]}], // 轮播图列表
+        loading: false, // 加载动画
+        btnLoading: false,
+        axios: null,
+        errors: [[false, false]], // 对应的banner是否存在错误信息, 0.图片错误，1.地址错误
+      }
+    },    
+    watch: {
+      showEdit: {
+        immediate: true,
+        handler: function(res) {
+          this.$nextTick(function() {
+            this.initDefault(this.data)
+            let height = $(".active-modal.module-modal .el-dialog__body").height() - $(".active-modal .module-modal-tip").height();
+            $(".active-modal .module-edit-container").height(height);
+            if (res) {
+              this.initBannerUpload()
+            }
+          })
+        }
+      },
+      banners() {
+        this.fillBannerFiles()
+        this.initBannerUpload()
+      }
+    },
+    computed: {
+      isInit() {
+        return jQuery.isEmptyObject(this.data)
+      }
+    },
+    created() {
+      this.axios = axios.create({});
+    },
+    methods: {
+      /**
+      * 编辑时初始化默认值
+      */
+      initDefault(_data) {
+        let data = _.cloneDeep(_data)
+        let that = this;
+        if (data && data.banners && data.banners.length) {
+          this.banners = [];
+          this.errors = [];
+          data.banners.map(function(item, index) {
+            that.banners.push({
+              link: item.link,
+              pic: item.pic,
+              files: [{
+                url: item.pic_show,
+                path: item.pic
+              }],
+            })
+            that.errors.push([false,false])
+          })
+        }
+      },
+
+      /**
+      * 编辑操作
+      */
+      handleEdit() {
+        this.showEdit = true;
+      },
+
+      closeEdit() {
+        this.clearModal();
+        this.showEdit = false;
+      },
+
+      //清空弹窗
+      clearModal() {
+        this.banners = [{files:[]}];
+        this.errors = [[false, false]];
+      },
+
+      //前端表单验证
+      validateForm(data) {
+        for(let i = 0; i < data.length; i++) {
+          if (data[i] && JSON.stringify(data[i]) != JSON.stringify({})) {
+            this.errors[i][0] = !!(!data[i].pic || (data[i].pic && data[i].pic.trim() == ''))
+            this.errors[i][1] = !!(!data[i].link || (data[i].link && data[i].link.trim() == ''))
+          } else {
+            this.errors[i] = [false, false];
+          }
+        }
+        let res = this.errors.every(function(item){
+          return !item[0] && !item[1];
+        });
+        this.$forceUpdate();
+        return res;
+      },
+
+      _getData() {
+        let data = { 
+          type: MODULE_TYPE.BANNER,
+          data: {
+            banners:[]
+          }
+        }
+        this.fillBannerFiles();
+        this.banners.map(function(banner) {
+          data.data.banners.push({
+            pic: banner.files[0] ? banner.files[0].path : '',
+            link: banner.link
+          })
+        });
+        return data;
+      },
+
+      //保存弹窗按钮
+      saveEdit() {
+        let data = this._getData();
+        this.btnLoading = true;
+        if (this.validateForm(data.data.banners)) {
+          let that = this;
+          that.axios.post(API.MODULE_SAVE, data).then(res => {
+            if(res.data.code == 200) {
+              that.closeEdit();
+              that.$emit("set-module", _.cloneDeep(res.data.data));
+            } else {
+              that.$message({...ALERT_OPTION, message: res.data.msg});
+            }
+            this.btnLoading = false;
+          }).catch(err => {
+            this.btnLoading = false;
+            that.$message.error(err);
+          })
+        } else {
+          this.btnLoading = false;
+        }
+
+      },
+
+      // 轮播图操作部分
+      // 初始化banner文件上传
+      initBannerUpload() {
+        this.$nextTick(() => {
+          $(() => {
+            this.banners.map((item, index) => {
+              item.upload = quickInitBannerUpload('banner-upload-' + index, item.files)
+              return item
+            })
+          })
+        })
+      },
+      fillBannerFiles() {
+        this.banners.map(item => {
+          if (!item.upload) {
+            return item
+          }
+          item.files = item.upload.getImageList()
+          return item
+        })
+      },
+
+      // 添加轮播图片
+      handleAddBanner() {
+        this.banners.push({files:[]});
+        this.errors.push([false, false]);
+      },
+
+      // 删除轮播图片
+      delBanner(index)  {
+        if(this.banners.length > 1) {
+          this.banners.splice(index, 1);
+          this.errors.splice(index, 1);
+        }
+        this.$forceUpdate();
+      },
+
+      // 上移轮播图片
+      upBanner(index) {
+        this.fillBannerFiles()
+        if (index > 0) {
+          let temp = this.banners[index];
+          this.banners[index] = this.banners[index-1];
+          this.banners[index-1] = temp;
+          let tempErr = this.errors[index];
+          this.errors[index] = this.errors[index-1];
+          this.errors[index-1] = tempErr;
+        }
+        this.$forceUpdate();
+        this.initBannerUpload();
+      },
+
+      // 下移轮播图片
+      downBanner(index) {
+        this.fillBannerFiles()
+        if (index < this.banners.length - 1) {
+          let temp = this.banners[index];
+          this.banners[index] = this.banners[index+1];
+          this.banners[index+1] = temp;
+          let tempErr = this.errors[index];
+          this.errors[index] = this.errors[index+1];
+          this.errors[index+1] = tempErr;
+        }
+        this.$forceUpdate();
+        this.initBannerUpload();
+      },
+
+      handleInputBlur() {
+        this.validateForm(this._getData().data.banners);
+      },
+    }
+  })
+</script>

@@ -1,0 +1,204 @@
+<input type="hidden" value="{{ alarm_price }}" id="alarm-price">
+<div class="bg-white m16-tb">
+  <table class="oris-table product-table no-hover" >
+    <thead>
+    <tr>
+      <th class="text-left oris-w220">Item Code / MPN</th>
+      <th class="text-left oris-w220">Attribute</th>
+      <th class="text-right oris-w180" >Current Price
+        <i class="giga icon-V10-wenhaotishi text-size-normal"
+           data-toggle="tooltip" title="{{ __('Current price of this Item Code, Spot Price, Rebate Price and Futures Price.') }}"></i>
+      </th>
+      <th class="text-right oris-w220" >Historical Price
+        {#31737 DE可能包含税#}
+        <i class="giga icon-V10-wenhaotishi text-size-normal" data-toggle="tooltip"
+           title="{% if isDeCountry %} {{ __('Historical price of this Item Code during the past 180 days. The historical price may be VAT inclusive or VAT-free, depending on the previous orders.') }} {% else %} {{ __('History price of this Item Code during the past 180 days.') }} {% endif %}">
+        </i>
+      </th>
+      <th width="150px">Available Quantity</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td class="text-left" width="30%">
+        <a class="oris-link image-td"  target="_blank" href="{{ url('product/product', {product_id: product_id}) }}">
+          <img src="{{ image }}" id="product_image" class="pro-image">
+          <div class="item-mpn" id="product-detail-sku-mpn">
+            <span class="tags-image">
+              <text class=" max-line1" title="{{ item_code }}">{{ item_code }}</text>
+            {% if tags %}
+              {% for tag in tags %}
+                {{ tag }}
+              {% endfor %}
+            {% endif %}
+            </span>
+            <span class="max-line2" title="{{ mpn }}">{{ mpn }}</span>
+          </div>
+        </a>
+      </td>
+      <td class="text-left">
+        <div class="max-line1" title="{{ attribute }}" id="product-attribute">{{ attribute }}</div>
+      </td>
+      <td class="nowrap text-right">
+        <span class="pointer" id="referencePrice" >
+          {{ reference_price }}
+          <i class="giga icon-V10_shouyeyouxiadown" data-toggle="popover" data-placement="bottom" data-content="" data-html="true"  data-trigger="manual"></i>
+        </span>
+        <div  id="priceList" class="none">
+          <div class="price-list text-left">
+            <div class="current-price">
+              <span class="icon-color">{{ __('Current Price') }}</span>
+              <span class="m10-l"><span class="text-bold">{{ reference_price_detail.current_price }}</span>/Unit</span>
+            </div>
+            {% if reference_price_detail.rebate_price %}
+              <div class="price-module">
+                <div class="link-color"><span class="short-vline"></span>{{ __('Rebates(Unit)') }}</div>
+                <div class="flex-layout flex-between">
+                  {# 有几个循环几个 #}
+                  {% for item in  reference_price_detail.rebate_price %}
+                    <div class="m10-t productDetails-price">
+                      <div class="text-bold">{{ item.price }}</div>
+                      <div class="dusty-blue nowrap">{{ item.msg }}</div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            {% if reference_price_detail.future_price %}
+              <div class="price-module">
+                <div class="link-color"><span class="short-vline"></span>{{ __('Futures(Unit)') }}</div>
+                <div class="flex-layout flex-between">
+                  {# 有几个循环几个 #}
+                  {% for item in  reference_price_detail.future_price %}
+                    <div class="m10-t productDetails-price">
+                      <div class="text-bold">{{ item.price }}</div>
+                      <div class="dusty-blue nowrap">{{ item.msg }}</div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            {% if reference_price_detail.spot_price %}
+              <div  class="price-module">
+                <div class="link-color"><span class="short-vline"></span>{{ __('Spot Price(Unit)') }}</div>
+                <div class="flex-layout flex-between">
+                  {# 有几个循环几个 #}
+                  {% for item in  reference_price_detail.spot_price %}
+                    <div class=" m10-t productDetails-price">
+                      <div class="text-bold">{{ item.price }}</div>
+                      <div class="dusty-blue nowrap">{{ item.msg }}</div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </td>
+      <td class="nowrap text-right oris-popover">
+        <span class="pointer" id="openPrice" >
+          {{ open_price }}
+          <i class="giga icon-V10_shouyeyouxiadown" data-toggle="popover" data-placement="bottom"
+             data-content="<div class='lineChart' id='lineChart'></div>" data-html="true"  data-trigger="manual"></i>
+        </span>
+      </td>
+      <td>{{ quantity }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+{# 折线图 #}
+
+<script type="text/javascript">
+  $('body').on('click', '#openPrice', function() {
+    $("#referencePrice").children('i').popover('destroy');
+    $(this).children('i').popover('show');
+    drawChart();
+  });
+  $('body').on('click','#referencePrice',function () {
+    var that = this;
+    var div = $("#priceList").html();
+    $(that).children('i').attr('data-content',div);
+    setTimeout(function () {
+      $("#openPrice").children('i').popover('destroy');
+      $(that).children('i').popover('show');
+    },200)
+  });
+  $('body').bind('click', function(event) {
+    var evt = event.srcElement ? event.srcElement : event.target;
+    if ((evt.id == 'openPrice') || (($(evt).parents("#openPrice").length!=0)) || (evt.id == 'referencePrice') || ($(evt).parents('#referencePrice').length!=0) )
+      return // 如果是元素本身，则返回
+    else {
+      $("#openPrice").children('i').popover('destroy');
+      $("#referencePrice").children('i').popover('destroy');
+    }
+  });
+
+
+  function drawChart() {
+    var dates = '{{ open_price_detail.dates }}';
+    var prices = '{{ open_price_detail.prices }}';
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('lineChart'));
+
+    //#31737 价格曲线，DE可能包含税
+    var optionText = 'Historical price of this Item Code during the past 180 days.';
+    debugger;
+    if ('{{ isDeCountry }}') {
+      optionText = 'Historical price of this Item Code during the past 180 days. The\nhistorical price may be VAT inclusive or VAT-free, depending\non the previous orders.';
+    }
+
+    // 指定图表的配置项和数据
+    var option = {
+      title: {
+        text: optionText, //#31737 价格曲线，德国可能包含税
+        left: '{% if isDeCountry %}left{% else %}center{% endif %}',
+        textStyle: {
+          fontSize: 14,
+          lineHeight: 20
+        },
+      },
+      tooltip: {
+        trigger: 'axis'
+      },
+      legend: {
+        data:['销量'],
+      },
+      xAxis: {
+        type: 'category',
+        name: '{{ open_price_detail.year }}',
+        data: JSON.parse(dates),
+      },
+      yAxis: {
+        type: 'value',
+        name: 'unit price'
+      },
+      series: [{
+        name: 'Unit price',
+        type: 'line',
+        smooth: true,
+        // stack: '总量',
+        data: JSON.parse(prices)
+      }],
+      grid: {
+        left: '3%',
+        right: '90px',
+        bottom: '3%',
+        //#31737 价格曲线，德国可能包含税
+        {% if isDeCountry %} top: '100px', {% endif %}
+        containLabel: true
+      },
+      lineStyle:{
+        color:'#5470C6'
+      },
+      itemStyle : {
+          color:'#5470C6'
+      }
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+  }
+
+</script>

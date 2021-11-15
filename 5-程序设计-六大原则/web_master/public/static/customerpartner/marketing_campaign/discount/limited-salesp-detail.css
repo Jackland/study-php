@@ -1,0 +1,361 @@
+/*店铺限时限量折扣新增查看样式*/
+/*新增*/
+
+/*这里用id是兼容历史代码*/
+#container {
+  min-width: 1500px;
+}
+
+.limited-salesp-add>div,
+.limited-salesp-view>div {
+  background: #FFFFFF;
+  border: 1px solid #DCDCDC;
+  margin-bottom: 16px;
+}
+
+.ls-desc {
+  padding: 24px;
+  color: #666;
+  line-height: 18px;
+  height: 64px;
+  overflow: hidden;
+}
+
+.ls-desc:not(.ls-desc-expand) article {
+  overflow: hidden;
+  height: 18px;
+}
+
+.ls-desc-expand {
+  height: auto;
+  column-count: auto;
+  transition: height 0.25s ease-in;
+}
+
+.ls-desc-first {
+  position: relative;
+  display: inline-block;
+}
+
+.ls-desc:not(.ls-desc-expand) .ls-desc-first {
+  height: 40px;
+  max-width: calc(100% - 45px);
+}
+
+.ls-desc .more-i {
+  background-color: #fff;
+  position: absolute;
+  right: -55px;
+  top: 0;
+  display: inline-flex;
+  min-width: 45px;
+}
+
+.ls-desc .link-color {
+  cursor: pointer;
+}
+
+.ls-desc .link-color i.giga {
+  font-size: 12px;
+}
+
+.ls-keys .oris-row label {
+  height: 20px;
+}
+
+.keys-title,
+.products-title {
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border-bottom: 1px solid #DCDCDC;
+}
+
+.products-title {
+  padding: 8px 24px;
+  line-height: 32px;
+}
+
+.prod-subtitle {
+  font-size: 14px;
+  padding-left: 16px;
+  color: #666;
+  font-weight: normal;
+}
+
+.prod-subtitle .num {
+  font-weight: bold;
+  color: #333;
+  padding: 0 4px;
+}
+
+.keys-content {
+  padding: 24px;
+}
+
+.date-to {
+  width: 16px;
+}
+
+.oris-checkbox,
+.oris-checkbox:before,
+.oris-checkbox:after {
+  width: 16px !important;
+  height: 16px !important;
+  line-height: 16px !important;
+  margin-right: 8px !important;
+}
+
+.line40 {
+  line-height: 40px;
+}
+
+.m24-r-i {
+  margin-right: 24px !important;
+}
+
+.prod-btns {
+  float: right;
+}
+
+.prod-btns .oris-button {
+  padding: 8px 16px;
+  margin-left: 10px;
+}
+
+.prod-table {
+  padding: 20px 24px;
+}
+
+.prod-footer {
+  padding-top: 32px;
+}
+
+.prod-footer .oris-button:first-child {
+  margin-right: 10px !important;
+}
+
+i.icon-V10-wenhaotishi {
+  font-weight: normal !important;
+}
+
+.discount-input {
+  position: relative;
+  width: 88px;
+}
+
+.discount-input input {
+  width: 88px;
+  height: 32px;
+  padding-left: 8px;
+  padding-right: 50px;
+}
+
+.discount-input .discount-util {
+  background-color: #fff;
+  position: absolute;
+  right: 8px;
+  top: 6px;
+}
+
+.stock-input {
+  width: 100% !important;
+  height: 32px !important;
+  text-align: center;
+}
+
+.stock-input~.text-danger {
+  text-align: left;
+}
+
+.batch-modal {
+  width: 480px;
+}
+
+.batch-modal .modal-body {
+  padding-top: 24px;
+}
+
+.batch-modal input[type="radio"].oris-radio-mini {
+  margin-right: 8px;
+}
+
+.limited-salesp-add .ls-keys .text-danger {
+  min-height: 14px;
+}
+
+.batch-modal .text-danger {
+  max-height: 14px;
+}
+
+.batch-modal .action-danger.text-danger {
+  height: 14px;
+}
+
+.batch-modal .icon-color {
+  padding-top: 6px;
+}
+
+.off-right,
+.per-right {
+  position: absolute;
+  right: 16px;
+  top: 10px;
+}
+
+.danger-border {
+  border: 1px solid #E64545 !important;
+}
+
+.oris-button {
+  min-width: 80px;
+}
+
+.fixed-footer {
+  width: calc(100vw - 235px);
+  left: 235px;
+  position: fixed;
+  bottom: 0;
+  background: #fff;
+  padding: 7px;
+  box-shadow: 0px -3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-show-icon {
+  position: relative;
+}
+
+.nav-show-icon img {
+  display: none;
+  position: absolute;
+  bottom: 20px;
+  left: -220px;
+}
+
+.nav-show-icon:hover img {
+  display: block;
+  background: #fff;
+  padding: 12px;
+  box-shadow: 0px 2px 8px rgb(0 0 0 / 10%);
+  border-radius: 4 px;
+}
+
+/*-------------------以下是查看-------------------------*/
+
+.limited-salesp-view .keys-content .item-key {
+  color: #666;
+  padding-right: 12px;
+}
+
+.limited-salesp-view .keys-content .oris-row:not(:last-child) {
+  margin-bottom: 16px;
+}
+
+.limited-salesp-view .keys-title .oris-circle {
+  position: relative;
+  top: -2px;
+}
+
+.limited-salesp-view .circle-bg[class*=oris-bg] {
+  position: absolute;
+  left: -12px;
+  top: -5px;
+  width: calc(100% + 24px);
+  height: 28px;
+  border-radius: 100px;
+  opacity: 0.1;
+}
+
+.limited-salesp-view .rules-btn {
+  float: right;
+  font-weight: normal;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+}
+
+.limited-salesp-view .rules-btn:focus,
+.limited-salesp-view .rules-btn:hover {
+  color: #333;
+  text-decoration: underline;
+}
+
+.limited-salesp-view .action-edit {
+  display: none;
+}
+
+.low-pop-html {
+  color: #333;
+  width: 260px;
+}
+
+.low-pop-html>span {
+  color: #375ACD;
+  cursor: pointer;
+}
+
+.low-pop-html>span:hover {
+  text-decoration: underline;
+}
+
+.popover {
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.16) !important;
+  border-radius: 2px !important;
+  border: unset !important;
+}
+
+.remove-btn {
+  padding: 6px !important;
+  border-color: #C1C1C1;
+}
+
+.oris-tooltip~.tooltip .tooltip-inner {
+  font-size: 13px !important;
+  min-width: 380px;
+}
+
+.oris-table th>i.icon-V10-wenhaotishi,
+.ls-keys i.icon-V10-wenhaotishi {
+  position: relative;
+  top: 1px;
+}
+
+.prod-footer .oris-button-default {
+  padding: 10px;
+}
+
+.text-danger {
+  font-size: 13px;
+}
+
+.limited-salesp-view .ls-keys,
+.limited-salesp-view .ls-products {
+  display: inline-block;
+  width: 100%;
+  min-width: 1230px;
+}
+/*unavaliable图片蒙层*/
+.unaval-image {
+  position: relative;
+}
+.unaval-image:after {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  content: 'Unavailable';
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  z-index: 2;
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 12px;
+  width: 60px;
+  height: 60px;
+  word-break: break-all;
+  padding: 0 10px;
+}
+.top4 {
+  top: 4px;
+}

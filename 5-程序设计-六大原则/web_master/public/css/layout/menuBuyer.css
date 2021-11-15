@@ -1,0 +1,58 @@
+/*
+ * buyer后台导航栏样式 *11673
+ * Date: 2021-01-07
+ */
+
+/*buyer主页画布统一1200px，底部除外*/
+.center-module:not(.footer-content) {
+  width: 1200px !important;
+  margin: 0 auto;
+}
+
+.menu-buyer,
+.menu-buyer .menu-top>li {
+  background: #315fb7;
+}
+
+.menu-buyer .menu-top>li>a {
+  color: #fff;
+  font-size: 14px !important;
+}
+.menu-buyer.bordsolid-tb {
+  border-top: none;
+  border-bottom: none;
+}
+.menu-buyer .categories {
+  border-left: 1px solid #315fb7;
+  border-right: 1px solid #315fb7;
+  height: 40px;
+}
+
+.menu-buyer .menu-top > li.category-list:hover > a,
+.menu-buyer .menu-top > li.dropdown:hover{
+	color: #fff !important;
+	background: #1a4596 !important;
+}
+.menu-buyer .menu-top>li.dropdown:hover > a {
+  color: #fff !important;
+	border-bottom: 3px solid #1a4596 !important;
+}
+.menu-buyer .img-bot {
+	background: url('../../../../../image/foot/mulu-bai.png');
+}
+
+.menu-buyer #menu,
+.menu-buyer .navbar-nav > li,
+.menu-buyer .navbar .navbar-line {
+  height: 40px !important;
+}
+
+.menu-buyer .category-list {
+  margin-right: 0 !important;
+}
+.menu-buyer .navbar-nav > li > a {
+  padding-top: 10px;
+}
+.menu-buyer .navbar-nav >li:not(.categories) {
+  padding: 10px 20px 10px 20px !important;
+}

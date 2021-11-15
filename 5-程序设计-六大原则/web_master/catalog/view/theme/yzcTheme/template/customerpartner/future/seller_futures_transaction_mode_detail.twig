@@ -1,0 +1,766 @@
+<style>
+    .appeal-popover {
+        box-shadow: none;
+        background-color: transparent;
+    }
+
+    .popover-content .btn {
+        width: 80px;
+        padding: 5px;
+        font-size: 12px;
+    }
+
+    .details .form-group .control-label {
+        color: #677999;
+        font-size: 12px;
+    }
+
+    .details .form-group .control-label i {
+        font-size: 14px;
+    }
+    .scale-popover,.scale-popover:focus,.scale-popover:hover,.scale-popover:active{
+        box-shadow: none;
+        background-color: #fff;
+        color: #FA6400;
+    }
+    button.scale-popover {
+        border: none;
+        font-weight: initial;
+        padding: 0;
+        height: 24px;
+        color: #FA6400;
+    }
+    .claim-layer {
+        display: inline-table;
+    }
+    .claim-layer .layui-layer-content {
+        padding: 12px;
+    }
+    .claim-no{
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    .claim-no:hover,
+    .claim-no:focus,
+    .claim-no:active,
+    .claim-no:active:focus {
+        background-color: #3A75DC;
+        color: #fff;
+    }
+    .popover {
+        z-index: 10000;
+    }
+    /*#my-popover { left: -169px!important; } 
+    #my-popover .arrow { left: 90% } */
+</style>
+<div class="detail-main bg-white p-2">
+    <div>
+        {#尾款#}
+        <div class="mb-3">
+            <div class="title">Warehouse Arrival Summary</div>
+            <div class="summary over">
+                <div class="abstract col-sm-3">
+                    <i class="giga icon-DatePicker summary-icon"></i> <br>
+                    <p class="summary-name">Delivery Date</p>
+                    <p class="summary-detail">{{ agreement.show_delivery_date }}</p>
+                    {#确认保证是待入仓的状态#}
+                    {% if agreement.days <= 7 and  agreement.days > 0 and agreement.delivery_status == 1 %}
+                        <span style="color: #FF414D">{{ agreement.days }} Days Left</span><br>
+                    {% endif %}
+                </div>
+                <div class="abstract col-sm-3">
+                    <i class="giga icon-ziliaoyuquanzhengjiaoge summary-icon"></i> <br>
+                    <p class="summary-name">Settlement Method</p>
+                    <p class="summary-detail">{{ agreement.delivery_type_name }}</p>
+                </div>
+                <div class="abstract col-sm-3">
+                    <i class="giga icon-BusinessIcons_BusinessTagSale-  summary-icon"></i> <br>
+                    <p class="summary-name">Item Code / MPN</p>
+                    <p class="summary-detail">
+                        <div style="display: inline-block">
+                            {{ agreement.sku }} / {{ agreement.mpn }}
+                        </div>
+                        <span style="vertical-align: top;">
+                            {% for tagDetail in agreement.tag %}
+                              {{ tagDetail }}
+                            {% endfor %}
+                        </span>
+                    </p>
+                </div>
+                <div class="abstract col-sm-3">
+                    <i class="giga icon-jiaohuo summary-icon"></i> <br>
+                    <p class="summary-name">Delivery Status</p>
+                    <p style="color:{{ agreement.status_color }}">
+                        {{ agreement.status_name }}
+                        {# 7724期货三期--Start #}
+                      {% if agreement.delivery_status ==  1 and left_days > 1  and not apply_exist %}
+                         <button id="claimTips" type="button" class="btn scale-popover"
+                                    data-trigger="manual" data-toggle="popover"
+                                    data-container="body" data-placement="bottom" data-html="true" 
+                                    data-content="<p>Are the products in this Future Goods Agreement unable to be delivered due to force majeure? You can terminate this agreement by submitting a claim to the Marketplace.</p><div class='text-right'><button type='button' class='btn btn-primary action-submit' style='margin-right: 6px;width:90px;color:#fff;' onClick='showClaimAlert({{ agreement.id }})'>Submit Claim</button><button type='button' class='btn btn-default claim-no'>No</button></div>">
+                                <i class="giga icon-wuliuzhuangtai-chuxianyichang"></i>
+                        </button>
+                      {% endif %}
+                        {# 7724期货三期--End #}
+                        {% if agreement.agreement_status ==  7
+                            and agreement.delivery_status == 2
+                            and agreement.has_apply == false
+                            and agreement.complain_time_out == false
+                            and agreement.cancel_appeal_apply == 0 %}
+                            <button type="button" id="agreement_id_{{ agreement.id }}" class="btn appeal-popover"
+                                    data-trigger="focus" data-toggle="popover"
+                                    data-container="body" data-placement="bottom"
+                                    data-html="true"
+                                    data-content="<p>If you have any questions or concerns about the delivery result of this future goods agreement, please submit a request to the Marketplace.</p>
+                      <div class='text-right'>
+                      <button type='button' class='btn btn-primary appeal'
+                      onclick=complainBackOrder('{{ agreement.id }}','{{ agreement.days }}'); style='margin-right:15px;'>Appeal</button>
+                      <button type='button' class='btn btn-default noRemind' onclick=noRemindInTab('{{ agreement.id }}'); >No</button></div>"
+                                    style="border: none;font-weight: initial;padding: 0;">
+                                <i class="giga icon-icn--n" style="color: #FF414D;font-size: 14px"></i>
+                            </button>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% if  agreement.delivery_type == 1 and agreement.days >= 0 %}
+            <div class="details mb-3">
+                <div class="title">Settlement Method Detail</div>
+                <div style="overflow: hidden;border: 1px solid #eee;padding: 10px 0;border-radius: 4px">
+                    {% if agreement.version >=3 %}
+                        <p class=" col-sm-12">Direct Settlement (Buyer has to pay the due of future goods in a lump sum payment. This must be within one day after the Seller's successful delivery. The deposit paid by Seller will be fully refunded after the Buyer's one-time due payment.)</p>
+                    {% else %}
+                        <p class=" col-sm-12">Direct Settlement (Buyer has to pay the due of future goods within 7 days. The deposit Seller paid will be fully refunded after Buyer's each due payment)</p>
+                    {% endif %}
+                    <div class=" col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Direct Settlement Quantity</label>
+                            <input type="text" class="form-control" value="{{ agreement.num }}" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Due Per Unit
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-trigger="hover" data-toggle="tooltip"
+                                   title="Price of Goods Value"
+                                ></i>
+                            </label>
+                            <input type="text" class="form-control" value="{{ agreement.unit_last_show }}"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group ">
+                            <label class="control-label">Total Due Amount
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-trigger="hover" data-toggle="tooltip"
+                                   title="Total Amount of Goods Value"
+                                ></i>
+                            </label>
+                            <input type="text" class="form-control" value="{{ agreement.last_price_amount_show }}"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="details mb-3">
+                <div class="title">Payment Method Detail</div>
+
+                <div style="overflow: hidden;border: 1px solid #eee;padding: 10px 0;border-radius: 4px">
+                    <p class=" col-sm-12">
+                      Transfer to Margin Transaction (The deposit Seller paid will be fully refunded after Buyer paid the difference between the future goods and margin deposit in order to transfer to margin transaction)</p>
+                    <div class=" col-sm-3">
+                        <div class="form-group">
+                            <label class="control-label">Margin Transaction Quantity</label>
+                            <input type="text" class="form-control" value="{{ agreement.num }}" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label class="control-label">Margin Transaction Due Per Unit
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-trigger="hover" data-toggle="tooltip"
+                                   title="Price of Goods Value"
+                                >
+                                </i></label>
+                            <input type="text" class="form-control" value="{{ agreement.margin_last_price_show }}"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group ">
+                            <label class="control-label">Replenished Difference Amount
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-trigger="hover" data-toggle="tooltip"
+                                   title="Replenished difference amount between the future goods and margin deposit."
+                                ></i>
+                            </label>
+                            <input type="text" class="form-control" value="{{ agreement.deposit_amount_show }}"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group ">
+                            <label class="control-label">Days of margin transaction
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-trigger="hover" data-toggle="tooltip"
+                                   title="After successfully transferred to margin transaction, the due amount of margin transaction should be paid within 30 days."
+                                ></i>
+                            </label>
+                            <input type="text" class="form-control" value="{{ agreement.default_days_show }}"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="mb-3">
+            {% include 'yzcTheme/template/customerpartner/future/message.twig' %}
+        </div>
+        {% if agreement.delivery_status == 1 and agreement.has_apply == false %}
+            <div class="processingResult">
+                <div class="title">Processed Result
+                    {% if agreement.time_tips %}
+                        <i class="giga icon-daojishi" style="color: #FF414D;margin-left: 8px;font-weight: initial"></i>
+                       <span style="color: #FF414D;font-weight: initial"> {{ agreement.time_left }}</span>
+                    {% endif %}
+                </div>
+                <div class="row my-radio-group">
+                    <div class="col-sm-6">
+                        <div class="form-group" style="overflow: hidden;padding-top: 0">
+                            <div class="col-sm-8" style="padding: 0 1px">
+                                <label for="approved" class="radio-inline">
+                                    {% if agreement.days > 1 %}
+                                        <input id="approved" type="radio" onclick="check(this)"  value="1" name="processResult">
+                                        <span style="text-transform: none">
+                                          Warehouse arrival and deliver ahead of time
+                                        </span>
+                                    {% else %}
+                                        <input id="approved" type="radio" onclick="check(this)" value="5" name="processResult">
+                                        <span style="text-transform: none">
+                                          Warehouse arrival and complete delivery
+                                        </span>
+                                    {% endif %}
+                                </label>
+                            </div>
+{#                            {% if agreement.days > 1 %}#}
+{#                                <div class="col-sm-4">#}
+{#                                    <label for="rejected" class="radio-inline">#}
+{#                                        <input id="rejected" type="radio" value="2" name="processResult"><strong#}
+{#                                                style="text-transform: none">拒绝交付</strong>#}
+{#                                    </label>#}
+{#                                </div>#}
+{#                            {% endif %}#}
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="padding:0 10px;">
+{#                    <div class="request" style="text-align: right">#}
+{#                        <span style="color: #1e91cf">REQUIRED</span>#}
+{#                    </div>#}
+                    <div style="position: relative">
+                        <textarea id="enterPaidMessage" minlength="1" maxlength="2000"
+                                  style="resize: none;height: 120px" class="form-control" placeholder=""></textarea>
+                        <span class="count-str" id="countStr">0/2000</span>
+                        <span id="enterMessageError" class="red"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="pending-st  text-center" style="margin-top: 10px;">
+                <button id='transaction_mode_bid' class="btn btn-primary cansub" disabled="disabled" onclick="savePaidBid()">SEND</button>
+            </div>
+        {% endif %}
+        <div id="complain" style="display: none">
+            <div class="row" style="padding-left: 10px;">
+                <div class="request" style="text-align: right">
+                    <span style="color: #1e91cf">REQUIRED</span>
+                </div>
+                <div style="position: relative">
+                    <textarea id="enterPaidMessage" minlength="1" maxlength="2000" style="resize: none;height: 120px"
+                              class="form-control" ></textarea>
+                    <span class="count-str" id="countStr">0/2000</span>
+                    <span id="enterMessageError" class="red"></span>
+                </div>
+            </div>
+            <div class="pending-st  text-center" style="margin-top: 10px;">
+                <button class="btn btn-primary canComplain"  onclick="saveComplain()">SEND</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% include 'yzcTheme/template/account/product_quotes/futures/appeal.twig' %}
+<script type="text/javascript" src="catalog/view/javascript/layerOris.js?v={{ app_version }}"></script>
+<script>
+    $(function () {
+        $("[data-toggle='popover']").popover();
+    });
+    $("#approved").on('click',function () {
+        var val=$('#approved:checked').val();
+        if(val==null){
+           $(this).parent().find("span").css('color','#333')
+        }
+        else{
+            $(this).parent().find("span").css('color','#3a75dc')
+        }
+    })
+</script>
+
+<script>
+    //监听输入
+    $("#enterPaidMessage").on('input propertychange', function () {
+
+        //获取输入内容
+        var userDesc = $(this).val();
+
+        //判断字数
+        var len;
+        if (userDesc) {
+            len = checkStrLengths(userDesc, 2000);
+        } else {
+            len = 0
+        }
+        //显示字数
+        $("#countStr").html(len + '/2000');
+
+        if (len > 2000) {
+            $("#countStr").addClass('red');
+        } else {
+            $("#countStr").removeClass('red');
+        }
+    });
+
+    function savePaidBid() {
+        let apply_status = $('input[name="processResult"]:checked').val();
+        let remark = $('#enterPaidMessage').val();
+        let notice = '';
+        let day = '{{ agreement.days }}';
+        let agreement_no = '{{ agreement.agreement_no }}';
+        let agreement_num = '{{ agreement.num }}';
+        remark = remark.replace(/(^\s*)|(\s*$)/g, "");
+        if(apply_status == 1 || apply_status == 5){
+            let amount_flag = 1;
+            // 首先要判断数量是否足够
+            $.ajax({
+              url: "{{ url('account/product_quotes/futures/checkFuturesAgreementNum') }}",
+              type: 'post',
+              async:false,
+              dataType: 'json',
+              data: { agreement_id: '{{ agreement.id }}' },
+              beforeSend: function () {
+                layer.load(1,{shade: [0.3,'#000']});
+              },
+              success: function (json) {
+                layer.closeAll('loading');
+                if(!json.code){
+                  amount_flag = 0;
+                  layerConfirm('The delivery of Future Goods Agreement (ID '+ agreement_no +') cannot be completed due to the delivered quantity is greater than the inventory quantity minus the locked inventory.',{
+                      btn: ['OK'],
+                    })
+                    .then(function () {
+                      layer.closeAll();
+                    })
+                    .catch(function () {
+                      layer.closeAll();
+                    });
+                }
+              },
+              error: function (xhr, ajaxOptions, thrownError) {
+                layer.closeAll('loading');
+              }
+            });
+            if(!amount_flag){
+              return false;
+            }
+        }
+
+        let formData = {
+            update_time: '{{ agreement.de_update_time }}',
+            agreement_id: '{{ agreement.id }}',
+            day: '{{ agreement.days }}',
+            remark: remark,
+            type: 3, // tab 页面提交
+            apply_status: apply_status
+        };
+        if (day > 1) {
+            if (apply_status == 1) {
+                notice = 'To deliver products ahead of time for the Future Goods Agreement (Agreement ID ' + agreement_no + '), Please check back for updates on the status of your request.';
+            } else if (apply_status == 2) {
+                notice = '确认向Buyer发送协议ID为' + agreement_no + '的期货协议取消交付的申请吗? 请填写理由，并及时查看处理结果。';
+            } else {
+                $.toast({
+                  heading: false,
+                  text: 'Please choose！',
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'error',
+                  hideAfter: 5000,
+                  allowToastClose: false,
+                  loader: false
+                });
+                return false;
+            }
+            var btn = ['Submit', 'Cancel'];
+        } else {
+            if (apply_status == 5) {
+                notice = 'Are you sure you wish to complete delivery for the ' + agreement_num + ' products in the Future Goods Agreement (Agreement ID: ' + agreement_no + ')?';
+            } else if (apply_status == 2) {
+                notice = '确认取消交付期货协议ID为' + agreement_no + '的' + agreement_num + '个产品吗?';
+            } else {
+                $.toast({
+                  heading: false,
+                  text: 'Please choose',
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'error',
+                  hideAfter: 5000,
+                  allowToastClose: false,
+                  loader: false
+                });
+                return false;
+            }
+            var btn = ['Yes', 'No'];
+        }
+        let tmplayer = layer.confirm(notice, {
+            title: 'Reminder',
+            skin: 'yzc_layer',
+            area: ['500px', '200px'],
+            btnAlign: 'c',
+            btn: btn //按钮
+        }, function () {
+            layer.close(tmplayer);
+            $.ajax({
+                url: 'index.php?route=account/product_quotes/futures/sellerFuturesProcessApply',
+                type: 'post',
+                dataType: 'json',
+                data: formData,
+                beforeSend: function () {
+                    layer.load(1, {shade: [0.3, '#000']});
+                    $('.cansub').attr({disabled: "disabled"});
+                },
+                success: function (json) {
+                    layer.closeAll('loading');
+                    $('.cansub').attr({disabled: false});
+                    if (json.code == 200) {
+                        if (json.msg) {
+                            $.toast({
+                              heading: false,
+                              text: json.msg,
+                              position: 'top-center',
+                              showHideTransition: 'fade',
+                              icon: 'success',
+                              hideAfter: 5000,
+                              allowToastClose: false,
+                              loader: false
+                            });
+                        }
+                        $('#futuresTransactionModeDetail').load('index.php?route=account/product_quotes/futures/sellerFuturesTransactionModeDetail&id=' + formData.agreement_id);
+                    } else {
+                        $.toast({
+                          heading: false,
+                          text: json.msg,
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'error',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    layer.closeAll('loading');
+                    $.toast({
+                      heading: false,
+                      text: thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText,
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                    });
+                    $('.cansub').attr({disabled: false});
+                }
+            });
+        }, function () {
+            layer.close(tmplayer);
+        });
+    }
+
+    function complainBackOrder(agreement_id, days) {
+        $('#complain').hide();
+        openTicket();
+    }
+
+    function openTicket() {
+        let url = 'index.php?route=account/ticket/lists&is_others=1';
+        window.open(url, '_blank');
+    }
+
+    function saveComplain() {
+        let update_time = '{{ agreement.update_time }}';
+        let agreement_id = '{{ agreement.id }}';
+        var remark_seller = $('#enterPaidMessage').val();
+        remark_seller = remark_seller.replace(/(^\s*)|(\s*$)/g, "");
+        if (remark_seller.length == 0) {
+            let tmplayer = layer.confirm('Reason cannot be left blank.', {
+              title: 'Reminder',
+              skin: 'yzc_layer',
+              btnAlign: 'c',
+              btn: ['ok'] //按钮
+            }, function () {
+              layer.close(tmplayer);
+            });
+            return false;
+        }
+        let formData = {
+            update_time: update_time,
+            agreement_id: agreement_id,
+            remark: remark_seller,
+            type: 8, // tab
+            // back order 申诉
+            apply_status: 4, // 申诉
+        };
+        let send_url = 'index.php?route=account/product_quotes/futures/sellerFuturesProcessApply';
+        sendRequest(formData, send_url);
+    }
+
+    function sendRequest(formData, url) {
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            data: formData,
+            beforeSend: function () {
+                layer.load(1, {shade: [0.3, '#000']});
+            },
+            success: function (json) {
+                layer.closeAll();
+                if (json.code == 200) {
+                    if (json.msg) {
+                        $.toast({
+                          heading: false,
+                          text: json.msg,
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'success',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    }
+                    $('#futuresTransactionModeDetail').load('index.php?route=account/product_quotes/futures/sellerFuturesTransactionModeDetail&id=' + formData.agreement_id);
+                } else {
+                    $.toast({
+                      heading: false,
+                      text: json.msg,
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                layer.closeAll();
+                $.toast({
+                  heading: false,
+                  text: thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText,
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'error',
+                  hideAfter: 5000,
+                  allowToastClose: false,
+                  loader: false
+                });
+            }
+        });
+    }
+
+    function noRemindInTab(agreement_id) {
+        $('#complain').hide();
+        $.ajax({
+            url: 'index.php?route=account/product_quotes/futures/sellerFutureUpdateDelivery',
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            data: {agreement_id: agreement_id},
+            beforeSend: function () {
+                layer.load(1, {shade: [0.3, '#000']});
+            },
+            success: function (json) {
+                layer.closeAll();
+                if (json.code == 200) {
+                    if (json.msg) {
+                        $.toast({
+                          heading: false,
+                          text: json.msg,
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'success',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    }
+                    $('#agreement_id_' + agreement_id).popover('hide');
+                    $('#agreement_id_' + agreement_id).hide();
+                } else {
+                    $.toast({
+                      heading: false,
+                      text: json.msg,
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                    });
+                }
+                $('#futuresTransactionModeDetail').load('index.php?route=account/product_quotes/futures/sellerFuturesTransactionModeDetail&id=' + formData.agreement_id);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                layer.closeAll();
+                $.toast({
+                  heading: false,
+                  text: thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText,
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'error',
+                  hideAfter: 5000,
+                  allowToastClose: false,
+                  loader: false
+                });
+            }
+        });
+    }
+    function check(obj) {
+      var state = $(obj).prop("checked");
+      if(state){
+        $('#transaction_mode_bid').attr('disabled',false);
+      }else{
+        $('#transaction_mode_bid').attr('disabled',true);
+      }
+    }
+
+    // 7724期货三期--Start 申诉提示框显示消失popover逻辑
+    $().ready(function(){
+        $('#claimTips').on("click", function(event) {
+            event.stopPropagation();
+            $(this).popover("show");
+        })
+        $('body').not('.action-submit').not('#claimTips').on('click',function(){
+            var $claim = $('#claimTips');
+            if ($claim.length) {
+                setTimeout(function() {
+                    $claim.popover("hide");
+                }, 100);
+            }
+        });
+    })
+
+    function refreshModeDetail(id) {
+       $('#futuresTransactionModeDetail').load('index.php?route=account/product_quotes/futures/sellerFuturesTransactionModeDetail&id=' + id); 
+    }
+
+    function showClaimAlert(id) {
+        var $claim = $('#force-claim-layer');
+        // 弹框之前清空弹框内容
+        $claim.find('textarea').val('').next().html('0/2000');;
+        $claim.find('#inputFiles').html('');
+        $claim.find('span.wrong-tips').hide();
+        $claim.find('span.agreeID').html('{{ agreement.agreement_no }}');
+        $claim.find('span.agreeDate').html('{{agreement.show_delivery_date}}');
+        fileList = [];
+        var optionsLtl = {
+            skin: 'yzc_layer claim-layer',
+            area: ['600px', '420px'],
+            btn: ['Submit', 'Cancel'],
+            title: 'Submit Force Majuere Claim',
+            content: $('#force-claim-layer'),
+        };
+        layerOris.confirmLayer(optionsLtl, function (index, layero) {
+          // 点击提交
+          // 校验申请原因是否为空
+          var claimReason = $claim.find('textarea').val()
+          if (!claimReason) {
+            return $claim.find('span.wrong-tips').show();
+          }
+          // 校验文件大小
+          if (checkFilesSize(fileList)) {
+            return layerOris.confirmLayer({title: 'Error',content:'File size exceeds limit, please re-upload again.</br>File size limit: Image files less than 20M.', btn:['OK']});
+          }
+          let formData = new FormData();
+          $.each(fileList, function (k, v) {
+            formData.append('files[]', v);
+          });
+          formData.append('agreement_id', id);
+          formData.append('message', claimReason);
+          let loading = layer.load();
+          $.ajax({
+            url: '{{ url('account/product_quotes/futures/doSellerAppeal') }}',
+            type: 'post',
+            dataType: 'json',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                layer.close(index);
+                layer.close(loading);
+                if (res.code == 200) {
+                    $.toast({
+                      heading: false,
+                      text: 'The request has been sent to the Marketplace and is now being processed. Please check the status of your request for the latest updates.',
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'success',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false
+                    });
+                    refreshModeDetail(id);
+                } else {
+                    $.toast({
+                      heading: false,
+                      text: res.code == 0 ? res.msg : 'The request was unable to be sent. Please try again.',
+                      position: 'top-center',
+                      showHideTransition: 'fade',
+                      icon: 'error',
+                      hideAfter: 5000,
+                      allowToastClose: false,
+                      loader: false,
+                      afterHidden: function(){
+                        refreshModeDetail(id);
+                      }
+                    });
+                }
+            },
+            error: function (err) {
+                layer.closeAll();
+                $.toast({
+                    heading: false,
+                    text: 'Failed. Please contact with our customer service to argue.',
+                    position: 'top-center',
+                    showHideTransition: 'fade',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    allowToastClose: false,
+                    loader: false,
+                    afterHidden: function(){
+                      refreshModeDetail(id);
+                    }
+                });
+            },
+          });
+        })
+    }
+    // 7724期货三期--End
+</script>

@@ -1,0 +1,220 @@
+<style>
+  .ticket-lists-left ul li {
+    font-size: 12px;
+    margin-left: -35px;
+    height: 30px;
+    line-height: 30px;
+  }
+  table tbody tr td {
+    word-break: inherit;
+  }
+  .content-messages {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-bottom: 5px;
+    height: 300px;
+    overflow: auto;
+  }
+
+  .content-messages-group {
+    min-height: 100px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .message-group-title {
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .role-customer-title {
+    color: #397C96;
+  }
+
+  .role-customer-server-title {
+    color: #e3503e;
+  }
+
+  .message-detail-content {
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .message-detail-attachment ul {
+    list-style-type: none;
+    padding: 0px;
+  }
+
+  .message-detail-attachment ul li {
+    float: left;
+    margin-right: 20px;
+  }
+  .message-detail-attachment ul li  a{
+color: #0b9bc2;
+  }
+  .content-messages::-webkit-scrollbar {
+      width: 6px;
+  }
+  .content-messages::-webkit-scrollbar-thumb{
+    border-radius:6px;
+    background:#ccc;
+  }
+  .content-messages::-webkit-scrollbar-track {
+      border-radius: 0;
+      background: #eee;
+}
+  .content-messages .panel.panel-default{
+    max-width: 60%;
+    border-radius: 5px;
+  }
+  .border{
+    border: 1px solid #fa6400;
+  }
+  .content-messages .message-group-title{
+    padding: 0 5px;
+  }
+</style>
+{{ tickets }}
+{% if lists %}
+  <h4 class="sub_title">RMA Resolution</h4>
+  <div class="form-group">
+    <button type="button" class="btn btn-primary reply-ticket-button" style="vertical-align: bottom">Reply</button>
+    <span> Your feedback has been received and is currently being processed.</span>
+  </div>
+  <div class="content-messages">
+
+  {% for item in lists %}
+    <div class="content-messages-group">
+      <div class="{% if item.create_admin_id > 0 %} pull-left {% else %} pull-right {% endif %}" style="width: 100%">
+        <div class="message-group-title
+          {% if item.create_admin_id > 0 %} role-customer-server-title text-left {% else %} role-customer-title  text-right {% endif %}">
+{#          ●&nbsp;{{ item.showName }}&emsp;-&emsp;{{ item.date_added }}#}
+           <div> {% if item.is_read == '0' and  item.create_admin_id > 0 %}
+               <span class="glyphicon glyphicon-exclamation-sign"></span>&nbsp;
+             {% endif %} {{ item.showName }}</div>
+           <div style="font-size: 12px"> {{ item.date_added }}</div>
+        </div>
+        <div class="panel panel-default
+              {% if item.create_admin_id > 0 %} pull-left  border{% else %} pull-right{% endif %}">
+          <div class="panel-body">
+            <div>
+              <table>
+                <tr>
+                  <td valign="top">
+                    <div class="message-detail-title">Description:&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                  </td>
+                  <td>
+                    <div class="message-detail-content">
+                      {{ item.description }}
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            {% if item.attachments %}
+            <div>
+              <table>
+                <tr>
+                  <td valign="top">
+                    <div class=" message-detail-title">Attachments:&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                  </td>
+                  <td class="message-detail-attachment">
+                    <ul>
+                      {% for value in item.attachments %}
+                        {% if value.is_img %}
+                          <li><a href="{{ value.url }}" target="_blank">{{ value.name }}</a></li>
+                        {% else %}
+                          <li><a href="{{ value.url }}" download="{{ value.name }}">{{ value.name }}</a></li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+  {#没有记录#}
+  </div>
+{% endif %}
+
+<script>
+
+  $(".reply-ticket-button").click(function () {
+    showModal('{{ info.rma_id }}')
+    $("#myModalTicketLabel").text('Reply');
+    $('#myModalTicket .form-group:nth-child(1)').hide();
+    $('#myModalTicket .form-group:nth-child(2)').hide();
+    $("#myModalTicketFooter").show();
+    $('#myModalTicketFooter').html('<button id="replyTicketSubmit" type="button" class="btn btn-primary btn-submit">Submit</button>');
+  });
+
+
+  $(document).on('click', "#replyTicketSubmit", function() {
+
+    let descriptionValue = $.trim($("#ticket_description").val());
+    let hidden_ticket_id='{{ info.id }}'
+    if( descriptionValue.length < 1){
+      layer.msg('Description can not be left blank.');
+      return false;
+    }
+    if( descriptionValue.length > 1000 ){
+      layer.msg('Description more than 1000 characters');
+      return false;
+    }
+    $("#ticket_description").val(descriptionValue);
+
+
+    //upload files
+    let upfiles=[]
+    $(".ticket-upload-file li a").each(function(index, ele){
+      let item = {};
+      item.name=$(ele).text();
+      item.url =$(ele).data('val');
+      upfiles.push(item);
+    });
+
+    var sendData = {};
+    sendData.ticket_id = hidden_ticket_id;
+    sendData.ticket_description = $.trim($("#ticket_description").val());
+    sendData.ticket_attachments = JSON.stringify(upfiles);
+
+
+    var url = "index.php?route=account/ticket/reply&ticket_id=" + hidden_ticket_id;
+
+    block.blockUI();
+    $("#replyTicketSubmit").attr("disabled", true);
+    $.ajax({
+      url: url,
+      type: 'POST',
+      data: sendData,
+      dataType: 'json',
+      success: function (result, status, xhr) {
+        if (result.ret == 1) {
+          $('#myModalTicket').modal('hide');
+          layer.msg(result.msg);
+          setTimeout(function(){
+            window.location.reload();
+          }, 1000);
+        } else {
+          layer.open({
+            title: 'Failed'
+            , content: result.msg
+            , btn: ['OK']
+          });
+        }
+      },
+      error: function (xhr, status, error) {
+        layer.msg('error');
+      },
+      complete: function (xhr, status) {
+        $("#replyTicketSubmit").attr("disabled", false);
+        block.unBlockUI();
+      }
+    });
+  });
+</script>

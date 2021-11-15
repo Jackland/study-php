@@ -1,0 +1,382 @@
+{{ header }}{{ separate_column_left }}
+<div
+  {% if separate_view is defined and separate_view %}
+    class="container-fluid" id="content" style="margin-left: 15%"
+  {% else %}
+    class="container"
+  {% endif %}
+>
+  {% include 'giga/template/_parts/breadcrumb.twig' %}
+  <div class="row giga-content" style="margin-right: 30px">{{ column_left }}
+    {% if column_left and column_right %}
+      {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+      {% set class = 'col-sm-9' %}
+    {% else %}
+      {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div class="{{ class }} giga-content">{{ content_top }}
+      <h1>{{ text_bill_detail }}</h1>
+      <div class="row col-sm-12" id="box-shadow" style="margin-left: 0;padding: 0;">
+        <div class="panel panel-default" style="margin-bottom: 0">
+          <div class="panel-body">
+            <div class="row">
+              <form action="#" id="seller_bill_detail_form">
+                <div class="col-sm-4">
+                  <div class="form-group">
+                    <label class="control-label"
+                           for="input-filter_settlement_cycle">{{ column_settlement_cycle }}</label>
+                    <select onchange="changeType()" name="filter_settlement_cycle" id="input-filter_settlement_cycle" class="form-control">
+                      {% for key,val in settlement_list %}
+                        <option data-version="{{ val.version }}"
+                          {% if request.filter_settlement_cycle is defined and request.filter_settlement_cycle == key %}
+                            selected
+                          {% endif %}
+                          value="{{ key }}">
+                          {{ val.name }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" for="input-filter_sku_mpn">{{ column_sku_mpn }}</label>
+                    <input
+                      placeholder="{{ column_sku_mpn }}"
+                      name="filter_sku_mpn"
+                      id="input-filter_sku_mpn"
+                      class="form-control">
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="form-group">
+                    <label class="control-label" for="input-filter_settlement_item">{{ column_settlement_item }}</label>
+                    <select name="filter_settlement_item" id="input-filter_settlement_item" class="form-control settlement_item_v1">
+                      {% for key,val in settlement_items %}
+                        <option
+                          {% if request.filter_settlement_item is defined and request.filter_settlement_item == key %}
+                            selected
+                          {% endif %}
+                          value="{{ key }}">
+                          {{ val }}
+                        </option>
+                      {% endfor %}
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="form-group">
+                    <label class="control-label" for="input-filter_order_id">{{ column_order_id }}</label>
+                    <input
+                      placeholder="{{ column_order_id }}"
+                      name="filter_order_id"
+                      id="input-filter_order_id"
+                      class="form-control">
+                  </div>
+                  <div class="form-group" style="margin-top: 22px">
+                    <a
+                      href="{{ search_refresh_url }}"
+                      class="btn btn-default pull-right reset"
+                      data-toggle="tooltip"
+                      title="Reset"
+                      data-original-title="Reset">
+                      <i class="fa fa-refresh"></i>
+                    </a>
+                    <a
+                      onclick="func_download();"
+                      class="btn btn-default pull-right download"
+                      data-toggle="tooltip"
+                      data-original-title="Download"
+                      style="margin:0 15px">
+                      <i class="fa fa-download"></i>
+                    </a>
+                    <button
+                      type="button"
+                      onclick="filter();"
+                      id="rma-refund-application-filter"
+                      class="btn btn-primary pull-right filter"
+                      data-loading-text="Loading...">
+                      {{ button_filter }}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="row" style="padding: 0 15px">
+              <table id="detail_table" style="margin-top: 50px;padding: 0 15px"></table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+
+    let form = $('#seller_bill_detail_form');
+    let $table = $('#detail_table');
+    let $postUrl = '{{ post_url }}';
+    let $downloadUrl = '{{ download_url }}';
+    let $filter_settlement_item = $('#input-filter_settlement_item');
+    let $filter_sku_mpn = $('#input-filter_sku_mpn');
+    $(function () {
+      changeType();
+      {% if init_table %}
+      filter();
+      filter_settlement_select();
+      {% else %}
+      $table.bootstrapTable({
+        formatNoMatches: function () {
+          return '<p style="font-weight: bold;font-size: 15px">' +
+            'Please select a settlement period or a transaction type and click \'FILTER\' button.' +
+            '</p>';
+        },
+      });
+      {% endif %}
+    })
+    function getQueryParam() {
+      let params = form.serializeArray();
+      let ret = {};
+      $.each(params, function (key, item) {
+        ret[item['name']] = item['value'];
+      });
+      return ret;
+    }
+
+    function filter() {
+      let params = getQueryParam();
+      // 校验
+      if (!params.hasOwnProperty('filter_settlement_cycle') || parseInt(params['filter_settlement_cycle']) <= 0) {
+        layer.msg('{{ error_settlement_cycle }}');
+        return;
+      }
+      let item = parseInt($filter_settlement_item.val());
+      let columns = [];
+      let $option = {
+        url: $postUrl,
+        queryParams: function (params) {
+          let data = {};
+          data['sort'] = params['sort'];
+          data['order'] = params['order'];
+          data['page'] = (params['offset'] / params['limit'] + 1);
+          data['per_page'] = params['limit'];
+          data = $.extend(data, getQueryParam());
+          return data;
+        },
+        classes: 'table table-hover',
+        sidePagination: "server",
+        pagination: true,
+        pageNumber: 1,
+        pageSize: 15,
+        pageList: [5, 15, 20, 50, 100],
+        formatNoMatches: function () {
+          return 'No records.';
+        },
+        onLoadSuccess: function () {
+          $('.info-click').on('click', function () {
+            let msg = $(this).attr('data-info');
+            msg = msg.replace(/\n/g, '</br>');
+            layer.confirm(msg, {title: 'Message', skin: 'yzc_layer', btn: false, area: '50%'});
+          })
+        },
+        columns:[
+          {
+            field: 'produce_date',
+            title: 'Incurred Time',
+            align: 'center',
+            sortable: true,
+            sortName: 'sbd.produce_date'
+          },
+          {
+            field: 'type_name',
+            title: 'Bill Type',
+            align: 'right'
+          },
+          {
+            field: 'ord_num',
+            title: 'Order Number',
+            align: 'center',
+            formatter: function (value, row, index) {
+              let str='';
+              if(Number(row['delivery_type']) == 2){
+                str='<i class="giga icon-cwf" style="color: #1f5268" data-toggle="tooltip" data-original-title="{{ cwf }}"></i>'
+              }
+              return  (row['ord_num_url'] || row['ord_num']|| 'UNKNOWN')+str;
+            },
+          },
+        ]
+      };
+      switch (item) {
+        case 34:
+        case 36:
+        case 3: {
+          columns = [
+            {
+              title: 'Charge Detail',
+              align: 'center',
+              formatter: function (value, row, index) {
+                if (row['show_charge_detail'] == 0) {
+                  return 'N/A';
+                }
+                return '<a class="info-click click_for_detail "  data-info="'
+                  + row['spec_info']['charge_detail']
+                  + '">View Details</a>';
+              }
+            },
+            {
+              field: 'patch_files',
+              title: 'Patch Files',
+              align: 'left',
+            },
+            {
+              title: 'Remark',
+              align: 'center',
+              formatter: function (value, row, index) {
+                let $title = row['remark_s'];
+                if (row['show_remark_detail'] == 1) {
+                  $title = '<a class="info-click click_for_detail "  data-info="'
+                    + row['spec_info']['remark']
+                    + '">' + $title
+                    + '</a>';
+                }
+                return $title;
+              }
+            },
+          ];
+          break;
+        }
+        default: {
+          columns = [
+            {
+              field: 'item_code',
+              title: 'Item Code</br>MPN',
+              align: 'center',
+              formatter: function (value, row, index) {
+                  let str = row['item_code_s'];
+                  if (row.hasOwnProperty('is_rebate') && row['is_rebate'] == 1) {
+                    str = '<img' +
+                            ' data-toggle="tooltip" data-original-title="Rebate"' +
+                            ' style="width: 15px;height: 15px;" ' +
+                            'src="image/product/rebate_15x15.png">' + str;
+                  }
+                  if (row.hasOwnProperty('mpn_s') && row['mpn_s']) {
+                    str += '</br>' + row['mpn_s'];
+                  }
+                  return str;
+              }
+            },
+            {
+              field: 'quantity',
+              title: 'Quantity',
+              align: 'center',
+            },
+
+          ];
+          // 判断是不是收入和支出类型
+          if ([32, 33].includes(item)) {
+            let col = '';
+            if (item == 32) {
+              col = '{{ column_buyer_freight }}';
+            } else {
+              col = '{{ column_back_freight }}';
+            }
+            columns.push(...[
+              {
+                field: 'product_total',
+                title: '{{ column_product_total }}',
+                align: 'center',
+              },
+              {
+                field: 'logistics_fee_format',
+                title: col,
+                align: 'center',
+              }
+            ])
+          } else {
+            columns.push({
+              field: 'logistics_fee_format',
+              title: 'Fulfillment Fee',
+              align: 'center',
+            });
+          }
+          break;
+        }
+      }
+      $option['columns'].push(...columns, {
+        field: 'total_s',
+        title: 'Total',
+        align: 'center',
+      },);
+      refreshTable($option);
+    }
+
+    function refreshTable(options) {
+      $table.bootstrapTable('destroy');
+      $table.bootstrapTable(options);
+    }
+
+    function func_download() {
+      let params = getQueryParam();
+      // 校验
+      if (!params.hasOwnProperty('filter_settlement_cycle') || parseInt(params['filter_settlement_cycle']) <= 0) {
+        layer.msg('{{ error_settlement_cycle }}');
+        return;
+      }
+      window.location.href = $downloadUrl + '&' + $.param(params);
+    }
+
+    $filter_settlement_item.on('change', filter_settlement_select);
+
+    function filter_settlement_select() {
+      let val = parseInt($filter_settlement_item.val());
+      if (val === 3) {
+        $filter_sku_mpn.val('').prop('disabled', true);
+      } else {
+        $filter_sku_mpn.prop('disabled', false);
+      }
+    }
+
+
+    let settlement_item = `{% for key,val in settlement_items %}
+      <option {% if request.filter_settlement_item is defined and request.filter_settlement_item == key %} selected {% endif %} value="{{ key }}">
+      {{ val }}
+      </option>
+      {% endfor %}`
+
+
+    let settlement_item_v2 = `{% for key,val in settlement_items_v2 %}
+      <option {% if request.filter_settlement_item is defined and request.filter_settlement_item == key %} selected {% endif %} value="{{ key }}">
+      {{ val }}
+      </option>
+      {% endfor %}`
+
+
+    function changeType(){
+      if ($('#input-filter_settlement_cycle').find("option:selected").data('version') == 'V2') {
+        $('#input-filter_settlement_item').html(settlement_item_v2)
+      }else {
+        $('#input-filter_settlement_item').html(settlement_item)
+      }
+    }
+  </script>
+  <style>
+    .table > thead > tr > th {
+      border-bottom: 1px solid #ddd;
+    }
+
+    .click_for_detail {
+      color: #0b0b0b;
+      text-decoration-line: underline;
+    }
+
+    .click_for_detail:hover {
+      color: rgba(11, 11, 11, 0.75);
+      cursor: pointer;
+      text-decoration-line: underline;
+    }
+
+    .yzc_layer .layui-layer-content {
+      padding: 12px 25px;
+      text-align: left;
+    }
+  </style>
+{{ footer }}

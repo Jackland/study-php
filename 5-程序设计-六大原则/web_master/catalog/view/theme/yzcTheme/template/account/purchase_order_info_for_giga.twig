@@ -1,0 +1,194 @@
+{{ header }}
+<div id="account-order" class="container">
+  {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+  {% endif %}
+  {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+  {% endif %}
+  <div class="row">{{ column_left }}
+      {% set class = 'col-sm-12' %}
+    <div id="content" class="{{ class }}">{{ content_top }}
+      <h2>{{ text_order }}</h2>
+      <div class="tab-content" style="border: 1px #eee solid;float: left;width: 100%;">
+        <div style="float: left;width: 100%">
+            <span style="width: 31%;float: left;margin-left: 2%;margin-top: 10px"> {{ text_order_id }} <span style="font-weight: bold">{{ order_id }}</span></span>
+            <span style="width: 33%;float: left;margin-top: 10px">Supplier: <span style="font-weight: bold">{{ supplier_code }}</span></span>
+            <span style="width: 33%;float: left;margin-top: 10px">Purchase Order Status: <span style="font-weight: bold">Completed</span></span>
+            <span style="width: 31%;float: left;margin-left: 2%;margin-top: 10px">{{ text_transcation_status }} <span style="font-weight: bold">Paid</span></span>
+            <span style="width: 33%;float: left;margin-bottom: 10px;margin-top: 10px;">Payment Method: <span style="font-weight: bold">Line Of Credit</span></span>
+            <span style="width: 33%;float: left;margin-top: 10px">Creation Time: <span style="font-weight: bold">{{ date_added }} </span></span>
+        </div>
+        <div class="" style="float: left;width: 100%;border-top:1px #eee solid;margin-bottom: 10px; ">
+          <label style='font-weight: bold;margin-left: 2%;font-size: 16px;margin-top: 20px;'><i style="font-size: 16px;" class="fa fa-list-ul"></i> {{ text_item_list }}</label>
+          <table class="table table-hover" style="margin: 0 auto;width: 96%">
+            <thead>
+            <tr bgcolor="#F2F2F2">
+              <td class="text-center"> Item Code</td>
+              <td class="text-center"> Unit Price</td>
+              <td class="text-center"> Quantity</td>
+              <td class="text-center"> Total Price</td>
+              <td class="text-center"> Transaction Fee</td>
+              <td class="text-center" style="width: 100px;" > Action</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for product in products %}
+              <tr>
+                <td class="text-center">
+                  {% if product.is_margin %}
+                    <a href="{{ product.url_margin }}">
+                      <span class="flag-margin-order"><span class="giga icon-margin" data-toggle="tooltip" title="{{ product.tip_margin }}"></span></span>
+                    </a>
+                  {% endif %}
+                  {{ product.sku_code }}
+                </td>
+                <td class="text-center">
+                  {{ product.price }}
+                </td>
+                <td class="text-center">{{ product.quantity }}</td>
+                <td class="text-center">{{ product.total }}</td>
+                <td class="text-center">{{ product.poundage }}</td>
+                <td class="text-center" style="">
+                      <button id="test1" type="button" data-toggle="dropdown" class="btn btn-warning" onclick="displaySwitch(this)"><i class="fa fa-caret-down "></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-left" colspan="6" hidden="hidden">
+                  <div style="float: left;width: 100%">
+                    <span style="width: 25%;float: left;margin-top: 10px">Item Code: <span style="font-weight: bold">{{ product.sku_code }}</span></span>
+                    <span style="width: 50%;float: left;margin-top: 10px">Product Name: <span style="font-weight: bold">{{ product.product_name }}</span></span>
+                    <span style="width: 25%;float: left;margin-top: 10px">Color: <span style="font-weight: bold">{{ product.color }}</span></span>
+                    <span style="width: 25%;float: left;margin-top: 10px">Length: <span style="font-weight: bold">{{ product.length }}</span>  inches</span>
+                    <span style="width: 25%;float: left;margin-top: 10px">Width: <span style="font-weight: bold">{{ product.width }}</span>  inches</span>
+                    <span style="width: 25%;float: left;margin-top: 10px">Height: <span style="font-weight: bold">{{ product.height }}</span>  inches</span>
+                    <span style="width: 25%;float: left;margin-top: 10px">Weight: <span style="font-weight: bold">{{ product.weight }}</span>  pounds</span>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+            <tr bgcolor="#F2F2F2">
+              <td class="text-right" colspan="5">Sub-Total:</td>
+              <td class="text-center" colspan="1">{{ sub_total }} </td>
+            </tr>
+            <tr bgcolor="#F2F2F2">
+              <td class="text-right" colspan="5"> Total Transaction Fee:</td>
+              <td class="text-center" colspan="1">{{ total_transaction }} </td>
+            </tr>
+            <tr bgcolor="#F2F2F2">
+              <td class="text-right" colspan="5"> Total Price:</td>
+              <td class="text-center" colspan="1"> <span style="color:red">{{ total_price }}</span></td>
+            </tr>
+            </tbody>
+          </table>
+          {% if histories %}
+            <h3 style="margin: 0 auto;width: 96%;margin-top: 10px;margin-bottom: 10px;" >{{ text_history }}</h3>
+            <table class="table table-hover" style="margin: 0 auto;width: 96%">
+              <thead>
+              <tr bgcolor="#F2F2F2">
+                <td class="text-left">{{ column_date_added }}</td>
+                <td class="text-left">{{ column_status }}</td>
+                <td class="text-left">{{ column_comment }}</td>
+              </tr>
+              </thead>
+              <tbody>
+              {% if histories %}
+                {% for history in histories %}
+                  <tr >
+                    <td class="text-left">{{ history.date_added }}</td>
+                    <td class="text-left">{{ history.status }}</td>
+                    <td class="text-left">{{ history.comment }}</td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="3" class="text-center">{{ text_no_results }}</td>
+                </tr>
+              {% endif %}
+              </tbody>
+            </table>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="buttons clearfix" style="float:right;margin-top: 10px;">
+
+        <div class="pull-left"><a
+            {% if pre_order_id %}
+            href="{{ pre_order_id }}"
+            {% else %}
+            disabled="disabled"
+            {% endif %}
+            class="btn btn-primary"><i class="fa fa-angle-double-left "></i> Prev </a></div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div class="pull-right"><a
+            {% if next_order_id %}
+            href="{{ next_order_id }}"
+            {% else %}
+            disabled="disabled"
+            {% endif %}
+            class="btn btn-primary"> Next <i class="fa fa-angle-double-right "></i></a></div>
+      </div>
+      {{ content_bottom }}</div>
+    </div>
+</div>
+<!-- marketplace -->
+<script>
+   function displaySwitch(_this) {
+     if($(_this).children().hasClass('fa-caret-up')){
+       $(_this).children().removeClass('fa-caret-up').addClass('fa-caret-down');
+       $(_this).parent().parent().next().find('td').eq(0).hide();
+     }else {
+       $(_this).children().removeClass('fa-caret-down').addClass('fa-caret-up');
+       $(_this).parent().parent().next().find('td').eq(0).show();
+     }
+   }
+  function showImg(e){
+    var newsrc=getObjectURL(e.files[0]);
+    var id = e.id;
+    var pattern = new RegExp("[0-9]+");
+    var imgRow = id.match(pattern);
+    var reader = new FileReader();
+    reader.onload = function(theFile) {
+      var image = new Image();
+      image.onload = function() {
+        $('#img'+imgRow).attr("src",newsrc);
+      };
+      image.src = theFile.target.result;
+    }
+    reader.readAsDataURL(e.files[0]);
+  }
+  function getObjectURL(file) {
+    var url = null ;
+    if (window.createObjectURL!=undefined) {
+      url = window.createObjectURL(file) ;
+    } else if (window.URL!=undefined) {
+      url = window.URL.createObjectURL(file) ;
+    } else if (window.webkitURL!=undefined) {
+      url = window.webkitURL.createObjectURL(file) ;
+    }
+    return url ;
+  }
+</script>
+<style>
+  .upload_warp_img_div img {
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: middle;
+  }
+
+  .upload_warp_left img {
+    margin-top: 35px;
+  }
+
+  .flag-margin-order{
+    color: #FF784E;
+    margin-left: 5px;
+  }
+</style>
+
+{{ footer }}

@@ -1,0 +1,484 @@
+{% trans_default_category 'catalog/view/customerpartner/seller_store/home/index' %}
+{# @file 主推产品 #}
+
+{{ css([
+  'static/customerpartner/seller_store/home/components/modules/featured_products.css'
+]) }}
+
+<script type="text/x-template" id="featured-products-module">
+  <div class="featured-module-container">
+    {# 首次进入显示骨架图 #}
+    <div v-if="isInit"> 
+      <div class="mainprod-module">
+        <img class="w1200" src="{{ asset('static/customerpartner/seller_store/home/images/blanks/featured-products.png') }}">
+      </div>
+    </div>
+    {# 编辑后内容显示模块 #}
+    <div v-else>
+      <div class="mainprod-module m20-b">
+        <div class="common-title" v-if="data.title">${data.title}</div>
+        <div class="sub-title" v-if="data.title_sub">${data.title_sub}</div>
+        <div class="w1200 module-flex">
+          <div class="left-image" :class="{'unaval160-image': !data.products[0].product.available}">
+            <img :src="data.products[0].product.image">
+          </div>
+          <div class="right-content">
+            <div class="module-amount module-line2"><span class="title-link">${data.products[0].product.name}</span></div>
+            <div class="p8-tb" v-if="data.products[0].product.item_code">Item Code:&nbsp;${data.products[0].product.item_code}<span v-html="data.products[0].product.tags"></span></div>
+            <div class="tag-content p8-tb" v-if="data.products[0].product.complex_transaction && data.products[0].product.complex_transaction.length>0">
+              <div v-for="complex of data.products[0].product.complex_transaction"><i class="giga icon-duihao_10"></i>${complex}</div>
+            </div>
+            <div class="p8-tb" v-if="data.products[0].tags.length>0">
+              <div class="prod-list" v-for="tag of data.products[0].tags">${tag}</div>
+            </div>
+            <div class="m20-t" v-if="data.products[0].product.price">
+              <span class="module-amount" v-html="data.products[0].product.price"></span>
+            </div>
+            <div v-if="data.products[0].product.qty">Qty Available:&nbsp;${data.products[0].product.qty}</div>
+            <div class="btn-buy m10-t">BUY NOW</div>
+            <div class="mainprod-bot">
+              <span v-for="(_product,index) of data.products" :class="{'unaval100-image': !_product.product.available}"><img :class="{'active': index==0}" :src="_product.product.image">
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# 编辑弹窗部分 #}
+    <div>
+      <el-dialog class="module-modal ele ele-modal" :class="{'active-modal': showEdit}" title="{{__('主推产品设置')}}" :visible="showEdit" :close-on-click-modal="false"
+        @close="closeEdit" append-to-body destory-on-close width="800px">
+        <div class="content-container">
+          <div class="module-modal-tip">
+            <ul>
+              <li>
+                {{__('本模块适用于同款式、同系列、适合搭配售卖的产品大图介绍。')}}
+              </li>
+              <li>
+                {{__('最多可设置:num1个产品，每个产品可设置:num2个产品特色标签。', {num1: "<strong>3</strong>", num2:"<strong>3</strong>"})}}
+              </li>
+            </ul>
+          </div>
+          <div class="module-edit-container">
+            <el-tabs v-model="activeTab" class="ele ele-tabs">
+              <el-tab-pane label="{{__('内容设置')}}" name="tab1">
+                <div class="module-form-body featured-form scrollable-container">
+                  <div class="product-item-container ele ele-form nofirst-container" v-for="(product,index) of products">
+                    <div class="product-title">
+                      <div class="tag-icon"></div> 
+                      <div class="product-title-text">{{__('产品')}} ${index + 1}</div>
+                      <span v-if="index == 0" class="required-after"></span>
+                    </div>
+                      
+                    <div class="product-edit-body"> 
+                      <div class="product-input-container">
+                        <div v-if="index==0" class="error-tip" :class="{errorinput: contentError}">{{__('请选择产品:index中的产品', {index: '${index + 1}'})}}</div>
+                        <el-input v-model="product.product.sku" @focus="handleProductDialog(index)" class="linput"
+                          placeholder="{{ __('请选择', {}, 'common') }}" clearable @clear="clearProduct(index)"></el-input>
+                      <div>
+                      <div class="featured-tags-container">
+                        <div class="featured-tags-text text-bold">{{__('特色标签')}}</div>
+                        <el-tooltip class="item" effect="dark" placement="right">
+                          <i class="giga icon-bangzhuzhongxin"></i>
+                          <div slot="content">
+                            <ul class="tooltip-list">
+                              <li>{{__('可添加:num个标签', {num: 3})}}</li>
+                              <li>{{__('每个可显示:num字，多出部分将隐藏', {num: 70})}}</li>
+                              <li>{{__('以设置先后顺序展示')}}</li>
+                            </ul>
+                          </div>
+                        </el-tooltip>
+                        <el-button class="outline add-text-btn add-tag-btn ele ele-btn" type="text" @click="handleTags(product)" v-if="!product.tags.length">{{__('新增标签')}}</el-button>
+                        <el-button class="outline add-text-btn add-tag-btn ele ele-btn" type="text" @click="handleTags(product)" v-if="product.tags.length">{{__('编辑标签')}}</el-button>
+                      </div>
+                      <div class="product-tags-container" v-if="product.tags.length">
+                        <ul class="tag-list">
+                          <li class="tag-item" v-for="(tag,tagIndex) of product.tags">
+                            ${tag} <i class="el-icon-close" @click="delTag(product, tagIndex)"></i>
+                          </li>
+                        </ul>
+                      </div>
+                      <!--
+                      <div class="product-btn-container ele ele-btn">
+                        <el-button class="outline add-tag-btn" @click="handleTags(product)" v-if="!product.tags.length">
+                          <i class="giga icon-iconfonticon02-copy btn-icon"></i>{{__('新增标签')}}</el-button>
+                        <el-button class="outline add-tag-btn" @click="handleTags(product)" v-if="product.tags.length">
+                          <i class="el-icon-edit btn-icon"></i>{{__('编辑标签')}}</el-button>
+                      </div>
+                      -->
+                    </div>
+                  </div>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="{{__('显示设置')}}" class="display-setting-tab" name="tab2">
+                <div class="module-form-body ele ele-form featured-form">
+                  <el-form ref="form" label-width="145px" :model="model" :rules="rules">
+                    <el-form-item label="{{__('显示标题')}}" class="radio-form-item" >
+                      <el-radio-group v-model="model.title_show" class="ele ele-radio-group">
+                        <el-radio :label="1">{{__('显示')}}</el-radio>
+                        <el-radio :label="0">{{__('不显示')}}</el-radio>
+                      </el-radio-group>
+                    </el-form-item>
+                    <el-form-item v-show="model.title_show" prop="title" label="{{__('主标题')}}" 
+                      class="radio-form-item lform ele ele-form-item-required">
+                      <el-input v-model="model.title" maxlength="60" class="ele ele-input-limit"
+                        show-word-limit resize="none" placeholder="{{ __('请输入') }}"></el-input>
+                    </el-form-item>
+                    <el-form-item v-show="model.title_show" label="{{__('副标题')}}" class="radio-form-item lform">
+                      <el-input v-model="model.title_sub" maxlength="60" class="ele ele-input-limit"
+                        show-word-limit resize="none" placeholder="{{ __('请输入') }}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="{{__('显示内容')}}" class="radio-form-item">
+                      <el-checkbox-group v-model="model.display" class="ele ele-checkbox-group">
+                        <el-checkbox v-for="(i,index) in displayOptions" :key="index" :disabled="i.value == 'item_code' || i.value == 'price'" 
+                          :label="i.value">${i.label}</el-checkbox>
+                      </el-checkbox-group>
+                    </el-form-item>
+                  </el-form>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+        </div>
+        <template slot="footer">
+          <div class="ele ele-btn ele-btn-group">
+            <el-button class="oper-btn" @click="closeEdit">{{__('取消')}}</el-button>
+            <el-button class="oper-btn" :loading="btnLoading" type="primary" @click="saveEdit">{{__('保存')}}</el-button>
+          </div>
+        </template>
+      </el-dialog>
+      {# tags 编辑弹窗 #}
+      <el-dialog class="tags-modal ele ele-modal" title="{{ __('编辑') }}" :visible="showTags" :close-on-click-modal="false"
+        @close="closeTags" append-to-body destory-on-close width="640px">
+        <div class="tags-edit-container">
+          <div class="tags-tip">{{__('请输入产品特色标签')}}</div>
+          <el-form label-width="56px" model="tags" class="ele ele-form">
+            <el-form-item class="ele-form-item" :label="'Tags ' + (index + 1)" v-for="(tag,index) of tags">
+              <el-input v-model="tag.value" maxlength="100" class="ele ele-input-limit"
+                show-word-limit resize="none" placeholder="{{ __('请输入特色标签') }}"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <template slot="footer">
+          <div class="ele ele-btn ele-btn-group">
+            <el-button class="oper-btn" @click="closeTags">{{__('取消')}}</el-button>
+            <el-button class="oper-btn" type="primary" @click="saveTags">{{__('保存')}}</el-button>
+          </div>
+        </template>
+      </el-dialog>
+
+      {# 产品选择弹窗 #}
+      <product-select-dialog :showModal="showProductDialog" :type="searchType" 
+        @close="handleCloseProductDialog" @choose="chooseProduct" :beforeChoose="beforeChooseProduct"></product-select-dialog>
+    </div>
+  </div>
+</script>
+<script>
+const FEAUTRED_PRODUCTS_TRANSLATE = {
+  TITLE_REQUIRED: "{{__('请输入主标题！')}}",
+}
+</script>
+<script>
+  const FEATURED_PRODUCT_DISPLAY_OPTIONS = [
+    {label:"{{__('产品名称')}}", value:"product_name"},
+    {label:"Item Code", value:"item_code"},
+    {label:"{{__('复杂交易')}}", value:"complex_transaction"},
+    {label:"{{__('特色标签')}}", value:"tag"},
+    {label:"{{__('价格')}}", value:"price"},
+    {label:"{{__('上架数量')}}", value:"qty_available"},
+  ]
+  
+  Vue.component('featured-products', {
+    template: '#featured-products-module',
+    delimiters: ['${', '}'],
+    props: {
+      data: {
+        type: Object,
+        default: () => ({})
+      }
+    },
+    data() {
+      //自定义表单验证方法
+      var validateTitle = (rule, value, callback) => {
+        if (this.model.title_show && value == '') {
+          callback(FEAUTRED_PRODUCTS_TRANSLATE.TITLE_REQUIRED);
+        } else {
+          callback();
+        }
+      };
+      return {
+        showEdit: false,
+        activeTab: 'tab1',
+        loading: false, // 加载动画
+        btnLoading: false,
+        axios: null,
+        displayOptions: FEATURED_PRODUCT_DISPLAY_OPTIONS,
+        searchType: MODULE_TYPE.FEATURED_PRODUCTS,
+
+        //显示设置表单部分
+        model: {
+          title_show: 1,
+          title: 'Featured Products',
+          title_sub: '',
+          display: []
+        },
+        rules: {
+          title: {validator: validateTitle, trigger: 'blur'}
+        },
+
+        //内容设置表单部分
+        products: [],
+        contentError: false, //内容部分是否存在错误
+
+        //tags 编辑部分
+        showTags: false,
+        tags: [],
+        curProduct: {}, //当前操作的产品
+
+        //产品选择弹窗部分
+        curPickProductIndex: 0, //当前进行选择的产品下标
+        showProductDialog: false,
+      }
+    },
+    created() {
+      this.axios = axios.create({});
+    },
+    watch: {
+      showEdit: {
+        immediate: true,
+        handler: function(res) {
+          this.$nextTick(function() {
+            this.initDefault(this.data)
+            let height = $(".active-modal.module-modal .el-dialog__body").height() - $(".active-modal .module-modal-tip").height();
+            $(".active-modal .module-edit-container").height(height);
+          })        
+        }
+      },
+    },
+    computed: {
+      isInit() {
+        return jQuery.isEmptyObject(this.data);
+      },
+    },
+    methods: {
+      /**
+      * 编辑时初始化默认值
+      */
+      initDefault(data) {
+        let that = this;
+        if(!jQuery.isEmptyObject(data)) {
+          this.products = [];
+          this.model = {
+            title_show: data.title_show,
+            title: data.title_show ? data.title : 'Featured Products',
+            title_sub: data.title_sub,
+            display: []
+          };
+          this.products = _.map(data.products, (item) => {
+            item.product['sku'] = item.product['item_code'];
+            return _.cloneDeep(item);
+          });
+          for (let i of Array(3 - this.products.length).keys()) {
+            this.products.push({
+              product: {},
+              tags: []
+            })
+          }
+          this.model.display = [];
+          for (let key in data.display_value) {
+            if (data.display_value[key]) {
+              that.model['display'].push(key);
+            }
+          }
+        } else {
+          that.model.display = [];
+          this.displayOptions.map(function(d) {
+            that.model.display.push(d.value);
+          })
+          this.products = [];
+          for(let i = 0; i < 3; i ++) {
+            this.products.push({
+              product: {},
+              tags: []
+            })
+          }
+        }
+      },
+
+      /**
+      * 编辑操作
+      */
+      handleEdit() {
+        this.showEdit = true;
+      },
+
+      closeEdit() {
+        this.clearModal();
+        this.showEdit = false;
+      },
+
+      //清空弹窗
+      clearModal() {
+        this.model = {
+          title_show: 1,
+          title: 'Featured Products',
+          title_sub: '',
+          display: []
+        };
+        this.products = [];
+        this.contentError = false; //内容部分是否存在错误
+        this.showTags = false;
+        this.tags = [];
+        this.curProduct = {}; //当前操作的产品
+        this.curPickProductIndex = 0; //当前进行选择的产品下标
+        this.activeTab = 'tab1';
+        this.$refs['form'].resetFields();
+      },
+
+      //验证内容设置tab
+      validateContent(data) {
+        return !(jQuery.isEmptyObject(data.data.products[0].product))
+      },
+
+      //保存弹窗按钮
+      saveEdit() {
+        let that = this;          
+        let data = { 
+          type: MODULE_TYPE.FEATURED_PRODUCTS,
+          data: {
+            title_show: this.model.title_show,
+            title: this.model.title_show ? this.model.title : '',
+            title_sub: this.model.title_show ? this.model.title_sub : '',
+            display_value: {},
+            products: []
+          }
+        }
+        this.displayOptions.map(function(d) {
+          if(that.model.display.includes(d.value)){
+            data.data.display_value[d.value] = 1;
+          } else {
+            data.data.display_value[d.value] = 0;
+          }
+        });
+        
+        data.data.products = _.cloneDeep(this.products);
+
+        //验证内容设置页面
+        if(!this.validateContent(data)) {
+          this.contentError = true;
+          this.activeTab = "tab1";
+          return;
+        }
+
+        data.data.products = [];
+        this.products.forEach(item => {
+          if(!jQuery.isEmptyObject(item.product)){
+            data.data.products.push(item);
+          }
+        })
+        this.$refs['form'].validate((valid) => {
+          if(valid) {
+            this.contentError = false;
+            that.btnLoading = true;
+            that.axios.post(API.MODULE_SAVE, data).then(res => {
+              if(res.data.code == 200) {
+                that.closeEdit();
+                that.$emit("set-module", _.cloneDeep(res.data.data));
+              } else {
+                that.$message({...ALERT_OPTION, message: res.data.msg});
+              }
+              that.btnLoading = false;
+            }).catch(err => {
+              that.btnLoading = false;
+              that.$message.error(err);
+            })
+          } else {
+            that.btnLoading = false;
+            that.activeTab = 'tab2';
+          }
+        })
+      },
+
+
+      //tags 弹窗部分 start-----
+      //删除选中的产品
+      clearProduct(index) {
+        this.products[index].product = {};
+      },
+
+      //编辑tags弹窗
+      handleTags(product) {
+        this.curProduct = product;
+        this.tags = [];
+        let empty = product.tags.every(function(el) {
+          return el == '';
+        })
+        for(let i of Array(3).keys()) {
+          this.tags.push({value: ""});
+        }
+        if(!empty) {
+          for (let i = 0; i < this.curProduct.tags.length; i++ ) {
+            this.tags[i].value = this.curProduct.tags[i];
+          }
+        }
+        this.showTags = true;
+      },
+
+      //删除tag
+      delTag(product, tag_i) {
+        product.tags.splice(tag_i ,1);
+      },
+
+      //关闭tags弹窗
+      closeTags() {
+        this.tags = [];
+        this.showTags = false;
+      },
+
+      //保存tags
+      saveTags() { 
+        this.curProduct.tags = [];
+        this.tags.forEach(item => {
+          if(item.value.trim() != '') {
+            this.curProduct.tags.push(item.value)
+          }
+        })
+        this.closeTags();
+      },
+
+      //tags 弹窗部分 end-----
+    
+      //产品选择 弹窗部分 start-----
+      //产品选择验证回调
+      beforeChooseProduct(product) {
+        for(let item of this.products) {
+          if(item.product.id == product.id) {
+            this.$message({...ALERT_OPTION, message: PRODUCT_RECOMMEND_TRANSLATE.PRODUCT_EXIST });
+            return false;
+          }
+        }
+        return true;
+      },
+
+      handleProductDialog (index){
+        this.curPickProductIndex = index;
+        this.showProductDialog = true;
+      },
+
+      handleCloseProductDialog () {
+        this.showProductDialog = false;
+      },
+
+      chooseProduct(product) {
+        // 去除必填错误
+        if(this.curPickProductIndex == 0) {
+          this.contentError = false;
+        }
+        this.products[this.curPickProductIndex].product = product;
+      },
+
+      //产品选择 弹窗部分 end-----
+    }
+  })
+</script>

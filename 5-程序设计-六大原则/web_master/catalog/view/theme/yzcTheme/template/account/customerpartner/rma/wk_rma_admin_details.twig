@@ -1,0 +1,432 @@
+<style>
+div#tab-images td{
+  display: inline-table;
+}
+div#tab-images .thumbnail{
+  margin: 3px;
+}
+div#alert-view div.alert{
+  color : #000;
+}
+div#alert-view div.col-sm-10{
+  padding: 0px;
+}
+@media (max-width: 767px) {
+  div#alert-view .pull-right{
+    float: none !important;
+  }
+}
+</style>
+{{ header }}
+<div class="container">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+    {% endfor %}
+  </ul>
+  {% if (error_warning) %}
+  <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+  </div>
+  {% endif %}
+  {% if (success) %}
+  <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+  </div>
+  {% endif %}
+  <div class="row">{{ column_left }}
+    {% if (column_left and column_right) %}
+    {% set class = 'col-sm-6' %}
+    {% elseif (column_left or column_right) %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">{{ content_top }}
+      <h1>{{ heading_title }}
+        <div class="pull-right">
+          <a href="{{ invoice }}" target="_blank" data-toggle="tooltip" title="{{ button_invoice }}" class="btn btn-info"><i class="fa fa-print"></i></a>
+          <a href="{{ back }}" data-toggle="tooltip" title="{{ button_back }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div></h1>
+      <hr />
+        <ul class="nav nav-tabs">
+          <li class="{% if (tab == '') %} {{ 'active' }}{% endif %}"><a href="#tab-general" data-toggle="tab">{{ text_admin_basic }}</a></li>
+          <li><a href="#tab-product" data-toggle="tab">{{ text_admin_product }}</a></li>
+          <li class="{% if (tab == 'messages') %} {{ 'active' }}{% endif %}"><a href="#tab-messages" data-toggle="tab">{{ text_admin_msg_tab }}</a></li>
+          <li><a href="#tab-images" data-toggle="tab">{{ text_admin_images }}</a></li>
+          <li class="{% if (tab == 'shipping') %} {{ 'active' }}{% endif %}"><a href="#tab-shipping" data-toggle="tab">{{ text_shipping_label }}</a></li>
+        </ul>
+
+
+        <div class="tab-content">
+          <div id="tab-general" class="tab-pane {% if (tab == '') %} {{ 'active' }}{% endif %}">
+            <table class="table">
+              {% if (result_rmaadmin) %}
+                {% set result_rmaadmins = result_rmaadmin %}
+              <tbody>
+                <tr>
+                   <td>{{ text_admin_oid }} :</td>
+                   <td><a href="{{ result_rmaadmins['orderurl'] }}" target="_blank">{{ result_rmaadmins['oid']|capitalize }}</a><input type="hidden" name="rma_id" value="{{ result_rmaadmins['id'] }}"></td>
+                </tr>
+
+                <tr>
+                  <td>{{ text_admin_rmastatus }} :</td>
+                  <td style="color:{{ result_rmaadmins['color'] }};font-weight:bold;">{{ result_rmaadmins['rmastatus'] }}</td>
+                </tr>
+
+                <tr>
+                  <td>{{ text_admin_cname }} :</td>
+                  <td>{{ result_rmaadmins['name']|capitalize }}</td>
+                </tr>
+
+                <tr>
+                  <td>{{ text_admin_add_info }} :</td>
+                  <td>{{ result_rmaadmins['add_info']|capitalize }}</td>
+                </tr>
+                <tr>
+                  <td>{{ text_admin_authno }} :</td>
+                  <td>{{ result_rmaadmins['auth_no'] }}</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- product tab -->
+          <div class="tab-pane" id="tab-product">
+            {% if (result_products) %}
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                    <td class="left">{{ entry_name }}</td>
+                    <td class="left">{{ text_admin_return }}</td>
+                    <td class="left">{{ text_admin_reason }}</td>
+                </tr>
+              </thead>
+
+              {% for products in result_products %}
+              <tr>
+                <td class="left">{{ products['name'] }}</td>
+                <td class="left">{{ products['quantity'] }}</td>
+                <td class="left">{{ products['reason'] }}</td>
+              </tr>
+              {% endfor %}
+
+            </table>
+            {% endif %}
+          </div>
+
+          <!-- messages tab -->
+          <div class="tab-pane {% if (tab == 'messages') %} {{ 'active' }}{% endif %}" id="tab-messages">
+
+            <div class="well">
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label class="control-label" for="input-assign_to">{{ entry_message_by }}</label>
+                    <select name="filter_name" class="form-control" id="input-assign_to">
+                      <option value="*"></option>
+                      <option value="me" {{ filter_name == 'me' ? 'selected' : '' }} >{{ result_rmaadmins['name'] }}</option>
+                      <option value="admin" {{ filter_name == 'admin' ? 'selected' : '' }}>{{ 'Admin' }}</option>
+                      <option value="seller" {{ filter_name == 'seller' ? 'selected' : '' }}>{{ 'Seller' }}</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" for="input-assign_to">{{ text_admin_msg }}</label>
+                    <input type="text" name="filter_message" value="{{ filter_message }}" placeholder="{{ text_admin_msg }}" id="input-msg" class="form-control" />
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <div class="form-group">
+                      <label class="control-label" for="input-assign_to">{{ text_admin_date }}</label>
+                      <div class='input-group'>
+                      <input data-toggle="datetimepicker" type='text' name="filter_date" value="{{ filter_date }}" placeholder="{{ text_admin_date }}" id="input-date" class="form-control" />
+                      <span class="input-group-btn">
+                      <button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="btn-group">
+                    <button type="button" id="alert-view-button" class="btn btn-default" data-toggle="tooltip" title="{{ button_alert }}"><i class="fa fa-th-list"></i></button>
+                    <button type="button" id="table-view-button" class="btn btn-default" data-toggle="tooltip" title="{{ button_table }}"><i class="fa fa-th"></i></button>
+                  </div>
+
+                  <button type="button" onclick="filter();" class="btn btn-primary">{{ button_filter }}</button>
+                  <button type="button" onclick="clrfilter();" class="btn btn-primary">{{ button_clrfilter }}</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- table view -->
+            <div class="table-responsive hide" id="table-view">
+              <table class="table table-hove">
+                <thead>
+                  <tr>
+                    <td class="text-left">
+                      {% if (sort == 'wrm.writer') %}
+                        <a href="{{ sort_name }}" class="{{ order|lower }}">{{ text_admin_cname }}</a>
+                      {% else %}
+                        <a href="{{ sort_name }}" > {{ text_admin_cname }} </a>
+                      {% endif %}
+                    </td>
+                    <td class="text-left">
+                      {% if (sort == 'wrm.message') %}
+                        <a href="{{ sort_message }}" class="{{ order|lower }}">{{ text_admin_msg }}</a>
+                      {% else %}
+                        <a href="{{ sort_message }}" > {{ text_admin_msg }} </a>
+                      {% endif %}
+                    </td>
+                    <td class="text-left">
+                      {% if (sort == 'wrm.date') %}
+                        <a href="{{ sort_date }}" class="{{ order|lower }}">{{ text_admin_date }}</a>
+                      {% else %}
+                        <a href="{{ sort_date }}" > {{ text_admin_date }} </a>
+                      {% endif %}
+                    </td>
+                    <td class="text-left">
+                      {{ text_download }}
+                    </td>
+                  </tr>
+                </thead>
+                {% if (results_message) %}
+                  {% for results_messages in results_message %}
+                <tbody>
+                  <tr>
+                    <td class="text-left">{% if (results_messages['writer'] == 'me') %} {{ result_rmaadmins['name'] }} {% else %} {{ results_messages['writer']|capitalize }}{% endif %}</td>
+                    <td class="text-left " >{{ results_messages['message'] }}</td>
+                    <td class="text-left">{{ results_messages['date'] }}</td>
+                    <td class="text-left">
+                      {% if (results_messages['attachment']) %}
+                        <a href="{{ attachmentLink~results_messages['attachment'] }}" data-toggle="tooltip" title="{{ text_download }}" class="text-info" target="_blank"><i class="fa fa-download"></i> {{ results_messages['attachment'] }}</a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                </tbody>
+                {% endfor %} {% else %}
+                  <tbody>
+                    <tr><td class="text-center" colspan="4">{{ text_no_recored }}</td></tr>
+                  </tbody>
+                {% endif %}
+
+              </table>
+            </div>
+
+
+            <!-- alert view -->
+            <div id="alert-view" class="hide">
+              {% for res_message in results_message %}
+                {% if (res_message['writer'] != 'admin' and res_message['writer'] != 'seller') %}
+                  <div class="col-sm-10">
+                    <div class="alert alert-success">
+                      <label data-toggle="tooltip" title="{{ result_rmaadmins['name']|capitalize }}"><i class="fa fa-user"></i> </label>
+                      <label class="pull-right" ><i class="fa fa-clock-o"></i> {{ res_message['date'] }}</label>
+                      <br/>
+                      {{ res_message['message'] }}
+                      {% if (res_message['attachment']) %}
+                      <br/>
+                        <a href="{{ attachmentLink~res_message['attachment'] }}" data-toggle="tooltip" title="{{ text_download }}" class="text-info" target="_blank"><i class="fa fa-download"></i> {{ res_message['attachment'] }}</a>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="col-sm-10 pull-right">
+                    <div class="alert alert-{{ res_message['writer'] == 'seller' ? 'info' : 'warning'}}">
+                    <label data-toggle="tooltip" title="{{ res_message['writer']|capitalize }}"><i class="fa fa-{{ res_message['writer'] == 'seller' ? 'users' : 'home'}}"></i></label>
+                    <label class="pull-right"><i class="fa fa-clock-o"></i> {{ res_message['date'] }}</label>
+                    <br/>
+                    {{ res_message['message'] }}
+                    {% if (res_message['attachment']) %}
+                    <br/>
+                      <a href="{{ attachmentLink~res_message['attachment'] }}" target="_blank" data-toggle="tooltip" title="{{ text_download }}" class="text-success"><i class="fa fa-download"></i> {{ res_message['attachment'] }}</a>
+                    {% endif %}
+                  </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+
+            <div class="row">
+              <div class="col-sm-6 text-left">{{ pagination }}</div>
+              <div class="col-sm-6 text-right">{{ results }}</div>
+            </div>
+
+            <form action="{{ save }}" method="post" enctype="multipart/form-data" class="form_msg">
+
+              <div class="row required">
+                <label class="col-sm-12 text-left control-label">{{ text_admin_adminstatus }}</label>
+                <div class="col-sm-12">
+                  <select name="wk_rma_admin_adminstatus" class="form-control">
+                    <option 'selected' value="{{ result_rmaadmins['admin_status'] }}">{{ text_select }}</option>
+                  {% if (admin_status) %}
+                    {% for admin_st in admin_status %}
+                      <option {% if (admin_st['status_id'] == result_rmaadmins['admin_status']) %} /**echo 'selected';**/ {% endif %} value="{{ admin_st['status_id'] }}">{{ admin_st['name'] }}</option>
+                    {% endfor %}
+                  {% else %}
+                      {{ text_no_option }}
+                  {% endif %}
+                  </select>
+                </div>
+              </div>
+              <br/>
+              <div class="row required">
+                <label class="col-sm-12 text-left control-label">{{ text_admin_msg }}</label>
+                <div class="col-sm-12">
+                  <input type="hidden" name="rma_id" value="{{ vid }}">
+                  <textarea name="wk_rma_admin_msg" rows="4" class="form-control" required>{{ wk_rma_admin_msg }}</textarea>
+                  <br/>
+
+                  <div class="input-group col-sm-12">
+                    <span class="input-group-btn">
+                      <label type="button" class="btn btn-primary" for="file-upload"><i class="fa fa-upload"></i> {{ button_upload }}</label>
+                    </span>
+                    <input type="text" id="input-file-name" class="form-control" disabled/>
+                  </div>
+
+                  <input type="file" id="file-upload" name="up_file" class="form-control hide">
+                  <br/>
+
+                  <button type="submit" class="btn btn-primary pull-right" data-toggle="tooltip" title="{{ wk_viewrma_msg }}"><i class="fa fa-save"></i></button>
+
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- images tab -->
+          <div class="tab-pane" id="tab-images">
+            {% if (result_rmaadmin_images) %}
+            <div class="table-responsive">
+              <table>
+                <tbody class="thumbnails">
+                  <tr>
+                    {% for images in result_rmaadmin_images %}
+                      {% if (images['image']) %}
+                        <td><a href="{{ images['image'] }}" data-toggle="tooltip" title="View Images" class="thumbnail"><img src="{{ images['resize'] }}"></a></td>
+                      {% endif %}
+                    {% endfor %}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            {{ text_no_image }}
+          {% endif %}
+          </div>
+
+          <!-- shipping tab -->
+          <div class="tab-pane {% if (tab == 'shipping') %} {{ 'active' }}{% endif %}" id="tab-shipping">
+            {% if (text_shipping_info is defined and text_shipping_info) %}
+            <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ text_shipping_info }}
+            </div>
+          {% endif %}
+
+            {% if (result_rmaadmin['shipping_label']) %}
+              <div class="text-center">
+                <img src="{{ result_rmaadmin['shipping_label'] }}" />
+              </div>
+              <br/><br/>
+            {% endif %}
+
+            <form action="{{ savelabel }}" method="post" enctype="multipart/form-data" class="form-horizontal">
+
+              <button type="submit" class="btn btn-primary pull-right" data-toggle="tooltip" title="{{ wk_viewrma_shipping_label }}"><i class="fa fa-save"></i></button>
+
+              <div class="input-group col-sm-11">
+                <span class="input-group-btn">
+                  <label type="button" class="btn btn-primary" for="shipping-upload"><i class="fa fa-upload"></i> {{ button_upload }}</label>
+                </span>
+                <input type="text" id="input-shipping-name" class="form-control" disabled/>
+                <input type="file" id="shipping-upload" name="shipping_label" class="form-control hide">
+              </div>
+              <br/>
+            </form>
+          </div>
+        </div>
+        {{ content_bottom }}</div>
+      {{ column_right }}</div>
+  </div>
+{{ footer }}
+<script type="text/javascript">
+jQuery('input[name=up_file]').change(function(){
+  $('#input-file-name').val(jQuery(this).val().replace(/C:\\fakepath\\/i, ''));
+});
+
+jQuery('input[name=shipping_label]').change(function(){
+  $('#input-shipping-name').val(jQuery(this).val().replace(/C:\\fakepath\\/i, ''));
+});
+
+// Message Alert List
+$('#alert-view-button').click(function() {
+  localStorage.setItem('display', 'alert');
+  $('#alert-view').removeClass('hide');
+  $('#table-view').addClass('hide');
+});
+
+// Message Table Grid
+$('#table-view-button').click(function() {
+   localStorage.setItem('display', 'table');
+    $('#table-view').removeClass('hide');
+    $('#alert-view').addClass('hide');
+
+});
+
+if (localStorage.getItem('display') == 'alert') {
+  $('#alert-view').removeClass('hide');
+} else {
+  $('#table-view').removeClass('hide');
+}
+
+$('[data-toggle="datetimepicker"]').datepicker({
+  autoHide: true,
+  format:"YYYY-MM-DD"
+});
+
+function clrfilter() {
+  location = 'index.php?route=account/customerpartner/rma/wk_rma_admin/getForm&id={{ result_rmaadmins["id"] }}';
+  localStorage.setItem('tab', 'tab-messages');
+}
+
+function filter() {
+  url = 'index.php?route=account/customerpartner/rma/wk_rma_admin/getForm';
+
+  var filter_name = $('select[name=\'filter_name\']').val();
+
+  if (filter_name != '*') {
+    url += '&filter_name=' + encodeURIComponent(filter_name);
+  }
+
+  var filter_message = $('input[name=\'filter_message\']').val();
+
+  if (filter_message) {
+    url += '&filter_message=' + encodeURIComponent(filter_message);
+  }
+
+  var filter_date = $('input[name=\'filter_date\']').val()
+
+  if (filter_date) {
+    url += '&filter_date=' + encodeURIComponent(filter_date);
+  }
+
+  url += "&id={{ result_rmaadmins['id'] }}" ;
+
+  localStorage.setItem('tab', 'tab-messages');
+
+  location = url;
+}
+
+$(document).ready(function() {
+  if(localStorage.getItem('tab')=='tab-messages'){
+    $('a[href="#tab-messages"]').trigger('click');
+    localStorage.setItem('tab', '');
+  }
+
+  $('.thumbnails').magnificPopup({
+    type:'image',
+    delegate: 'a',
+    gallery: {
+      enabled:true
+    }
+  });
+});
+</script>

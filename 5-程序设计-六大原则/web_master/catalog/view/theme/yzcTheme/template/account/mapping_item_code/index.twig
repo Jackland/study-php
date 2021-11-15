@@ -1,0 +1,874 @@
+<div role="tabpanel" class="tab-pane active">
+  <div class="bg-white p-2">
+    <div class="filter-wrapper form-wrapper">
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="" for="input-orderId"><span style="font-weight: bold">Platform</span></label>
+            <select id="input-platform_id" name="platform_id" class="form-control">
+              <option value="0">--{{ __('请选择', {}, 'common') }}--</option>
+              {% for item in platformKeyList %}
+                <option value="{{ item.platform_id }}" {% if item.platform_id == filter_platform_id %}selected{% endif %}>{{ item.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="" for="input-item_code"><span style="font-weight: bold">Platform SKU/B2B Item Code</span></label>
+            <input type="text" name="search_sku" value="{{ filter_search_sku }}"
+                   placeholder="{{ column_item_code_search }}" id="input-search_sku" class="form-control"/>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group pull-right">
+            <label class="form-control" style="visibility: hidden;height: 20px;"></label>
+            <button type="button" onclick="filterItemCodeMapping(this);" class="btn btn-primary">{{ button_filter }}</button>
+            <button type="button" onclick="clrFilterItemCodeMapping(this)" class="btn btn-default" data-toggle="tooltip" title="Reset">Reset</button>
+            <button type="button" onclick="downloadItemCodeMapping();" class="btn btn-default"
+                    data-toggle="tooltip" title="{{ text_commodity_statistics }}">
+              <i class="fa fa-download"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <button type="button" class="btn btn-primary doAddItemCodeMapping mr-1"><i class="fa fa-plus"></i> Create</button>
+      <button type="button" class="btn btn-default mr-1" id="btn_import_sku"><i class="fa fa-upload"></i> Import</button>
+      <input type="file" id="btn_import_file" name='btn_import_file' onchange="handleFiles(this.files)" style="display:none;">
+      <a href="{{itemCodeMappingTemplate}}" download="Download Template" class="my-download mr-1">
+        Download Template
+      </a>
+      <a href="{{itemCodeMappingGuide}}"  target="_blank" class="my-download mr-1">Import Guide</a>
+    </div>
+
+    <div class="table-responsive">
+    <table class="table main table-hover">
+      <thead>
+      <tr>
+        <th>
+          <div class="check"><input id="check_box" onclick="selectAll(this)" data-set=".checkboxes" type="checkbox"/><span class="icon"></span></div>
+        </th>
+        <th class="text-left">#</th>
+        <th class="text-left my-hover"><a onclick="sortItemCodeMapping('platform','{{ order }}');"
+            {% if sort == 'platform' %} class="{{ class_order|lower }}" {% endif %}>Platform </a></th>
+        <th class="text-left my-hover"><a onclick="sortItemCodeMapping('platform_sku','{{ order }}');"
+            {% if sort == 'platform_sku' %} class="{{ class_order|lower }}" {% endif %}>Platform SKU </a></th>
+        <th class="text-left">B2B Item Code</th>
+        <th class="text-center my-hover"><a onclick="sortItemCodeMapping('date_modified','{{ order }}');"
+            {% if sort == 'date_modified' %} class="{{ class_order|lower }}" {% endif %}>Last Modified </a></th>
+        <th class="text-center">Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% if itemCodeMappingList %}
+        {% for k,item in itemCodeMappingList %}
+          <tr id="tr_{{ item.id }}">
+            <td>
+              <div class="check">
+                <input class="checkboxes" name="" value="{{ item.id }}" type="checkbox"/>
+                <span class="icon"></span></div>
+            </td>
+            <td class="text-left">{{ k+1 }}</td>
+            <td class="text-left">{{ item.platform_name }}</td>
+            <td class="text-left">{{ item.platform_sku }}</td>
+            <td class="text-left">{{ item.sku }}</td>
+            <td class="text-center">{{ item.date_modified }}</td>
+            <td class="text-center">
+              <div class="action-group">
+                <button class="doEditItemCodeMapping" title="" data-toggle="tooltip"
+                        data-original-title="Edit" data-id="{{ item.id }}"
+                        data-platform_id="{{ item.platform_id }}"
+                        data-platform_sku="{{ item.platform_sku }}"
+                        data-platform_name="{{ item.platform_name }}"
+                        data-b2b_sku="{{ item.sku }}"
+                        data-product_id="{{ item.product_id }}">
+                  <i class="giga icon-action-edit"></i>
+                </button>
+                <button onclick="toDelete({{ item.id }},'{{ item.platform_name }}','{{ item.platform_sku }}','{{ item.sku }}')"
+                        id="toDelete" data-original-title="Delete" title="" data-toggle="tooltip">
+                  <i class="giga icon-action-delete-entry"></i></button>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td class="text-center" colspan="7">{{ text_no_results }}</td>
+        </tr>
+      {% endif %}
+      </tbody>
+    </table>
+    </div>
+    {#分页#}
+    {#<div class="row" id="rowPageItemCodeMapping">#}
+      {#<div class="col-sm-12 text-right">#}
+        {#<ul id="bos_pagination_mapping_item_code"></ul>#}
+        {#{{ results }}#}
+      {#</div>#}
+    {#</div>#}
+    <div class="row">
+      <div class="col-sm-12">
+
+        {% if itemCodeMappingList %}
+        <div class="pull-left">
+          {#左侧删除#}
+          <div class="table-bottom-action">
+            <div class="bottom-action-left">
+              <i class="fa fa-right-angle"></i>
+              <button type="button" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger" onclick="checkboxDelete()"><i class="fa fa-trash-o"></i></button>
+              <span class="bottom-action-detail"></span>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        <div class="pull-right">
+          <ul id="bos_pagination_mapping_item_code"></ul>
+          {{ results }}
+        </div>
+      </div>
+    </div>
+    <div class="text-center">
+      <div ><a href="{{ continue }}" class="btn btn-primary">{{ button_continue }}</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- （Modal） -->
+<div class="modal fade" id="myModalItemCodeMapping" tabindex="-1" role="dialog"
+     aria-labelledby="myModalItemCodeMappingLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog modal-itemcodemapping-area">
+    <div class="modal-content">
+      <div class="modal-header modal-itemcodemapping-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                style="opacity: 1;">&times;
+        </button>
+        <h4 class="modal-title" id="myModalItemCodeMappingLabel">Add Item Code Mapping</h4>
+      </div>
+      <div class="modal-body">
+        <div style="">
+          <form role="form">
+            <input type="hidden" id="mapping_item_code_id" name="mapping_item_code_id" value="0">
+            <div class="form-group">
+
+              <div class="my-tip">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" style="vertical-align: middle"></span>
+                <span id="ic_tip">[Platform-Platform SKU] has already built the mapping. Please edit in the listing page.</span>
+              </div>
+
+              <label for="platform_id">Platform</label>
+              <select id="platform_id" name="platform_id" class="form-control">
+                <option value="0">--{{ __('请选择', {}, 'common') }}--</option>
+                {% for item in platformKeyList %}
+                  <option value="{{ item.platform_id }}" data-text="{{ item.name }}">{{ item.name }}</option>
+                {% endfor %}
+              </select>
+              <input type="hidden" id="platform_name_old">
+            </div>
+            <div class="form-group">
+              <label for="platform_sku">Platform SKU</label>
+              <input type="text" class="form-control" id="platform_sku" name="platform_sku" class="form-control" 
+                     onblur="platformSkuCheck()">
+              <input type="hidden" id="platform_sku_old">
+
+            </div>
+            <div class="form-group">
+              <label for="b2b_sku">B2B Item Code</label>
+              <input type="text" class="form-control" id="b2b_sku" name="b2b_sku" class="form-control">
+              <input type="hidden" id="b2b_sku_old">
+            </div>
+          </form>
+        </div>
+      </div>
+      <div id="myModalItemCodeMappingFooter" class="modal-footer" style="text-align: center;">
+        <button id="myModalItemCodeMappingSubmit" type="button" class="btn btn-primary btn-submit">Submit</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal -->
+</div>
+
+
+<script>
+  var pageLimitItemCodeMapping = '{{ page_limit | default('20') }}';
+
+  $(function () {
+    $(".tooltip").remove();
+    block.unBlockUI();
+    $("#myModalItemCodeMapping").modal({backdrop: 'static', keyboard: false, show: false});
+    initMappingItemCodeList();
+
+
+    //每一行的复选框
+    $(".checkboxes").off("click").on("click", function() {
+      if (!$(this).prop("checked")) {
+        $("#check_box").prop("checked", false);
+      } else {
+        let is_all = true;
+        $(".checkboxes").each(function (index, domEle) {
+          if (!$(domEle).prop("checked")) {
+            $("#check_box").prop("checked", false);
+            is_all = false;
+          }
+        });
+        if(is_all){
+          $("#check_box").prop("checked", true);
+        }
+      }
+    });
+  });
+
+  var fileSelect = document.getElementById('btn_import_sku'),
+    fileElem = document.getElementById('btn_import_file');
+  fileSelect.addEventListener("click", function (e) {
+    if (fileElem) {
+      fileElem.click();
+    }
+    e.preventDefault(); // prevent navigation to "#"
+  }, false);
+
+  function handleFiles(files) {
+    $('#btn_import_sku').button('loading');
+    var formFile = new FormData();
+    var index = files[0]['name'].lastIndexOf(".");
+    var suffix = files[0]['name'].substr(index+1);
+    if (suffix != 'xls' && suffix != 'xlsx') {
+      layerMsg('Required file format: .xls or .xlsx');
+      $('#btn_import_file').val('');
+      $('#btn_import_sku').button('reset');
+      return false;
+    }
+
+    formFile.append("file", files[0]);
+    var data = formFile;
+    $.ajax({
+      url: "{{ itemCodeMappingImport }}",
+      data: data,
+      type: "Post",
+      dataType: "json",
+      cache: false,//上传文件无需缓存
+      processData: false,//用于对data参数进行序列化处理 这里必须false
+      contentType: false, //必须
+      beforeSend: function () {
+        layer.load(1, {shade: [0.3, '#000']});
+      },
+      success: function (json) {
+        layer.closeAll('loading');
+        $('#btn_import_file').val('');
+        $('#btn_import_sku').button('reset');
+        layerMsg(json.msg);
+        if (!json.error){
+          filterItemCodeMapping();
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.closeAll('loading');
+        $('#btn_import_file').val('');
+        $('#btn_import_sku').button('reset');
+        layerMsg(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    })
+  }
+
+  function layerMsg(message, time = 3000) {
+    layer.msg(message, {time: time, skin: ''});
+  }
+
+
+  function initMappingItemCodeList() {
+    //分页链接
+    paginationMappingItemCodeList();
+  }
+
+  function paginationMappingItemCodeList() {
+    if ({{ total_pages }}) {
+      //total_pages
+      $('#bos_pagination_mapping_item_code').bootstrapPaginator({
+        /*当前使用的是3版本的bootstrap*/
+        bootstrapMajorVersion: 3,
+        /*配置的字体大小是小号*/
+        size: 'normal',
+        /*当前页*/
+        currentPage: {{ page_num }},
+        /*一共多少页*/
+        totalPages: {{ total_pages }},
+        total: {{ total_num }},
+        rowsOfPage: {{ page_limit | default('20') }},
+        /*页面上最多显示几个含数字的分页按钮*/
+        numberOfPages: 5,
+        /*设置显示的样式，默认是箭头	*/
+        // itemTexts: function(type, page, current) {
+        //     switch(type) {
+        //         case "first": // type值固定
+        //             return `<span class="glyphicon glyphicon-fast-backward"></span>`;
+        //         case "prev":
+        //             return `<span class="glyphicon glyphicon-step-backward"></span>`;
+        //         case "next":
+        //             return `<span class="glyphicon glyphicon-step-forward"></span>`;
+        //         case "last":
+        //             return `<span class="glyphicon glyphicon-fast-forward"></span>`;
+        //         case "page":
+        //             return page;
+        //     }
+        // },
+        onPageClicked: function (event, originalEvent, type, page) {
+          block.blockUI();
+          let url = getUrlMappingItemCodeList(page);
+          $('#show-mapping_item_code_list').load(url);
+        }
+      });
+    }
+  }
+
+  function getUrlMappingItemCodeList(page) {
+    let url = 'index.php?route=account/mapping_item_code/index{{ url|escape }}';
+
+    let platform_id = $.trim($("#input-platform_id").val());
+    if (platform_id > 0) {
+      url += "&filter_platform_id=" + platform_id;
+    }
+    let search_sku = $.trim($("#input-search_sku").val());
+    if (search_sku) {
+      url += "&filter_search_sku=" + encodeURIComponent(search_sku);
+    }
+
+    if (page) {
+      url += "&page_num=" + page;
+    }
+
+    return url;
+  }
+
+  function refreshMappingItemCodeList() {
+    block.blockUI();
+    $('#show-mapping_item_code_list').load('index.php?route=account/mapping_item_code/index');
+  }
+
+  function refreshMappingItemCodeListEdit() {
+    $("#bos_pagination_mapping_item_code").find(".active a").click();
+  }
+
+  $(".doAddItemCodeMapping").off("click").on("click", function () {
+    initModalItemCodeMapping();
+    $("#myModalItemCodeMapping").modal("show");
+  });
+
+  function initModalItemCodeMapping() {
+    $("#myModalItemCodeMappingLabel").text("Add Item Code Mapping");
+    $("#mapping_item_code_id").val(0);
+    $("#myModalItemCodeMapping #platform_id").val(0).attr("disabled", false);
+    $("#platform_sku").val("").attr("disabled", false);
+    $("#b2b_sku").val("").attr("disabled", false);
+    $("#myModalItemCodeMapping .my-tip").hide();
+    $("#myModalItemCodeMapping .form-group").removeClass("has-error");
+
+    $("#myModalItemCodeMappingSubmit").attr("url", "index.php?route=account/mapping_item_code/save");
+  }
+
+  function initEditModalItemCodeMapping() {
+    $("#myModalItemCodeMappingLabel").text("Edit Item Code Mapping");
+    $("#mapping_item_code_id").val(0);
+    //$("#myModalItemCodeMapping #platform_id").val(0).attr("disabled", true);
+    //$("#platform_sku").val("").attr("disabled", true);
+    $("#b2b_sku").val("").attr("disabled", false);
+    $("#myModalItemCodeMapping .my-tip").hide();
+    $("#myModalItemCodeMapping .form-group").removeClass("has-error");
+
+    $("#myModalItemCodeMappingSubmit").attr("url", "index.php?route=account/mapping_item_code/updates");
+  }
+
+  function platformSkuCheck() {
+    var mapping_item_code_id  = $("#myModalItemCodeMapping #mapping_item_code_id").val();
+    var platform_id  = $("#myModalItemCodeMapping #platform_id").val();
+    var platform_sku = $.trim($("#platform_sku").val());
+    var platform_name = $("#myModalItemCodeMapping #platform_id").find("option:selected").text();
+    var url          = '{{ urlPlatformSKUCheckOnly }}';
+
+    var sendData = {mapping_item_code_id:mapping_item_code_id,platform_id:platform_id,platform_sku:platform_sku,platform_name:platform_name};
+    $.ajax({
+      type: 'POST',
+      dataType: 'json',
+      data: sendData,
+      url: url,
+      success: function (result) {
+        if (0 == result.ret) {
+          tip = result.msg;
+          $("#myModalItemCodeMapping #ic_tip").val(tip).text(tip);
+          $("#myModalItemCodeMapping .my-tip").show();
+        } else {
+          $("#myModalItemCodeMapping #ic_tip").text("");
+          $("#myModalItemCodeMapping .my-tip").hide();
+        }
+      }
+    });
+  }
+  
+  $("#myModalItemCodeMappingSubmit").off("click").on("click", function () {
+    if (!beforeSubmitItemCodeMappingCheck()) {
+      return false;
+    }
+
+    var mapping_item_code_id = parseInt($("#mapping_item_code_id").val());
+    if (mapping_item_code_id < 1) {
+      //add
+      submitItemCodeAdd();
+    } else {
+      //edit
+      submitItemCodeEdit();
+    }
+  });
+
+  function beforeSubmitItemCodeMappingCheck() {
+    var mapping_item_code_id  = $("#myModalItemCodeMapping #mapping_item_code_id").val();
+    var platform_id  = $("#myModalItemCodeMapping #platform_id").val();
+    var platform_sku = $.trim($("#platform_sku").val());
+    var b2b_sku      = $.trim($("#b2b_sku").val());
+    var tip          = '';
+
+    $("#myModalItemCodeMapping .form-group").removeClass("has-error");
+
+    if (platform_id < 1) {
+      tip = 'Platform can not be left blank.';
+      $("#myModalItemCodeMapping #ic_tip").val(tip).text(tip);
+      $("#myModalItemCodeMapping .my-tip").show();
+
+      $("#myModalItemCodeMapping #platform_id").focus().parent().addClass('has-error');
+      return false;
+    }
+    if (platform_sku.length < 1) {
+      tip = 'Platform SKU can not be left blank.';
+      $("#myModalItemCodeMapping #ic_tip").val(tip).text(tip);
+      $("#myModalItemCodeMapping .my-tip").show();
+
+      $("#platform_sku").focus().parent().addClass('has-error');
+      return false;
+    }
+    if (platform_sku.length > 40) {
+      tip = 'Platform SKU can not be more than 40 characters.';
+      $("#myModalItemCodeMapping #ic_tip").val(tip).text(tip);
+      $("#myModalItemCodeMapping .my-tip").show();
+
+      $("#platform_sku").focus().parent().addClass('has-error');
+      return false;
+    }
+    if (b2b_sku.length < 1) {
+      tip = 'B2B Item Code can not be left blank.';
+      $("#myModalItemCodeMapping #ic_tip").val(tip).text(tip);
+      $("#myModalItemCodeMapping .my-tip").show();
+
+      $("#myModalItemCodeMapping #b2b_sku").focus().parent().addClass('has-error');
+      return false;
+    }
+
+    return true;
+  }
+
+  function submitItemCodeAdd() {
+    let platform_id = $("#myModalItemCodeMapping #platform_id").val();
+    let platform_sku = $.trim($("#platform_sku").val());
+    let b2b_sku = $.trim($("#b2b_sku").val());
+    let platform_name = $("#myModalItemCodeMapping #platform_id").find("option:selected").text();
+    let lockded = false;
+
+    var str='<div style="text-align: left">' +
+      '<p class="sub-title1">Do you confirm to submit the mapping for <br>[ ' + platform_name + ' - ' + platform_sku + ' - '+ b2b_sku +' ] ? </p>';
+    layer.confirm(str, {
+      title: 'Confirm',
+      btn: ['Yes', 'No'],
+      skin: 'yzc_layer',
+      yes: function (index) {
+        var sendData = $("#myModalItemCodeMapping").find("form").serialize();
+        var url = $("#myModalItemCodeMappingSubmit").attr("url");
+        sendData += '&platform_name=' + platform_name;
+        if(!lockded){
+          lockded = true;
+          $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: sendData,
+            url: url,
+            beforeSend: function () {
+              $('#myModalItemCodeMappingSubmit').button('loading');
+            },
+            complete: function (xhr, status) {
+              lockded = false;
+              $('#myModalItemCodeMappingSubmit').button('reset');
+            },
+            success: function (result, status, xhr) {
+              if (result.ret) {
+                layer.msg(result.msg);
+                $("#myModalItemCodeMapping").modal("hide");
+                refreshMappingItemCodeList();
+              } else {
+                tip = result.msg;
+                $("#myModalItemCodeMapping #ic_tip").val(tip).text(tip);
+                $("#myModalItemCodeMapping .my-tip").show();
+
+              }
+            }
+          });
+          layer.close(index);
+        }
+      }
+    })
+  }
+
+  function submitItemCodeEdit() {
+    let mapping_item_code_id = $("#mapping_item_code_id").val();
+    let platform_id = $.trim($("#myModalItemCodeMapping #platform_id").val());
+    let platform_sku = $.trim($("#platform_sku").val());
+    let b2b_sku = $("#b2b_sku").val();
+    let platform_name = $("#myModalItemCodeMapping #platform_id").find("option:selected").text();
+    let b2b_sku_old = $("#b2b_sku_old").val();
+    let platform_sku_old = $("#platform_sku_old").val();
+    let platform_name_old = $("#platform_name_old").val();
+
+
+    let x = 0;//x值为该Buyer系统中使用了该Platform SKU的状态为New Order/Check label 的 Dropship销售订单数量
+    let content='<div style="text-align: left">' +
+      '<p class="sub-title1">Do you confirm to change this item code mapping ['
+      + platform_name_old + ' - ' + platform_sku_old + ' - ' + b2b_sku_old + '] to ['
+      + platform_name + ' - ' + platform_sku + ' - ' + b2b_sku + '] ?</p>' +
+      '<p class="sub-title2">Changing this mapping will not affect the imported sales orders</p><div>';
+    //checkOrderNumByPlatformSku
+    $.ajax({
+      async: false,
+      type: 'GET',
+      dataType: 'json',
+      data: {id:mapping_item_code_id},
+      url: 'index.php?route=account/mapping_item_code/checkOrderNumByPlatformSku',
+      beforeSend: function () {
+        $('#myModalItemCodeMappingSubmit').button('loading');
+      },
+      complete: function (xhr, status) {
+        $('#myModalItemCodeMappingSubmit').button('reset');
+      },
+      success: function (result, status, xhr) {
+        if (result.ret && result.num > 0) {
+          x = result.num
+        }
+      }
+    });
+
+    if (x > 0) {
+      content += '<font color="red">' + x + ' new orders contain this Item Code [' + b2b_sku_old + '], please cancel those orders and import again if you want to modify.</font>';
+
+      let tmplayer = layer.confirm(content, {
+        title: 'Confirm',
+        skin: 'yzc_layer',
+        btn: ['Yes','No'] //按钮
+      }, function(){
+        layer.close(tmplayer);
+        submitDataSKUEdit();
+      }, function(){
+        layer.close(tmplayer);
+      });
+
+      return false;
+    }
+
+    let tmplayer = layer.confirm(content, {
+      title: 'Confirm',
+      skin: 'yzc_layer',
+      btn: ['Yes','No'] //按钮
+    }, function(){
+      layer.close(tmplayer);
+      submitDataSKUEdit();
+    }, function(){
+      layer.close(tmplayer);
+    });
+
+  }
+
+
+  function submitDataSKUEdit() {
+    let sendData = {};
+    sendData.mapping_item_code_id = $("#myModalItemCodeMapping").find("#mapping_item_code_id").val();
+    sendData.b2b_sku = $("#myModalItemCodeMapping").find("#b2b_sku").val();
+    sendData.platform_id = $("#myModalItemCodeMapping #platform_id").val();
+    sendData.platform_sku = $("#myModalItemCodeMapping").find("#platform_sku").val();
+    sendData.platform_name = $("#myModalItemCodeMapping #platform_id").find("option:selected").text();
+
+    var url = $("#myModalItemCodeMappingSubmit").attr("url");
+    $.ajax({
+      type: 'POST',
+      dataType: 'json',
+      data: sendData,
+      url: url,
+      beforeSend: function () {
+        $('#myModalItemCodeMappingSubmit').button('loading');
+      },
+      complete: function (xhr, status) {
+        $('#myModalItemCodeMappingSubmit').button('reset');
+      },
+      success: function (result, status, xhr) {
+        if (result.ret) {
+          layer.msg(result.msg);
+          $("#myModalItemCodeMapping").modal("hide");
+          refreshMappingItemCodeListEdit();
+        } else {
+          tip = result.msg;
+          $("#myModalItemCodeMapping #ic_tip").val(tip).text(tip);
+          $("#myModalItemCodeMapping .my-tip").show();
+        }
+      }
+    });
+  }
+
+  $(".doEditItemCodeMapping").off("click").on("click", function () {
+
+    initEditModalItemCodeMapping();
+    let that = this;
+
+    let id = $(that).data('id');
+    let platform_id = $(that).data('platform_id');
+    let platform_name = $(that).data('platform_name');
+    let platform_sku = $(that).data('platform_sku');
+    let b2b_sku = $(that).data('b2b_sku');
+
+    $("#mapping_item_code_id").val(id);
+    $("#myModalItemCodeMapping #platform_id").val(platform_id);
+    $("#myModalItemCodeMapping #platform_sku").val(platform_sku);
+    $("#myModalItemCodeMapping #b2b_sku").val(b2b_sku);
+    $("#myModalItemCodeMapping #b2b_sku_old").val(b2b_sku);
+    $("#myModalItemCodeMapping #platform_sku_old").val(platform_sku);
+    $("#myModalItemCodeMapping #platform_name_old").val(platform_name);
+
+    $("#myModalItemCodeMapping").modal("show");
+
+  });
+
+
+  $(document).off("#myModalItemCodeMapping #b2b_sku");
+  $("#myModalItemCodeMapping #b2b_sku").autocomplete({
+    'source': function (request, response) {
+      $.ajax({
+        url: 'index.php?route=account/mapping_item_code/autocompletesku&b2b_sku=' + encodeURIComponent(request),
+        dataType: 'json',
+        success: function (json) {
+          response($.map(json, function (item) {
+            return {
+              label: item['sku'],
+              value: item['sku']
+            }
+          }));
+        }
+      });
+    },
+    'select': function (item) {
+      $("#b2b_sku").val(item['value']);
+    }
+  });
+
+  function filterItemCodeMapping(button) {
+    block.blockUI();
+    var url = getUrlForFilter();
+    $(button).button('loading');
+    $('#show-mapping_item_code_list').load(url);
+  }
+
+  function clrFilterItemCodeMapping(button) {
+    block.blockUI();
+
+    $("#input-platform_id").val("");
+    $("#input-search_sku").val("");
+
+    var url = getUrlForFilter();
+    $(button).button('loading');
+    $('#show-mapping_item_code_list').load(url);
+  }
+
+  function getUrlForFilter() {
+    let url = 'index.php?route=account/mapping_item_code';
+    let filter_platform_id = $("#input-platform_id").val();
+    if (filter_platform_id) {
+      url += '&filter_platform_id=' + encodeURIComponent(filter_platform_id);
+    }
+    let filter_search_sku = $("#input-search_sku").val();
+    if (filter_search_sku) {
+      url += '&filter_search_sku=' + encodeURIComponent(filter_search_sku);
+    }
+    return url;
+  }
+
+  function downloadItemCodeMapping() {
+    let url = 'index.php?route=account/mapping_item_code/filterByCsv';
+    let filter_platform_id = $("#input-platform_id").val();
+    if (filter_platform_id) {
+      url += '&filter_platform_id=' + encodeURIComponent(filter_platform_id);
+    }
+    let filter_search_sku = $("#input-search_sku").val();
+    if (filter_search_sku) {
+      url += '&filter_search_sku=' + encodeURIComponent(filter_search_sku);
+    }
+    window.location.href = url;
+  }
+
+  function toDelete(id,platform,platform_sku,sku) {
+
+    if (id != ''){
+
+      //二次提示
+      var str='<div style="text-align: left">' +
+        '<p class="sub-title1">Do you confirm to delete this Item code mapping ['+platform+' - '+platform_sku+' - '+sku+']?</p>' +
+        '<p class="sub-title2">Deleting this mapping will not affect the imported sales orders.</p><div>';
+      var tmplayer = layer.confirm(str, {
+        title: 'Confirm',
+        skin: 'yzc_layer',
+        btn: ['Yes','No'] //按钮
+      }, function(){
+        $.ajax({
+          type: 'POST',
+          dataType: 'json',
+          data: {ids:id},
+          url: '{{ urlBatchDelete }}',
+          success: function (json) {
+            if (json['ret']){
+              if (id){
+                layer.msg(json['msg']);
+                $("#tr_"+id).hide();
+                refreshMappingItemCodeList();
+              }
+            }
+          }
+        });
+
+        layer.close(tmplayer);
+      }, function(){
+        layer.close(tmplayer);
+      });
+    }
+
+  }
+
+  {#var locked_sku = false;#}
+  {#var timersku   = undefined;#}
+  {#$("#btn_import_sku").off('click').on('click', function(){#}
+
+  {#  var form_type = '<input name="upload_type" value="0" type="hidden">';#}
+  {#  $('form[id="form-upload-sku"]').remove();#}
+  {#  $('body').prepend('<form enctype="multipart/form-data" id="form-upload-sku" style="display: none;">'+form_type+'<input type="file" name="file" accept="text/csv"/></form>');#}
+  {#  $($('#form-upload-sku')[0]).find('input[name="file"]').trigger('click');#}
+
+  {#  if (typeof timersku != 'undefined') {#}
+  {#    clearInterval(timersku);#}
+  {#  }#}
+  {#  timersku = setInterval(function () {#}
+  {#    if ($($('#form-upload-sku')[0]).find('input[name="file"]').val() != '') {#}
+  {#      clearInterval(timersku);#}
+
+  {#      if(locked_sku){#}
+  {#        return false;#}
+  {#      }#}
+  {#      locked_sku = true;#}
+
+  {#      $("#btn_import_sku").button('loading');#}
+  {#      $.ajax({#}
+  {#        url: '{{ itemCodeMappingImport }}',#}
+  {#        type: 'post',#}
+  {#        dataType: 'json',#}
+  {#        data: new FormData($('#form-upload-sku')[0]),#}
+  {#        cache: false,#}
+  {#        contentType: false,#}
+  {#        processData: false,#}
+  {#        beforeSend:function(xhr){#}
+  {#          block.blockUI();#}
+  {#        },#}
+  {#        success: function (json) {#}
+  {#          locked_sku = false;#}
+  {#          if (json.ret == 1){#}
+  {#            layer.msg(json.msg);#}
+  {#            filterItemCodeMapping();#}
+  {#          }else if(json.ret == 0) {#}
+  {#            layer.alert(json.msg, {#}
+  {#              title: 'Message',#}
+  {#              btn: 'OK',#}
+  {#              skin: 'yzc_layer', //样式类名#}
+  {#              closeBtn: 0#}
+  {#            });#}
+  {#          }#}
+  {#        },#}
+  {#        error: function (xhr, ajaxOptions, thrownError) {#}
+
+  {#        },#}
+  {#        complete: function () {#}
+  {#          locked_sku = false;#}
+  {#          block.unBlockUI();#}
+  {#          setTimeout(function () {#}
+  {#            $("#btn_import_sku").button('reset');#}
+  {#          }, 3000);#}
+  {#        }#}
+  {#      });#}
+  {#    }#}
+  {#  }, 1000);#}
+
+  {#});#}
+
+  function sortItemCodeMapping(sort,order) {
+    var url = getUrlForFilter();
+
+    url += '&sort=' + encodeURIComponent(sort);
+    if (order){
+      url += '&order=' + encodeURIComponent(order);
+    }
+    url += "&page_num={{ page_num }}";
+    block.blockUI();
+    $('#show-mapping_item_code_list').load(url);
+  }
+  //全选
+  function selectAll(ele){
+    if($(ele).prop('checked')){
+      $(".checkboxes").prop("checked", true);
+    }else{
+      $(".checkboxes").prop("checked", false);
+    }
+  }
+  //批量删除
+  function checkboxDelete(){
+    var checkChoose=$(".checkboxes:checked");
+    if(checkChoose==null||checkChoose==undefined||checkChoose==""||checkChoose.length==0){
+      layer.alert("Please select at least one mapping.", {
+        title: 'Message',
+        btn: 'OK',
+        skin: 'yzc_layer' //样式类名
+        , closeBtn: 0
+      });
+    }else{
+      var chooseValue=[];
+      $.each(checkChoose,function (i,item) {
+        chooseValue.push($(item).attr("value"))
+      });
+      //需要删除的value值
+      var chooseValueStr=chooseValue.join(',');
+
+      var tipStr='<div style="text-align: left">' +
+        '<p class="sub-title1">Do you confirm to delete these item code mappings?</p>' +
+        '<p class="sub-title2">Deleting these mappings will not affect the imported sales orders.</p><div>';
+      var tmplayer = layer.confirm(tipStr, {
+        title: 'Confirm',
+        skin: 'yzc_layer',
+        btn: ['Yes','No'] //按钮
+      }, function(){
+        //删除逻辑
+        //alert(chooseValueStr);
+        $.ajax({
+          type: 'POST',
+          dataType: 'json',
+          data: {ids:chooseValueStr},
+          url: '{{ urlBatchDelete }}',
+          success: function (json) {
+            layer.msg(json['msg']);
+            if (json['ret']){
+              filterItemCodeMapping();
+            }
+          }
+        });
+
+        layer.close(tmplayer);
+      }, function(){
+        layer.close(tmplayer);
+      });
+    }
+  }
+</script>

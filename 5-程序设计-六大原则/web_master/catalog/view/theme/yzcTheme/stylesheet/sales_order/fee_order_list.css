@@ -1,0 +1,560 @@
+.popover{
+  max-width: 360px;
+}
+
+#feeOrder {
+  background: #fff;
+}
+.pointer-hover:hover{
+  cursor: pointer;
+}
+.m10-b{
+  margin-bottom: 10px;
+}
+
+/*搜索*/
+#feeOrder.form-wrapper .form-group > label {
+  font-size: 14px;
+  text-transform: none;
+  font-weight: normal;
+}
+
+.padding-left-0 {
+  padding-left: 0;
+}
+
+.padding-right-0 {
+  padding-right: 0;
+}
+
+.fee-btn-con {
+  padding-top: 25px;
+}
+
+.datetimepicker-range .datetimepicker:first-child {
+  padding-right: 2px;
+}
+
+.datetimepicker-range .datetimepicker:last-child {
+  padding-left: 2px;
+}
+
+/*搜索*/
+
+/*按钮*/
+.giga-btn-primary {
+  height: 40px;
+  width: 70px;
+  padding: 0;
+  line-height: 40px;
+  font-size: 14px;
+  color: #fff;
+  background: #3A75DC;
+  font-weight: initial;
+  border: none;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.giga-btn-primary:hover, .giga-btn-primary:focus, .giga-btn-primary:active {
+  color: #fff;
+  background-color: #2d57a9;
+  border-color: #2d57a9;
+  outline: none;
+}
+
+.giga-btn-default {
+  background: #fff;
+  text-align: center;
+  height: 40px;
+  line-height: 38px;
+  color: #3A75DC;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.giga-btn-reset {
+  padding: 0 9.7px;
+}
+
+.giga-btn-download {
+  padding: 0 11px;
+}
+
+.giga-btn-default:hover, .giga-btn-default:focus, .giga-btn-default:active {
+  color: #fff;
+  background-color: #3A75DC;
+  border-color: #3A75DC;
+  outline: none;
+}
+
+.giga-btn-default.disabled {
+  border: 1px solid #ddd !important;
+}
+
+/*按钮*/
+
+/*table*/
+.order-table-header {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #333;
+  background: #D7DDEA;
+  font-weight: bold;
+  padding: 10px 14px;
+}
+
+.table-index {
+  width: 5%;
+}
+
+.table-purchase-order-id {
+  width: 17%;
+  word-break: break-word;
+}
+
+.table-bind-order-id {
+  width: 15%;
+  word-break: break-word;
+}
+
+.table-order-fee-type {
+  width: 14%;
+  word-break: break-word;
+}
+
+.table-order-money {
+  width: 16%;
+  word-break: break-word;
+  padding-right: 50px;
+}
+
+.table-fee-order-status {
+  width: 16%;
+  padding-left: 20px;
+  word-break: break-word;
+}
+
+.table-order-creation-time {
+  width: 12%;
+  padding-right: 20px;
+  word-break: break-word;
+}
+
+.table-order-checkout-time {
+  width: 10%;
+  word-break: break-word;
+}
+
+.table-order-actions {
+  width: 12%;
+  word-break: break-word;
+}
+
+.order-row {
+  padding: 8px 14px;
+  border-bottom: 1px solid #e3e3e3;
+}
+.order-row.no-records{
+  padding:0;
+  height: 80px;
+  line-height: 80px;
+}
+
+.order-row-outer {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.table-group-action {
+  border-radius: 4px;
+  background: #eee;
+  color: #333;
+  border: 1px solid #e3e3e3;
+  display: inline-block;
+  height: 28px;
+  width: 28px;
+  padding: 1px;
+  text-align: center;
+  line-height: 26px;
+}
+
+.table-group-action.light-button {
+  background: #fA6400;
+  border-color: #fA6400;
+  color: #fff;
+}
+
+.table-group-action:last-child {
+  margin-right: 0;
+}
+
+.table-group-action:hover {
+  background: #fA6400;
+  color: #fff;
+  border: 1px solid #fA6400;
+  cursor: pointer;
+}
+
+.table-group-action.light-button:hover {
+  background: #fff;
+  color: #fA6400;
+  border: 1px solid #fA6400;
+}
+.link-color:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.status-con {
+  padding: 8px 0;
+}
+
+.clock-con {
+  display: flex;
+  align-items: center;
+  color: #E64545;
+}
+.clock-con span{
+  margin-left: 4px;
+}
+
+.font-weight-normal {
+  font-weight: normal;
+}
+
+.inner-image {
+  width: 10%;
+}
+
+.inner-item-code {
+  width: 15%;
+}
+
+.inner-item-seller {
+  width: 20%;
+}
+
+.inner-qty {
+  width: 10%;
+}
+
+.inner-volume {
+  width: 15%;
+}
+
+.inner-in-house-day {
+  width: 15%;
+}
+
+.inner-house-money {
+  width: 15%;
+  text-align: right;
+  padding-right: 44px !important;
+}
+
+.flag-tab {
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.download-cart {
+  font-size: 12px;
+  vertical-align: revert;
+  margin-left: 4px;
+}
+
+.warehouse-day > div {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.warehouse-day .text {
+  margin-right: 8px;
+}
+
+/*table*/
+
+/*分页*/
+.page-con {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.page-list, .page-info {
+  position: static;
+}
+
+/*分页*/
+
+/*排序*/
+.my-sort {
+  font-size: 12px;
+  color: #999;
+}
+
+.my-sort:hover {
+  cursor: pointer;
+  color: #004BD8;
+}
+
+.my-sort.active {
+  color: #004BD8;
+}
+
+.my-sort-up {
+  position: absolute;
+  font-size: 12px;
+  right: -16px;
+  top: -6px;
+  transform: scale(0.76);
+}
+
+.my-sort-down {
+  position: absolute;
+  font-size: 12px;
+  right: -16px;
+  top: 2px;
+  transform: scale(0.76);
+}
+
+/*排序*/
+
+/*支付图片*/
+.pay-type-tab .mr20 {
+  margin-right: 20px;
+}
+
+.pay-type-tab .ml10 {
+  margin-left: 10px;
+}
+
+.pay-type-icon.icon-tubiaozhizuomoban {
+  color: #ec1840;
+  font-size: 22px;
+  vertical-align: middle;
+}
+
+.icon-xinyongedu.pay-type-icon {
+  color: #183464;
+  font-size: 32px;
+  vertical-align: middle;
+}
+
+/*支付图片*/
+.my-break-all {
+  word-break: break-all;
+}
+
+/*layer 按钮弹窗的样式*/
+.layui-layer-btn .layui-layer-btn0 {
+  border-color: #3a75dc;
+  background-color: #3a75dc;
+  color: #fff;
+}
+
+.layui-layer-btn a.layui-layer-btn0:hover {
+  border-color: #2d57a9;
+  background-color: #2d57a9;
+  text-decoration: none;
+}
+
+.layui-layer-btn a.layui-layer-btn1:hover {
+  border-color: #3a75dc;
+  background-color: #3a75dc;
+  color: #fff;
+  text-decoration: none;
+}
+
+/*layer 按钮弹窗的样式*/
+.no-background{
+  background: #fff;
+}
+.giga-content .hover-a-link:hover{
+  color: #3A75DC;
+}
+.sort-outer-con{
+  position: relative;
+}
+
+.table-order-actions{
+  display: flex;
+  align-items: center;
+}
+.table-btn-one{
+  margin-right: 16px;
+}
+.table-btn-one:hover{
+  cursor: pointer;
+}
+.table-btn-one:last-child{
+  margin-right: 0;
+}
+.table-btn-one .giga.icon-v10bzfwjt,.table-btn-one .giga.icon-21cancel,.table-btn-one .zhifu-btn{
+  font-size: 22px;
+}
+.table-btn-one .giga.icon-v10bzfwdy{
+  font-size: 20px;
+}
+.table-btn-one.light-button{
+  color: #FF6600;
+}
+.collapse-btn i{
+  display: inline-block;
+}
+.icon-v10bzfwjt.rotate90{
+  -webkit-transform:rotate(180deg);
+  transform:rotate(180deg);
+  /*-webkit-transition:-webkit-transform 0.2s linear;*/
+  /*transition:transform 0.2s linear;*/
+}
+.order-row-inner{
+  background: #EDEFF3;
+}
+.no-top-i{
+  margin-top: 0 !important;
+}
+.span-tooltip{
+  display: inline-block;
+}
+.status-text{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #333;
+  font-weight: bold;
+}
+.small-cricle{
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.small-cricle.canceled{
+  background: #999999;
+}
+.small-cricle.status-to-paid{
+  background: #FF6600;
+}
+.small-cricle.completed{
+  background: #0AAD4F;
+}
+.small-cricle.refund{
+  background: #0047D8;
+}
+
+/*伸缩框*/
+.inner-detail-main{
+  padding: 16px 20px;
+}
+.inner-detail-main .pr70-i{
+  padding-right: 70px !important;
+}
+.inner-detail-main .pr100-i{
+  padding-right: 100px !important;
+}
+.inner-detail-main .pl30-i{
+  padding-left: 30px !important;
+}
+.inner-detail-main .pr16-i{
+  padding-right: 16px !important;
+}
+.inner-detail-main .amount-info-item{
+  line-height: 24px;
+}
+.inner-detail-main .amount-label{
+  color: #666666;
+}
+.inner-detail-main .amount-value{
+  color: #000;
+  display: inline-block;
+}
+.oris-table.border-table tr.table-row td {
+  border-bottom: 1px solid transparent;
+}
+.table-amount{
+  border-top: 1px solid #DCDCDC;
+  padding-top: 10px;
+}
+.pointer-hover:hover{
+  cursor: pointer;
+}
+.inner-detail-main .giga.icon-V10_shouyeyouxiadown,.inner-detail-main .giga.icon-V10_shouyeyouxiaTOP{
+  font-size: 12px;
+  font-weight: bold;
+}
+.top-arrow {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  bottom: -17px;
+  right: 114px;
+  background: #ebeef5;
+  -moz-transform: rotate(-45deg);
+  -webkit-transform: rotate(
+    -45deg
+  );
+}
+.flex-start{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.width-60{
+  width: 60px;
+  margin-right: 8px;
+}
+.width-200{
+  width: 200px;
+  word-break: break-word;
+}
+.dark-color{
+  color: #000;
+}
+.pd-t-0-i{
+  padding-top: 0 !important;
+}
+.guarantee-fee-base{
+  padding-right: 20px;
+}
+a.popover-hover{
+  padding: 0 4px;
+  margin-left: -4px;
+  margin-right: -4px;
+}
+.hover-line-blue:hover{
+  color: #004BD8;
+}
+.oris-row [class*=oris-col-]:not(:last-child) {
+  padding-right: 24px !important;
+}
+.inner-detail-main .oris-table  td{
+ padding: 2px 6px;
+}
+.inner-detail-main .oris-table tr.table-row:first-child td{
+  padding-top: 10px;
+}
+.inner-detail-main .oris-table tr:last-child td div.table-amount{
+  margin-top: 8px;
+}
+.font-weight{
+  font-weight: bold;
+}
+.content-con-sub-title{
+  color: #666;
+  text-align: left;
+  background: #F2F2F2;
+  padding: 10px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+.pr-20-i{
+  padding-right: 20px !important;
+}

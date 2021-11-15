@@ -1,0 +1,209 @@
+{# 运送仓批量上传文件历史记录 #}
+<div class="filter-wrapper form-wrapper">
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="form-group">
+        <label>Upload Date</label>
+        <div class="datetimepicker-range">
+          <div class="col-sm-6 no-padding">
+            <div class="datetimepicker no-padding" style="margin-left: 0">
+              <input type="text" name="cloudRecordDateFrom" value="" class="form-control" id="cloudRecordDateFrom"
+                     placeholder="Pick a date..." autocomplete="off">
+              <span class="title">From</span>
+              <span class="icon"><i class="giga icon-date-icon"></i></span>
+            </div>
+          </div>
+          <div class="col-sm-6 no-padding">
+            <div class="datetimepicker no-padding">
+              <input type="text" name="cloudRecordDateTo" value="" class="form-control" id="cloudRecordDateTo"
+                     placeholder="Pick a date..." autocomplete="off">
+              <span class="title">To</span>
+              <span class="icon"><i class="giga icon-date-icon"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4 quick-btns">
+      <span class="quick-btn-item" id="quickMonthRecordCloud">One Month</span>
+      <span class="quick-btn-item" id="quickWeekRecordCloud">One Week</span>
+    </div>
+    <div class="col-sm-4 text-right" style="height: 58px;padding-top: 26px;">
+      <button type="button" class="btn btn-primary" id="cloudFilterBtn">Filter</button>
+    </div>
+  </div>
+</div>
+{# 列表 #}
+<div class="order-list">
+  <div class="order-list-item">
+    <table class="table table-responsive table-item">
+      <thead>
+      <tr>
+        <th class="text-center" style="width:20%">
+            <span class="hover-pointer" data-toggle="tooltip" data-html="true"
+                  title="<p>Only records uploaded <br/> within the last year <br/> will  be saved.</p>">
+              File Name
+              <i class="giga icon-V10-wenhaotishi text-size-normal"></i>
+            </span>
+        </th>
+        <th class="text-center" style="width: 55%">Status</th>
+        <th class="text-center" style="width:15%">Creation Time</th>
+        <th class="text-center">Download</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% if list.count() %}
+        {% for item in list %}
+          <tr>
+            <td class="text-left break-word">{{ item.fileUpload.orig_name }}</td>
+            <td class="text-left break-word" style="width: 55%;">
+              {% if item.is_validate_success == 1 %}
+                <i class="giga icon-action-confirm-and-agree pointer" aria-hidden="true" style="color: #00CC00;"></i>
+                uploaded successfully.
+              {% else %}
+                <i class="giga icon-action-warning pointer" aria-hidden="true" style="color: #DB0000;"></i>
+                {{ item.error_info }}
+              {% endif %}
+            </td>
+            <td class="text-center" style="width:15%">{{ item.create_time }}</td>
+            <td class="text-center">
+              <a class="pointer"
+                 onclick="window.location.href='{{ url('account/sales_order/CloudWholesaleFulfillment/recordDownload' ,{'id':item.id}) }}'">
+                &nbsp;<i class="giga icon-table-download"></i>
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td class="text-center" colspan="4">No records.</td>
+        </tr>
+      {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{# 分页 #}
+<div class="row mt-2 mr-0">
+  <div class="col-sm-12 cloud_pagination_record flex-end">
+    <ul id="cloud_pagination_record"></ul>
+  </div>
+</div>
+<script>
+  var cloudRecordPage = {
+    $parent: $('#cloudWhoRecord'),
+    data: {
+      startDate: '{{ filter_orderDate_from }}',
+      endDate: '{{ filter_orderDate_to }}',
+      searchUrl: 'index.php?route=account/sales_order/CloudWholesaleFulfillment/recordPage'
+    },
+    initComponents: function () {
+      cloudRecordPage.pagination();
+      let filterStart = cloudRecordPage.data.startDate;
+      let filterEnd = cloudRecordPage.data.endDate;
+      if (filterStart) {
+        filterStart = filterStart.substring(0, 10);
+        $('#cloudRecordDateFrom').val(filterStart);
+      }
+      if (filterEnd) {
+        filterEnd = filterEnd.substring(0, 10);
+        $('#cloudRecordDateTo').val(filterEnd);
+      }
+      //时间选择格式
+      $('#cloudRecordDateFrom').datetimepicker({
+        minView: 2,
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        forceParse: true
+      });
+      $('#cloudRecordDateTo').datetimepicker({
+        minView: 2,
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        forceParse: true
+      });
+    },
+    bindClick: function () {
+      $("#cloudRecordDateFrom").on('click foucs', function () {
+        $('#cloudRecordDateTo').datetimepicker('hide');
+      });
+      $("#cloudRecordDateTo").on('click foucs', function () {
+        $('#cloudRecordDateFrom').datetimepicker('hide');
+      });
+      var now = new Date();
+      // Filter
+      $('#cloudFilterBtn').click(function () {
+        cloudRecordPage.recordSearch();
+      });
+      $('#quickWeekRecordCloud').click(function () {
+        //一周的时间
+        var weektime = new Date().setDate((new Date().getDate() - 7));
+        $('#cloudRecordDateFrom').datetimepicker('setDate', new Date(weektime));
+        $('#cloudRecordDateTo').datetimepicker('setDate', new Date());
+      });
+      $('#quickMonthRecordCloud').click(function () {
+        //一个月的时间
+        var monthtime = new Date().setMonth((new Date().getMonth() - 1));
+        $('#cloudRecordDateFrom').datetimepicker('setDate', new Date(monthtime));
+        $('#cloudRecordDateTo').datetimepicker('setDate', new Date());
+      })
+    },
+    //分页
+    pagination: function () {
+      let totalPages = {{ max(paginator.getPageCount(), 1) }};
+      if (totalPages) {
+        //total_pages
+        $('#cloud_pagination_record').bootstrapPaginator({
+          /*当前使用的是3版本的bootstrap*/
+          bootstrapMajorVersion: 3,
+          /*配置的字体大小是小号*/
+          size: 'normal',
+          /*当前页*/
+          currentPage: {{ paginator.getPage() }},
+          /*一共多少页*/
+          totalPages: totalPages,
+          /*页面上最多显示几个含数字的分页按钮*/
+          numberOfPages: 5,
+          total: {{ paginator.getTotalCount() }},
+          rowsOfPage: {{ paginator.getPageSize() }},
+          onPageClicked: function (event, originalEvent, type, page) {
+            layer.load(1, {shade: [0.3, '#000']});
+            let url = cloudRecordPage.getUrl(page);
+            $('#cloudWhoRecord').load(url, function () {
+              layer.closeAll('loading');
+            });
+          }
+        });
+      }
+    },
+    //页面加载带的参数
+    getUrl: function (page) {
+      let url = cloudRecordPage.data.searchUrl;
+      let filterStart = $('#cloudRecordDateFrom').val();
+      let filterEnd = $('#cloudRecordDateTo').val();
+      if (filterStart) {
+        url += '&filter_orderDate_from=' + encodeURIComponent(moment(filterStart).format('YYYY-MM-DD 00:00:00'));
+      }
+      if (filterEnd) {
+        url += '&filter_orderDate_to=' + encodeURIComponent(moment(filterEnd).format('YYYY-MM-DD 23:59:59'));
+      }
+      if (page) {
+        url += "&page_num=" + page;
+      }
+      return url;
+    },
+    //搜索
+    recordSearch: function () {
+      let url = cloudRecordPage.getUrl('');
+      layer.load(1, {shade: [0.3, '#000']});
+      $('#cloudWhoRecord').load(url, function () {
+        layer.closeAll('loading');
+      });
+    }
+  }
+  //页面加载
+  $(function () {
+    cloudRecordPage.initComponents();
+    cloudRecordPage.bindClick();
+  });
+</script>

@@ -1,0 +1,1963 @@
+{{ header }}
+{{ jsOrigin(['/catalog/view/javascript/layerOris.js']) }}
+{{ css(['/css/common/common.css']) }}
+<style>
+  .tag_icon img {
+    margin-top: -6px;
+  }
+
+  .container {
+    width: 80%;
+  }
+
+  .popover {
+    min-width: 300px;
+    border-radius: 4px;
+  }
+
+  .pop_hover {
+    /*font-weight: bold;*/
+    width: 100%;
+  }
+
+  .pop_hover tr {
+    border-bottom: 1px dotted grey;
+  }
+
+  .pop_hover tr:last-child {
+    border-bottom: none;
+  }
+
+  .pop_hover tr p {
+    margin: 10px 0;
+  }
+</style>
+<style>
+  input.filter {
+    width: 33%;
+    height: 40px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+
+  .btn-filter {
+    height: 40px;
+    background-color: #3A75DC;
+    color: #fff;
+    border: 1px solid #3A75DC;
+    border-radius: 4px;
+    width: 80px;
+    margin-left: 30px;
+  }
+
+  .tab {
+    margin-top: 30px;
+  }
+
+  .tab > ul {
+    text-align: center;
+  }
+
+  .tab > ul li {
+    width: 20%;
+    padding: 1px;
+  }
+
+  .tab > ul li a {
+    border: none;
+    padding: 1px;
+  }
+
+  .tab > ul li h4 {
+    font-weight: bold;
+    width: 90%;
+    margin: 0 auto;
+    padding: 5px;
+    font-size: 14px;
+  }
+
+  .tab .nav-tabs > li > a,
+  .tab .nav-tabs > li > a:hover,
+  .tab .nav-tabs > li > a:focus {
+    border: none;
+    background-color: #fff;
+    color: #333;
+  }
+
+  .tab .nav-tabs > li.active > a > h4,
+  .tab .nav-tabs > li > a:hover h4,
+  .tab .nav-tabs > li > a:focus h4 {
+    border-bottom: 2px solid #3A75DC;
+  }
+
+
+  .panel .panel-title {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .panel .panel-title th,
+  .panel .panel-title td {
+    width: 20%;
+    text-align: center;
+  }
+
+  .panel {
+    margin: 0;
+  }
+
+  .panel-default {
+    border-bottom: none;
+  }
+
+  .panel-default > .panel-heading {
+    background-color: #fff;
+    border: none;
+  }
+
+  .sku {
+    width: 95%;
+    margin: 0 auto;
+    background-color: #eee;
+  }
+
+  .sku .table-header td {
+    border-bottom: 1px solid #ccc;
+  }
+
+  .sku th, .sku td {
+    text-align: center;
+  }
+
+  .btn-view, .btn-create {
+    border: 1px solid #fa6400;
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-size: 12px;
+    color: #FA6400;
+    background-color: #fff;
+    outline: none;
+  }
+
+  .btn-view:hover,
+  .btn-create:hover,
+  .active-rma {
+    background-color: #FA6400;
+    color: #fff;
+  }
+
+  .item {
+    width: 95%;
+    margin: 30px auto;
+
+  }
+
+  label {
+    font-weight: inherit;
+  }
+
+  .item > h4 {
+    font-size: 14px;
+    background-color: #eee;
+    color: #fa6400;
+    padding: 10px;
+    margin: 0;
+  }
+
+  .item > div {
+    background-color: #eee;
+    padding: 20px 10px;
+    overflow: hidden;
+  }
+
+  .item > div > div {
+    padding: 10px;
+  }
+
+  .w22 {
+    width: 30%;
+    text-align: right;
+    padding-right: 10px;
+  }
+
+  .w15 {
+    width: 15%;
+    text-align: right;
+    margin-right: 10px;
+  }
+
+  .item select,
+  .item input[type=text] {
+    border: 1px solid #ccc;
+    width: 69%;
+    padding: 8px;
+    border-radius: 4px;
+  }
+
+  option {
+    color: #000;
+  }
+
+  .textarea {
+    display: inline-block;
+    width: 78%;
+    min-height: 100px;
+    max-height: 300px;
+    padding: 8px 12px;
+    outline: 0;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-radius: 4px;
+  }
+
+  .textarea:focus {
+    border: 1px solid #3A75DC;
+  }
+
+  .upload-content .content-img-list {
+    display: inline-block;
+    padding: 0;
+    margin-bottom: 0;
+  }
+
+  .upload-content .content-img .fa {
+    font-size: 20px;
+    margin-right: 5px;
+  }
+
+  .upload-content .content-img-list-item {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    margin-right: 7px;
+    border: 1px dashed #DEDEDE;
+    border-radius: 4px;
+    background-color: #fff;
+    line-height: 100px;
+    margin-bottom: 7px;
+  }
+
+
+  .upload-content .content-img-list-item .hide {
+    display: none;
+  }
+
+  .upload-content .content-img-list-item .delete-btn {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    height: 100%;
+    line-height: 100px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .upload-content .content-img-list-item .fa {
+
+  }
+
+  .upload-content .content-img-list-item img {
+    width: 100%;
+  }
+
+  .upload-content .upload-tips {
+    padding-top: 10px;
+    text-align: right;
+    width: 100%;
+  }
+
+
+  /*图片上传按钮*/
+
+  .upload-content .file {
+    position: relative;
+    display: inline-block;
+    border: 1px dashed #DEDEDE;
+    border-radius: 4px;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+    background-color: #fff;
+    vertical-align: top;
+  }
+
+  .upload-content .file input {
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100px;
+    height: 100px;
+  }
+
+  .upload-content .file:hover {
+    color: #999999;
+  }
+
+  .upload-submit {
+    text-align: center;
+    margin-top: 50px;
+  }
+
+  .reshipment,
+  .refund {
+    border: 1px solid #ccc;
+    padding: 0 !important;
+    margin-top: 5px;
+  }
+
+  .reshipment p {
+    margin-bottom: 10px;
+  }
+
+  .reshipment .title,
+  .refund .title {
+    background-color: #fff;
+    padding: 5px 10px;
+  }
+
+  .reshipment .title h4,
+  .refund .title h4 {
+    display: inline-block;
+    color: #FA6400;
+    font-size: 14px;
+    margin: 10px;
+  }
+
+  .item .content {
+    padding-bottom: 10px;
+    padding-top: 5px;
+  }
+
+  .content {
+    display: none;
+  }
+
+  .content h5 {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .prompt {
+    font-size: 13px;
+  }
+
+  .modal-header {
+    background-color: #183464;
+  }
+
+  .modal-body > div {
+    margin: 10px 0;
+  }
+
+  .w2 {
+    width: 20%;
+  }
+
+  .required::before {
+    content: '*';
+    color: red;
+  }
+
+  .detail0 .detail {
+    width: 69%;
+    display: inline-block;
+  }
+
+  .detail0 .detail select,
+  .detail0 .detail input {
+    width: 45%;
+    margin-right: 4%;
+    margin-bottom: 10px;
+  }
+
+  .modal-body .btn-primary {
+    width: 15%;
+    padding: 10px;
+  }
+
+  #binding .btn-submit {
+    padding: 6px 10px;
+  }
+
+  #binding .btn-submit:focus {
+    color: #fff;
+    background: #146bff;
+    border: 1px solid #3881ff;
+  }
+
+
+  /* 复选框 */
+
+  input[type=checkbox] {
+    position: relative;
+    width: 15px;
+    height: 15px;
+    margin: 0 5px;
+    vertical-align: sub;
+  }
+
+  input[type=checkbox]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    text-align: center;
+    color: #FA6400;
+    font-size: 14px;
+    background-color: #fff;
+    border: 1px solid #fa6400;
+  }
+
+  input[type=checkbox]:checked::before {
+    content: '\e6ca';
+    background-color: #fff;
+    font-family: "gcl";
+    font-size: 12px;
+    border: 1px solid #fa6400;
+  }
+
+  .sku0 th {
+    background-color: #eee;
+  }
+
+  #nobinding .itemcode {
+    overflow: hidden;
+    padding: 8px 15px;
+    background-color: #fff;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  #nobinding .itemcode > div {
+    text-align: center;
+    padding: 3px 0;
+    border-right: 1px solid #ddd;
+    width: 100%;
+  }
+  #nobinding .itemcode div.min270 {
+    min-width: 18%;
+    flex: 1;
+  }
+
+  #nobinding .itemcode > div span {
+    margin-left: 15px;
+  }
+
+  #nobinding .itemcode > div:last-child {
+    border-right: none;
+  }
+
+  .w11 {
+    width: 15%;
+    padding-right: 10px;
+    text-align: right;
+  }
+
+  .upload-content .modal-dialog {
+    width: 100%;
+  }
+
+  .show {
+    text-align: center;
+  }
+
+  .show img {
+    max-width: 100%;
+  }
+
+  #heading1 .panel-title tr {
+    height: 40px;
+    border-bottom: 1px solid #eee;
+  }
+
+  #show_image .modal-dialog {
+    width: 100%;
+  }
+
+  .page-seller-portal .nav-tabs.main > li {
+    position: relative;
+  }
+
+  .page-seller-portal .nav-tabs.main > li.active > a,
+  .page-seller-portal .nav-tabs.main > li > a:hover {
+    color: #fff;
+    background-color: #3A75DC;
+    border-color: #3A75DC;
+  }
+
+  .page-seller-portal .nav-tabs.main > li > .num {
+    position: absolute;
+    right: 1px;
+    top: -8px;
+    border-radius: 50%;
+    background-color: #FA6400;
+    color: #fff;
+    padding: 1px 3px;
+    display: inline-block;
+    min-width: 20px;
+    height: 20px;
+    text-align: center;
+  }
+
+  .form-wrapper .form-group > label {
+    text-transform: capitalize;
+    color: #333;
+  }
+
+  .form-wrapper .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-wrapper .form-control {
+    border: 1px solid #ccc;
+  }
+
+  #form_search .dropdown-menu {
+    width: 31%;
+  }
+
+  .form-wrapper select {
+    background-image: none;
+  }
+
+  .form-group .datetimepicker {
+    position: relative;
+    width: 50%;
+    float: left;
+  }
+
+  .form-group .datetimepicker input {
+    padding: 13px 25px 0 13px;
+  }
+
+  .form-group .datetimepicker .title {
+    position: absolute;
+    top: 0;
+    color: #ccc;
+    font-size: 12px;
+    left: 13px;
+  }
+
+  .form-group .datetimepicker .icon {
+    position: absolute;
+    right: 5px;
+    color: #ccc;
+    z-index: 100;
+    top: 0;
+    line-height: 40px;
+  }
+
+  .form-group label {
+    text-transform: capitalize;
+    font-size: 12px;
+  }
+
+  .file span {
+    font-size: 30px;
+  }
+
+  .img-modal-content .modal-header {
+    background-color: #fff;
+    border: none;
+    padding: 5px 12px;
+  }
+
+  .img-modal-content .modal-body {
+    padding: 0;
+  }
+
+  .sku td {
+    font-size: 12px;
+  }
+
+  .btn-view-only {
+    padding: 4px 10px !important;
+    font-size: 12px !important;
+    height: 24px;
+    line-height: normal;
+  }
+  .name-line2 {
+    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .complex-icon{
+    font-size: 12px;
+    color: #004BD8;
+    border: 1px solid #004BD8;
+    background-color: #eef2fe;
+    margin-left: 6px;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    text-align: center;
+    line-height: 14px;
+  }
+
+  .cp-img{
+    margin-left: 4px;
+  }
+
+  .m04-r{
+    margin-right: 4px;
+  }
+</style>
+<div id="page-rma-index" class="page-seller-portal">
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+  <div class="container giga-content">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Create RMA</h1>
+        {% if rma_edit_error %}
+          <div class="alert alert-warning alert-dismissible"><i class="fa fa-check-circle"></i> {{ error }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+        {% endif %}
+        {# tab页标题 #}
+        <div class="row">
+          <div class="col-md-12">
+            <ul class="nav nav-tabs main" role="tablist">
+              <li id="rma_li" {% if show_tab == 0 %} class="active" {% endif %}>
+                <a href="#tab-rma" data-toggle="tab">Create RMA</a>
+              </li>
+              <li id="reshipment_li" {% if show_tab == 1 %} class="active" {% endif %}>
+                <a href="#tab-reshipment" data-toggle="tab">Reshipment Order</a>
+                <span class="num" id="reshipment_count"
+                      {% if reship_non_process_count <= 0 %}
+                        style="display: none"
+                      {% endif %}
+                >{{ reship_non_process_count }}
+                </span>
+              </li>
+              <li id="refund_li" {% if show_tab == 2 %} class="active" {% endif %}>
+                <a href="#tab-refund" data-toggle="tab">Refund Application</a>
+                <span class="num" id="refund_count"
+                      {% if refund_non_process_count <= 0 %}
+                        style="display: none"
+                      {% endif %}
+                >{{ refund_non_process_count }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    {# tab页内容 #}
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="tab-content main">
+          <!--Create RMA-->
+          <div role="tabpanel" class="tab-pane {% if show_tab == 0 %} active {% endif %}" id="tab-rma">
+            <div class="bg-white p-2" style="min-height: 200px;">
+              <div>
+                <form id="form_search" method="post" action="index.php?route=account/rma_management">
+                  <input
+                    type="text"
+                    name="filter_order_id"
+                    class="filter"
+                    value="{{ request.filter_order_id }}"
+                    placeholder="Please enter the Purchase Order ID or Sales Order ID">
+                  <button type="button" id="filter_button" class="btn-filter">Filter</button>
+                  {# <input type="hidden" name="filter_order_type" value="{{ request.filter_order_type }}"> #}
+                  {% if request.filter_order_id is defined and request.filter_order_id is not empty and has_data == false %}
+                    <p style="color: red" id="errorOrderEmpty">Please enter the correct Sales Order ID or Purchase Order
+                      ID</p>
+                  {% endif %}
+                </form>
+              </div>
+              {% if has_data %}
+                <div class="tab">
+                  <!-- Nav tabs -->
+                  {% if is_single == 0 %}
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li role="presentation" {% if is_single_no_binding_active == false %}class="active"{% endif %}>
+                        <a href="#binding"
+                           aria-controls="binding" role="tab"
+                           data-toggle="tab">
+                          <h4> Assigned</h4>
+                        </a></li>
+                      <li role="presentation" {% if is_single_no_binding_active == true %}class="active"{% endif %}>
+                        <a href="#nobinding"
+                           aria-controls="nobinding"
+                           role="tab"
+                           data-toggle="tab">
+                          <h4>Unassigned</h4>
+                        </a>
+                      </li>
+                    </ul>
+                  {% endif %}
+                  <!-- Tab panes -->
+                  <div class="tab-content">
+                    {% set binding_active = 'active' %}
+                    {% if is_single %}
+                      {% if binding is empty %}
+                        {% set binding_active = '' %}
+                      {% else %}
+                        {% set binding_active = 'active' %}
+                      {% endif %}
+                    {% else %}
+                      {% if is_single_no_binding_active == true %}
+                        {% set binding_active = '' %}
+                      {% endif %}
+                    {% endif %}
+                    <div role="tabpanel" class="tab-pane {{ binding_active }}" id="binding">
+                      <div class="list">
+                        <div class="panel panel-default">
+                          <div class="panel-heading" role="tab" id="heading0"
+                               style="background-color: #f3f5f7">
+                            <table class="panel-title">
+                              <tr>
+                                <td>Sales Order ID</td>
+                                <td>Sales Order Date</td>
+                                <td>Sales Order Status</td>
+                                <td>Action</td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                        {% for key,order in binding %}
+                          <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="heading1"
+                                 style="padding: 0 15px">
+                              <table class="panel-title">
+                                <tr>
+                                  <td>{{ order.order_id }}
+                                    {% if order.cloud_id %}
+                                      <i class="giga icon-cwf" style="color: #1f5268;width: 16px" data-toggle="tooltip"
+                                         title="{{ cwf }}"></i>
+                                    {% endif %}
+                                  </td>
+                                  <td>{{ order.create_time }}</td>
+                                  <td>{{ order.order_status_show }}</td>
+                                  <td>
+                                    {% if order.has_details %}
+                                      <a
+                                        class="btn-view"
+                                        role="button"
+                                        data-toggle="collapse"
+                                        data-parent="#accordion"
+                                        href="{{ '#collapse'~order.id }}"
+                                        aria-expanded="true"
+                                        aria-controls="{{ '#collapse'~order.id }}">
+                                        View Item
+                                      </a>
+                                    {% else %}
+                                      <div
+                                        title="The order cannot apply for RMA"
+                                        data-toggle="tooltip">
+                                        <a class="btn btn-view disabled btn-view-only">
+                                          View Item
+                                        </a>
+                                      </div>
+                                    {% endif %}
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                            <div
+                              id="{{ 'collapse'~order.id }}"
+                              class="panel-collapse collapse "
+                              role="tabpanel"
+                              aria-labelledby="{{ 'heading'~order.id }}">
+                              <div class="panel-body">
+                                <table class="sku table">
+                                  <tr class="table-header">
+                                    <td width="10%">Image</td>
+                                    <td width="10%">Item Code</td>
+                                    <td width="">Order ID</td>
+                                    <td width="">Product Name</td>
+                                    <td width="5%">Qty</td>
+                                    <td width="12%">Total Amount</td>
+                                    <td width="15%"></td>
+                                  </tr>
+                                  {% for line in order.details %}
+                                    {% for item in line %}
+                                      <tr>
+                                        <td><img style="width: 50px" src="{{ item.image }}"></td>
+                                        <td>{{ item.sku }}</td>
+                                        <td>{{ item.order_id }}</td>
+                                        <td class="text-center">
+                                          <div class="name-line2" title="{{ item.name }}">{{ item.name }}</div>
+                                        </td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>
+                                        <span
+                                          data-toggle="popover"
+                                          data-trigger="focus hover"
+                                          data-placement="bottom"
+                                          data-html="true"
+                                          data-content="{{ item.price_detail }}">
+                                          {{ item.total|formatPrice(currency) }}
+                                        </span>
+                                        </td>
+                                        <td>
+                                          <button
+                                            class="btn-create"
+                                            data-order-id="{{ order.order_id|replace({'#':'_',' ':'_','?':'_','.':'_'}) }}"
+                                            data-real-order-id="{{ order.order_id }}"
+                                            data-purchase-order-id="{{ item.order_id }}"
+                                            data-order-type="1"
+                                            data-product-id="{{ item.product_id }}"
+                                            data-action="sales_order_rma"
+                                            data-id="itemshow_1">
+                                            + Create RMA
+                                          </button>
+                                        </td>
+                                      </tr>
+                                    {% endfor %}
+                                  {% endfor %}
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                      <div>
+                        <div id="sales_order_rma"></div>
+                        <div style="text-align: center;display: none">
+                          <button class="btn btn-submit click_submit">Submit</button>
+                        </div>
+                      </div>
+                    </div>
+                    {% set no_binding_active = '' %}
+                    {% if is_single %}
+                      {% if no_binding is empty %}
+                        {% set no_binding_active = '' %}
+                      {% else %}
+                        {% set no_binding_active = 'active' %}
+                      {% endif %}
+                    {% else %}
+                      {% if is_single_no_binding_active == true %}
+                        {% set no_binding_active = 'active' %}
+                      {% endif %}
+                    {% endif %}
+                    <div role="tabpanel" class="tab-pane {{ no_binding_active }}" id="nobinding">
+                      <div class="">
+                        <table class="table sku0">
+                          <tr>
+                            <th class="text-center" width="10%">Image</th>
+                            <th class="text-center" width="10%">Item Code</th>
+                            <th class="text-center" width="">Product Name</th>
+                            <th class="text-center" width="5%">Qty</th>
+                            <th class="text-center" width="12%">Total Amount</th>
+                            <th class="text-center" width="15%">Action</th>
+                          </tr>
+                          {% if no_binding and no_binding is not empty %}
+                            {% for item in no_binding %}
+                              <tr>
+                                <td class="text-center"><img style="width: 50px;"
+                                                             src="{{ item.image }}">
+                                </td>
+                                <td class="text-center">{{ item.sku }}</td>
+                                <td class="text-center">
+                                  <div class="name-line2" title="{{ item.name }}">{{ item.name }}</div>
+                                </td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-center">
+                                <span
+                                  data-toggle="popover"
+                                  data-trigger="focus hover"
+                                  data-placement="bottom"
+                                  data-html="true"
+                                  data-content="{{ item.price_detail }}">
+                                   {{ item.total|formatPrice(currency) }}
+                                 </span>
+                                </td>
+                                <td class="text-center">
+                                  {% if  item.product_type  == 0 or item.product_type  == 3 %}
+                                    <button
+                                      data-action="purchase_order_rma"
+                                      data-order-id="{{ item.order_id|replace({'#':'_',' ':'_','?':'_','.':'_'}) }}"
+                                      data-order-type="2"
+                                      data-real-order-id="{{ item.order_id }}"
+                                      data-product-id="{{ item.product_id|replace({'#':'_',' ':'_','?':'_','.':'_'}) }}"
+                                      class="btn-create">
+                                      + Create RMA
+                                    </button>
+                                  {% endif %}
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          {% else %}
+                            <tr>
+                              <td>No Records!</td>
+                            </tr>
+                          {% endif %}
+                        </table>
+                      </div>
+                      <div>
+                        <div id="purchase_order_rma"></div>
+                        <div style="text-align: center;display: none">
+                          <button class="btn btn-submit click_submit_purchase">Submit</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+          <!--Reshipment Order-->
+          <div class="tab-pane  {% if show_tab == 1 %} active {% endif %}" id="tab-reshipment">
+            <fieldset>
+              <div id="order-reshipment"></div>
+            </fieldset>
+          </div>
+          <!--Refund Application-->
+          <div class="tab-pane  {% if show_tab == 2 %} active {% endif %}" id="tab-refund">
+            <fieldset>
+              <div id="order-refund"></div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {# modal #}
+  <div
+    class="modal fade bs-example-modal-lg"
+    id="show_image"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content img-modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+        </div>
+      </div>
+    </div>
+  </div>
+  {# modal end #}
+
+  {# modal #}
+  <div class="modal fade" id="myModalOrderType" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true"
+       data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+            &times;
+          </button>
+          <h4 class="modal-title">
+            Attention
+          </h4>
+        </div>
+        <div class="modal-body">
+          <p>This Order ID is connected with both a Purchase Order and a Sales Order. Please select which order type
+            that you would like to apply the RMA to.</p>
+          <div class="modal-body-group">
+            <div class="radio">
+              <label>
+                <input type="radio" name="filter_order_type" value="2" onchange="selectSalesAndPurchase(2)"> Purchase
+                Order
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="filter_order_type" value="1" onchange="selectSalesAndPurchase(1)"> Sales Order
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top: 0;text-align: center;">
+          <button id="btnOrderTypeToSearch" type="button" class="btn btn-primary disabled"
+                  onclick="btnOrderTypeToSearch(this)">Create RMA
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {# modal end #}
+
+  {# kimi js #}
+  <script>
+    let body = $('body');
+    let $filter_order_id = $('input[name=\'filter_order_id\']');
+    let $filter_order_type = $('input[name=\'filter_order_type\']');
+    let sales_order_rma = $("#sales_order_rma");
+    let purchase_order_rma = $('#purchase_order_rma');
+    let isJapan = {{ is_japan }};
+    //保留原来的地址信息
+    let addressInfo={};
+    $("body").on('click','.btn-modification',function () {
+      getAddressInfo();
+    });
+    function getAddressInfo(){
+      $(".modifiyAddress-modal").find('input').each(function (key, item) {
+        item = $(item);
+        let name = item.attr('name');
+        let value = item.val().trim();
+        addressInfo[name] = value;
+      });
+    }
+
+    // popover
+    $(function () {
+      $('[data-toggle="popover"]').popover({container: 'body',});
+      if (location.href.split("fiter_order_id=")[1]){
+        let fiter_order_id = location.href.split("fiter_order_id=")[1].split("&")[0];
+        $("#form_search").children('input[name=filter_order_id]').val(fiter_order_id)
+        filter_click()
+      }
+    })
+    // autocomplete
+    $filter_order_id.autocomplete({
+      'source': function (request, response) {
+        $.ajax({
+          url: 'index.php?route=account/rma/manage/autocomplete&filter_name=' + encodeURIComponent(request),
+          dataType: 'json',
+          success: function (json) {
+            response($.map(json, function (item) {
+              return {label: item['order_id'], value: item['order_id'], order_type: item['order_type']}
+            }));
+          }
+        });
+      },
+      'select': function (item) {
+        $filter_order_id.val(item['value']);
+        //$filter_order_type.val(item['order_type'])
+        $("#errorOrderEmpty").hide();
+      }
+    });
+    // filter_click
+    function filter_click(){
+      let data = {};
+      let url = $('#form_search').attr('action');
+      let params = $('#form_search').serializeArray();
+      params.map(function (item) {
+        data[item['name']] = item['value'];
+      })
+      if (!data['filter_order_id']) {
+        return false;
+      }
+
+      let isEnd = false;
+      $.ajax({
+        url: "index.php?route=account/rma_management/checkSalesAndPurchase",
+        async: false,
+        type: 'POST',
+        dataType: "json",
+        data: data,
+        success: function (json, textStatus, jqXHR) {
+          if (json.code) {//如果销售单号与采购单号相同
+            if (json.data.orderType == "1+2") {
+              $("#myModalOrderType").modal();
+              isEnd = true;
+            }
+          }
+        },
+        complete: function () {
+        }
+      });
+      if (isEnd) {
+        return false;
+      }
+
+      fromPost(url, data);
+      return false;
+    }
+    $('#filter_button').on('click', function () {
+      filter_click()
+    })
+    // view sku 点击时间
+    $('.btn-view').on('click', function () {
+      let item = $(this);
+      if (item.hasClass('active-rma')) {
+        item.removeClass('active-rma')
+      } else {
+        item.addClass('active-rma')
+      }
+    })
+    // create sales order rma
+    $('[data-action="sales_order_rma"]').on('click', function () {
+      let item = $(this);
+      let params = {};
+      params['order_id'] = item.attr('data-real-order-id');
+      params['resolve_order_id'] = item.attr('data-order-id');
+      params['purchase_order_id'] = item.attr('data-purchase-order-id');
+      params['order_type'] = item.attr('data-order-type');
+      params['product_id'] = item.attr('data-product-id');
+      // 判断active属性
+      if (item.hasClass('active-rma')) {
+        item.removeClass('active-rma')
+        item.text('+ Create RMA');
+        // 删除rma
+        let resolve_id = 'sales_order_rma_'
+          + params['resolve_order_id']
+          + params['purchase_order_id']
+          + params['product_id'];
+        sales_order_rma.children('div').each(function (key, item) {
+          let id = $(item).attr('id');
+          if (id === resolve_id) {
+            $(item).remove();
+          }
+        })
+        if (sales_order_rma.children('div').length === 0) {
+          $('.click_submit').hide();
+        }
+      } else {
+        // 校验是否重复申请rma
+        let flag = true;
+        if (sales_order_rma.children('div').length > 0) {
+          let resolve_id = 'sales_order_rma_' + params['resolve_order_id'] + params['product_id'];
+          sales_order_rma.children('div').each(function (key, item) {
+            let id = $(item).attr('id');
+            if (id === resolve_id) {
+              flag = false;
+            }
+          })
+        }
+        if (!flag) {
+          layer.msg('You have already create rma relate to this sales order.Please submit first.');
+          return false;
+        }
+        $.ajax({
+          url: 'index.php?route=account/rma/create_rma',
+          type: 'post',
+          data: params,
+          dataType: 'json',
+          beforeSend: function () {
+            block.blockUI();
+          },
+          complete: function () {
+            block.unBlockUI();
+          },
+          success: function (res) {
+            let code = parseInt(res['code']);
+            if (code === 2) {
+              layer.confirm('{{ error_sales_order_rma }}', {
+                title: "RMA Application Failed",
+                skin: 'oris-layer',
+                btn: ["OK"],
+                scrollbar: false
+              }, function (index) {
+                layer.close(index);
+              });
+              return;
+            }
+            if (code === 1) {
+              layer.msg(res.msg);
+              return;
+            }
+            sales_order_rma.append(res.data);
+            sales_order_rma.parent('div').children('div').show();
+            item.addClass('active-rma');
+            item.text('Remove RMA');
+            $('.click_submit').show();
+          },
+          error: function (e) {
+            console.error(e);
+          }
+        })
+        return false;
+      }
+    })
+    $('[data-action="purchase_order_rma"]').on('click', function () {
+      let item = $(this);
+      let params = {};
+      params['order_id'] = item.attr('data-real-order-id');
+      params['resolve_order_id'] = item.attr('data-order-id');
+      params['order_type'] = item.attr('data-order-type');
+      params['product_id'] = item.attr('data-product-id');
+      if (item.hasClass('active-rma')) {
+        item.removeClass('active-rma');
+        item.text('+ Create RMA');
+        let resolve_id = 'purchase_order_rma_' + params['resolve_order_id'] + params['product_id'];
+        purchase_order_rma.children('div').each(function (key, item) {
+          let id = $(item).attr('id');
+          if (id === resolve_id) {
+            $(item).remove();
+          }
+        })
+        if (purchase_order_rma.children('div').length === 0) {
+          $('.click_submit_purchase').hide();
+        }
+      } else {
+        // 校验是否重复申请rma
+        let flag = true;
+        if (purchase_order_rma.children('div').length > 0) {
+          let resolve_id = 'purchase_order_rma_' + params['resolve_order_id'] + params['product_id'];
+          purchase_order_rma.children('div').each(function (key, item) {
+            let id = $(item).attr('id');
+            if (id === resolve_id) {
+              flag = false;
+            }
+          })
+        }
+        if (!flag) {
+          layer.msg('You have already create rma relate to this purchase order.Please submit first.');
+          return false;
+        }
+        $.ajax({
+          url: 'index.php?route=account/rma/create_rma',
+          type: 'post',
+          data: params,
+          dataType: 'json',
+          beforeSend: function () {
+            block.blockUI();
+          },
+          complete: function () {
+            block.unBlockUI();
+          },
+          success: function (res) {
+            if (res['code'] == 1) {
+              layer.msg(res.msg);
+            } else {
+              purchase_order_rma.append(res.data);
+              purchase_order_rma.parent('div').children('div').show();
+              item.addClass('active-rma');
+              item.text('Remove RMA');
+              $('.click_submit_purchase').show();
+            }
+          },
+          error: function (e) {
+            console.error(e);
+          }
+        })
+      }
+      return false;
+    })
+    // 提交表单
+    // 销售订单rma提交订单
+    body.delegate('.click_submit', 'click', function () {
+      let button = $(this);
+      button.button('loading');
+      let sales_order_divs = [];
+      $('#sales_order_rma').children('div').map(function (key, item) {
+        sales_order_divs.push($(item));
+      })
+      let check_results = [];
+      for (let item of sales_order_divs) {
+        let res = check_sales_order_rma_form(item);
+        if (false === res) {
+          button.button('reset');
+          return false;
+        }
+        check_results.push(res);
+      }
+      check_results = check_results.map(function (item) {
+        return $.ajax({
+          url: 'index.php?route=account/rma_management/saveRmaRequest',
+          type: 'post',
+          data: item,
+          cache: false,
+          contentType: false,
+          processData: false,
+          dataType: 'json',
+        });
+      })
+      block.blockUI();
+      $.when.apply(this, check_results).done(function () {
+        block.unBlockUI();
+        button.button('reset');
+        let ret = arguments;
+        if (check_results.length <= 1) {
+          ret = [ret];
+        }
+        let errors = [];  // 错误信息列表
+        let rmaTypes = []; // 处理跳转问题
+        var res = ret[0][0];
+        if (res.code==-1){
+          $.toast({
+            heading: false,
+            text: res.msg.error,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false,
+          });
+          return;
+        }
+        for (let i in ret) {
+          let res = ret[i][0];
+          if (res && res.hasOwnProperty('error')) {
+            res.error.map(function (item) {
+              errors.push(item['errorMsg']);
+            })
+          } else {
+            $(sales_order_divs[i]).remove();
+          }
+          if (res && res.hasOwnProperty('rma_type')) {
+            rmaTypes.push(parseInt(res['rma_type']));
+          }
+        }
+
+        if (errors.length > 0) {
+          layer.msg(errors.join('<br>'))
+        } else {
+          $(".click_submit").hide();
+          rmaTypes = [...new Set(rmaTypes)].reduce(function (prev, cur) {
+            return prev + cur;
+          }, 0);
+          {# 1-重发 2-退款 3-重发又退款 #}
+          rmaTypes = parseInt(rmaTypes >= 3 ? 3 : rmaTypes);
+          layer.msg('Submit Successful.', {shift: -1}, function () {
+            if (rmaTypes === 3) {
+              window.location.href = 'index.php?route=account/rma_management';
+            } else {
+              window.location.href = 'index.php?route=account/rma_management&tab_index=' + rmaTypes;
+            }
+          })
+        }
+      }).fail(function (e) {
+        block.unBlockUI();
+        button.button('reset');
+        console.error(e);
+      })
+      return false;
+    })
+
+    function check_sales_order_rma_form(item) {
+      let id = $(item).attr('id').replace('sales_order_rma_', '');
+      let index = 0;
+      let form_id = 'form_' + id;
+      let form = $(document.getElementById(form_id));
+      // complete
+      let order_status = form.find('input[name="orderStatus"]').val();
+      // 校验purchase order id 不为空
+      if (!checkEmpty(form.find('select[name="' + 'orderId' + index + '"]'))) {
+        return false;
+      }
+      // 校验store 不为空
+      if (!checkEmpty(form.find('input[name="' + 'store' + index + '"]'))) {
+        return false;
+      }
+      // 校验damage qty
+      let damage_qty = form.find('input[name="' + 'rmaQty' + index + '"]');
+      if (!damage_qty.val()) {
+        layer.msg('DamagePackagesQty can not be empty.')
+        damage_qty.addClass('has-error');
+        return false;
+      }
+      let temp_damage_qty = Number(parseInt(damage_qty.val()));
+      if (temp_damage_qty < 0) {
+        layer.msg('DamagePackagesQty must be greater than or equal to 0.')
+        damage_qty.addClass('has-error');
+        return false;
+      }
+      // 只有complete的销售订单对于损坏数量校验
+      if (order_status.toLowerCase() === 'complete') {
+        let max = Number(parseInt(damage_qty.attr('max')));
+        if (temp_damage_qty > max) {
+          layer.msg('DamagePackagesQty can not be greater than ' + max + '.')
+          damage_qty.addClass('has-error');
+          return false;
+        }
+      }
+
+      // 校验Reason 不为空
+      if (!checkEmpty(form.find('select[name="' + 'reason' + index + '"]'))) {
+        return false;
+      }
+      // 校验comments 不为空
+      if (!checkEmpty(form.find('textarea[name="' + 'comments' + index + '"]'))) {
+        return false;
+      }
+      // 校验files不能为空
+      if (!img_container.hasOwnProperty(id)) {
+        layer.msg('File upload can not be empty.');
+        return false;
+      }
+      // 先校验reship refund至少有一个选择项
+      let checkBox = [];
+      form.find('input[name="rma_type' + index + '[]"]').map(function (k, item) {
+        checkBox.push($(item).prop('checked'));
+      })
+      if (checkBox.indexOf(true) === -1) {
+        layer.msg('Please select at least one reshipment or refund option.');
+        return false;
+      }
+      // 校验reshipment qty合法
+      let reship_qty = form.find('input[name="' + 're_ship_to_qty' + index + '"]');
+      if (checkBox[0] && reship_qty.hasClass('has-error')) {
+        layer.msg('Please correct reshiped qty first.');
+        return false;
+      }
+      // 校验refund合法
+      let refund_amount = form.find('input[name="' + 'refund_amount' + index + '"]');
+      if (checkBox[1] && refund_amount.hasClass('has-error')) {
+        layer.msg('Please correct amount first.');
+        return false;
+      }
+      form.find('input').removeClass('has-error');
+      form.find('select').removeClass('has-error');
+      // 组装传到后台的formdata
+      let formData = new FormData;
+      form.serializeArray().map(function (item) {
+        formData.append(item['name'], item['value']);
+      })
+      // 加入files
+      img_container[id].imgFile.map(function (item) {
+        formData.append('files' + index + '[]', item);
+      })
+      return formData;
+    }
+
+    // 采购订单rma提交
+    body.delegate('.click_submit_purchase', 'click', function () {
+      let button = $(this);
+      button.button('loading');
+      let order_divs = [];
+      $('#purchase_order_rma').children('div').map(function (key, item) {
+        order_divs.push($(item));
+      })
+      let check_results = [];
+      for (let item of order_divs) {
+        let res = check_purchase_order_rma_form(item);
+        if (false === res) {
+          button.button('reset');
+          return false;
+        }
+        check_results.push(res);
+      }
+      check_results = check_results.map(function (item) {
+        return $.ajax({
+          url: 'index.php?route=account/rma/purchaseorderrma/saveRmaRequest',
+          type: 'post',
+          data: item,
+          cache: false,
+          contentType: false,
+          processData: false,
+          dataType: 'json',
+        });
+      })
+      block.blockUI();
+      $.when.apply(this, check_results).done(function () {
+        block.unBlockUI();
+        button.button('reset');
+        let ret = arguments;
+        if (check_results.length <= 1) {
+          ret = [ret];
+        }
+        let errors = [];
+        for (let i in ret) {
+          let res = ret[i][0];
+          if (res && res.hasOwnProperty('error')) {
+            res.error.map(function (item) {
+              errors.push(item['errorMsg']);
+            })
+          } else {
+            $(order_divs[i]).remove();
+          }
+        }
+        if (errors.length > 0) {
+          layer.msg(errors.join('<br>'))
+        } else {
+          button.hide();
+          layer.msg('Submit Successful.', {shift: -1}, function () {
+            window.location.href = 'index.php?route=account/rma_management&tab_index=2';
+          })
+        }
+      }).fail(function (e) {
+        block.unBlockUI();
+        button.button('reset');
+        console.error(e);
+      })
+      return false;
+    })
+
+    function check_purchase_order_rma_form(item) {
+      let id = $(item).attr('id').replace('purchase_order_rma_', '');
+      let form_id = 'form_' + id;
+      let form = $('#' + form_id);
+      // 校验返还数量 不为空
+      let return_qty = form.find('input[name="returnQty"]');
+      if (return_qty.hasClass('has-error') || !checkEmpty(return_qty)) {
+        return false;
+      }
+      // 校验返还金额 不为空
+      let refund = form.find('input[name="refund"]');
+      if (refund.hasClass('has-error') || !checkEmpty(refund, 'Refund can not be empty.')) {
+        return false;
+      }
+      // 校验Reason 不为空
+      if (!checkEmpty(form.find('select[name="rmaReason"]'))) {
+        return false;
+      }
+      // 校验comments 不为空
+      if (!checkEmpty(form.find('textarea[name="comments"]'))) {
+        return false;
+      }
+      form.find('input').removeClass('has-error');
+      form.find('select').removeClass('has-error');
+      let formData = new FormData;
+      form.serializeArray().map(function (item) {
+        formData.append(item['name'], item['value']);
+      })
+      // 加入files
+      if (img_container.hasOwnProperty(id)) {
+        img_container[id].imgFile.map(function (item, key) {
+          formData.append('file' + key, item);
+        })
+      }
+      return formData;
+    }
+
+    function checkEmpty(input, msg) {
+      input = $(input);
+      let name_show = input.parent('div').find('label').html();
+      let value = input.val();
+      if (!value || value === '' || value === null || value === undefined) {
+        msg = msg || (name_show + ' can not be empty.');
+        layer.msg(msg);
+        input.addClass('has-error');
+        return false;
+      } else {
+        input.removeClass('has-error');
+      }
+      return true;
+    }
+
+    // events
+    // 地址模态框点击事件 包含相关校验
+    body.delegate('.modal_click', 'click', function () {
+      let id = $(this).attr('data-id');
+      let modal_id = 'myModal_' + id;
+      // 在这里校验地址栏输入是否为空
+      let modal = $('#' + modal_id);
+      let can_close;
+      let address = {};
+      modal.find('input').each(function (key, item) {
+        item = $(item);
+        let show_name = item.parent('div').find('label').html();
+        let name = item.attr('name').substr(0, (item.attr('name').length - 1));
+        let value = item.val().trim();
+        address[name] = value;
+        if (!value || value === '' || value === null || value === undefined) {
+          layer.msg(show_name + ' can not be empty.');
+          item.addClass('has-error');
+          can_close = false;
+          return false;
+        } else {
+          item.removeClass('has-error');
+          can_close = true;
+        }
+        // email 校验
+        if (name === 're_ship_to_email' && value) {
+          //let reg_email = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+          // #21416需求
+          let reg_email = /^(([a-zA-Z0-9]{1}([\w\.\-]*)[a-zA-Z0-9]{1})|([a-zA-Z0-9]{1,}))+@[\w\-]+(\.[\w\-]+)+$/;
+          if (reg_email.test(value)) {
+            item.removeClass('has-error');
+            can_close = true;
+          } else {
+            layer.msg(show_name + ' is invalid.');
+            item.addClass('has-error');
+            can_close = false;
+          }
+        }
+      });
+      //为空校验不通过不进行下一步校验
+      if (!can_close){
+        return
+      }
+      //#26062 检验poboxes和偏远地区
+      var formData={
+        sales_order_id:$("#sales_order_rma").find('input[name=sales_order_id]').val(),
+        re_ship_to_address:$(".modifiyAddress-modal").find('input[name=re_ship_to_address0]').val(),
+        re_ship_to_state:$(".modifiyAddress-modal").find('input[name=re_ship_to_state0]').val()
+      }
+      $.ajax({
+        url: "index.php?route=account/rma_management/saveRmaRequestCheckAddress",
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json;charset=UTF-8',
+        traditional: true,
+        data: JSON.stringify(formData),
+        success: function (res) {
+          if (res.code !=0){
+            var name = res.msg.field_name;
+            var error = res.msg.error;
+            $(".modifiyAddress-modal").find('.error-msg').html('');
+            $(".modifiyAddress-modal").find(`.${name}`).find('.error-msg').html(error);
+          }else{
+            //保存成功，更新地址信息
+            getAddressInfo();
+            $(".modifiyAddress-modal").find('.error-msg').html('');
+            // 点击ok关闭模态框
+            if (can_close) {
+              let reshipment = modal.parents('.reshipment');
+              reshipment.find('.c_ship_name').val(
+                address['re_ship_to_name'] + '(' + [address['re_ship_to_phone'], address['re_ship_to_email']].join(',') + ')'
+              );
+              reshipment.find('.c_ship_address').val(
+                [
+                  address['re_ship_to_address'], address['re_ship_to_city'], address['re_ship_to_postal_code'],
+                  address['re_ship_to_state'], address['re_ship_to_country']
+                ].filter(function (item) {
+                  return item;
+                }).join(',')
+              )
+              modal.modal('hide');
+            }
+          }
+        }
+      });
+
+    })
+
+    //地址模态框关闭事件（保存不成功的值还原）
+    $('body').on('hidden.bs.modal', '.modifiyAddress-modal', function () {
+      $(".modifiyAddress-modal").find('input').each(function (key, item) {
+        item = $(item);
+        let name = item.attr('name');
+        $(".modifiyAddress-modal").find('.error-msg').html('');
+        $("input[name="+name+"]").val(addressInfo[name]).removeClass('has-error');
+
+      });
+    });
+    // purchase_order 联动
+    body.delegate('.purchase_order', 'change', function () {
+      let select = $(this);
+      let id = select.attr('data-id');
+      let index = select.attr('data-index')
+      let selected_option = select.find('option:selected');
+      let form = $('#form_' + id);
+      form.find('.rma_store').val(selected_option.attr('data-model'));
+      form.find('.rma_qty').val(selected_option.attr('data-qty'));
+      // 修正重发数量
+      let reship_qty = form.find('input[name="re_ship_to_qty' + index + '"]')
+      reship_qty.val(selected_option.attr('data-qty'));
+      reship_qty.attr('max', selected_option.attr('data-qty'));
+      // 修正重发价格
+      let refund = form.find('input[name="refund_amount' + index + '"]')
+      refund.val(selected_option.attr('data-refund'));
+      refund.attr('max', selected_option.attr('data-refund'));
+      // 修正提示
+      if (selected_option.attr('data-tip')) {
+        form.find('.prompt-tip').html(selected_option.attr('data-tip'));
+        form.find('.prompt-msg').html(selected_option.attr('data-msg'));
+        form.find('.prompt-tip-msg').show();
+      } else {
+        form.find('.prompt-tip-msg').hide();
+      }
+    })
+
+    // 校验重发数量
+    function checkInputNumber(input) {
+      var max = parseInt($(input).attr('max'));
+      var min = parseInt($(input).attr('min'));
+      var value = parseInt($(input).val());
+      if (value < min) {
+        $(input).addClass('has-error');
+        $(input).focus();
+      } else if (value > max) {
+        show_error(input);
+        $(input).focus();
+      } else if (value >= min && value <= max) {
+        hide_error(input);
+      }
+    }
+
+    // 校验退款金额
+    function checkSalesRefundAmount(input) {
+      var value = $(input).val();
+      var dec = isJapan ? 0 : 2;
+      var totalPrice = Number($(input).attr('max'));
+      if (value > totalPrice) {
+        show_error(input, 'The amount entered exceeds the total amount(' + totalPrice.toFloor(dec) + ') of the order details!');
+        $(input).focus();
+        return false;
+      }
+      if (isJapan) {
+        if (!value.toString().isInteger()) {
+          show_error(input, 'Refund amount must be integer.');
+          $(input).focus();
+          return false;
+        }
+      } else {
+        if (!(value.toString().isFloat() || value.toString().isInteger())) {
+          show_error(input, 'Refund amount invalid.');
+          $(input).focus();
+          return false;
+        }
+      }
+      hide_error(input);
+      return true;
+    }
+
+    function show_error(input, msg) {
+      input = $(input);
+      let prompt = input.parents('div:first').find('.prompt');
+      if (msg) {
+        if (prompt.find('i').length > 0) {
+          prompt.find('i').html(msg);
+        }
+        if (prompt.find('span').length > 0) {
+          prompt.find('span').html(msg);
+        }
+      }
+      prompt.show();
+      input.addClass('has-error');
+    }
+
+    function hide_error(input) {
+      input = $(input);
+      input.parents('div:first').find('.prompt').hide();
+      input.removeClass('has-error');
+    }
+
+    // 校验退款数量
+    function checkRefundQty(input) {
+      var max = Number($(input).attr('max'));
+      var min = Number($(input).attr('min'));
+      var value = Number(parseInt($(input).val()));
+      let form = $(input).parents('form');
+      if (value < min) {
+        show_error(input, 'Return quantity can not be lower than 0.')
+        $(input).focus();
+      } else if (value > max) {
+        show_error(input, 'The quantity entered exceeds the returnable quantity of the order details!');
+        $(input).focus();
+      } else if (value >= min && value <= max) {
+        hide_error(input);
+        // form
+        let refundInput = form.find('input[name="refund"]');
+        let refundRange = JSON.parse(refundInput.attr('data-range'));
+        form.find('input[name="refund"]').attr('max', refundRange[value])
+      }
+      // 同步校验下退款金额
+      let unit_refund = form.find('input[name="refund"]').val();
+      if (unit_refund !== '' && unit_refund !== undefined && unit_refund !== null) {
+        checkRefundAmount(form.find('input[name="refund"]'), true);
+      }
+    }
+
+    // 校验退款金额
+    function checkRefundAmount(input, immediate) {
+      immediate = !!immediate;
+      if (!immediate) return;
+      var value = $(input).val();
+      var dec = isJapan ? 0 : 2;
+      var totalPrice = Number($(input).attr('max'));
+      // let error_input = $(input)
+      if (value > totalPrice) {
+        show_error(input, 'The amount entered exceeds the total amount(' + totalPrice.toFloor(dec) + ') of the order details!');
+        $(input).focus();
+        return false;
+      }
+      if (isJapan) {
+        if (!value.toString().isInteger()) {
+          show_error(input, 'Refund amount must be integer.');
+          $(input).focus();
+          return false;
+        }
+      } else {
+        if (!(value.toString().isFloat() || value.toString().isInteger())) {
+          show_error(input, 'Refund amount invalid.');
+          $(input).focus();
+          return false;
+        }
+      }
+      hide_error(input);
+      return true;
+    }
+  </script>
+  {# kimi end #}
+  <script>
+    $("body").delegate('.request .title', 'click', function () {
+      var content = $(this).parent().find('.content');
+      var check = $(this).find(".check");
+      if (content.css("display") === 'none') {
+        check.prop("checked", true);
+        content.show();
+      } else {
+        content.hide();
+        check.prop("checked", false);
+      }
+    });
+    $('#order-reshipment').load('index.php?route=account/rma_management/reshipment');
+    $('#order-refund').load('index.php?route=account/rma_management/refund');
+  </script>
+
+  <script>
+    var img_container = {};
+    $(function () {
+      let body = $('body');
+      // 鼠标经过显示删除按钮
+      body.delegate('.content-img-list .content-img-list-item', 'mouseover', function () {
+        $(this).children('a').removeClass('hide');
+      });
+      // 鼠标离开隐藏删除按钮
+      body.delegate('.content-img-list .content-img-list-item', 'mouseleave', function () {
+        $(this).children('a').addClass('hide');
+      });
+      // 单个图片删除
+      body.delegate('.content-img-list .content-img-list-item a .fa-trash-o', "click", function () {
+        var index = $(this).parent().parent().index();
+        var boxId = $(this).parents('.content-img').find('.content-img-list');
+        var id = boxId.attr('data-id');
+        img_container[id].imgSrc.splice(index, 1);
+        img_container[id].imgFile.splice(index, 1);
+        img_container[id].imgName.splice(index, 1);
+        addNewContent(boxId);
+        if (img_container[id].imgSrc.length < 4) { //显示上传按钮
+          boxId.parents('.content-img').find('.file').show();
+        }
+        if (img_container[id].imgSrc.length == 0) { // 图片全部删除之后清除图片对象
+          delete img_container[id];
+        }
+      });
+      //查看原图
+      body.delegate('.content-img-list .content-img-list-item a .fa-search-plus', "click", function () {
+        var index = $(this).parent('a').attr('index');
+        var id = $(this).parents('.content-img').find('.content-img-list').attr('data-id');
+        let imgSrc = img_container[id].imgSrc;
+        let modal = $(".img-modal-content .modal-body");
+        modal.html("");
+        modal.html('<div class="show"><img src="' + imgSrc[index] + '" alt=""><div>');
+        $('#show_image').modal('show');
+      });
+      //图片上传
+      body.delegate('.upload', 'change', function (e) {
+        var len = this.files.length;
+        var num = $("ul.content-img-list").children().length;
+        var total = Number(len) + Number(num)
+        if (total > 20) {
+          return layer.msg("upload files can not be more than 20.");
+        }
+        if (len > 0) {
+          for (var i = 0, j = len; i < j; ++i) {
+            var imgSize = this.files[i].size;
+            var type = this.files[i].type;
+            if (imgSize > 1024 * 1024 * 10) { //10M
+              return layer.msg("upload files can not greater than 10M.");
+            }
+            if (type !== 'image/png' && type !== 'image/jpeg') {
+              return layer.msg("only allow files[jpg,png].");
+            }
+          }
+        }
+
+        var imgBox = $(this).parents('.content-img').find('.content-img-list');
+        var id = imgBox.attr('data-id');
+        if (!img_container.hasOwnProperty(id)) {
+          img_container[id] = {imgName: [], imgSrc: [], imgFile: [],};
+        }
+        var fileList = this.files;
+        for (let i = 0; i < fileList.length; i++) {
+          var imgSrcI = getObjectURL(fileList[i]);
+          if (fileList[i].type === 'application/pdf') {
+            imgSrcI = '{{ asset("image/icons/pdf.png") }}';
+          }
+          img_container[id].imgName.push(fileList[i].name);
+          img_container[id].imgSrc.push(imgSrcI);
+          img_container[id].imgFile.push(fileList[i]);
+        }
+        addNewContent(imgBox);
+        this.value = null; //解决无法上传相同图片的问题
+      });
+    });
+
+    //删除
+    function removeImg(obj, index) {
+      imgSrc.splice(index, 1);
+      imgFile.splice(index, 1);
+      imgName.splice(index, 1);
+      var boxId = ".content-img-list";
+      addNewContent(boxId);
+    }
+
+    //图片展示
+    function addNewContent(obj) {
+      // console.log(imgSrc)
+      let id = $(obj).attr('data-id');
+      let imgSrc = img_container[id].imgSrc;
+      $(obj).html("");
+      for (var a = 0; a < imgSrc.length; a++) {
+        var oldBox = $(obj).html();
+        $(obj).html(
+          oldBox
+          + '<li class="content-img-list-item"><img src="' + imgSrc[a]
+          + '" alt=""><a index="' + a
+          + '" class="hide delete-btn"><i class="fa fa-trash-o"></i><i class="fa fa-search-plus""></i> </a></li>'
+        );
+      }
+    }
+
+    //建立一個可存取到該file的url
+    function getObjectURL(file) {
+      var url = null;
+      if (window.createObjectURL != undefined) { // basic
+        url = window.createObjectURL(file);
+      } else if (window.URL != undefined) { // mozilla(firefox)
+        url = window.URL.createObjectURL(file);
+      } else if (window.webkitURL != undefined) { // webkit or chrome
+        url = window.webkitURL.createObjectURL(file);
+      }
+      return url;
+    }
+
+
+    function selectSalesAndPurchase(value) {
+      $("#btnOrderTypeToSearch").removeClass("disabled");
+    }
+
+    function btnOrderTypeToSearch(btn) {
+      let data = {};
+      let url = $('#form_search').attr('action');
+      let params = $('#form_search').serializeArray();
+      let filter_order_type = $("#myModalOrderType").find('input[name="filter_order_type"]:checked').val();
+      params.push({"name": "filter_order_type", "value": filter_order_type});
+      params.map(function (item) {
+        data[item['name']] = item['value'];
+      });
+      if (!data['filter_order_id'] || !data['filter_order_type']) {
+        return false;
+      }
+
+      fromPost(url, data);
+      return false;
+    }
+
+    /**
+     * 创建表单方法
+     * @param URL
+     * @param PARAMS  JSON对象
+     * @returns {HTMLFormElement}
+     */
+    function fromPost(URL, PARAMS) {
+      var temp = document.createElement("form");
+      temp.action = URL;
+      temp.method = "post";
+      temp.style.display = "none";
+      for (var x in PARAMS) {
+        var opt = document.createElement("input");
+        opt.type = "text";
+        opt.name = x;
+        opt.value = PARAMS[x];
+        temp.appendChild(opt);
+      }
+      document.body.appendChild(temp);
+      temp.submit();
+      return temp;
+    }
+  </script>
+
+{{ footer }}

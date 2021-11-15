@@ -1,0 +1,464 @@
+<link rel="stylesheet" href="admin/view/stylesheet/totalStyle.css">
+<link rel="stylesheet" href="catalog/view/theme/yzcTheme/stylesheet/account/accountManage.css">
+{{ header }}
+{{ separate_column_left }}
+<link rel="stylesheet" href="catalog/view/javascript/toast/jquery.toast.min.css">
+<script type="text/javascript" src="catalog/view/javascript/toast/jquery.toast.min.js"></script>
+<div class="container-fluid" id="content" style="margin-left: 15%">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  <div>
+    <h1>Profit Collection Account Management
+    </h1>
+  </div>
+
+  <div class="account-management">
+    <div class="pull-right" style="margin-top: -2px">
+      <a  href="{{ url('account/seller_bill/account_manage/add') }}"  class="btn btn-deep text-larger text-weight-normal" target="_blank" id="">
+        Create a Collection Account
+      </a>
+    </div>
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active" ><a href="#account" aria-controls="home" role="tab" data-toggle="tab">Collection Account Information</a></li>
+      <li role="presentation" ><a href="#changeLog" aria-controls="profile" role="tab" data-toggle="tab">Change Log</a></li>
+    </ul>
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active box-shadow mr-0" id="account">
+          <div class="ptb-3">
+            <div class="text-right mb-2 display-able" style="display: none">
+               <input type="checkbox" checked="checked" id="display_disable" class="mr-05"> <span class="selected-disabled">Display Disable</span>
+            </div>
+            <div id="account-list" data-success="true" data-page="1" data-end="0">
+            </div>
+            <div class="load"></div>
+          </div>
+      </div>
+      <div role="tabpanel" class="tab-pane box-shadow mr-0" id="changeLog">
+        <div class="ptb-3">
+          <div id="log-list" data-success="true" data-page="1" data-end="0">
+          </div>
+          <div class="load"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!--删除模态框-->
+  <div class="modal fade bs-example-modal-sm" id="del-account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="myModalLabel">Confirm</h4>
+        </div>
+        <div class="modal-body" >
+          <span id="del_model"></span>
+          <div class="footer text-center" style="padding-top: 20px">
+            <a class="btn btn-deep btn-small mr-1" id="del_sure" data-id="">Yes</a>
+            <button type="button" class="btn btn-abetall btn-small" data-dismiss="modal">No
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--开关启用模态框-->
+  <div class="modal fade" id="enableUseModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="ModalLabel">Confirm</h4>
+        </div>
+        <div class="modal-body">
+          <div id="enable_model_html">
+
+          </div>
+          <div class="application-reasons">
+            <textarea class="limit-reasons pb-2"  placeholder="Enter..." maxlength="2000" id="apply_reason" required="required" onkeyup="this.value=this.value.replace(/(^\s*)/,'')"></textarea>
+            <div class="limit"> <span class="value">0</span>/2000</div>
+              <span id="reason_error_show" style="color: red;display: none">Reason can not be left blank.</span>
+          </div>
+          <div class="text-center mt-2">
+            <button type="button" class="btn  btn-deep mr-1 btn-small" id="to_enable_model"  data-id="">Confirm</button>
+            <button type="button" class="btn btn-abetall btn-small" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade bs-example-modal-sm" id="unenableUseModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="ModalLabel">Confirm</h4>
+        </div>
+        <div class="modal-body">
+          <div id="disable_model_html"></div>
+          <div class="text-center mt-2">
+            <button type="button" class="btn btn-deep mr-1 btn-small" id="to_disable_model"  data-id="">Yes</button>
+            <button type="button" class="btn btn-abetall btn-small" data-dismiss="modal">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}
+<script>
+  //申请理由校验
+  $(".limit-reasons").bind("input propertychange change keyup", function() {
+    var len = $(this).val().length;
+    $(".application-reasons .value").text(len);
+  });
+  var monitor =function(){
+    //滚过高度
+    var scrollTop = $(this).scrollTop();
+    //页面高度
+    var scrollHeight = $(document).height();
+    //浏览器高度
+    var windowHeight = $(this).height();
+    //滚动条到底时
+    if (scrollHeight-scrollTop - windowHeight <200) {
+      // alert(1)
+      let account_class = $('#account').attr('class');
+      if (account_class.indexOf("active") !== -1){
+        loadAccountInfo();
+      } else{
+        loadLogInfo();
+      }
+    }
+  }
+  $(window).scroll(function() {
+    monitor()
+  });
+  $(document).ready(function () {
+    getAccountRows(1,1);
+    getAccountLogRows(1);
+  });
+
+  function deleteModel(account_id,del_show_msg) {
+    $("#del_model").html(del_show_msg);
+    $("#del_sure").attr('data-id',account_id);
+    //$("#del-account-modal").modal('show');
+    $('#del-account-modal').modal({backdrop: 'static', keyboard: false,show:'data-show'});
+  }
+
+  <!--删除账号-->
+  $("body").on('click','#del_sure',function () {
+    let account_id = $(this).attr('data-id');
+    if (!account_id){
+       return false;
+    }
+    // $("#del_sure").attr('disabled', true);
+    $(this).on('click.disable', false);
+    $.ajax({
+      url: '{{ account_del_url }}',
+      type: 'post',
+      dataType: 'json',
+      async: true,
+      data: {'account_id': account_id},
+      success: function (data) {
+        if (data.code == 1) {
+           $("#del_model").html('');
+           $("#del_sure").attr('data-id',0);
+           $("div[data-line=" + account_id + "]").remove();
+           $("#del-account-modal").modal('hide');
+          $.toast({
+            heading: false,
+            text: data.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false
+          });
+          setTimeout(function () {
+            block.blockUI();
+            location.reload();
+          },5000)
+        } else {
+          $("#del_model").html('');
+          $("#del_sure").attr('data-id',0);
+          $("#del-account-modal").modal('hide');
+          $.toast({
+            heading: false,
+            text: data.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false
+          });
+        }
+        $("#del_sure").off('click.disable');
+      },
+      error:function () {
+        $("#del_sure").off('click.disable');
+      }
+    })
+  });
+
+
+  <!--禁用账号-->
+  $("#to_disable_model").click(function () {
+    let account_id = $("#to_disable_model").attr('data-id');
+    if (!account_id){
+      return false;
+    }
+    $("#to_disable_model").attr('disabled', true);
+    $.ajax({
+      url: '{{ account_disable_url }}',
+      type: 'post',
+      dataType: 'json',
+      async: true,
+      data: {'account_id': account_id},
+      success: function (data) {
+        if (data.code == 1) {
+          $("#enableUse"+account_id).attr('checked',false).attr('disabled',true).parent('label').removeAttr('onclick');
+          $("#enable_span"+account_id).html('Disable');
+          $("#disable_model_html").html('');
+          $("#del_sure").attr('data-id',0);
+          $("#unenableUseModal").modal('hide');
+          $.toast({
+            heading: false,
+            text: data.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false
+          });
+          setTimeout(function () {
+            window.location.reload();
+          }, 5000);
+          $("#to_disable_model").attr('disabled', false);
+        } else {
+          $("#disable_model_html").html('');
+          $("#to_disable_model").attr('data-id',0);
+          $("#unenableUseModal").modal('hide');
+          $.toast({
+            heading: false,
+            text: data.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false
+          });
+          $("#to_disable_model").attr('disabled', false);
+        }
+      }
+    })
+  });
+
+  <!--启用账号-->
+  $("#to_enable_model").click(function () {
+    let account_id = $("#to_enable_model").attr('data-id');
+    let reason = $("#apply_reason").val() ;
+    if (!account_id){
+      return false;
+    }
+    if (reason == ''||reason === ''){
+      $("#reason_error_show").show();
+      return false;
+    }
+    $("#to_enable_model").attr('disabled', true);
+    $.ajax({
+      url: '{{ account_enable_url }}',
+      type: 'post',
+      dataType: 'json',
+      async: true,
+      data: {'account_id': account_id,'reason':reason},
+      success: function (data) {
+        if (data.code == 1) {
+          $("#enableUse"+account_id).attr('disabled',true).parent('label').removeAttr('onclick');
+          $("#verdict"+account_id).html('Pending').attr('class','pending');
+          $("#enableUse"+account_id).next('div').addClass('disabled');
+          $("#edit_account"+account_id).addClass('disabled').attr('href','javascript:void(0);').removeAttr('target');
+          $("#enable_model_html").html('');
+          $("#apply_reason").val('');
+          $("#to_enable_model").attr('data-id',0).attr('disabled', false);
+          $("#enableUseModal").modal('hide');
+          $.toast({
+            heading: false,
+            text: data.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false
+          });
+        } else {
+          $("#disable_model_html").html('');
+          $("#to_enable_model").attr('data-id',0).attr('disabled', false);
+         // $("#apply_reason").val('');
+          $("#unenableUseModal").modal('hide');
+          $.toast({
+            heading: false,
+            text: data.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 5000,
+            allowToastClose: false,
+            loader: false
+          });
+        }
+      }
+    })
+  });
+
+  $('#apply_reason').bind('input propertychange', function(){
+    var length = $("#apply_reason").val().length;
+    if (length > 0){
+      $("#reason_error_show").hide();
+    }
+  });
+  /*加载分页数据*/
+  function loadAccountInfo() {
+    let dom = $('#account-list');
+    if(dom.data('success') == true){
+      let page = dom.data("page");
+      /**最后一页不再添加数据*/
+      if(dom.data('end') == '1'){
+        return;
+      }
+      //触发ajax事件，加载dom
+      getAccountRows(page,1);
+    }
+  }
+
+  /*加载分页数据*/
+  function loadLogInfo() {
+    let dom = $('#log-list');
+    if(dom.data('success') == true){
+      let page = dom.data("page");
+      /**最后一页不再添加数据*/
+      if(dom.data('end') == '1'){
+        return;
+      }
+      //触发ajax事件，加载dom
+      getAccountLogRows(page);
+    }
+  }
+
+  //账户列表
+  function getAccountRows(page,display_disable = 0) {
+    $("#display_disable").attr("disabled",true);
+    $('#account-list').data('success', false);
+    waitBlock.blockUI();
+    $.ajax({
+      url: '{{ url("account/seller_bill/account_manage/getAccountInfos") }}',
+      data: {page: page, page_limit: 8,display_disable:display_disable},
+      type: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        $('#account-list').data('end', data.is_end);
+        if (data.html != '') {
+          $('#account-list').append(data.html);
+        }
+        $('#account-list').data("page", ++page);
+        $('.tips').on({
+          mouseenter: function () {
+            var that = this;
+            $(that).next().show();
+          },
+          mouseleave: function () {
+            var that = this;
+            $(that).next().hide();
+
+          }
+        });
+        page_show_limit();
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      },
+      complete: function (xhr, textStatus) {
+        $("#display_disable").attr("disabled",false);
+        $('#account-list').data('success', true);
+        waitBlock.unBlockUI();
+      }
+    })
+  }
+
+  //日志列表
+  function getAccountLogRows(page) {
+    $('#log-list').data('success', false);
+    waitBlock.blockUI();
+    $.ajax({
+      url: '{{ url("account/seller_bill/account_log/getAccountLogs") }}',
+      data: {page: page, page_limit: 8},
+      type: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        $('#log-list').data('end', data.is_end);
+        if (data.html != '') {
+          $('#log-list').append(data.html);
+        }
+        $('#log-list').data("page", ++page);
+        $('.tips').on({
+          mouseenter: function () {
+            var that = this;
+            $(that).next().show();
+          },
+          mouseleave: function () {
+            var that = this;
+            $(that).next().hide();
+
+          }
+        });
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      },
+      complete: function (xhr, textStatus) {
+        $('#log-list').data('success', true);
+        waitBlock.unBlockUI();
+      }
+    })
+  }
+
+  $("#display_disable").on('click',function () {
+    $('#account-list').empty();
+    if($(this).is(':checked')){
+      getAccountRows(1,1);
+      $(this).parent().children('span').addClass('selected-disabled')
+    }else{
+      getAccountRows(1,0);
+      $(this).parent().children('span').removeClass('selected-disabled')
+    }
+  });
+
+
+</script>
+
+
+<script>
+  var page_show_limit  = function(){
+    //显示长度限制
+    $(".value").each(function() {
+      var dataNum = $(this).data("num");
+      if ($.trim($(this).html()).length > dataNum) {
+        var str = $(this).html().trim().substring(0, dataNum) + '...';
+        $(this).html(str);
+        $(this).addClass('cursor-d')
+      } else {
+        $(this).attr("title", '')
+      }
+    });
+  }
+</script>

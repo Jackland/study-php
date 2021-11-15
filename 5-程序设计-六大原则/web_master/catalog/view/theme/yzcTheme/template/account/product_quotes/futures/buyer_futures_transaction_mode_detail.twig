@@ -1,0 +1,149 @@
+<style>
+  .details .form-group label{
+    color: #677999;
+    font-size: 12px;
+  }
+  .details .form-group label i{
+      font-size: 14px;
+  }
+</style>
+<div class="detail-main bg-white p-2">
+    <div>
+        {#尾款#}
+        <div class="mb-3">
+            <div class="title">Warehouse Arrival Summary</div>
+            <div class="summary over">
+                <div class="abstract col-sm-3">
+                    <i class="giga icon-DatePicker summary-icon"></i> <br>
+                    <p class="summary-name">{{ column_delivery_date }}</p>
+                    <p class="summary-detail">{{ agreement.show_delivery_date }}</p>
+                    {#确认保证是待入仓的状态#}
+                    {% if agreement.days <= 7 and  agreement.days > 0 and agreement.delivery_status == 1 %}
+                        <span style="color: #FF414D">{{ agreement.days }} Days Left</span>
+                    {% endif %}
+                </div>
+                <div class="abstract col-sm-3">
+                    <i class="giga icon-ziliaoyuquanzhengjiaoge summary-icon"></i> <br>
+                    <p class="summary-name">Settlement Method</p>
+                    <p class="summary-detail">{{ agreement.delivery_type_name }}</p>
+                </div>
+                <div class="abstract col-sm-3">
+                    <i class="giga icon-BusinessIcons_BusinessTagSale- summary-icon"></i> <br>
+                    <p class="summary-name">Item Code</p>
+                    <span class="summary-detail">
+                        {{ agreement.sku }}
+                        {% for tagDetail in agreement.tag %}
+                            {{ tagDetail }}
+                        {% endfor %}
+                    </span>
+                </div>
+                <div class="abstract col-sm-3">
+                    <i class="giga icon-jiaohuo summary-icon"></i> <br>
+                    <p class="summary-name">{{ column_delivery_status }}</p>
+                    <p style="color:{{ agreement.status_color }}">{{ agreement.status_name }}</p>
+                </div>
+            </div>
+        </div>
+        {% if  agreement.delivery_type == 1 and agreement.days >= 0 %}
+            <div class="details mb-3">
+                <div class="title">Settlement Method Detail</div>
+                <div style="overflow: hidden;border: 1px solid #eee;padding: 10px 0;border-radius: 4px">
+                    {% if agreement.version >=3 %}
+                       <p class=" col-sm-12">Direct Settlement (Buyer has to pay the due of future goods in a lump sum payment. This must be within one day after the Seller's successful delivery. The deposit paid by Seller will be fully refunded after the Buyer's one-time due payment.)</p>
+                    {% else %}
+                       <p class=" col-sm-12">Direct Settlement (Buyer has to pay the due of future goods within 7 days. The deposit Seller paid will be fully refunded after Buyer's each due payment)</p>
+                    {% endif %}
+                    <div class=" col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label" data-translation="尾款交割数量">Direct Settlement Quantity</label>
+                            <input type="text" class="form-control" value="{{ agreement.num }}" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label" data-translation="尾款单价">Due Per Unit
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-trigger="hover" data-toggle="tooltip"
+                                   title="{{ tip_price_of_goods_value }}"
+                                ></i>
+                            </label>
+                            <input type="text" class="form-control" value="{{ agreement.unit_last_show }}"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group ">
+                            <label class="control-label" data-translation="尾款总金额">Total Due Amount
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-trigger="hover" data-toggle="tooltip"
+                                   title="{{ tip_total_amount_of_goods_value }}"
+                                ></i>
+                            </label>
+                            <input type="text" class="form-control" value="{{ agreement.last_price_amount_show }}"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="details mb-3">
+                <div class="title">Settlement Method Detail</div>
+
+                <div style="overflow: hidden;border: 1px solid #eee;padding: 10px 0;border-radius: 4px">
+                    <p class=" col-sm-12">Transfer to Margin Transaction (The deposit Seller paid will be fully refunded after Buyer paid the difference between the future goods and margin deposit in order to transfer to margin transaction)</p>
+                    <div class=" col-sm-3">
+                        <div class="form-group">
+                            <label class="control-label" data-translation="转现货保证金数量">Margin Transaction Quantity</label>
+                            <input type="text" class="form-control" value="{{ agreement.num }}" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label class="control-label" data-translation="转现货协议尾款单价">Margin Transaction Due Per Unit
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-trigger="hover" data-toggle="tooltip"
+                                   title="{{ tip_price_of_goods_value }}"
+                                >
+                                </i></label>
+                            <input type="text" class="form-control" value="{{ agreement.margin_last_price_show }}"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group ">
+                            <label class="control-label" data-translation="转现货需补足的保证金金额">Replenished Difference Amount
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-trigger="hover" data-toggle="tooltip" data-html="true"
+                                   title="{{ tip_replinished_difference_for_margin_bid }}"
+                                ></i>
+                            </label>
+                            <input type="text" class="form-control" value="{{ agreement.deposit_amount_show }}"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group ">
+                            <label class="control-label" data-translation="转现货协议天数">Days of margin transaction
+                                <i class="giga icon-V10-wenhaotishi"
+                                   data-trigger="hover" data-toggle="tooltip"
+                                   title="{{ tip_days_of_margin_bid }}"
+                                ></i>
+                            </label>
+                            <input type="text" class="form-control" value="{{ agreement.default_days_show }}"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="mb-3">
+            {% include 'yzcTheme/template/account/product_quotes/futures/message.twig' %}
+        </div>
+    </div>
+
+</div>
+<script>
+    $(function () {
+        block.unBlockUI();
+    });
+</script>

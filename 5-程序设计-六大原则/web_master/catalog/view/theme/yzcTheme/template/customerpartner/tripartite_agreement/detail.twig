@@ -1,0 +1,744 @@
+{% trans_default_category 'catalog/view/customerpartner/tripartite_agreement/detail' %}
+
+{{ this.title('Sales and Purchase Agreement Details') }}
+{{ this.params('breadcrumbs', [
+  {
+    text:'Buyer Management',
+    href: 'javasctipt:void(0)',
+  },
+  {
+    text: 'Sales and Purchase Agreement',
+    href: url('customerpartner/tripartite_agreement'),
+  },
+  'current'
+]) }}
+{{ this.params('pageTitle', {backUrl: false}) }}
+{{ css(['css/common/common.css','css/common/common-ext.css','static/account/tripartite_agreement/seller_agreement_common.css','static/customerpartner/tripartite_agreement/detail.css']) }}
+{{ js(['js/common/toolString.js', 'js/common/orisComponents.js']) }}
+{{ cssOrigin([ 'catalog/view/javascript/datetimepicker/css/bootstrap-datetimepicker.min.css',
+'/catalog/view/javascript/user_portrait/user_portrait.css']) }}
+{{ jsOrigin(['catalog/view/javascript/datetimepicker/bootstrap-datetimepicker.min.js',
+'/catalog/view/javascript/user_portrait/user_portrait.js']) }}
+{{ assetBundle('Seller\\VatAsset') }}
+<div id="seller-agreement-detail-box">
+<div class="seller-agreement-detail-container">
+  <div class="agreement-box-top">
+    <div class="agreement-header">
+      <div class="agreement-title">{{ agreement.title }}</div>
+      <a href="{{ url('customerpartner/tripartite_agreement/download', {id:agreement.id}) }}" class="agreement-down-btn down-border"><i class="giga icon-xiazaixin-01 m6-r"></i><span class="download-text">Download</span></a>
+    </div>
+  </div>
+  <div class="agreement-box-bottom">
+    <div class="agreement-container">
+      {{ agreement.content }}
+      {% if agreement.status in [15,20] %}
+      {# 已签约图标 #}
+      <span class="agreement-icon color-e6">
+        <i class="giga icon-yiqianyue-01"></i>
+      </span>
+      {% endif %}
+    </div>
+    <div class="agreement-msg">
+      <div class="agreement-status">
+        {% if agreement.status == 1 %}
+        <!--待处理-->
+        <div class="status-text">
+          <i class="giga icon-quchuli-01 mr-octal1 text-bigger color-28"></i><span class="status-text-value color-4b">Process Pending</span>
+        </div>
+        <!--END-->
+        {% endif %}
+        {% if agreement.status == 5 %}
+          <!--已取消-->
+          <div class="status-text">
+            <i class="giga icon-v10quxiao-01 mr-octal1 text-bigger color-99"></i><span class="status-text-value color-99">Canceled</span>
+          </div>
+          <!--END-->
+        {% endif %}
+        {% if agreement.status == 10 %}
+          <!--已拒绝-->
+          <div class="status-text">
+            <i class="giga icon-V10_Sellerhoutai_tishishixin mr-octal1 text-bigger color-e6"></i><span class="status-text-value color-e6">Refused</span>
+          </div>
+          <!--END-->
+        {% endif %}
+        {% if agreement.status == 15 %}
+        <!--待生效-->
+        <div {% if not agreement.terminate_handle_request %} class="status-text" {% endif %}>
+          <i class="giga icon-dengdai mr-octal1 text-bigger color-f6"></i><span class="status-text-value color-f6">To Be Effective</span>
+          <!--待生效 buyer 申请取消-->
+          {% if agreement.cancel_handle_request %}
+          <span class="early-termination color-e6 m8-t line-height15">Buyer cancellation request</span>
+          <div class="reason-box">
+            <div class="triangle"></div>
+            <div class="reason-header">
+              Reasons for Cancellation:
+            </div>
+            <div class="early-termination color-33">                 
+              {{ agreement.cancel_handle_request.reason }}
+            </div>
+            <div class="to-deal-with color-33 seller_to_deal_with_btn text-center">Process&nbsp;></div>
+          </div>
+          {% endif %}
+          {% if agreement.expire_time != agreement.terminate_time %}
+            <!--提前终止-->
+            <span class="early-termination color-e6 m8-t line-height15">Early termination</span>
+            <div class="reason-box">
+              <div class="triangle"></div>
+              <div class="reason-header">
+                Early termination time:
+              </div>
+              <div class="early-termination color-33">
+                {{ agreement.terminate_time|formatZone(country,null,'Y-m-d') }}
+              </div>
+            </div>
+            <!--END-->
+          {% endif %}
+        </div>
+        <!--END-->
+        {% endif %}
+        {% if agreement.status == 20 %}
+        <!--协议中-->
+        <div {% if not agreement.terminate_handle_request %} class="status-text" {% endif %}>
+          <i class="giga icon-shijian mr-octal1 text-bigger color-oa"></i><span class="status-text-value color-oa">Active</span>
+          {% if agreement.seven_remind > 0 %}
+          <span class="due-day">Due in {{ agreement.seven_remind }} days</span>
+          {% endif %}
+          {% if agreement.expire_time != agreement.terminate_time %}
+            <!--提前终止-->
+            <span class="early-termination color-e6 m8-t line-height15">Early termination</span>
+            <div class="reason-box">
+              <div class="triangle"></div>
+              <div class="reason-header">
+                Early termination time:
+              </div>
+              <div class="early-termination color-33">
+                {{ agreement.terminate_time|formatZone(country,null,'Y-m-d') }}
+              </div>
+            </div>
+            <!--END-->
+          {% endif %}
+        </div>
+        {% endif %}
+        <!--END-->
+        {% if agreement.terminate_handle_request %}
+        <!--buyer申请终止-->
+        <div class="status-text">
+{#          <i class="giga icon-shijian mr-octal1 text-bigger color-oa"></i>#}
+{#          <span class="status-text-value color-oa">Active</span>#}
+          <span class="early-termination color-e6 m8-t line-height15">Buyer termination request</span>
+          <div class="reason-box">
+            <div class="triangle"></div>
+            <div class="reason-header">
+              Termination Time:
+            </div>
+            <div class="early-termination color-33">
+              {{ agreement.terminate_handle_request.request_time|formatZone(country,null,'Y-m-d')  }}
+            </div>
+            <div class="reason-header m8-t">
+              Reasons for Termination:
+            </div>
+            <div class="early-termination color-33">
+              {{ agreement.terminate_handle_request.reason }}
+            </div>
+            <div class="to-deal-with color-33 seller_to_deal_with_btn text-center">Process&nbsp;></div>
+          </div>
+        </div>
+        <!--END-->
+        {% endif %}
+
+        {% if agreement.status == 25 %}
+        <!--已终止-->
+        <div class="status-text">
+          <i class="giga icon-jinzhi mr-octal1 text-bigger color-99"></i><span class="status-text-value color-99">Terminated</span>
+          {% if agreement.expire_time != agreement.terminate_time %}
+            <!--提前终止-->
+            <span class="early-termination color-e6 m8-t line-height15">Early termination</span>
+            <div class="reason-box">
+              <div class="triangle"></div>
+              <div class="reason-header">
+                Early termination time:
+              </div>
+              <div class="early-termination color-33">
+                {{ agreement.terminate_time|formatZone(country,null,'Y-m-d') }}
+              </div>
+            </div>
+            <!--END-->
+          {% endif %}
+        </div>
+        <!--END-->
+        {% endif %}
+
+        <div class="status-msg">
+          <div class="flex-layout m16-b flex-wrap">
+            <span class="oris-circle oris-bg-info padding2 color-dc"></span>
+            <span class="status-title">Agreement Validity:<i class="giga icon-V10-wenhaotishi m8-l ver-middle" data-toggle="tooltip" title="Local Time"></i></span>
+            <div class="status-value">{{ agreement.effect_time|formatZone(country,null,'Y-m-d')  }} - {{ agreement.expire_time|formatZone(country,null,'Y-m-d') }}</div>
+          </div>
+          <div class="flex-layout m16-b flex-wrap">
+            <span class="oris-circle oris-bg-info padding2 color-dc" style="margin-bottom: 0px;"></span>
+            <span class="status-title">Agreement Buyer:</span>
+            <span class="status-value">
+              <span class="action-userinfo" data-user_customer_id="{{ agreement.buyer_id }}" data-toggle="popover" data-placement="top" data-content="" data-html="true"  data-trigger="manual" data-container="body">
+              {{ agreement.buyer.nickname }}({{ agreement.buyer.user_number }})
+                {% if agreement.buyer.buyer_type == 1 %}
+                  <span class="account-type atype-wc">Will Call</span>
+                {% else %}
+                  <span class="account-type atype-ds">Drop Shipping</span>
+                {% endif %}
+              </span>
+              <span>
+              {{ ex_vat }}
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>    
+      <div class="agreement-history">
+        <div class="agreement-history-header m16-b">Agreement Records</div>
+        <div class="agreement-history-box">
+          {% for record in agreement.records %}
+          <div class="agreement-history-item">
+            <div class="flex-layout flex-wrap">
+              <span class="radius13">
+                <span class="oris-circle oris-bg-default margin0 padding4 color-b"></span>
+              </span> 
+              <span class="agreement-history-time">{{ record.create_time }}</span>
+              <div class="agreement-history-msg">
+                <div><span class="name">{{ record.customer_name }}:</span><span class="msg-value">{{ record.type_name }}</span></div>
+                {% if record.message %}
+                <div class="m8-t"><span class="name color-99">Comments:</span><span class="msg-value display-inline">{{ record.message }}</span></div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>    
+</div>
+{% if agreement.can_tripartite_cancel or agreement.can_tripartite_terminate or agreement.can_tripartite_handle %}
+<div class="seller-fixed-btn seller-width-full">
+  {# 待生效 seller 发起取消#} 
+  {% if agreement.can_tripartite_cancel %}<a class="oris-button oris-button-default oris-button-bigger m10-t text-size-normal" id="cancel_agreement">Cancel the Agreement</a>{% endif %}
+  {% if agreement.can_tripartite_terminate %}<a class="oris-button oris-button-default oris-button-bigger m10-t text-size-normal {% if agreement.can_tripartite_cancel %}m10-l {% endif %}" id="termination-agreement">Terminate the Agreement</a>{% endif %}
+  {% if agreement.can_tripartite_handle %}<a class="oris-button oris-button-bigger m10-t text-size-normal seller_to_deal_with_btn text-center {% if agreement.can_tripartite_terminate or agreement.can_tripartite_cancel %}m10-l{% endif %}">Process&nbsp;></a>{% endif %}
+</div>
+{% endif %} 
+<!--To-deal-with-->
+<div class="modal fade in oris-modal" tabindex="-1" role="dialog" id="seller_to_deal_with_modal" data-backdrop="static">
+  <div class="modal-dialog oris-seller h-v-center" id="seller_to_deal_with_modal_dialog">
+    <div class="modal-content" style="width: 640px">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          <i class="giga icon-V10_danchuangguanbi close-icon"></i>
+      </button>
+        <!--待处理-->
+        {% if agreement.status == 1 %}<h4 class="modal-title">Buyer's request for signing the Sales and Purchase Agreement</h4>{% endif %}
+        <!--seller 处理 buyer 申请终止-->
+        {% if agreement.terminate_handle_request %}<h4 class="modal-title">Buyer's requests for terminating the Sales and Purchase Agreement </h4>{% endif %}
+        <!--待生效 buyer 取消-->
+        {% if agreement.cancel_handle_request %}<h4 class="modal-title">Buyer's requests for cancelling the Sales and Purchase Agreement</h4>{% endif %}
+      </div>
+      <div class="modal-body">
+          <!--待处理-->
+          {% if agreement.status == 1 %}
+          <div class="checkbox check-text">
+            <span class="m24-r">Result</span>
+            <div class="check-box">
+              <input type="radio" name="delivery_type170" value="0" class="modal-input">Agree to sign the agreement
+            </div>
+            <div class="m30-l check-box"><input type="radio" name="delivery_type170" value="1" class="modal-input">Refuse to sign the agreement</div>
+          </div>
+          {% endif %}
+           <!--END-->
+          <!--seller 处理 buyer 申请终止-->
+          {% if agreement.terminate_handle_request %}
+          <div class="checkbox check-text">
+            <span class="m24-r">Result</span>
+            <div class="check-box">
+              <input type="radio" name="delivery_type170" value="approve_terminate" class="modal-input">Agree to terminate the agreement
+            </div>
+            <div class="m30-l check-box"><input type="radio" name="delivery_type170" value="reject_terminate" class="modal-input">Refuse to terminate the agreement</div>
+          </div>
+          {% endif %}
+          <!--END-->
+          <!--待生效 buyer取消 -->
+          {% if agreement.cancel_handle_request %}
+          <div class="checkbox check-text">
+            <span class="m24-r">Result</span>
+            <div class="check-box">
+              <input type="radio" name="delivery_type170" value="approve_cancel" class="modal-input">Agree to cancel the agreement
+            </div>
+            <div class="m30-l check-box"><input type="radio" name="delivery_type170" value="reject_cancel" class="modal-input">Refuse to cancel the agreement</div>
+          </div>
+          {% endif %}
+          <!--error-msg-->
+          <div class="error-msg">Please select a result</div>
+          <!--END-->
+          <div class="oris-comments check-msg-box m20-t">
+            <div><span class="color-e6 m5-r required-hint">*</span>Comments</div>
+            <textarea name="message" id='to-deal-width-text' class="application oris-input countInput check-textarea m6-t" autoheight="true" maxlength="500" placeholder="Please enter your comments to Buyer" data-countid="maxCount"></textarea>
+            <span class="letter-count"><span id="maxCount" class="link-color">0</span>/500</span> 
+          </div>
+          <!--待处理没有此提示-->
+          {% if agreement.cancel_handle_request %}
+            <span class="check-hint">The result will be 'Refused' by default if this request is not processed within <span class="ml-04">{{ agreement.cancel_handle_request_remain_time[0] }}</span>d<span class="ml-04">{{ agreement.cancel_handle_request_remain_time[1] }}</span>h<span class="ml-04">{{ agreement.cancel_handle_request_remain_time[2] }}</span>m.</span>
+          {% endif %}
+          {% if agreement.terminate_handle_request %}
+            <span class="check-hint">The result will be 'Refused' by default if this request is not processed within <span class="ml-04">{{ agreement.terminate_handle_request_remain_time[0] }}</span>d<span class="ml-04">{{ agreement.terminate_handle_request_remain_time[1] }}</span>h<span class="ml-04">{{ agreement.terminate_handle_request_remain_time[2] }}</span>m.</span>
+          {% endif %}
+      </div>
+      <div class="modal-footer border-none"> 
+        <div class="text-right">
+          <button type="button" class="oris-button oris-button-default" data-dismiss="modal">Cancel
+          </button>
+          <button type="button" class="oris-button" id="submit-agreement-result">Submit</button>  
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--END-->
+<!--Termination Agreement seller申请终止-->
+<div class="modal fade in oris-modal" tabindex="-1" role="dialog" id="termination-agreement_modal" data-backdrop="static">
+  <div class="modal-dialog oris-seller h-v-center" id="termination-agreement_modal_modal_modal_dialog">
+    <div class="modal-content" style="width: 640px">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          <i class="giga icon-V10_danchuangguanbi close-icon"></i>
+        </button>
+        <h4 class="modal-title">Confirm</h4>
+      </div>
+      <div class="modal-body">
+        <div>
+          <div><span class="color-e6 m5-r required-hint">*</span>Termination Time</div>
+          <div class="oris-ingroup action-clear m6-t">
+            <input type="text" name="filter_margin_date_to" value="" placeholder="Please enter the Termination Time" id="input_agreement_date_to" class="oris-input" autocomplete="off" readonly="">
+            <i class="giga icon-v10quxiao-01 oris-clear oris-clear-show"></i>
+          </div>
+        </div>
+        <div class="oris-comments check-msg-box m20-t">
+          <div><span class="color-e6 m5-r required-hint">*</span>Reasons for Termination</div>
+          <textarea name="" id="termination-text" class="application oris-input countInput check-textarea m6-t" autoheight="true" maxlength="500" data-countid="addLen"
+            placeholder="Please enter the Reason for Termination"></textarea>
+          <span class="letter-count"><span id="addLen" class="link-color">0</span>/500</span>
+        </div>
+        <span class="check-hint">Your termination request will be canceled automatically by the system if it is not processed by Buyer before termination time; and the request will be refused automatically if not processed by Buyer within 7 days.</span>
+      </div>
+      <div class="modal-footer border-none">
+        <div class="text-right">
+          <button type="button" class="oris-button oris-button-default" data-dismiss="modal">Cancel
+          </button>
+          <button type="button" class="oris-button" id="submit-termination-agreement">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--END-->
+<!--取消协议-->
+<div class="modal fade in oris-modal" tabindex="-1" role="dialog" id="cancale_agreement_modal" data-backdrop="static">
+  <div class="modal-dialog oris-seller h-v-center" id="cancale_agreement_modal_modal_dialog">
+    <div class="modal-content" style="width: 640px">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          <i class="giga icon-V10_danchuangguanbi close-icon"></i>
+        </button>
+        <h4 class="modal-title">Confirm</h4>
+      </div>
+      <div class="modal-body">
+        <div class="cancel_hint">
+          Do you confirm to initiate the request to cancel this agreement?
+        </div>
+        <div class="oris-comments check-msg-box m20-t">
+          <div><span class="color-e6 m5-r required-hint">*</span>Reasons for Cancellation</div>
+          <textarea name="" class="application countInput oris-input check-textarea m6-t" autoheight="true" maxlength="500" data-countid="cancelLen"
+            placeholder="Please enter the Reason for Cancellation" id="cancel-text"></textarea>
+          <span class="letter-count"><span id="cancelLen" class="link-color">0</span>/500</span>
+        </div>
+        <span class="check-hint">Your cancellation request will be canceled automatically by the system if it is not processed by Buyer before the agreement starts; and the request will be refused automatically if not processed by Buyer within 7 days.</span>
+      </div>
+      <div class="modal-footer border-none">
+        <div class="text-right">
+          <button type="button" class="oris-button oris-button-default" data-dismiss="modal">Cancel
+          </button>
+          <button type="button" class="oris-button" id="submit-cancel">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--END-->
+</div>
+<script type="text/javascript">
+  $(function(){
+    //协议期限
+    for (var num = 1; num <= 2; num++) {
+      num = num < 10 ? "0" + num : num + "";
+      var dateVal = $(".agreement-container").find(".AgreementValidity" + num).html();
+      var AgreementDate = `<input class="AgreementDate-input text-input date-form" type="text" disabled value="${dateVal}" >`
+      $(".agreement-container").find(".AgreementValidity" + num).html(AgreementDate);
+    }
+    //普通参数
+    var writeKeywords ={{ agreement.write_keywords|js_json }};
+    for(i=0;i<writeKeywords.length;i++){
+      var className = writeKeywords[i];
+      val = $(".agreement-container").find('.'+className).html() || '';
+      var parameter = `<input class="parameter-input text-input" type="text"  disabled value="${val}" data-key="${className}">`
+      $(".agreement-container").find('.' +className ).html(parameter);
+    }
+    var minDate = moment(new Date()).add(-1, 'days').format('YYYY-MM-DD 00:00:00')
+    $('#input_agreement_date_to').datetimepicker({
+        container:'#termination-agreement_modal .modal-content',
+        minView:2,
+        autoclose: true,
+        pickDate: true,
+        pickTime: false,
+        format: 'yyyy-mm-dd',
+        startDate: moment({{ current_time > agreement.effect_time ? current_time|js_var : agreement.effect_time|js_var }}).format('YYYY-MM-DD'),
+        endDate: moment({{ agreement.expire_time | js_var }}).add(-1, 'days').format('YYYY-MM-DD'),
+      }); 
+      //取消协议
+    $('#cancel_agreement').on('click',function(){
+      $('.countInput').val('');
+      $('#cancelLen').text(0);
+      $('.check-textarea').removeClass('border-color-error');
+      $('#cancale_agreement_modal').modal('show');
+    })  
+    $('.seller_to_deal_with_btn').on('click',function(){
+      $('.countInput').val('');
+      $('#maxCount').text(0);
+      $('.error-msg').css('display','none');
+      var checklist=$('.checkbox input[name=delivery_type170]'); //默认不选中
+      for(var i=0;i<checklist.length;i++){
+        checklist[i].checked=false;
+      }
+      $('.check-textarea').removeClass('border-color-error');
+      $('#seller_to_deal_with_modal').modal('show');
+    })
+    //提前终止
+    $('#termination-agreement').on('click',function(){
+      $('#input_agreement_date_to').val('');
+      $('.countInput').val('');
+      $('#addLen').text(0);
+      $('#input_agreement_date_to').removeClass('border-color-error');
+      $('.check-textarea').removeClass('border-color-error');
+      $('#termination-agreement_modal').modal('show');
+    })
+     //监听输入
+     $(".countInput").on('input propertychange', function () {
+        var flagId=$(this).attr('data-countid');
+        var userDesc = $(this).val();
+        var strValue = toolString.calcStringLength(userDesc,500);
+        $("#"+flagId).html(strValue.len);
+        $(this).val(strValue.fullStr);
+    });
+    //时间校验
+    $('.oris-clear').on('click',function(){
+      $('#input_agreement_date_to').val('');
+      $('#input_agreement_date_to').addClass('border-color-error');
+    })
+    //输入框失焦验证
+    $('.oris-input').on('change',function(){
+      if($(this).val() == ''){
+        $(this).addClass('border-color-error');
+      }else{
+        $(this).removeClass('border-color-error');
+      }
+    });
+    //单选框监听
+    $('.checkbox input[name=delivery_type170]').on('change',function(){
+      var checkValue =$('.checkbox input[name=delivery_type170]:checked').val();
+      if(checkValue){
+        $('.error-msg').css('display','none');
+      }else{
+        $('.error-msg').css('display','block');
+      }
+    })
+    //左边导航伸缩,改变fix-btn的宽度
+    document.getElementById("zz").addEventListener("click", function(){ 
+      if($("#menu").find('span').hasClass('display')){ //true
+        $('.seller-fixed-btn').removeClass('seller-width-full');
+        $('.seller-fixed-btn').addClass('seller-fixed-btn-false');
+      }else{
+        $('.seller-fixed-btn').removeClass('seller-fixed-btn-false');
+        $('.seller-fixed-btn').addClass('seller-width-full');     
+      }
+    });
+    var sellerAgreementClass={ 
+      //待生效seller 取消协议
+      submitCancelService: function (msg) {
+        $.ajax({
+        url: 'index.php?route=customerpartner/tripartite_agreement/cancelRequest',
+        data: msg,
+        method: 'post',
+        cache: false,
+        dataType: 'json',
+        beforeSend: function () {
+          layer.load();
+          $("#submit-cancel").attr('disabled','disabled');
+        },
+        complete: function() {
+          $("#submit-cancel").removeAttr('disabled');
+        },
+        success: function (res) {
+          $('#cancale_agreement_modal').modal('hide');
+          var msgDiv = '<div class="success"><i class="giga icon-complete"></i>' + res['msg'] + '<div>';
+          if (res['code'] == 200) {
+            location.reload();
+            $.toast({
+              heading: false,
+              text: res['msg'],
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'success',
+              hideAfter: 3000,
+              allowToastClose: false,
+              loader: false
+            });
+          } else {
+            $.toast({
+              heading: false,
+              text: res['msg'],
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: 3000,
+              allowToastClose: false,
+              loader: false
+            });
+          }   
+          layer.closeAll('loading');     
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          layer.closeAll('loading');
+          console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      })
+      },
+      //提前终止
+      submitTerminationService:function(msg){
+        $.ajax({
+        url: 'index.php?route=customerpartner/tripartite_agreement/terminateRequest',
+        data: msg,
+        method: 'post',
+        cache: false,
+        dataType: 'json',
+        beforeSend: function () {     
+          $('#submit-termination-agreement').attr('disabled','disabled');
+          layer.load();
+        },
+        complete: function() {
+         $("#submit-termination-agreement").removeAttr('disabled');
+        },
+        success: function (res) { 
+          $('#termination-agreement_modal').modal('hide');     
+          var msgDiv = '<div class="success"><i class="giga icon-complete"></i>' + res['msg'] + '<div>';
+          if (res['code'] == 200) {
+            location.reload();
+            $.toast({
+              heading: false,
+              text: res['msg'],
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'success',
+              hideAfter: 3000,
+              allowToastClose: false,
+              loader: false
+            });
+          } else {
+            $.toast({
+              heading: false,
+              text: res['msg'],
+              position: 'top-center',
+              showHideTransition: 'fade',
+              icon: 'error',
+              hideAfter: 3000,
+              allowToastClose: false,
+              loader: false
+            });
+          }
+          layer.closeAll('loading');
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          layer.closeAll('loading');
+          console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+      })
+      },
+      //其他处理
+      submitAgreementResultService: function (msg,url) {
+        $.ajax({
+          url: url,
+          data: msg,
+          method: 'post',
+          cache: false,
+          dataType: 'json',
+          beforeSend: function () {
+            $("#submit-agreement-result").attr('disabled','disabled');
+            layer.load();
+          },
+          complete: function() {
+            $("#submit-agreement-result").removeAttr('disabled');
+          },
+          success: function (res) {
+            $('#seller_to_deal_with_modal').modal('hide');
+            var msgDiv = '<div class="success"><i class="giga icon-complete"></i>' + res['msg'] + '<div>';
+            if (res['code'] == 200) {
+              location.reload();
+              $.toast({
+                heading: false,
+                text: res['msg'],
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'success',
+                hideAfter: 3000,
+                allowToastClose: false,
+                loader: false
+              });
+            } else {
+              $.toast({
+                heading: false,
+                text: res['msg'],
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: 3000,
+                allowToastClose: false,
+                loader: false
+              });
+            }
+            layer.closeAll('loading');
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            layer.closeAll('loading');
+            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+        })
+      },
+      //校验规则
+      doValidatorText:function(curId){
+        var countInput=$('#'+curId).val();
+        if(countInput==''){
+          $('#'+curId).addClass('border-color-error');
+          return false;
+        }else{
+          return true;
+        }
+      },
+      //校验单选必填
+      radioValid:function(){
+        var checkValue=$('.checkbox input[name=delivery_type170]:checked').val();
+        if(checkValue){
+          return true;
+        }else{
+          $('.error-msg').css('display','block');
+          return false;
+        }
+      },
+      //seller 处理buyer 申请 校验
+      doSubmitValidfunction:function(){
+        var result1=false;
+        var result2=false;
+        result1=this.radioValid();
+        result2=this.doValidatorText('to-deal-width-text');
+        if(!result1 || !result2){
+          return false;
+        }else{
+          return true;
+        }    
+      },
+      //校验日期
+      doValidatorDate:function(){
+        var inputDate=$('#input_agreement_date_to').val();
+        if(inputDate == ''){
+          $('#input_agreement_date_to').addClass('border-color-error');
+          return false;
+        }else{
+          return true;
+        }
+      },
+      //多个字段校验
+      doValidatorMultiple:function(){
+        var result1=false;
+        var result2=false;
+        result1=this.doValidatorDate();
+        result2=this.doValidatorText('termination-text');
+        if(!result1 || !result2){
+          return false;
+        }else{
+          return true;
+        }      
+      }
+    }
+    //确认取消
+    $('#submit-cancel').on('click',function(){
+      var flag=sellerAgreementClass.doValidatorText('cancel-text');
+      if(!flag){
+        return;
+      }
+      //参数
+      var msg={
+        id:{{agreement.id | js_var}},
+        message:$('#cancel-text').val(),
+      }
+      sellerAgreementClass.submitCancelService(msg);
+    })
+    //提前终止
+    $('#submit-termination-agreement').on('click',function(){
+      var flag=sellerAgreementClass.doValidatorMultiple();
+      if(!flag){
+        return;
+      }
+      var msg={
+        time:$('#input_agreement_date_to').val()+' 23:59:59',
+        message:$('#termination-text').val(),
+        id:{{agreement.id | js_var}},
+      }
+      sellerAgreementClass.submitTerminationService(msg);
+    })
+    //其他处理
+    $('#submit-agreement-result').on('click',function(){
+      var flag=sellerAgreementClass.doSubmitValidfunction();
+      if(!flag){
+        return;
+      }
+      //待处理
+      var agreementStatus= {{ agreement.status | js_var}}
+      var url='';
+      var msg={};
+      if(agreementStatus == 1){ //待处理
+        var checkboxValue =$('.checkbox input[name=delivery_type170]:checked').val()
+        if(checkboxValue == 0){ //0:同意协议 1：拒绝协议
+          var url='index.php?route=customerpartner/tripartite_agreement/approve';
+          var msg={
+            id: {{agreement.id | js_var}},
+            message:$('#to-deal-width-text').val(),
+            replace_value:{{ agreement.md5_replace_value | js_var}},
+            template_id:{{agreement.template_id | js_var}}, //模板id
+          }
+          sellerAgreementClass.submitAgreementResultService(msg,url);
+        }else{
+          url='index.php?route=customerpartner/tripartite_agreement/reject';
+          var msg={
+            id:{{agreement.id | js_var}},
+            message:$('#to-deal-width-text').val(),
+          }
+          sellerAgreementClass.submitAgreementResultService(msg,url);
+        }
+      }else{ //取消或是终止申请
+        var checkboxValue =$('.checkbox input[name=delivery_type170]:checked').val();
+        // var cancelHandleRequest={{ agreement.cancel_handle_request | js_var}}; //判断取消
+        // var terminateHandleRequest ={{ agreement.terminate_handle_request | js_var}}  //判断终止
+        url='index.php?route=customerpartner/tripartite_agreement/handleRequest';
+        msg={
+          request_id:{{agreement.request_id| js_var}},
+          message:$('#to-deal-width-text').val(),
+          type:checkboxValue
+        }
+          sellerAgreementClass.submitAgreementResultService(msg,url);
+      }
+    })
+  })
+</script>

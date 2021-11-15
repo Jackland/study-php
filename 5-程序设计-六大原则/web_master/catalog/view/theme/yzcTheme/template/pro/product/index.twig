@@ -1,0 +1,71 @@
+{% trans_default_category 'catalog/view/pro/product/addproduct' %}
+
+{{ header }}{{ separate_column_left }}
+{{ assetBundle('Common\\SummernoteAsset') }}
+
+<div
+  {% if separate_view is defined and separate_view %}
+    class="container-fluid" id="content" style="margin-left: 235px;"
+  {% else %}
+    class="container"
+  {% endif %}
+>
+
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li>
+        <a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% if marketplace_product_reapprove %}
+    <div class="alert alert-info">
+      <i class="fa fa-info-circle"></i>
+      {{ marketplace_product_reapprove }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+  {% endif %}
+  {% if success %}
+    <div class="alert alert-success">
+      <i class="fa fa-check-circle"></i>
+      {{ success }}</div>
+  {% endif %}
+
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+      {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+      {% set class = 'col-sm-9' %}
+    {% else %}
+      {% set class = 'col-sm-12' %}
+    {% endif %}
+
+    <div id="content" class="{{ class }}">{{ content_top }}
+      <h1>
+        <span id="pageTitle">{{ is_add ? __('添加产品',[],'catalog/document'):__('编辑产品',[],'catalog/document') }}</span>
+        <div class="pull-right">
+          {# <a data-toggle="tooltip" class="btn btn-primary"
+             title="{{ button_continue }}" id="submit">
+            <i class="fa fa-save"></i>
+          </a> #}
+          <a href="{{ url('customerpartner/product/lists/index') }}" data-toggle="tooltip" title="{{ button_back }}" class="btn btn-default"
+             data-original-title="Cancel">
+            <i class="fa fa-reply"></i>
+          </a>
+        </div>
+      </h1>
+      <legend></legend>
+      {{ form_content }}
+    </div>
+  </div>
+</div>
+
+<style>
+  {% if separate_view is defined and separate_view %}
+  {% else %}
+  #content {
+    padding-bottom: 40px;
+  }
+  {% endif %}
+</style>
+{{ footer }}

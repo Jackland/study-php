@@ -1,0 +1,550 @@
+<style>
+    .note {
+        padding: 8px 12px;
+        background-color: #fff0e6;
+        border: 1px solid #FA6400;
+
+    }
+    .note > div{
+        display: flex;
+        align-items: center;
+    }
+    .rule-name{
+        color: #7F7F7F;
+        width: 80px;
+        text-align: right;
+        margin-right: 15px;
+    }
+    .rule{
+        margin: 10px 0;
+        padding: 0;
+    }
+    .flex{
+        display: flex;
+        align-items: center;
+    }
+    .rule-content{
+        width:-webkit-calc(100% - 95px);
+        width:-moz-calc(100% - 95px);
+        width:calc(100% - 95px);
+    }
+    .rule .input-group input{
+        height: 30px;
+    }
+    .rule .input-group span{
+        padding: 0;
+        height: 28px;
+        line-height: 28px;
+    }
+    .table thead td{
+        color: #7f7f7f;
+    }
+    .input-group{
+        border: 1px solid #aaa;
+        border-radius: 4px;
+    }
+    .input-group input{
+        border-left: 1px solid #aaa !important;
+        border-right: 1px solid #aaa !important;
+    }
+    #futures_bid_modal_content .table tbody tr{
+        cursor: pointer;
+    }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="myModalLabel">
+        Future Goods Contract Details (Item Code {{ sku }})
+    </h4>
+</div>
+<div class="modal-body">
+    <div class="note" >
+       <div >
+           <i class="giga icon-gantanhaojinggao" style="color: #FA6400;margin-right:5px "></i>
+           <span> {{ tip_futures_contract }}</span>
+       </div>
+    </div>
+    <table class="table table-hover" style="margin-bottom: 0; width: -webkit-calc(100% - 15px);width: -moz-calc(100% - 15px);width: calc(100% - 15px);">
+        <thead>
+        <tr>
+            <td width="15%">Delivery Date</td>
+            <td width="18%">Total Quantity Available</td>
+            <td width="20%">Settlement Method</td>
+            <td width="16%">Unit Price</td>
+            <td width="15%">The Minimum Quantity for a Single Agreement</td>
+            <td>Collateral Percentage</td>
+        </tr>
+        </thead>
+    </table>
+    <div style="max-height: 185px;overflow:auto;width: 100%;margin-bottom: 20px">
+        <table class="table table-hover" style="width: 100%;">
+            <tbody>
+            {% for item in contracts %}
+                <tr onclick="getContract(this)" id="contract_{{ item.id }}" data-id="{{ item.id }}">
+                    <td width="15%">{{ item.delivery_date|date('Y-m-d') }}</td>
+                    <td width="18%">{{ item.remain_num }}</td>
+                    <td width="20%" data-delivery_type="{{ item.delivery_type }}">{{ item.delivery_type_show }} </td>
+                    <td width="16%" data-margin_unit_price="{{ item.margin_unit_price }}" data-last_unit_price="{{  item.last_unit_price }}">
+                        {% if item.delivery_type==3 %}
+                            {% if item.margin_unit_price < item.last_unit_price %}
+                                {{ item.margin_unit_price_show }} - {{ item.last_unit_price_show }}
+                            {% elseif item.margin_unit_price == item.last_unit_price  %}
+                                {{ item.margin_unit_price_show }}
+                            {% else %}
+                                {{ item.last_unit_price_show }} - {{ item.margin_unit_price_show }}
+                            {% endif %}
+                        {% elseif item.delivery_type==2 %}
+                            {{ item.margin_unit_price_show }}
+                        {% else %}
+                            {{ item.last_unit_price_show }}
+                        {% endif %}
+                    </td>
+                    <td width="15%">{{ item.min_num }}</td>
+                    <td data-payment_ratio="{{ item.payment_ratio_show }}">
+                        {% if item.is_special_payment_ratio %}
+                            <span style="color: #FF414D">{{ item.payment_ratio_show }}%</span>
+                        {% else %}
+                            {{ item.payment_ratio_show }}%
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            <input type="hidden" name="contract_id" id="input_contract_id">
+            </tbody>
+        </table>
+    </div>
+    <div id="contract_detail" style="overflow: hidden;display: none;" >
+        <h4 style="border-bottom: 1px solid #eee;margin-top: 0px">Bid Details of Future Goods Contract</h4>
+        <div style="overflow: hidden;display: flex">
+            <div class="col-sm-3 rule flex">
+                <div class="rule-name ">Delivery Date</div>
+                <div class="rule-content" id="delivery_date"></div>
+            </div>
+            <div class="col-sm-3 rule flex">
+                <div class="rule-name " style="width: 320px">Total Quantity Available
+{#                    <i id='margin_tips' class="giga icon-V10-wenhaotishi"#}
+{#                       data-toggle="tooltip" title=""#}
+{#                       data-original-title="Total Quantity Available for This Contract"></i>#}
+                </div>
+                <div class="rule-content" id="contract_num"></div>
+            </div>
+            <div class="col-sm-6 rule flex">
+                <div class="rule-name ">Settlement Method Option</div>
+                <div class="rule-content" id="delivery_type-html">
+                    <span><input type="radio" name="delivery_type" value="1"> {{ futures_final_delivery }}</span>
+                    <span><input type="radio" name="delivery_type" value="2"> {{ futures_margin_delivery }}</span>
+                </div>
+            </div>
+        </div>
+        <div style="overflow: hidden;display: flex">
+            <div class="col-sm-3 rule flex">
+                <div class="rule-name" style="align-items: center">Bid Price</div>
+                <div class="rule-content">
+                    <div class="input-group" id="input-group-price" style="">
+                        <input type="text"  id="input_futures_price" class="form-control center"
+                               style="width: 70px;border-left: none !important;border-bottom-left-radius: 4px;border-top-left-radius: 4px;" onblur="calculateFuturesPrice()">
+                        <span class="input-group-addon " style="font-size: 12px;color: #aaa">{{ currency }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 rule flex" >
+                <div class="rule-name">Ordered Quantity</div>
+                <div class="rule-content">
+                    <div class="input-group " id="input-group-qty" style="width: 125px">
+                        <span class="input-group-addon qty_reduce2"> - </span>
+                        <input type="text" name="quantity" id="input_futures_qty"  onblur="calculateFuturesPrice()" class="form-control center" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" onchange="" value="1" style="width: 60px;">
+                        <span class="input-group-addon qty_add2"> + </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 rule flex">
+                <div class="rule-name">Deposit Percentage</div>
+                <div class="rule-content"  id="payment_ratio"></div>
+            </div>
+            <div class="col-sm-3 rule flex">
+                <div class="rule-name ">Total Deposit</div>
+                <div class="rule-content" id="margin_price"></div>
+            </div>
+        </div>
+        <div class="">
+            <span id="error_futures_price" style="font-size: 12px;color: #FF414D;"></span>
+            <span id="error_futures_qty" style="font-size: 12px;color: #FF414D;"></span>
+        </div>
+        <div class="col-sm-12" style="margin-top: 10px">
+            <div  style="color: #3A75DC;margin-bottom: 5px">
+              + Comments
+            </div>
+            <textarea name=""  id="input_futures_message"  class="application" autoHeight="true" style="width: 100%;height: 80px;border-radius: 4px;border: 1px solid #aaa"  maxlength="2000"></textarea>
+            <div class="text-right"> <span class="val">0</span>/2000</div>
+            <span id="error_futures_message" style="font-size: 12px;color: #FF414D;position: absolute;bottom: 5px;display: none; ">Message can not more than 2000 characters</span>
+            {# #25957 后台协调，前端更改描述即可，去掉error_futures_bid_message变量#}
+        </div>
+    </div>
+    <div class="footer" style="overflow: hidden;padding: 0 5px">
+        <div style="text-align: center">
+            <div style="text-align:left;">
+                <input type="checkbox" id="futures_agree_clause" name="futures_agree_clause" value="1"
+                       onchange="futuresBtnStatus()"/>
+              I have read and agreed to the details of the Future Goods Contract that are listed above.
+                <a href="{{ clause_url }}" target="_blank" style="color:#0099FF;">{{ clause_title }}</a>
+                <span id="error_futures_agree_clause"
+                      style="display: none;color: red">{{ error_futures_agree_clause }}</span>
+            </div>
+            <div style="margin-top: 10px">
+                <button type="button" class="btn btn-primary" id="futures-bid-btn" onclick="submitFuturesBid(this)"
+                        disabled title="{{ tip_futures_place_bid_btn }}">
+                    {{ futures_bid_place_bid }}
+                </button>
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">{{ futures_bid_cancel }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#input_futures_message").bind("input propertychange change", function() {
+        var len = $(this).val().length;
+        $(this).parent().find(".val").text(len)
+    })
+    $(".qty_reduce2").click(function () {
+        let input = $(this).parent().find("input");
+        if (input.val() <= 1) {
+            input.val(1);
+        } else {
+            input.val(input.val() - 1);
+        }
+        calculateFuturesPrice();
+    });
+    $(".qty_add2").click(function () {
+        let input = $(this).parent().find("input");
+        if (input.val() == "" || input.val() == undefined || input.val() == null) {
+            input.val(0);
+        }else{
+            input.val(parseInt(input.val()) + 1);
+        }
+        calculateFuturesPrice();
+    });
+</script>
+<script>
+    var symbolLeft = "{{ symbolLeft }}";
+    var symbolRight = "{{ symbolRight }}";
+    var depositPercentagesStr = '{{ deposit_percentages }}';
+    $(function () {
+        let is_futures = '{{ is_futures }}';
+        if (!is_futures) {
+            showLayerTip('alert', '{{ error_futures_seller }}', {
+                title: 'Error',
+                btn: 'OK',
+                btnAlign:'c',
+                skin: 'yzc_layer',
+                icon: 2,
+                closeBtn: 0
+            }, function () {
+                $("#futures_bid_modal").modal('hide');
+                layer.closeAll();
+                parent.location.reload();
+            });
+
+        }
+
+        //如果只有一个协议，默认选中协议
+        if ($("#futures_bid_modal_content").find('tr[id^=contract_]').length == 1) {
+          $("#futures_bid_modal_content").find('tr[id^=contract_]')[0].click();
+        }
+    });
+
+    function selectDeliverType() {
+        let contract_id = $('#input_contract_id').val()
+        let margin_unit_price = $('#contract_' + contract_id).children('td').eq(3).data('margin_unit_price')
+        let last_unit_price = $('#contract_' + contract_id).children('td').eq(3).data('last_unit_price')
+        let delivery_type = $('input[name=delivery_type]:checked').val()
+        let unit_price = 0;
+        let country_id = '{{ country_id }}';
+        if (delivery_type == 1) {
+            unit_price = last_unit_price;
+        } else {
+            unit_price = margin_unit_price;
+        }
+        if (107 == country_id) {
+            unit_price = parseInt(unit_price);
+        }
+        $('#input_futures_price').val(unit_price)
+        calculateFuturesPrice()
+    }
+
+    function getContract(obj) {
+        $("table tr").css('color','#333');
+        $(obj).css('color','#fa6400');
+        $('#contract_detail').show();
+        let contract_id = $(obj).data('id')
+        let delivery_date = $(obj).children('td').eq(0).text()
+        let contract_num = $(obj).children('td').eq(1).text()
+        let delivery_type = $(obj).children('td').eq(2).data('delivery_type')
+        let margin_unit_price = $(obj).children('td').eq(3).data('margin_unit_price')
+        let last_unit_price = $(obj).children('td').eq(3).data('last_unit_price')
+        let contract_min_num = $(obj).children('td').eq(4).text()
+        let payment_ratio = $(obj).children('td').eq(5).data('payment_ratio')
+        let str1 = '<span style="display:block"><input type="radio" name="delivery_type" value="1" checked onclick="selectDeliverType()"> {{ futures_final_delivery }}</span>'
+        let str2 = '<span><input type="radio" name="delivery_type" value="2" checked onclick="selectDeliverType()"> {{ futures_margin_delivery }}</span>';
+        let str = ''
+        let payment_ratio_text=''
+        let unit_price = 0;
+        let country_id = '{{ country_id }}';
+
+        if (delivery_type == 3) {
+            if (margin_unit_price >= last_unit_price) {
+                unit_price = last_unit_price;
+                str2 = str2.replace('checked', '');
+            } else {
+                unit_price = margin_unit_price;
+                str1 = str1.replace('checked', '');
+            }
+            str = str1 + str2;
+        } else if (delivery_type == 2) {
+            unit_price = margin_unit_price;
+            str = str2;
+        } else {
+            unit_price = last_unit_price;
+            str = str1;
+        }
+        if (107 == country_id) {
+            unit_price = parseInt(unit_price);
+        }
+        $('#input_contract_id').val(contract_id)
+        $('#delivery_date').text(delivery_date)
+        $('#contract_num').text(contract_num)
+        $('#input_futures_qty').val(contract_min_num)
+        $('#input_futures_qty').data('min_num',contract_min_num)
+        $('#delivery_type-html').html(str);
+        $('#input_futures_price').val(unit_price)
+        let depositPercentages = depositPercentagesStr.split(',');
+        if(!depositPercentages.includes(payment_ratio)){
+            payment_ratio_text='<span style="color: #FF414D">'+payment_ratio+'%<span>';
+        }else{
+            payment_ratio_text='<span>'+payment_ratio+'%<span>';
+        }
+        $('#payment_ratio').html(payment_ratio_text)
+        $('#payment_ratio').attr('data-payment_ratio',payment_ratio)
+        calculateFuturesPrice()
+    }
+
+
+
+    function checkPositiveInteger(value) {
+
+        //必填正整数校验
+        if (!(/^[1-9]*[1-9][0-9]*$/.test(value)) || value <= 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function checkDecimalNumber(value) {
+        //校验货币 两位小数
+        if (!(/^[0-9]+(.[0-9]{1,2})?$/.test(value))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function calculateFuturesPrice() {
+        var price = $('#input_futures_price').val();
+        var qty = $('#input_futures_qty').val();
+        var payment_ratio = $('#payment_ratio').data('payment_ratio');
+        var country_id = '{{ country_id }}';
+        let validateQty=checkQty();
+        let validatePrice=checkPrice();
+        if (!validateQty || !validatePrice) {
+          return;
+        }
+
+        payment_ratio = Number(payment_ratio) / 100;
+        var precision = 2;
+        if (107 == country_id) {
+            precision = 0;
+        }
+        var deposit_per = operation(price, payment_ratio, 'multiply', precision);
+        var deposit = operation(deposit_per, qty, 'multiply', precision);
+        deposit = Number(deposit).toFixed(precision);
+        $('#margin_price').text(symbolLeft+deposit+symbolRight);
+
+    }
+
+    function checkQty() {
+        let isValid = true;
+        let input_futures_qty = Number($('#input_futures_qty').val());
+        let contract_min_num =  Number($('#input_futures_qty').data('min_num'));
+        let contract_num =  Number($('#contract_num').text());
+        if (!input_futures_qty || !checkPositiveInteger(input_futures_qty) || input_futures_qty < contract_min_num || input_futures_qty > contract_num || input_futures_qty > 9999) {
+            isValid = false;
+            $('#error_futures_qty').text('{{ error_futures_bid_qty_not_exceed_total_quantity_available }}').css('display', 'block');
+            $('#input-group-qty').css('border-color','#ff414d');
+        } else {
+            $('#error_futures_qty').css('display', 'none');
+            $('#input-group-qty').css('border-color','#aaa');
+        }
+        return isValid;
+    }
+
+    function checkPrice() {
+        let isValid = true;
+        let input_futures_price = $('#input_futures_price').val().trim();
+        let product_price = '{{ product_price }}';
+        let country_id = '{{ country_id }}';
+        $('#input_futures_price').val(input_futures_price);
+        if (!input_futures_price || (107 != country_id && !checkDecimalNumber(input_futures_price)) || (107 != country_id && input_futures_price > 10000000)) {
+            isValid = false;
+            $('#error_futures_price').text('{{ error_futures_bid_price_too_few }}').css('display', 'block');
+            $('#input-group-price').css('border-color','#ff414d');
+
+        } else if (107 == country_id && !checkPositiveInteger(input_futures_price) || (107 == country_id && input_futures_price > 1000000000)) {
+            isValid = false;
+            $('#error_futures_price').text('{{ error_futures_bid_price_japan }}').css('display', 'block');
+            $('#input-group-price').css('border-color','#ff414d');
+        } else if (input_futures_price <= 0) {
+            isValid = false;
+            $('#error_futures_price').text('{{ error_futures_bid_price_too_few }}').css('display', 'block');
+            $('#input-group-price').css('border-color','#ff414d');
+            {#} else if (parseFloat(input_futures_price) > parseFloat(product_price)) {#}
+            {#  isValid = false;#}
+            {#  $('#error_futures_price').text('{{ error_futures_bid_price_too_much }}').css('display', 'block');#}
+        } else {
+            $('#error_futures_price').css('display', 'none');
+            $('#input-group-price').css('border-color','#aaa');
+        }
+        return isValid;
+    }
+
+    function validateParam() {
+        var isValid = true;
+        var input_futures_message = $.trim($('#input_futures_message').val());
+        if (!checkQty() || !checkPrice()) {
+            isValid = false;
+        }
+        if (input_futures_message.length > 2000) { //#24957 || input_futures_message.length < 1
+            isValid = false;
+            $('#error_futures_message').css('display', 'block');
+        } else {
+            $('#error_futures_message').css('display', 'none');
+        }
+        //同意条约
+        if (!$('#futures_agree_clause').is(':checked')) {
+            isValid = false;
+            $('#error_futures_agree_clause').css('display', 'block');
+        } else {
+            $('#error_futures_agree_clause').css('display', 'none');
+        }
+        if(!$('#input_contract_id').val()){
+            showLayerTip('alert','Please select an agreement', {
+                title: 'Error',
+                btn: 'OK',
+                skin: 'yzc_layer',
+                btnAlign:'c',
+                icon: 2
+            });
+        }
+
+        return isValid;
+    }
+
+
+    function submitFuturesBid(obj) {
+        var submit_btn = $(obj);
+        submit_btn.button('loading');
+
+        if (validateParam()) {
+            var input_futures_qty = Number($('#input_futures_qty').val());
+            var input_futures_price = $('#input_futures_price').val();
+            var input_futures_message = $.trim($('#input_futures_message').val());
+            var input_contract_id = $('#input_contract_id').val();
+            var input_delivery_type = $('input[name=delivery_type]:checked').val();
+            $.ajax({
+                url: 'index.php?route=account/product_quotes/futures/addAgreement',
+                type: 'post',
+                data: {
+                    contract_id: input_contract_id,
+                    qty: input_futures_qty,
+                    price: input_futures_price,
+                    delivery_type: input_delivery_type,
+                    message: input_futures_message,
+                    is_bid: 1,
+                },
+                dataType: 'json',
+                success: function (json) {
+                    if (json['success']) {
+                        $("#futures_bid_modal").modal('hide');
+                        $.toast({
+                          heading: false,
+                          text:  json['success'],
+                          position: 'top-center',
+                          showHideTransition: 'fade',
+                          icon: 'success',
+                          hideAfter: 5000,
+                          allowToastClose: false,
+                          loader: false
+                        });
+                    } else if (json['error']) {
+                        showLayerTip('alert', json['error'], {
+                            title: 'Error',
+                            btn: 'OK',
+                            skin: 'yzc_layer',
+                            btnAlign:'c',
+                            icon: 2
+                        });
+                        submit_btn.button('reset');
+                    }
+                }
+            });
+
+        } else {
+            submit_btn.button('reset');
+        }
+    }
+
+
+    function futuresBtnStatus() {
+        //同意条约
+        if ($('#futures_agree_clause').is(':checked')) {
+
+            $('#futures-bid-btn').removeAttr("disabled").removeAttr("title");
+        } else {
+            $('#futures-bid-btn').attr("disabled", true).attr('title', '{{ tip_futures_place_bid_btn }}');
+        }
+    }
+
+    //封装一个限制字数方法
+    var checkStrLengths = function (str, maxLength) {
+        var maxLength = maxLength;
+        var result = 0;
+        result = str.length;
+        return result;
+    };
+
+    //监听输入
+    $("#input_futures_message").on('input propertychange', function () {
+
+        //获取输入内容
+        var userDesc = $(this).val();
+
+        //判断字数
+        var len;
+        if (userDesc) {
+            len = checkStrLengths(userDesc, 2000);
+        } else {
+            len = 0
+        }
+        //显示字数
+        $("#countStr").html(len + '/2000');
+
+        if (len > 2000) {
+            $("#countStr").addClass('red');
+        } else {
+            $("#countStr").removeClass('red');
+        }
+    });
+</script>
+

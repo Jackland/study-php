@@ -1,0 +1,17 @@
+<div class="nav-bar pos-rela">
+  <div class="nav-bar-content pos-rela">
+    <div class="left-arrow ops-abs"><i class="giga icon-V10_zuocejiantou" type="button"></i></div>
+    <div class="right-arrow ops-abs"><i class="giga icon-V10_youjiantougengduo" type="button"></i></div>
+    <div class="nav-content">
+      <ul class="nav-content-ul" data="{{category_id}}">
+        {% for value in categories %}
+          <li class="item-nav {{ category_id == value.category_id ? 'triangle-black':'' }}" data="{{ value.category_id }}">
+            <div>{{ value.name }}</div>
+            <div class="triangle {{ category_id == value.category_id ? 'triangle-block':'' }}"></div>
+          </li>
+        {% endfor %}
+      </ul> 
+    </div>
+  </div>
+</div>
+<input type="hidden" id="url" value="{{ url('account/marketing_time_limit/listAll') }}">

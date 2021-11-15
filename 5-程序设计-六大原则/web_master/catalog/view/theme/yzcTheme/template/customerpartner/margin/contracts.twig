@@ -1,0 +1,463 @@
+{% trans_default_category 'catalog/view/theme/yzcTheme/template/account/customerpartner/margin' %}
+
+{{ this.title(__('Margin Offerings', {}, 'catalog/document')) }}
+{{ this.params('breadcrumbs', [
+  {
+    text: __('Complex Transaction Management', {}, 'catalog/document'),
+    href: 'javasctipt:void(0)',
+  },
+  'current'
+]) }}
+
+{{
+  this.params('pageTitle', {
+    show: true,
+    title: __('Margin Offerings'),
+    backUrl: '',
+    buttons: [{
+      href: url('customerpartner/margin/contract/save'),
+      target: '_blank',
+      id: 'insert',
+      icon: 'giga icon-iconfonticon02 text-bigger',
+      content: __('Create a Margin Offerings'),
+    }]
+  })
+}}
+
+<div>
+  <div id="box-shadow" class="main-content">
+    <div class="search-filter">
+      <div class="oris-row">
+        <div class="oris-col" style="width: 480px;">
+          <input type="text" value="{{ search.filter_sku_or_mpn }}" placeholder="{{ __('Search Item Code / MPN') }}"
+                 id="filter_sku_or_mpn" class="oris-input"/>
+        </div>
+        <div class="search-btn p16-lr">
+          <button onclick="filter();" type="button"
+                  class="oris-button oris-button-bigger width80">{{ __('Filter') }}</button>
+          {% if contracts %}
+            <button onclick="download_csv();" class="oris-button oris-button-default" title="Download"
+                    data-toggle="tooltip">
+              <i class="giga icon-xiazai1"></i>
+            </button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-center p8-tb">
+      {% if contracts|length %}
+        {#左侧删除#}
+        <div class="tips-color" onclick="confirm_multiple_delete()">Selected&nbsp;(<span id="selectNum">0</span>)&nbsp;
+        </div>
+        <div class="btn-text" onclick="confirm_multiple_delete()">
+          <i class="giga icon-seller_lajitong-01" data-toggle="tooltip" title="{{ __('Delete') }}"></i>
+        </div>
+      {% endif %}
+    </div>
+
+    <div>
+      <table class="oris-table no-hover">
+        <thead>
+        <tr>
+          <th class="text-right oris-w42"><input type="checkbox" onclick="pageSelectAllRow(this)"></th>
+          <th class="text-left p12-l oris-w180">{{ __('Contract ID') }}</th>
+          <th class="text-left oris-w220">{{ __('Item Code') }}&nbsp;/&nbsp;{{ __('MPN') }}</th>
+          <th>{{ __('Deposit Percentage ') }}
+            <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip"
+               title="{{ __('The deposit percentage which should be paid by buyer.') }}"></i>
+          </th>
+          <th class="text-right">{{ __('Margin Amount') }}
+            <i class="giga icon-V10-wenhaotishi" data-toggle="tooltip"
+               title="{{ __('The price does not include fulfillment fee.') }}"></i>
+          </th>
+          <th>
+            <a onclick="loadUrl('{{ sort.createUrl('update_time', sort.getAttributeSortDirection('update_time') == 'desc' ? 'asc' : 'desc') }}')"
+               href="javascript:void(0)" class="sort-order
+                            {{ sort.getAttributeSortDirection('update_time') == 'desc' ? ' desc-active' : '' }} {{ sort.getAttributeSortDirection('update_time') == 'asc' ? ' asc-active' : '' }}">
+              {{ __('Last Modified') }}</a>
+          </th>
+          <th>{{ __('Actions') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if contracts|length %}
+          {% for contract in contracts %}
+            <tr>
+              <td class="text-right">
+                <input type="checkbox" name="selected[]" value="{{ contract.id }}" onclick="pageSelectOneRow(this)"/>
+              </td>
+              <td class="text-left p12-l">
+                            <span>{{ contract.contract_no }}
+                              <i class="giga icon-color icon-V10_shouyeyouxiadown pointer"
+                                 id="open{{ contract.product_id }}" onclick="change_tips(this)"
+                                 data-href="#collapseExample{{ contract.product_id }}"></i></span>
+              </td>
+              <td class="text-left">
+                <a class="oris-link image-td" target="_blank"
+                   href="{{ url('product/product', {product_id: contract.product_id}) }}">
+                  <img class="pro-image" src="{{ contract.product_info.image }}"/>
+                  <div>
+                                <span class="tags-image">
+                                  <text class="max-line1"
+                                        title="{{ contract.product_info.sku }}">{{ contract.product_info.sku }}</text>{{ contract.product_info.tags|join('') }}</span>
+                    <span class="max-line2"
+                          title="{{ contract.product_info.mpn }}">{{ contract.product_info.mpn }}</span>
+                  </div>
+                </a>
+              </td>
+              <td>
+                <span>{{ contract.payment_ratio }}%</span>
+              </td>
+              <td class="text-right">
+                            <span>
+                              {{ contract.min_contract_amount == contract.max_contract_amount ? contract.min_contract_amount|formatPrice(currency) : contract.min_contract_amount|formatPrice(currency) ~ ' - ' ~ contract.max_contract_amount|formatPrice(currency) }}
+                            </span>
+              </td>
+              <td>
+                <span>{{ contract.update_time }}</span>
+              </td>
+              <td>
+                {# btn1#}
+                <a href="javascript:void(0)" class="btn-text" onclick="toView('{{ contract.product_id }}', '{{ contract.id }}')">
+                                <span>
+                                  <i class="giga icon-seller_bianji-01" data-toggle="tooltip" title=""
+                                     data-original-title="{{ __('Edit') }}"></i>
+                                </span>
+                </a>&nbsp;
+                {# btn2#}
+                <a onclick="confirm_one_delete('{{ contract.id }}')"
+                   class="btn-text">
+                                <span>
+                                  <i class="giga icon-seller_lajitong-01" data-toggle="tooltip" title=""
+                                     data-original-title="{{ __('Delete') }}"></i>
+                                </span>
+                </a>
+              </td>
+            <tr class="none expand-tr" id="collapseExample{{ contract.product_id }}">
+              <td colspan="8">
+                <div class="top-arrow"></div>
+                <div class="oris-intable">
+                  <div class="oris-intable-th">
+                    <span class="oris-intable-td">{{ __('Contract Days') }}</span>
+                    <span class="oris-intable-td">{{ __('Selling Quantity') }}</span>
+                    <span class="oris-intable-td text-right">{{ __('Contract price') }}</span>
+                    <span class="oris-intable-td text-right p40-r-i">{{ __('Margin Amount') }}</span>
+                  </div>
+                  <div class="oris-intable-tbody">
+                    {% for template in contract.templates %}
+                      <div class="oris-intable-tr">
+                        <span class="oris-intable-td">{{ template.day }}</span>
+                        <span
+                            class="oris-intable-td">{{ template.min_num == template.max_num ? template.min_num : template.min_num ~ ' - ' ~ template.max_num }}</span>
+                        <span class="oris-intable-td text-right">{{ template.price|formatPrice(currency) }}</span>
+                        <span class="oris-intable-td text-right p40-r-i">
+                                      {{ template.min_margin_amount == template.max_margin_amount ? template.min_margin_amount|formatPrice(currency) : template.min_margin_amount|formatPrice(currency) ~ ' - ' ~ template.max_margin_amount|formatPrice(currency) }}
+                                    </span>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </td>
+            </tr>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr class="no-records">
+            <td colspan="7">{{ __("You currently do not have any margin offers. Click 'Create a Margin Offerings' to create one.") }}</td>
+          </tr>
+        {% endif %}
+        </tbody>
+      </table>
+    </div>
+    {% if contracts|length %}
+      {# 分页 #}
+      <div class="oris-row oris-pagination">
+        <ul id="bos_pagination_charge"></ul>
+      </div>
+      {# 分页 #}
+    {% endif %}
+  </div>
+</div>
+<style>
+  .oris-table {
+    border-collapse: collapse;
+  }
+  .expand-tr,
+  .expand-tr:hover {
+    background: #EDEFF3 !important;
+  }
+
+  .expand-tr td {
+    padding: 16px 6px;
+  }
+
+  .oris-intable {
+    margin-left: 42px;
+    min-width: 800px;
+  }
+
+  .oris-intable-td {
+    padding: 12px 24px;
+  }
+
+  .top-arrow {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: -7px;
+    left: 169px;
+    background: #ebeef5;
+    -moz-transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+  }
+</style>
+<script type="text/javascript" src="catalog/view/javascript/layer/layer.js"></script>
+<script src="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js"
+        type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css" type="text/css"
+      rel="stylesheet" media="screen"/>
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script type="text/javascript">
+  $(function () {
+    $('#bos_pagination_charge').bootstrapPaginator({
+      /*当前使用的是3版本的bootstrap*/
+      bootstrapMajorVersion: 3,
+      /*配置的字体大小是小号*/
+      size: 'normal',
+      /*当前页*/
+      currentPage: {{ paginator.getPage() }},
+      /*一共多少页*/
+      totalPages: {{ max(paginator.getPageCount(), 1) }},
+      /*页面上最多显示几个含数字的分页按钮*/
+      numberOfPages: 5,
+      pageRange: [10, 20, 30, 50, 100],
+      rowsOfPage: {{ paginator.getPageSize() }},
+      total: {{ paginator.getTotalCount() }},
+      onPageClicked: function (event, originalEvent, type, page) {
+        loadUrl('{{ paginator.getUrlWithNoPage() }}&page_limit=' + originalEvent['page_info']['page_limit'] + '&page=' + page);
+      }
+    });
+  })
+
+  // 加载url
+  function loadUrl(url) {
+    window.location.href = url;
+  }
+
+  function toView(product_id, contract_id) {
+    $.ajax({
+      url: '{{ url('customerpartner/margin/contract/info') }}',
+      type: 'get',
+      data: {product_id: product_id},
+      dataType: 'json',
+      success: function (json) {
+        if (json.code == 200) {
+          let contract = json.data.contract;
+          if (!contract || contract.id != contract_id) {
+            let content =
+              '<div style="text-align: left;">' +
+              '<div> Sorry, this margin contract has been deleted, please refresh the page.</div>' +
+              '</div>';
+            layer.confirm(content, {
+              title: 'Margin Contract',
+              skin: 'oris-layer',
+              btn: ['Refresh', 'Cancel'],
+              area: ['480px'],
+              scrollbar: false
+            }, function () {
+              window.location.reload();
+            });
+            return;
+          }
+          window.location.href = '{{ url('customerpartner/margin/contract/save') }}' + '&product_id=' + product_id + '&id=' + contract_id
+        } else {
+          window.location.href = '{{ url('customerpartner/margin/contract/save') }}' + '&product_id=' + product_id + '&id=' + contract_id
+        }
+      }
+    });
+  }
+
+  function change_tips(obj) {
+    var this_href = $(obj).attr('data-href');
+    if ($(this_href).css('display') == 'table-row') {    //即将关闭
+      $(this_href).hide();
+      $(obj).removeClass('icon-V10_shouyeyouxiaTOP').addClass('icon-V10_shouyeyouxiadown');
+    } else {    //即将展开
+      $(this_href).show();
+      $(obj).removeClass('icon-V10_shouyeyouxiadown').addClass('icon-V10_shouyeyouxiaTOP');
+    }
+  }
+
+  function download_csv() {
+    let filter_sku_mpn = $('#filter_sku_or_mpn').val();
+    window.location.href = '{{ url('customerpartner/margin/contract/download') }}&filter_sku_or_mpn=' + filter_sku_mpn;
+  }
+
+  function filter() {
+    let filter_sku_mpn = $('#filter_sku_or_mpn').val();
+    loadUrl('{{ url('customerpartner/margin/contract') }}&filter_sku_or_mpn=' + filter_sku_mpn);
+  }
+
+  function pageSelectAllRow(checkbox) {
+    selectAllRow(checkbox);
+    changeSelectNum();
+  }
+
+  function pageSelectOneRow(checkbox) {
+    selectOneRow(checkbox);
+    changeSelectNum();
+  }
+
+  function changeSelectNum() {
+    // 修改选中的条数
+    var length = $("input[name^='selected']:checked").length;
+    if (length <= 0) {
+      $('#selectNum').text('0').parent().addClass('tips-color');
+    } else {
+      $('#selectNum').text(length).parent().removeClass('tips-color');
+    }
+    var dataLen = $('table tbody tr:not(.expand-tr)').length;
+    // 判断是否全选中
+    if (length === dataLen) {
+      // 全选
+      $('thead tr input[type="checkbox"]').prop('checked', true);
+    } else {
+      $('thead tr input[type="checkbox"]').prop('checked', false);
+    }
+  }
+
+  function confirm_one_delete(contractId) {
+    layer.open({
+      type: 1,
+      title: '{{ __('Message') }}',
+      closeBtn: 1,
+      skin: 'oris-layer',
+      shadeClose: true,
+      offset: 'auto',
+      area: ['400px', 'auto'],
+      content: '{{ __('Are you sure you want to delete the margin offering of this item code?') }}',
+      btn: ['OK'],
+      yes: function () {
+        param = {ids: contractId};
+        layer.closeAll();
+        layer.load(1, {
+          shade: [0.1, '#fff'] //0.1透明度的白色背景
+        });
+        $.ajax({
+          url: '{{ url('customerpartner/margin/contract/del') }}',
+          type: 'post',
+          data: param,
+          dataType: 'json',
+          contentType: "application/x-www-form-urlencoded",
+          success: function (json) {
+            layer.closeAll();
+            if (json.code == 200) {
+              $.toast({
+                heading: false,
+                text: '{{ __('The Margin Contract has been deleted successfully.') }}',
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'success',
+                hideAfter: 3000,
+                allowToastClose: false,
+                loader: false,
+                afterHidden: function () {
+                  window.location.reload();
+                }
+              });
+            } else {
+              $.toast({
+                heading: false,
+                text: '{{ __('The Margin Contract has been deleted unsuccessfully.') }}',
+                position: 'top-center',
+                showHideTransition: 'fade',
+                icon: 'error',
+                hideAfter: 3000,
+                allowToastClose: false,
+                loader: false
+              });
+            }
+          }
+        });
+      }
+    });
+
+  }
+
+  function confirm_multiple_delete() {
+    var length = $("input[name='selected[]']:checked").length;
+    if (length <= 0) {
+      layer.alert('{{ __('Please select Item Code(s) to delete their correlating margin offering(s).') }}', {
+        skin: 'oris-layer',
+        title: 'Alert',
+        btn: ['OK']
+      });
+    } else {
+      layer.open({
+        type: 1,
+        title: 'Confirm',
+        closeBtn: 1,
+        skin: 'oris-layer',
+        shadeClose: true,
+        offset: 'auto',
+        area: ['400px', 'auto'],
+        content: '{{ __('Select ‘OK’ to confirm you would like to delete the margin offerings that correlate with the selected Item Code(s).') }}',
+        btn: ['OK', 'Cancel'],
+        yes: function () {
+          let contract_ids = [];
+          $("input[name='selected[]']:checked").each(function (i, v) {
+            contract_ids.push($(this).val());
+          })
+          param = {ids: contract_ids};
+          layer.closeAll();
+          layer.load(1, {
+            shade: [0.1, '#fff'] //0.1透明度的白色背景
+          });
+          $.ajax({
+            url: '{{ url('customerpartner/margin/contract/del') }}',
+            type: 'post',
+            data: param,
+            dataType: 'json',
+            contentType: "application/x-www-form-urlencoded",
+            success: function (json) {
+              layer.closeAll();
+              if (json.code == 200) {
+                $.toast({
+                  heading: false,
+                  text: '{{ __('These Margin Contracts have been deleted successfully.') }}',
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'success',
+                  hideAfter: 3000,
+                  allowToastClose: false,
+                  loader: false,
+                  afterHidden: function () {
+                    window.location.reload();
+                  }
+                });
+              } else {
+                $.toast({
+                  heading: false,
+                  text: '{{ __('These Margin Contracts have been deleted unsuccessfully.') }}',
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'error',
+                  hideAfter: 3000,
+                  allowToastClose: false,
+                  loader: false,
+                  afterHidden: function () {
+                    window.location.reload();
+                  }
+                });
+              }
+            }
+          });
+        }
+      });
+
+    }
+  }
+
+</script>

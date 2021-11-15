@@ -1,0 +1,373 @@
+<style>
+  .panel-body > .list-group > .list-group-item {
+    padding: 6px 15px;
+  }
+
+  .shadow_img {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    background: black;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+    -moz-opacity: 0.6;
+  }
+
+  .title_img {
+    width: 100%;
+    /*left: 10px;*/
+    position: absolute;
+    top: 40%;
+    text-align: center;
+
+  }
+
+  .img_checkbox {
+    /*left: 10px;*/
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .con_img {
+    position: relative;
+    width: 100%;
+    height: 228px;
+    overflow: hidden;
+  }
+
+  .btn_go{
+    color: inherit;
+    width: 100%;
+    height: 100%;
+    display: block;
+    line-height: 34px;
+  }
+  .btn_go:hover{
+    color: #ffffff;
+  }
+  /*搜索 门店详情*/
+  #product-category .filter-tool-wrapper .input-group{
+    height: 0;
+  }
+
+  .third-cate{
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .third-cate .highlights{
+    background-color: #fff;
+  }
+  .third-cate li{
+    padding: 10px 10px;
+    overflow: hidden;
+    word-break: keep-all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .third-cate li a{
+    text-transform: capitalize;
+  }
+  .third-cate li span{
+    margin-right: 5px;
+    border: #333 3px solid;
+    display: inline-block;
+    height: 3px;
+    border-radius: 50%;
+  }
+  .third-cate li:hover,
+  .third-cate li:hover a,
+  .third-cate .highlights a{
+    color: #FA6400;
+  }
+  .third-cate li:hover span,
+  .third-cate .highlights span{
+    border: #FA6400 3px solid;
+  }
+</style>
+
+<script src="catalog/view/javascript/product_category/product_category.js"></script>
+
+<div class="row">
+  <div class="col-md-3">
+    <div class="side-tool" id="myColumn">
+      {% if categories %}
+      <column id="column-left-condition">
+        <div class="tool-item">
+          <div class="side-title">CATEGORIES</div>
+          <ul id="category-categories">
+
+            <li class="panel-lx"><a data-collection-url="{{ collection_url }}" class="category-href" onclick="toSearch(this)">{{ 'All' }}</a></li>
+            {% for one, category in categories %}
+              <li class="panel-lx">
+                <a data-collection-url="{{ category['href'] }}" class="category-href" onclick="toSearch(this)">{{ category['name'] }}</a>
+                {% if category['children'] %}
+                  <a class="toggle-icon" data-toggle="collapse" data-parent="#category-categories" href="#category-categories-{{ one }}"><i class="giga icon-sidebar-unfold"></i></a>
+                  <ul class="collapse" id="category-categories-{{ one }}">
+                    {% for two, child in category['children'] %}
+                      <li><a data-collection-url="{{ child['href'] }}" class="category-href" onclick="toSearch(this)">- {{ child['name'] }}</a></li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </column>
+      {% endif %}
+
+      <column id="column-left-filter">
+        <div class="tool-item">
+          <div class="side-title">Unit Price</div>
+          <ul id="category-price">
+            <li><a href="javascript:void(0);" class="filter-price" data-max="25{{ isJapanAddMoney }}"
+                   id="price_-25{{ isJapanAddMoney }}">Under {{ symbol_left }}
+                25{{ isJapanAddMoney }}{{ symbol_right }}</a></li>
+            <li><a href="javascript:void(0);" class="filter-price" data-min="25{{ isJapanAddMoney }}"
+                   data-max="50{{ isJapanAddMoney }}"
+                   id="price_25{{ isJapanAddMoney }}-50{{ isJapanAddMoney }}">{{ symbol_left }}
+                25{{ isJapanAddMoney }}{{ symbol_right }} to {{ symbol_left }}
+                50{{ isJapanAddMoney }}{{ symbol_right }}</a></li>
+            <li>
+              <a href="javascript:void(0);" class="filter-price" data-min="50{{ isJapanAddMoney }}"
+                 data-max="100{{ isJapanAddMoney }}"
+                 id="price_50{{ isJapanAddMoney }}-100{{ isJapanAddMoney }}">{{ symbol_left }}
+                50{{ isJapanAddMoney }}{{ symbol_right }} to {{ symbol_left }}
+                100{{ isJapanAddMoney }}{{ symbol_right }}</a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" class="filter-price" data-min="100{{ isJapanAddMoney }}"
+                 data-max="200{{ isJapanAddMoney }}"
+                 id="price_100{{ isJapanAddMoney }}-200{{ isJapanAddMoney }}">{{ symbol_left }}
+                100{{ isJapanAddMoney }}{{ symbol_right }} to {{ symbol_left }}
+                200{{ isJapanAddMoney }}{{ symbol_right }}</a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" class="filter-price" data-min="200{{ isJapanAddMoney }}"
+                 id="price_200{{ isJapanAddMoney }}">Over {{ symbol_left }} 200{{ isJapanAddMoney }}{{ symbol_right }}</a>
+            </li>
+          </ul>
+          <div class="section-wrapper">
+            <div class="edit icon">
+              <input type="text" onkeyup="value=value.replace(/[^\d.]/g,'')" class="form-control" id="min_price" placeholder="Min">
+              <span class="currency-icon">{{ symbol_left }}{{ symbol_right }}</span>
+            </div>
+            <div class="edit">
+              <input type="text" onkeyup="value=value.replace(/[^\d.]/g,'')" class="form-control" id="max_price" placeholder="Max">
+              <span class="currency-icon">{{ symbol_left }}{{ symbol_right }}</span>
+            </div>
+            <div class="btn" style="padding: 0;">
+              <a class="filter_button filter-price btn_go" href="javascript:void(0);">Go</a>
+            </div>
+          </div>
+        </div>
+        <div class="tool-item unit-price-wrapper">
+          <div class="side-title">Qty Available</div>
+          <ul>
+            <li><a href="javascript:void(0);" class="filter-quantity" data-max="10">Under 10</a></li>
+            <li><a href="javascript:void(0);" class="filter-quantity" data-min="10" data-max="20">10 to 20</a></li>
+            <li><a href="javascript:void(0);" class="filter-quantity" data-min="20" data-max="30">20 to 30</a></li>
+            <li><a href="javascript:void(0);" class="filter-quantity" data-min="30" data-max="50">30 to 50</a></li>
+            <li><a href="javascript:void(0);" class="filter-quantity" data-min="50">Over 50</a></li>
+          </ul>
+          <div class="section-wrapper ">
+            <div class="edit icon">
+              <input type="text" onkeyup="value=value.replace(/[^\d]/g,'')" class="form-control" id="min_quantity" placeholder="Min">
+            </div>
+            <div class="edit">
+              <input type="text" onkeyup="value=value.replace(/[^\d]/g,'')" class="form-control" id="max_quantity" placeholder="Max">
+            </div>
+            <div class="btn" style="padding: 0;">
+              <a class="filter_button filter-quantity btn_go" href="javascript:void(0);">Go</a>
+            </div>
+          </div>
+        </div>
+      </column>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div id="content_product">
+
+      {#第三级目录#}
+      {% if categories %}
+        <div class="row">
+          <h3 style="margin-top: 0">{{ text_refine }}</h3>
+          <ul class="third-cate">
+
+            {% for item in categories %}
+              <li class="col-sm-4 {% if item.isActive %} highlights  {% endif %}">
+                <span></span>
+                <a data-collection-url="{{ item.href }}" onclick="toNextSearch(this)" title="">{{ item.name }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+      <div class="filter-tool-wrapper">
+        <div class="row">
+          <div class="col-md-6 col-sm-6 hidden-xs left-btn">
+            <button type="button" id="list-view" class="btn btn-default" data-toggle="tooltip" title="{{ button_list }}"><i class="fa fa-th-list"></i></button>
+            <button type="button" id="grid-view" class="btn btn-default" data-toggle="tooltip" title="{{ button_grid }}"><i class="fa fa-th"></i></button>
+            {% if download_csv_privilege == 1 %}
+              <div class="form-group input-group input-group-sm" style="margin-top: 8px;display: inline-block;">
+                <label>
+                  <input type="hidden" id="choose_product" value=''>
+                  <input type="hidden" id="product" value=''>
+                  <input type="checkbox" onclick="checkChoose();" id="all_products_info" value="1"
+                         style="vertical-align:middle;margin-top: -5px; ">
+                  &nbsp;All Products Info
+                </label>
+              </div>
+              <div class="form-group input-group input-group-sm" style="display: inline-block;">
+                <button id='batch_download' mean="{{ products_to_csv }}" class="btn btn-primary btn-top"><i class="giga icon-action-download "></i>Batch Download</button>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-2 col-xs-2 pull-right">
+            <div class="form-group input-group input-group-sm select-icon">
+              <label class="input-group-addon" for="input-sort">{{ text_limit }}</label>
+              <select id="input-limit" class="form-control" style="cursor: pointer;">
+                {% for limits in limits %}
+                  {% if limits['value'] == limit %}
+                    <option value="{{ limits['href'] }}" selected="selected">{{ limits['text'] }}</option>
+                  {% else %}
+                    <option value="{{ limits['href'] }}">{{ limits['text'] }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4 col-xs-4 pull-right">
+            <div class="form-group input-group input-group-sm select-icon">
+              <label class="input-group-addon" for="input-limit">{{ text_sort }}</label>
+              <select id="input-sort" class="form-control col-sm-3" style="cursor: pointer;">
+                {% for sorts in sorts %}
+                  {% if sorts['value'] == sort ~ '-' ~ order %}
+                    <option value="{{ sorts['href'] }}" selected="selected">{{ sorts['text'] }}</option>
+                  {% else %}
+                    <option value="{{ sorts['href'] }}">{{ sorts['text'] }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      {% if products %}
+        {% for rowed in products|batch(3) %}
+          <div class="row" id="product_all_list">
+            {% for product in rowed %}
+              <div class="product-list">
+                {% include 'giga/template/_parts/product_simple_grid.twig' %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+
+        <div class="row" id="seller-collection">
+          <div class="col-sm-12 text-right">{{ pagination }}{{ results }}</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript" src="catalog/view/javascript/layui/layui.all.js"></script>
+<link rel="stylesheet" href="catalog/view/javascript/product_category/css/jquery-labelauty.css">
+<script src="catalog/view/javascript/product_category/js/jquery-labelauty.js"></script>
+
+<script>
+
+  $(function () {
+    // 初始化内容
+    $("#product_all_list input").labelauty();
+    var layer = layui.layer;
+
+    var tips;
+    $('.tips').on({
+      mouseenter: function () {
+        var that = this;
+//        var text_date = $(that).attr('text-date');
+//        var text_qty = $(that).attr('text-qty');
+//        tips = layer.tips("<span style='color:#000;'>Date of next arrival:&nbsp;" + text_date + "</span><br/><span style='color:#000;'>Estimated quantity of next arrival:&nbsp;" + text_qty + "</span>", that,
+//          {tips: [2, '#fff'], time: 4000});
+        $(that).next().show();
+      },
+      mouseleave: function () {
+//        setTimeout(function () {
+//          layer.close(tips);
+//        }, 1000);
+        var that = this;
+        $(that).next().hide();
+
+      }
+    });
+    var screenname;
+    $('.screenname').on({
+      mouseenter: function () {
+        var that = this;
+        $(this).children().eq(0).css('text-decoration', 'underline');
+        $(this).children().css("cursor", "pointer");
+        var qa_rate = $(this).attr('qa_rate');
+        var seller_id = $(this).attr('seller_id');
+        var sku = $(this).attr('sku');
+        var return_approval_rate = $(this).attr('return_approval_rate');
+        if (return_approval_rate == '0') {
+          //这是没有ma的
+          var approval_rate_show = 'N/A' + '&nbsp;<i class="giga icon-V10-wenhaotishi" data-toggle="tooltip" style="" title="No RMA records." ></i>';
+        } else {
+          //验证 return_approval_rate
+          if (parseFloat(return_approval_rate) > 90) {
+            var approval_rate_show = 'High';
+          } else if (parseFloat(return_approval_rate) > 60) {
+            var approval_rate_show = 'Moderate';
+          } else {
+            var approval_rate_show = 'Low';
+          }
+
+        }
+        var html = '<div style="float: left;color: #666666;padding: 10px 10px 10px 10px;">' +
+//            '<div style="float: left;margin: 5px 0 5px 0;">Q&A Rate:&nbsp;'+qa_rate+'%</div><br/>' +
+          '<div style="float: left;margin: 0 0 15px 0;">Return Approval Rate:&nbsp;' + approval_rate_show + '</div><br/>' +
+          '<div style="float: left;border-top: 1px solid #eee;margin-bottom: 10px;width: 100%">' +
+          '<button type="button" class="btn  btn-block" style="background-color: #FF7519;color: white;border-radius: 4px;margin-top: 10px;height: 35px;" onclick="getSeller(' + seller_id + ')" >Store' + "'" + 's Home Page</button>' +
+          '<button type="button" class="btn  btn-block" style="background-color: white;color: #FF7519;border-radius: 4px;margin-top: 10px;border: 1px solid  #FF7519;height: 35px;" onclick="getSellerContact(' + seller_id + ','+"'"+ sku +"'"+')" >Contact Now</button>' +
+          '</div></div>';
+        screenname = layer.tips(html, that, {tips: [3, '#fff'], time: 5000, area: ['auto', 'auto']});
+        $('[data-toggle="tooltip"]').tooltip();
+      },
+      mouseleave: function () {
+        $(this).children().eq(0).css('text-decoration', "none");
+      }
+    });
+
+
+    $(".to_store_home").click(function (ev) {
+      if (ev.target != this) {
+        return;
+      } else {
+        var seller_id = $(this).attr("seller_id");
+        getSeller(seller_id);
+      }
+    });
+  });
+
+  function getSellerContact(seller_id, sku) {
+    //window.location.href = 'index.php?route=message/seller/addMessage&receiver_id=' + seller_id + '&item_code=' + sku;
+    var url = 'index.php?route=message/seller/addMessage&receiver_id=' + seller_id + '&item_code=' + sku;
+    window.open(url,'_blank');
+  }
+
+</script>
+
+
+
+

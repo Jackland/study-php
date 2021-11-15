@@ -1,0 +1,152 @@
+.content-box {
+    border : 2px solid #229ac8;
+    margin-top: 20px;
+    padding: 34px 30px;
+}
+
+.content-title {
+    padding: 0 10px 44px 10px;
+    font-size: 18px;
+    font-weight: bold;
+    clear: both;
+    border-bottom: 4px solid #229ac8;
+    margin-bottom: 20px;
+}
+
+.content-title div {
+    float: left;
+    border-right: 2px solid #229ac8;
+}
+
+.content {
+    padding: 0 10px 44px 10px;
+    font-size: 16px;
+    clear: both;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 30px;
+}
+
+.content:last-child {
+    border-bottom: none;
+}
+
+.content1 {
+    height: 190px;
+}
+
+.content2, .content3, .content6, .content8, .content11, .content15, .content16, .content17, .content18, .content19, .content20, .content21, .content22, .content23, .content24 {
+    height: 60px;
+}
+
+.content9, .content10 {
+    height: 80px;
+}
+
+.content12, .content13{
+    height: 110px;
+}
+
+.content14 {
+    height: 320px;
+}
+
+.content4 {
+    height: 160px;
+}
+
+.content7 {
+    height: 300px;
+}
+
+.content5 {
+    height: 460px;
+}
+
+.content div {
+    float: left;
+}
+
+.content-title div:last-child {
+    border-right: none;
+}
+
+.title1 {
+    width: 58px;
+    text-align: center;
+}
+
+.title2 {
+    width: 146px;
+    text-align: center;
+}
+
+.title3 {
+    width: 172px;
+    text-align: center;
+}
+
+.title4 {
+    width: 248px;
+    text-align: center;
+}
+
+.title5 {
+    width: 440px;
+    text-align: center;
+}
+
+.title6 {
+    width: 130px;
+    text-align: center;
+}
+
+.entry {
+    width: 200px;
+    text-align: left;
+    margin-left: 44px;
+    line-height: 24px;
+}
+
+.func {
+    text-align: left;
+    width: 390px;
+    margin-left: 44px;
+    line-height: 24px;
+}
+
+.func-ti {
+    font-weight: bold;
+}
+
+.fieldName {
+    width: 126px;
+    margin-left: 16px;
+    text-align: left;
+    line-height: 24px;
+}
+
+.exp {
+    width: 136px;
+    margin-left: 34px;
+    text-align: left;
+    line-height: 24px;
+}
+
+.number {
+    color: white;
+    font-size: 12px;
+}
+
+.remark {
+    width: 140px;
+    margin-left: 22px;
+    text-align: left;
+    line-height: 24px;
+}
+
+.number .circle {
+    width: 20px;
+    margin-left: 12px;
+    margin-top: -6px;
+    line-height: 18px;
+}

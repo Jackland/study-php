@@ -1,0 +1,137 @@
+{{ header }}
+{{ separate_column_left }}
+<style>
+  .h2 {
+    color: #1865a4;
+    margin-bottom: 15px;
+  }
+
+  .activity_title {
+    font-size: 16px;
+    margin-left: 20px;
+    color: #000;
+  }
+
+  #box-shadow {
+    overflow: hidden;
+    padding: 20px 0 !important;
+    margin-top: 15px;
+  }
+
+  #box-shadow .form-group .control-label {
+    text-align: right;
+    margin-bottom: 0;
+    padding-top: 9px;
+  }
+
+  .upload_image {
+    position: relative;
+    width: 373px;
+    height: 124px;
+    border: 1px #b5b5b5 dashed !important;
+  }
+
+  .upload_image span {
+    margin-top: 33px;
+    margin-left: 159px;
+    display: block;
+    font-size: 40px;
+  }
+
+  .upload_image span:hover {
+    cursor: default;
+  }
+
+  .form-control:hover {
+    border: 1px solid #3A75DC;
+  }
+
+  #box-shadow input.layui-upload-file {
+    display: none;
+  }
+</style>
+{#<script type="text/javascript" src="catalog\view\javascript\layui\layui.all.js"></script>#}
+<div class="container-fluid" id="content" style="margin-left: 18%">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  {% if success %}
+    <div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> {{ success }}</div>
+  {% endif %}
+  <div class="row" id="main-content">
+    {{ column_left }}
+    {% if column_left and column_right %}
+      {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+      {% set class = 'col-sm-9' %}
+    {% else %}
+      {% set class = 'col-sm-12' %}
+    {% endif %}
+
+    <div id="content" class="{{ class }}">
+      {{ content_top }}
+      <h2 class="h2">
+        {{ heading_title }} <span class="activity_title">{{ activity_title }}</span>
+        <div class="pull-right">
+          <a onclick="save()" class="btn btn-primary">Submit</a>
+          <a href="{{ url_page_back }}" data-toggle="tooltip" title="{{ tips_back }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        </div>
+      </h2>
+
+      <div id="box-shadow" style="margin-right: 0">
+        <div class="form-group col-md-12">
+          <label for="input_url" class="col-md-3 control-label">
+            <i style="color: red">*</i>Banner URL
+          </label>
+          <div class="col-md-7">
+            <input type="text" class="form-control" name="url" id="input_url" value="{{ url_seller_store }}">
+          </div>
+        </div>
+        <div class="form-group col-md-12">
+          <label for="input_image" class="col-md-3 control-label" style="padding-top: 32px">
+            <i style="color: red">*</i>Image
+          </label>
+          <div class="col-md-7" style="padding-left: 15px!important;">
+            <div class="upload_image">
+              <span>+</span>
+              <img src="{{ banner_image_uri }}" width="371px" height="122px" style="display: none">
+            </div>
+            <div style="color: #b3b0b0"> Size: 1120 x 373 pixel ; Format: JPG/PNG</div>
+          </div>
+        </div>
+        <div class="form-group col-md-12">
+          <label for="input_description" class="col-md-3 control-label">
+            <i style="color: red">*</i>Banner Description
+          </label>
+          <div class="col-md-7">
+            <textarea name="description" id="input_description" cols="300" rows="3" class="form-control" maxlength="500">{{ banner_description }}</textarea>
+          </div>
+        </div>
+      </div>
+      {{ content_bottom }}
+    </div>
+    {{ column_right }}
+  </div>
+</div>
+{{ footer }}
+
+<script>
+
+  let error = '{{ error_message }}';
+  $(function () {
+    layer.confirm(error,{
+      btn: ['Ok'],
+      title: 'Message',
+      skin: 'yzc_layer',
+      end:function(){
+        window.location.href = '{{ url_list }}';
+      }
+    },function () {
+      window.location.href = '{{ url_list }}';
+    });
+  })
+
+  //endregion
+</script>

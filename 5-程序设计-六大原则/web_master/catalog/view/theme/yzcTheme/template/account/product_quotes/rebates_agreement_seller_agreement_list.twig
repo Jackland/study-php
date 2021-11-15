@@ -1,0 +1,490 @@
+<div role="tabpanel" class="tab-pane active">
+  <div class="bg-white p-2">
+    <div class="row" style="margin:10px 0px 20px 5px;">
+      <div style="width: 100%">
+        <span style="color:#183464;font-size: 20px;font-weight: bold;float: left;margin-left: 10px;">{{ text_agreement_summary }}</span>
+      </div>
+    </div>
+    <div class="row" style="margin:10px 0px 20px 5px;width: 100%;text-align: center;">
+      <div style="width: 20%;float: left;border-right: 1px solid #ccc;">
+        <p class="giga icon-summary-po-id"></p>
+        <p style="color: #677999;font-size: 13px;">Agreement ID </p>
+        <p style="color: #000000;font-size: 14px;opacity:0.8;">{{ list.base_info.agreement_code }}</p>
+      </div>
+      <div style="width: 20%;float: left;border-right: 1px solid #ccc;">
+        <p class="giga icon-summary-store"></p>
+        <p style="color: #677999;font-size: 13px;"><span>Buyer Name</span></p>
+        <p><span style="color: #43AFDD;font-size: 14px;cursor: pointer" data-toggle="tooltip" title="{{ text_buyer_info }}"  onclick="urlToRebatesList('{{ list.base_info.nickname }}')"> {{ list.base_info.nickname }} ({{ list.base_info.user_number }})</span> <img src="{{ list.base_info.isCollectionFromDomicile ? asset('image/icons/HomePickup/home_pickup-15x15.png') : asset('image/icons/HomePickup/drop_shipping-15x15.png') }}">{{ list.base_info.ex_vat }}</p>
+      </div>
+      <div style="width: 20%;float: left;border-right: 1px solid #ccc;">
+        <p class="giga icon-summary-status"></p>
+        <p style="color: #677999;font-size: 13px;">Agreement Status</p>
+        <p style="color: #000000;font-size: 14px;opacity:0.8;">{{ list.base_info.s_value }}</p>
+      </div>
+      <div style="width: 20%;float: left;border-right: 1px solid #ccc;">
+        <p class="fa fa-book"></p>
+        <p style="color: #677999;font-size: 13px;">Rebate Result</p>
+        <p><span style="color: #000000;font-size: 14px;opacity:0.8;">
+            {{ list.base_info.r_value }}
+          </span>
+          {% if list.base_info.rebate_result == 0 %}
+            <i style="font-size: 12px;" class="giga icon-V10-wenhaotishi" aria-hidden="true" data-toggle="tooltip" title="{{ text_agreement_result_tips }}" ></i>
+          {% endif %}
+        </p>
+      </div>
+      <div style="width: 20%;float: left;">
+        <p class="giga icon-date-icon"></p>
+        <p style="color: #677999;font-size: 13px;">Last Modified</p>
+        <p style="color: #000000;font-size: 14px;opacity:0.8;">{{ list.base_info.update_time }}</p>
+      </div>
+
+    </div>
+    <div class="row" style="margin:10px 0px 20px 5px;width: 100%;">
+      <span style="color:#183464;font-size: 20px;font-weight: bold;float: left;margin:0 0 20px 10px;width: 100%">{{ text_agreement_details }}</span>
+      <span style="width: 100%;margin-left: 10px;float: left;border-top: 1px solid #eee;
+          border-bottom: 1px solid #eee;height:60px;font-size: 16px;">
+        <span style="width: 45%;float: left;border-right: 1px solid #eee;line-height:50px;height: 50px;margin-top: 5px;">
+          <span style="color:#677999;font-weight: bold;width: 60%;float: left">DAYS</span>
+          <span style="width: 40%;float: left">
+            {{ list.base_info.day }}
+            {% if list.base_info.day_tips %}&nbsp;
+              <i class="iconfont icon-gantanhao" style="color: #da0000;margin-left: -10px;"
+                 data-toggle="tooltip" title="{{ list.base_info.day_tips }}">
+              </i>
+            {% endif %}
+          </span>
+        </span>
+        <span style="width: 55%;float: left;line-height:50px;height: 50px;margin-top: 5px;">
+          <span style="color:#677999;font-weight: bold;width: 44%;float: left;margin-left:6% ">TIME OF EFFECT</span>
+          <span style="width: 50%;float: left">{{ list.base_info.effect_time }}</span>
+        </span>
+      </span>
+
+      <span style="width: 100%;margin-left: 10px;float: left;
+          border-bottom: 1px solid #eee;height:60px;font-size: 16px;">
+        <span style="width: 45%;float: left;border-right: 1px solid #eee;line-height:50px;height: 50px;margin-top: 5px;">
+          <span style="color:#677999;font-weight: bold;width: 60%;float: left">MIN. TOTAL SELLING QUANTITY <i style="font-size: 12px;" class="giga icon-V10-wenhaotishi" aria-hidden="true" data-toggle="tooltip" title="{{ text_quantity_tips }}" ></i></span>
+          <span style="width: 40%;float: left">
+            <span>{{ list.base_info.qty }}</span>
+            {% if list.base_info.qty_tips %}&nbsp;
+              <i class="iconfont icon-gantanhao" style="color: #da0000;margin-left: -10px;"
+                 data-toggle="tooltip" title="{{ list.base_info.qty_tips }}">
+              </i>
+            {% endif %}
+          </span>
+        </span>
+        <span style="width: 55%;float: left;line-height:50px;height: 50px;margin-top: 5px;">
+          <span style="color:#677999;font-weight: bold;width: 44%;float: left;margin-left:6% ">TIME OF FAILURE</span>
+          <span style="width: 50%;float: left">{{ list.base_info.expire_time }}</span>
+        </span>
+      </span>
+    </div>
+    <div class="row" style="margin:10px 0px 20px 5px;width: 100%;">
+      <table class="table main table-hover">
+        <thead>
+        <tr>
+          <th class="text-center" >{{ column_rebates_image }}</th>
+          <th class="text-center" >{{ column_rebates_item_code }}</th>
+          <th class="text-center" >{{ column_rebates_mpn }}</th>
+          <th class="text-right" >{{ column_agreement_exclusive_price }}<i style="font-size: 12px;" class="giga icon-V10-wenhaotishi" aria-hidden="true" data-toggle="tooltip" title="{{ text_agreement_price_tips }}" ></i></th>
+          <th class="text-right" >{{ column_agreement_rebate_amount }}</th>
+          <th class="text-right" >{{ column_agreement_selling_price }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key,value in list.product_list %}
+          {% if value.is_show %}
+            <tr>
+          <td class="text-center" >
+            <img src="{{ value.image_show }}" style="width: 30px;height:30px;">
+          </td>
+          <td class="text-center" >
+            {{ value.sku }}
+            {% if value['tag_array'] is not empty %}
+              {% for tag in value['tag_array'] %}
+                &nbsp;{{ tag }}
+              {% endfor %}
+            {% endif %}
+            <i class="fa fa-play-circle" onclick="urlToProductDetails('{{ value.product_link }}')" data-toggle="tooltip"
+               title="{{ value.name }}" aria-hidden="true" style="color: #8493AC;cursor: pointer" ></i>
+          </td>
+          <td class="text-center" >{{ value.mpn }}</td>
+            <td class="text-right" >
+              {{ value.template_price_show }}&nbsp;
+              {% if value.template_price_tips %}&nbsp;
+                <i class="iconfont icon-gantanhao" style="color: #da0000;margin-left: -10px;"
+                   data-toggle="tooltip" title="{{ value.template_price_tips }}">
+                </i>
+              {% endif %}
+            </td>
+            <td class="text-right" >
+              {{ value.rebate_amount_show }}&nbsp;
+              {% if value.rebate_amount_tips %}&nbsp;
+                <i class="iconfont icon-gantanhao" style="color: #da0000;margin-left: -10px;"
+                   data-toggle="tooltip" title="{{ value.rebate_amount_tips }}">
+                </i>
+              {% endif %}
+            </td>
+            <td class="text-right" >
+              {{ value.min_sell_price_show }}&nbsp;
+              {% if value.min_sell_price_tips %}&nbsp;
+                <i class="iconfont icon-gantanhao" style="color: #da0000;margin-left: -10px;"
+                   data-toggle="tooltip" title="{{ value.min_sell_price_tips }}">
+                </i>
+              {% endif %}
+
+            </td>
+
+          </tr>
+          {% else %}
+            <tr class="rebate-show">
+              <td class="text-center "  >
+                <img src="{{ value.image_show }}" style="width: 30px;height:30px;">
+              </td>
+              <td class="text-center">
+                {{ value.sku }}
+
+                {% if value['tag_array'] is not empty %}
+                  {% for tag in value['tag_array'] %}
+                    &nbsp;{{ tag }}
+                  {% endfor %}
+                {% endif %}
+                <i class="fa fa-play-circle" onclick="urlToProductDetails('{{ value.product_link }}')" data-toggle="tooltip"
+                   title="{{ value.name }}" aria-hidden="true" style="color: #8493AC;cursor: pointer" ></i>
+                {% if value.verify_tips %}&nbsp;
+                  <i class="iconfont icon-gantanhao" style="color: red"
+                     data-toggle="tooltip" title="{{ value.verify_tips }}">
+                  </i>
+                {% endif %}
+              </td>
+              <td class="text-center" >{{ value.mpn }}</td>
+              <td class="text-center"></td>
+              <td class="text-center"></td>
+              <td class="text-center"></td>
+              <td class="text-center"></td>
+
+            </tr>
+          {% endif %}
+        {% endfor %}
+
+
+
+        </tbody>
+      </table>
+    </div>
+    <div class="row" style="margin:10px 0 20px 5px;width: 100%;padding-bottom: 20px;">
+      <div style="color:#183464;font-size: 20px;font-weight: bold;float: left;margin-left: 10px;width: 100%">{{ message_title }}</div>
+      <div style="float: left;width: 100%;margin-top: 20px;">
+      <div style="padding: 10px 10px 10px 10px">
+        <div class="message-div conversational-message-wrapper message-section mt-2" id="contract_message_history">
+            {#buyer#}
+          {% if messages %}
+            {% for msg in messages %}
+              {% if msg.writer_id != customer_id %}
+                <div class="message-item incoming">
+                  <div class="left">
+                    {#<img src="//via.placeholder.com/40" alt="" class="avatar" style="width: 40px;">#}
+                    <i class="giga icon-account-blue" style="font-size: 26px;"></i>
+                  </div>
+                  <div class="right">
+                    <div class="info">
+                      <span style='text-align: left;' >{{ msg.name }}</span>
+                      <span style='text-align: right;'><i class="giga icon-Action-Time"></i>&nbsp;{{ msg.msg_date }}</span>
+                    </div>
+                    <div class="content" style="word-break:break-all;white-space: pre-wrap;">{{ msg.message }}</div>
+                  </div>
+                </div>
+              {% else %}
+                <div class="message-item outgoing">
+                  <div class="left">
+                    {#<img src="//via.placeholder.com/40" alt="" class="avatar" style="width: 40px;">#}
+                    <i class="giga icon-account-blue" style="font-size: 26px;"></i>
+                  </div>
+                  <div class="right" style="width: 400px;">
+                    <div class="info">
+                      <span style='text-align: left;'>{{ msg.name }}</span>
+                      <span style='text-align: right;'><i class="giga icon-Action-Time"></i>&nbsp;{{ msg.msg_date }}</span>
+                    </div>
+                    <div class="content" style="word-break:break-all;white-space: pre-wrap;">{{ msg.message }}</div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        {% if list.base_info.status == 1 %}
+          <div>
+            <div class="approveOrReject">
+              <label style="font-weight: bold;padding-bottom: 5px;color: #000000;font-size: 14px;opacity:0.2;">{{ label_process_result }}
+              </label>
+              <label style="padding-left: 20px"><input type="radio" style="vertical-align: -3px;" name="contract_status" id="contract_status_3"
+                                                       value="3"/>&nbsp;{{ text_status_3 }}</label>
+              <label style="padding-left: 20px"><input type="radio" name="contract_status"  style="vertical-align: -3px;" id="contract_status_2"
+                                                       value="2"/>&nbsp;{{ text_status_2 }}</label>
+            </div>
+            <div class="approveOrReject-con">
+              <div class="textarea-con">
+                <textarea id="contract_message"
+                          placeholder="{{ text_message_placeholder }}" maxlength="2000" required></textarea>
+                <i><span>0</span>/2000</i>
+              </div>
+              <div class="btn-con">
+                <button class="btn btn-primary" style="width: 80px" type="button"
+                        onclick="sendMessage(this)"><i class="giga icon-action-send-message"></i>&nbsp;{{ btn_send }}</button>
+              </div>
+            </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .message-div {
+    margin-bottom: 20px;
+  }
+  .rebate-show {
+    color:
+      #4c4d5a;
+    border-color:
+      #dcdcdc;
+    background:
+      #f6f6f6;
+    /*text-shadow: 0 -1px 0*/
+    /*rgba(50, 50, 50, 0);*/
+  }
+  .approveOrReject-con{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .approveOrReject-con .textarea-con{
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+  }
+  .approveOrReject-con .textarea-con textarea{
+    resize: none;
+    height: 60px;
+    width: 94%;
+    border: 1px solid #ddd;
+    padding: 8px;
+    margin-right: 4px;
+  }
+  .approveOrReject-con .textarea-con i{
+    color: #000000;
+    opacity:0.2;
+  }
+  .approveOrReject-con .btn-con{
+    width: 80px
+  }
+
+</style>
+<script>
+  $(function () {
+    {% if list.base_info.status == 1 %}
+      var text = $('#contract_message').val();
+      var len = text.length;
+      $('#contract_message').next().find('span').html(len);
+      $('textarea').keyup(function () {
+        var text = $(this).val();
+        len = text.length;
+        if (len > 2000) {
+          return false;
+        }
+        $(this).next().find('span').html(len);
+      });
+    {% endif %}
+
+  });
+
+  function urlToRebatesList(filter_buyer_name) {
+    var url = 'index.php?route=account/customerpartner/wk_quotes_admin&tab=rebates&filter_buyer_name=' + encodeURIComponent(filter_buyer_name);
+    window.open(url,'_blank');
+  }
+  function sendMessage(button) {
+    $(button).attr('disabled','disabled');
+    var msg = $('#contract_message').val().trim();
+    var token = '{{ token }}';
+    var url_load = '{{ refresh_action }}';
+    var contract_status = $('input[name=\'contract_status\']:checked').val();
+
+    if(!contract_status){
+      layer.msg('{{ error_approve_empty }}', {time: 2000, skin: ''});
+      $(button).attr('disabled',false);
+      return;
+    }
+
+    var agreement_id = '{{ list.base_info.id }}' ;
+    var day = '{{ list.base_info.day }}' ;
+    var product_id = '{{ list.base_info.product_id }}' ;
+    var qty = '{{ list.base_info.qty }}';
+    var lock = false;
+    if (contract_status == '3') {
+      if (!msg){
+        layer.msg('{{ error_msg_empty }}', {time: 2000, skin: ''});
+        $(button).attr('disabled',false);
+        return;
+      }
+      layer.confirm('{{ need_alarm ? error_product_price_approve : text_confirm_approve }}',
+        {btn: ['Yes', 'No'], title: "Confirm", skin: 'yzc_layer',area:'500px'},
+        function(index){
+            if(!lock){
+              lock = true;//锁定
+              if (msg.length <= 2000) {
+                var param = {
+                  'message': msg,
+                  'token': token,
+                  'agreement_id': agreement_id,
+                  'status': contract_status,
+                  'day':day,
+                  'product_id': product_id,
+                  'qty': qty
+                };
+                $.ajax({
+                  url: '{{ send_message_action }}',
+                  dataType: 'json',
+                  type: 'post',
+                  data: param,
+                  success: function (json) {
+                    if (json['success']) {
+                      layer.msg('{{ success_saved_seller_msg }}', {time: 2000, skin: ''});
+                      layer.load();
+                      $('#mapping-agreement').load(url_load,function(responseTxt,statusTxt,xhr){
+                        if(statusTxt=="success"){
+                          layer.closeAll('loading');
+                        }
+                      })
+                    } else if (json['error']) {
+                      layer.msg(json['error'], {time: 2000, skin: ''});
+                      if(json['is_refresh']){
+                        layer.load();
+                        $('#mapping-agreement').load(url_load,function(responseTxt,statusTxt,xhr){
+                          if(statusTxt=="success"){
+                            layer.closeAll('loading');
+                          }
+                        })
+                      }else{
+                        $(button).attr('disabled',false);
+                      }
+                    }
+                  }
+                });
+              } else {
+                layer.msg('{{  error_msg_large  }}', {time: 2000, skin: ''});
+                $(button).attr('disabled',false);
+              }
+            } else{
+              $(button).attr('disabled',false);
+            }
+        },function (index) {
+          $(button).attr('disabled',false);
+          layer.close(index);
+        }
+      );
+    }else{
+      if (msg) {
+        if(!lock){
+          lock = true;//锁定
+          if (msg.length <= 2000) {
+            var param = {
+              'message': msg,
+              'token': token,
+              'agreement_id':'{{ list.base_info.id }}',
+              'status': contract_status,
+              'day':'{{ list.base_info.day }}',
+              'product_id': '{{ list.base_info.product_id }}',
+              'qty': '{{ list.base_info.qty }}'
+            };
+            $.ajax({
+              url: '{{ send_message_action }}',
+              dataType: 'json',
+              type: 'post',
+              data: param,
+              success: function (json) {
+                if (json['success']) {
+                    layer.msg('{{ success_saved_seller_msg }}', {time: 2000, skin: ''});
+                    layer.load();
+                    $('#mapping-agreement').load(url_load,function(responseTxt,statusTxt,xhr){
+                      if(statusTxt=="success"){
+                        layer.closeAll('loading');
+                      }
+
+                    })
+                } else if (json['error']) {
+                    layer.msg(json['error'], {time: 2000, skin: ''});
+                    if(json['is_refresh']){
+                      layer.load();
+                      $('#mapping-agreement').load(url_load,function(responseTxt,statusTxt,xhr){
+                        if(statusTxt=="success"){
+                          layer.closeAll('loading');
+                        }
+
+                      })
+                    }else{
+                      $(button).attr('disabled',false);
+                    }
+
+                }
+              }
+            });
+          } else {
+            layer.msg('{{  error_msg_large  }}', {time: 2000, skin: ''});
+            $(button).attr('disabled',false);
+          }
+        } else{
+          $(button).attr('disabled',false);
+        }
+      } else {
+        layer.msg('{{ error_msg_empty }}', {time: 2000, skin: ''});
+        $(button).attr('disabled',false);
+      }
+
+    }
+
+
+
+
+  }
+
+</script>
+
+<style>
+  .conversational-message-wrapper {
+    font-size: 12px;
+    max-height: 500px;
+    overflow-y: scroll;
+  }
+  .conversational-message-wrapper .message-item.outgoing .right .content {
+    background-color: #fbfbfb;
+    border: 1px solid #dfdfdf;
+  }
+  .conversational-message-wrapper .message-item .right .content {
+    padding: 20px;
+    border-radius: 6px;
+  }
+
+  .conversational-message-wrapper .message-item.incoming .right .content {
+    background-color: #fff5ef;
+    border: 1px solid #fa6400;
+  }
+
+  .conversational-message-wrapper .message-item .right .content {
+    padding: 20px;
+    border-radius: 6px;
+  }
+  .layui-layer-btn {
+    text-align: center;
+  }
+
+  .layui-layer-dialog .layui-layer-content {
+    line-height: 24px;
+    word-break:normal ;
+    font-size: 14px;
+  }
+
+</style>

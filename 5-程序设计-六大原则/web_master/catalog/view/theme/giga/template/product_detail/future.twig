@@ -1,0 +1,153 @@
+<!--期货-->
+<style>
+    .price .swiper-button-next, .price .swiper-button-prev{
+        background-color: #fff;
+        color: #666;
+        /*opacity: 0.35;*/
+    }
+    #product-product .swiper-button-prev{
+        left: 0;
+        z-index: 100;
+    }
+    #product-product .swiper-button-next{
+        right: 0;
+    }
+</style>
+{% if contracts %}
+    <div class="price" style="height: auto">
+        <div class="col-sm-11">
+            <span class="text-muted col-sm-3">
+                {{ text_futures_label }}({{ text_unit }})
+                <a href="index.php?route=information/information&information_id=127"
+                   data-original-title="Please note you have to pay the deposit, click to view the terms and conditions for the B2B Marketplace Future Goods Transaction Policy." data-toggle="tooltip">
+                    <i class="giga icon-V10-wenhaotishi" style="cursor: pointer"></i>
+                </a>
+            </span>
+            <div class="col-sm-9 futures-list swiper-container" style="padding: 0">
+                <div class="swiper-wrapper">
+                  {% for key,item in contracts %}
+                    <span style="height: auto" class="swiper-slide pcs" {% if is_seller_self != 1 %} onmouseover="view()"   data-key="{{ key }}" onclick='loadFuturesQuickView({{ item.id }})' {% endif %} >
+                        <span class="quick-box"></span>
+                        <strong>
+                          {{ item.delivery_date|date('Y-m-d') }}</strong><br>
+                        <span class="text-muted">
+                               {% if item.delivery_type==3 %}
+                                 {% if item.margin_unit_price < item.last_unit_price %}
+                                   {{ item.margin_unit_price_show }} - {{ item.last_unit_price_show }}
+                                 {% elseif item.margin_unit_price == item.last_unit_price  %}
+                                   {{ item.margin_unit_price_show }}
+                                 {% else %}
+                                   {{ item.last_unit_price_show }} - {{ item.margin_unit_price_show }}
+                                 {% endif %}
+                               {% elseif item.delivery_type==2 %}
+                                 {{ item.margin_unit_price_show }}
+                               {% else %}
+                                 {{ item.last_unit_price_show }}
+                               {% endif %}
+                        </span>
+                    </span>
+                  {% endfor %}
+                </div>
+                <div class="swiper-pagination"></div>
+              {% if count_contracts>3 %}
+                <div class="swiper-button-prev"><i class="giga icon-arrow-left"></i></div>
+                <div class="swiper-button-next" style="justify-content: flex-end;"><i
+                            class="giga icon-arrow-right-copy"></i></div>
+              {% endif %}
+            </div>
+        </div>
+        <div class="col-sm-1" style="padding: 0">
+          {% if is_seller_self != 1 %}
+            <span class="bid_title_span" data-toggle="tooltip" title=""{% if future_bid %}  data-original-title="Bid for a lower price" {% else %} data-original-title="Seller doesn't accept bid for the Futures Price transaction."  {% endif %}>
+              {% if future_bid %}  
+              <a id="btn_futures_bid" class="btn bid_btn pull-right" onclick="loadFuturesModal()" data-confirm="{% if product_pending %}1{% else %}0{% endif %}"
+                   style="float: right;">{{ entry_btn_bid }}</a>
+              {% else %}
+              <a id="btn_futures_bid" class="btn bid_btn pull-right no-drop" data-confirm="{% if product_pending %}1{% else %}0{% endif %}"
+                   style="float: right;cursor: no-drop;">{{ entry_btn_bid }}</a>
+              {% endif %}
+            </span>
+          {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+<script>
+    var swiper = new Swiper('.futures-list.swiper-container', {
+        slidesPerView: 3,
+        spaceBetween: 0,
+        loop: false,
+        autoplay: false,
+        // autoplayDisableOnInteraction: true,
+        nextButton: '.futures-list .swiper-button-next',
+        prevButton: '.futures-list .swiper-button-prev',
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+
+        },
+    });
+
+    function loadFuturesQuickView(contract_id) {
+      if ($('#btn_futures_bid').data('confirm')) {
+        layer.confirm('{{ rebate_other_confirm }}', {
+            title: ' Confirm',
+            skin: 'yzc_layer',
+            btnAlign:"c",
+          btn: ['Yes', 'No'] //按钮
+        }, function () {
+          layer.closeAll();
+          showFuturesQuickView(contract_id);
+        });
+      } else {
+        showFuturesQuickView(contract_id);
+      }
+    }
+
+    function showFuturesQuickView(contract_id) {
+        var myModalSelector = $("#futures_bid_modal");
+        // 请求后台获取详细信息
+        myModalSelector.modal({
+            remote: "index.php?route=product/product/showFuturesBidModal&product_id={{ product_id }}&quick=1&contract_id="+contract_id,
+            backdrop: 'static',
+            keyboard: false
+        });
+        // 每次隐藏时，清除数据。确保点击时，重新加载
+        myModalSelector.on("hidden.bs.modal", function () {
+            $(this).removeData("bs.modal");
+            $("#futures_bid_modal_content").html("");
+        });
+    }
+
+    function loadFuturesModal() {
+      if ($('#btn_futures_bid').data('confirm')) {
+        layer.confirm('{{ rebate_other_confirm }}', {
+            title: ' Confirm',
+            skin: 'yzc_layer',
+            btnAlign:"c",
+          btn: ['Yes', 'No'] //按钮
+        }, function () {
+          layer.closeAll();
+          showFuturesModal();
+        });
+      } else {
+        showFuturesModal();
+      }
+    }
+
+
+    function showFuturesModal() {
+      var myModalSelector = $("#futures_bid_modal");
+      // 请求后台获取详细信息
+      myModalSelector.modal({
+        remote: "index.php?route=product/product/showFuturesBidModal&product_id={{ product_id }}",
+        backdrop: 'static',
+        keyboard: false
+      });
+      // 每次隐藏时，清除数据。确保点击时，重新加载
+      myModalSelector.on("hidden.bs.modal", function () {
+        $(this).removeData("bs.modal");
+        $("#futures_bid_modal_content").html("");
+      });
+    }
+</script>

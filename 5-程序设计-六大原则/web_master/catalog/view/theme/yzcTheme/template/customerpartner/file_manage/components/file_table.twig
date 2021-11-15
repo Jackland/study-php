@@ -1,0 +1,301 @@
+{% trans_default_category 'catalog/view/customerpartner/account/file_manage/index' %}
+<script type="text/x-template" id="file-table">
+    <div>
+        <table class="oris-table" style="border: 0">
+            <thead>
+                <tr>
+                    <th class="text-right radius-input"><input type="checkbox" @click="pageSelectAllRow(event.target)" id="selectAll"></th>
+                    <th class="text-left">
+                        <span v-show="selectData.length <= 0">{{ __("文件名") }}</span>
+                        <span v-show="selectData.length > 0 && type === 'all'" class="default-text">{{ __("已选中:num个文件/文件夹", {num: '${selectData.length}'}) }}</span>
+                        <span v-show="selectData.length > 0 && type !== 'all'" class="default-text">{{ __("已选中:num个文件", {num: '${selectData.length}'}) }}</span>
+                    </th>
+                    <th class="text-left pointer" @click="setSortChange" style="width: 16%">
+                        {{ __("修改时间") }}
+                        <span :class="['sort-order', sortChange == 'desc' ? ' desc-active' : '', sortChange == 'asc' ? ' asc-active' : '']"></span>
+                    </th>
+                    <th class="text-left" style="width: 12%">{{ __("大小") }}</th>
+                    <th style="padding: 0; width: 8px" v-show="isScroll"></th>
+                </tr>
+            </thead>
+        </table>
+        <div class="scroll-box" ref="fileList">
+            <div class="table-body">
+                <table class="oris-table" style="border-bottom: 0">
+                    <!-- 空数据 start -->
+                    <tbody v-if="tableData.length <= 0 && noMore">
+                        <tr class="no-records">
+                            <td colspan="3">
+                                <div class="oris-empty">
+                                    <div class="oris-empty-container" style="margin-top: 28px">
+                                        <div class="oris-empty-icon">
+                                            <img src="{{ asset("image/icons/empty.png") }}"></img>
+                                        </div>
+                                        <p class="none-text-tip">
+                                            <span v-if="type !== 'other'">
+                                                ${  !$parent.searchObj.is 
+                                                    ? '{{ __("您还没有上传:type，", { type: "' + $parent.fileCHN + '" }) }}' 
+                                                    : '{{ __("没有结果")}}' }
+                                            </span>
+                                            <span v-else>
+                                                {{ __("暂无其他文件，")}}
+                                            </span>
+                                            <label class="upload-text" for="uploadFile" v-if="!$parent.searchObj.is">
+                                                {{ __("点击上传") }}
+                                                <input type="file" id="uploadFile" :accept="acceptType" multiple @change="$parent.handleUpload(event.target)">
+                                            </label>
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <!-- 空数据 end -->
+                    <tbody v-else>
+                        <tr class="hover-to-btn" v-for="(item, index) in tableData" :key="item.id">
+                            <td class="text-right radius-input">
+                                <input type="checkbox" name="selected[]" :value="JSON.stringify(item)" :disabled="item.id === undefined" @click.stop="pageSelectOneRow(event.target)" />
+                            </td>
+                            <td class="text-left">
+                                <div class="file-item-box">
+                                    <span :class="{'flex-layout': true, pointer: item.is_dir}" :title="item.name" @click.stop="enterFile(item)">
+                                        <span class="icon-box"><img :src="getFileType(item.suffix, item.is_dir)" alt=""></span>
+                                        <div class="rename-input" v-show="item.is_rename">
+                                            <input type="text" :id="'fileRename' + item.id" :maxLength="item.is_dir ? 50 : 100" @keyup.enter="confirmName(index, item.id)" @keyup.esc="cancelName(index)" @click.stop>
+                                            <span class="confirm-cancel-box">
+                                                <i class="giga icon-zhengquewanchengchenggong is-b-c" @click.stop="confirmName(index, item.id)"></i>
+                                                <i class="giga icon-shibai" @click.stop="cancelName(index)"></i>
+                                            </span>
+                                        </div>
+                                        <span class="overflow file-name" v-show="!item.is_rename">${ item.name }</span>
+                                    </span>
+                                    <div class="text-btn-group" v-if="item.id !== undefined">
+                                        <span class="text-btn ban-select" @click.stop="handleRename(index, item.id)">{{ __("重命名") }}</span>
+                                        <span class="text-btn ban-select" @click.stop="$parent.handleMoveTo([item])">{{ __("移动到") }}</span>
+                                        <span class="text-btn ban-select is-b" @click.stop="handleDelete([item])">{{ __("删除") }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-left" style="width: 16%">${ item.time }</td>
+                            <td class="text-left" style="width: 12%" v-if="item.is_dir === 0">${ item.size | changeSizeUnit }</td>
+                            <td class="text-left" style="width: 12%" v-else>- -</td>
+                        </tr>
+                    </tbody>
+                </table>
+                 <p class="loading-tip-text" v-if="loading"><i class="el-icon-loading mr-octal1"></i>{{ __("加载中…") }}</p>
+                <!-- <p class="loading-tip-text" v-if="noMore && tableData.length > 0">{{ __("已全部加载") }}</p> -->
+            </div>
+        </div>
+        <div class="page" v-if="tableData.length>0">
+            <el-pagination
+              background
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page.sync="pageCurrent"
+              :page-sizes="[20, 50, 100, 200, 500]"
+              :page-size="10"
+              layout="prev, pager, next, sizes"
+              :total="total">
+            </el-pagination>
+            <span style="line-height:30px;margin-left:-10px">${tableData.length>0?(pageCurrent-1) * pagesize +1 : 0}-${(pageCurrent-1) * pagesize +tableData.length} of ${total}</span>
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('file-table', {
+        template: '#file-table',
+        delimiters: ['${', '}'],
+        props: {
+            tableData: {
+                type: Array,
+                default: () => ([])
+            },
+            total: {
+                type: Number,
+                default: 1.1
+            },
+            type: {
+                type: String,
+                default: ''
+            },
+            renameIndex: { // 重命名下标
+                type: Object,
+                default: () => ({ 0: '' })
+            },
+            pageCurrent: {
+                type: Number,
+                default: 1
+            },
+            pagesize:{
+                type: Number,
+                default:10
+            }
+        },
+        data: () => ({
+            acceptType: acceptType,
+            sortChange: 'desc',
+            loading: false,
+            selectData: [],
+            axios: null,
+            isScroll: false,
+            pageCurrent: 1,
+            total:this.total
+        }),
+        filters: {
+            changeSizeUnit(value) {
+                if (value < 1024) {
+                    return value + 'KB'
+                } else if ((value / Math.pow(1024, 2)) >= 1) {
+                    return (value / Math.pow(1024, 2)).toFixed(2) + 'G'
+                } else if ((value / 1024) >= 1) {
+                    return (value / 1024).toFixed(2) + 'MB'
+                }
+            }
+        },
+        computed: {
+            noMore() {
+                return this.tableData.length >= this.total
+            },
+            disabled() {
+                return this.loading || this.noMore
+            },
+        },
+        created() {
+            this.axios = axios.create({});
+            this.sortChange = this.$parent[`${this.type}Condition`].sort || 'desc'
+            this.$nextTick(() => {
+                this.watchScroll('scroll-box')
+            })
+        },
+        methods: {
+            // 监听指定div是否宽度变化
+            watchScroll(name) {
+                // 获取指定样式的值包括class的值
+                function getStyle(obj, attr) {
+                    if (obj.currentStyle) {
+                        return obj.currentStyle[attr];
+                    } else {
+                        return getComputedStyle(obj, false)[attr];
+                    }
+                }
+                let element = document.getElementsByClassName(name)[0]
+                let _this = this
+                let observer = new ResizeObserver(function () {
+                    _this.isScroll = (element.scrollHeight > element.clientHeight) && getStyle(element, 'overflow') !== 'hidden'
+                })
+                observer.observe(element)
+            },
+            // 进入文件夹
+            enterFile(item) {
+                if (item.is_dir && item.id !== undefined) {
+                    this.$parent.searchObj.filename = ''
+                    this.$parent.cancelRename()
+                    this.$parent.crumbsList.push({
+                        name: item.name,
+                        id: item.id,
+                        is_dir: item.is_dir
+                    })
+                }
+            },
+            // 获取多选数据
+            getSelectData() {
+                let select = $(`input[name^='selected']:checked`)
+                this.selectData = []
+                select.map(item => {
+                    this.selectData.push(JSON.parse(select[item].value))
+                })
+                this.$emit('get-select', { selected: this.selectData, type: this.type })
+            },
+            // 全选
+            pageSelectAllRow(checkbox) {
+                this.$parent.pageSelectAllRow(checkbox, this.getSelectData)
+            },
+            // 单选
+            pageSelectOneRow(checkbox) {
+                this.$parent.pageSelectOneRow(checkbox, this.getSelectData)
+            },
+            // 设置排序
+            setSortChange() {
+                let sortList = {
+                    'asc': 'desc',
+                    'desc': 'asc'
+                }
+                this.sortChange = sortList[this.sortChange] ?? 'asc'
+                this.$emit('sort-change', { sort: this.sortChange, type: this.type })
+            },
+            // 获取文件类型图片
+            getFileType(filename, is_dir) {
+                return this.$parent.getFileType(filename, is_dir)
+            },
+            // 执行父级数据加载
+            async loadParent(id, reset) {
+                await this.$parent.scrollLoad(this.type, id, reset);
+                this.$nextTick(() => {
+                    this.loading = false
+                    this.$parent[`${this.type}Condition`].loading = false
+                })
+            },
+            // 触底加载
+            scrollLoad(id = 0, reset = false) {
+                this.loading = true;
+                if (this.type === 'all') {
+                    let parent = this.$parent.crumbsList
+                    this.loadParent(parent[parent.length - 1].id, reset);
+                } else {
+                    this.loadParent(undefined, reset);
+                }
+            },
+            // 重命名
+            handleRename(index, id) {
+                if (this.renameIndex.index === '') {
+                    if (this.renameIndex.index !== '') {
+                        this.cancelName(this.renameIndex.index, false)
+                    }
+                    if (this.tableData[0].id === undefined) {
+                        this.tableData.splice(0, 1)
+                        index--
+                    }
+                    this.renameIndex.index = index
+                    this.renameIndex.type = this.type
+                    this.$set(this.tableData[index], 'is_rename', true)
+                    this.$nextTick(() => {
+                        let dom = $(`#fileRename${id}`)
+                        dom.val(this.tableData[index].name.replace(fileSuffix, ''))
+                        dom.select()
+                    })
+                }
+            },
+            // 确认命名
+            async confirmName(index, id) {
+                this.pageCurrent = 1
+                this.$parent.confirmName(index, `fileRename${id}`)
+            },
+            // 取消命名
+            cancelName(index) {
+                this.$parent.pageCurrent = 1
+                this.pageCurrent = 1
+                this.$emit('get-file')
+                this.$parent.cancelName(index)
+            },
+            // 删除处理
+            handleDelete(data) {
+                this.$parent.handleDelete(data)
+            },
+            handleSizeChange(val){
+                this.$parent.pagesize =val
+                let pageMax = Math.ceil(this.total / val)
+                    if (this.$parent.pageCurrent > pageMax) {
+                    this.$parent.pageCurrent = pageMax
+                }
+                this.$emit('get-file')
+
+                
+            },
+            handleCurrentChange(val){
+                this.$parent.pageCurrent = val
+                this.$emit('get-file')
+            },
+    
+        }
+    })
+</script>

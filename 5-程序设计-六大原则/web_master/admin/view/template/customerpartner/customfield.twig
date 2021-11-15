@@ -1,0 +1,280 @@
+{% if module_marketplace_status is defined and module_marketplace_status %}
+  <div class="tab-pane" id="tab-custom-field">
+    <div class="row">
+      <div class="col-sm-3">
+        <ul class="nav nav-pills nav-stacked" id="vtab-option">
+          {% set tabCount = 0 %}
+          {% if wkPreCustomFields is defined and wkPreCustomFields %}
+            {% for tabs in wkPreCustomFields %}
+              <li>
+                <a href="#wktab-option-{{ tabCount }}" data-toggle="tab" id="wkoption-{{ tabCount }}" field-id="wkoption-{{ tabs['fieldId'] }}">
+                  <i class="fa fa-minus-circle" onclick="$('#wkoption-{{ tabCount }}').remove(); $('#wktab-option-{{ tabCount }}').remove(); $('#vtab-option li a:first').trigger('click'); return false;"></i>{{ tabs["fieldName"] }}></a>
+              </li>
+              {% set tabCount = tabCount + 1 %}
+            {% endfor %}
+          {% endif %}
+          <li id="optionSelector">
+            <select name="wkcustomfield" class="form-control">
+              {% if wkcustomFields is defined and wkcustomFields %}
+                <option value=""></option>
+                {% for field in wkcustomFields %}
+                  <option value="{{ field['id'] }}" data-type="{{ field['fieldType'] }}" data-name="{{ field['fieldName'] }}" data-des="{{ field['fieldDescription'] }}" title="{{ field['fieldDescription'] }}" data-isRequired="{{ field['isRequired'] }}">
+                    {{ field['fieldName'] }}
+                  </option>
+                {% endfor %}
+              {% endif %}
+            </select>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-sm-9">
+        <div class="tab-content" id="wk_customfieldcontent">
+          {% set tabCount = 0 %}
+          {% set wkcustom_option_row = 0 %}
+          {% if wkPreCustomFields is defined and wkPreCustomFields %}
+            {% for tabs in wkPreCustomFields %}
+              <div id="wktab-option-{{ tabCount }}" class="tab-pane">
+                <div class="alert alert-info">
+                  <i class="fa fa-info-circle"></i>
+                  {{ tabs['fieldDes'] }}
+                </div>
+                {% if error is defined and error == tabs['fieldId'] %}
+                  <div class="alert alert-danger">
+                    <i class="fa fa-exclamation-circle"></i>
+                    {{ error_warning_mandetory }}
+                  </div>
+                {% endif %}
+                <input type="hidden" name="product_custom_field[{{ wkcustom_option_ro }}][custom_field_name]" value="{{ tabs['fieldName'] }}">
+                <input type="hidden" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_type]" value="{{ tabs['fieldType'] }}">
+                <input type="hidden" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_id]" value="{{ tabs['fieldId'] }}">
+                <input type="hidden" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_des]" value="{{ tabs['fieldDes'] }}">
+                <input type="hidden" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_is_required]" value="{{ tabs['isRequired'] }}">
+
+                {% if tabs['fieldType'] == 'select' %}
+                  <div class="form-group {% if tabs['isRequired'] == 'yes' %}{{ 'required' }}{%endif %}">
+                    <label class="col-sm-3 control-label">Select option:</label>
+                    <div class="col-sm-9">
+                      <select class="form-control" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_value][]">
+                        {% for options in tabs['preFieldOptions'] %}
+                          <option value="{{ options['optionId'] }}" {% if tabs['fieldOptions'] %} {% for option in tabs['fieldOptions'] %} {% if option['optionId'] == options['optionId'] %}{{ 'selected' }}{%endif %} {% endfor %} {% endif %}>
+                            {{ options['optionValue'] }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                {% elseif tabs['fieldType'] == 'checkbox' or tabs['fieldType'] == 'radio' %}
+                  <div class="form-group {% if tabs['isRequired'] == 'yes' %}{{ 'required' }}{%endif %} ">
+                    <label class="control-label col-sm-3">Select option:</label>
+                    <div class="col-sm-9">
+                      {% for options in tabs['preFieldOptions'] %}
+                        <div class="radio checkbox">
+                          <label for="{{ wkcustom_option_row ~ options['optionId'] }}">
+                            <input
+                              type='{{ tabs['
+                              fieldType'] }}'
+                              id="{{ wkcustom_option_row ~ options['optionId'] }}"
+                              value="{{ options['optionId'] }}"
+                              name="product_custom_field[{{ wkcustom_option_row }}][custom_field_value][]"
+                              {% if tabs['fieldOptions'] %}
+                              {% for option in tabs['fieldOptions'] %}
+                              {% if option['optionId'] == options['optionId'] %}
+                              {{ 'checked' }}
+                              {% endif %}
+                              {% endfor %}
+                              {% endif %}/>
+                            {{ options['optionValue'] }}
+                          </label>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% elseif tabs['fieldType'] == 'text' %}
+                  <div class="form-group {% if tabs['isRequired'] == 'yes' %}{{ 'required' }}{%endif %} ">
+                    <label class="col-sm-3 control-label">Enter Text:</label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_value][]" value="{% if tabs['fieldOptions']['option_id'] is defined  %}{{ tabs['fieldOptions']['option_id'] }}{%endif %}"/>
+                    </div>
+                  </div>
+                {% elseif tabs['fieldType'] == 'textarea' %}
+                  <div class="form-group {% if tabs['isRequired'] == 'yes' %}{{ 'required' }}{%endif %} ">
+                    <label class="col-sm-3 control-label">Enter Text:</label>
+                    <div class="col-sm-9">
+                      <textarea class="form-control" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_value][]" rows="7">
+                        {% if tabs['fieldOptions']['option_id']is defined %}
+                          {{ tabs['fieldOptions']['option_id'] }}
+                        {% endif %}
+                      </textarea>
+                    </div>
+                  </div>
+                {% elseif tabs['fieldType'] == 'date' %}
+                  <div class="form-group {% if tabs['isRequired'] == 'yes' %}{{ 'required' }}{%endif %} ">
+                    <label class="col-sm-3 control-label">Select Date:</label>
+                    <div class="col-sm-6">
+                      <div class="input-group date">
+                        <input type="text" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_value][]" value="{% if tabs['fieldOptions']['option_id'] is defined  %}{{ tabs['fieldOptions']['option_id'] }}{%endif %}" class="form-control">
+                        <span class="input-group-btn">
+                          <button type="button" class="btn btn-default">
+                            <i class="fa fa-calendar"></i>
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                {% elseif tabs['fieldType'] == 'time' %}
+                  <div class="form-group {% if tabs['isRequired'] == 'yes' %}{{ 'required' }}{%endif %} ">
+                    <label class="col-sm-3 control-label">Enter Text:</label>
+                    <div class="col-sm-6">
+                      <div class="input-group time">
+                        <input class="form-control" type="text" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_value][]" value="{% if tabs['fieldOptions']['option_id'] is defined  %}{{ tabs['fieldOptions']['option_id'] }}{%endif %}">
+                        <span class="input-group-btn">
+                          <button type="button" class="btn btn-default">
+                            <i class="fa fa-clock-o"></i>
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                {% elseif tabs['fieldType'] == 'datetime' %}
+                  <div class="form-group {% if tabs['isRequired'] == 'yes' %}{{ 'required' }}{%endif %} ">
+                    <label class="col-sm-3 control-label">Select date-time:</label>
+                    <div class="col-sm-6">
+                      <div class="input-group datetime">
+                        <input type="text" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_value][]" value="{% if tabs['fieldOptions']['option_id'] is defined  %}{{ tabs['fieldOptions']['option_id'] }}{%endif %}" class="form-control">
+                        <span class="input-group-btn">
+                          <button type="button" class="btn btn-default">
+                            <i class="fa fa-clock-o"></i>
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+              {% set tabCount = tabCount + 1 %}
+              {% set wkcustom_option_row = wkcustom_option_row + 1 %}
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <script type="text/javascript">
+
+    $('#vtab-option a:first').tab('show');
+    tabCount = '{{ tabCount }}';
+    wkcustom_option_row = '{{ wkcustom_option_row }}';
+    $('select[name="wkcustomfield"]').on('change', function() {
+      value = $(this).val();
+      if (value == '') {
+        return;
+      }
+
+      if ($('body').find('[field-id = wkoption-' + value + ']').length) {
+        return;
+      }
+      fieldType = $('option:selected', this).attr('data-type');
+      fieldName = $('option:selected', this).attr('data-name');
+      fieldDes = $('option:selected', this).attr('data-des');
+      fieldIsRequired = $('option:selected', this).attr('data-isRequired');
+      tab = '<li><a href="#wktab-option-' + tabCount + '" data-toggle="tab" id="wkoption-' + tabCount + '" field-id = "wkoption-' + value + '"><i class="fa fa-minus-circle" onclick="$(\'#wkoption-' + tabCount + '\').remove(); $(\'#wktab-option-' + tabCount + '\').remove(); $(\'#vtab-option a:first\').trigger(\'click\'); return false;" /></i>&nbsp;' + fieldName + '</a></li>';
+      $('#optionSelector').before(tab);
+      html = '';
+      html += '<input type="hidden" name="product_custom_field[' + wkcustom_option_row + '][custom_field_name]" value="' + fieldName + '">';
+      html += '<input type="hidden" name="product_custom_field[' + wkcustom_option_row + '][custom_field_type]" value="' + fieldType + '">';
+      html += '<input type="hidden" name="product_custom_field[' + wkcustom_option_row + '][custom_field_id]" value="' + value + '">';
+      html += '<input type="hidden" name="product_custom_field[' + wkcustom_option_row + '][custom_field_des]" value="' + fieldDes + '">';
+      html += '<input type="hidden" name="product_custom_field[' + wkcustom_option_row + '][custom_field_is_required]" value="' + fieldIsRequired + '">';
+      if (fieldIsRequired == 'yes') {
+        required = 'required';
+      } else {
+        required = '';
+      }
+      if (fieldType == "textarea") {
+
+        html += '<div class="form-group ' + required + ' "><label class="col-sm-3 control-label">{{ entry_enter_text }}</label>';
+        html += '<div class="col-sm-9"><textarea class="form-control" id="" value="" name="product_custom_field[' + wkcustom_option_row + '][custom_field_value][]" row="7"></textarea></div></div>';
+        addtoBody(html);
+
+      } else if (fieldType == "text") {
+
+        html += '<div class="form-group ' + required + '"><label class="col-sm-3 control-label">{{ entry_enter_text }}</label>';
+        html += '<div class="col-sm-9"><input type="text" class="form-control" name="product_custom_field[' + wkcustom_option_row + '][custom_field_value][]" /></div></div>';
+        addtoBody(html);
+
+      } else if (fieldType == "time") {
+
+        html += '<div class="form-group ' + required + '"><label class="col-sm-3 control-label">{{ entry_select_time }}</label>';
+        html += '<div class="col-sm-6"><div class="input-group time"><input type="text" name="product_custom_field[' + wkcustom_option_row + '][custom_field_value][]" class="form-control" /><span class="input-group-btn"><button class="btn btn-default" type="button"><i class="fa fa-clock-o"></i></button</span></div</div></div>';
+
+        addtoBody(html);
+
+      } else if (fieldType == "datetime") {
+
+        html += '<div class="form-group ' + required + '"><label class="col-sm-3 control-label">{{ entry_select_datetime }}</label>';
+        html += '<div class="col-sm-6"><div class="input-group datetime"><input type="text" name="product_custom_field[' + wkcustom_option_row + '][custom_field_value][]" class="form-control" /><span class="input-group-btn"><button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button</span></div</div></div>';
+
+        addtoBody(html);
+
+      } else if (fieldType == "date") {
+
+        html += '<div class="form-group ' + required + '">';
+        html += '<label class="col-sm-3 control-label">{{ entry_select_date }}</label>';
+        html += '<div class="col-sm-6"><div class="input-group date">';
+        html += '<input type="text" name="product_custom_field[{{ wkcustom_option_row }}][custom_field_value][]" class="form-control">';
+        html += '<span class="input-group-btn"><button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button></span></div></div></div>';
+
+        addtoBody(html);
+
+      } else {
+        $.ajax({
+          url: 'index.php?route=wkcustomfield/wkcustomfield/getOptions&user_token={{ user_token }}',
+          data: '&value=' + value,
+          dataType: 'json',
+          type: 'post',
+          success: function(data) {
+            innerHtml = '';
+            if (fieldType == "select") {
+              html += '<div class="form-group ' + required + '"><label class="col-sm-3 control-label">Options</label><div class="col-sm-9" >';
+            } else {
+              html += '<div class="form-group ' + required + '"><label class="control-label">Options</label><div>';
+            }
+            $.each(data, function(key, val) {
+              if (fieldType == "select") {
+                innerHtml += '<option value="' + val.optionId + '">' + val.optionValue + '</option>'
+              } else if (fieldType == "checkbox") {
+
+                html += '<div class="radio checkbox"><label for="' + wkcustom_option_row + val.optionId + '"><input type=' + fieldType + ' id="' + wkcustom_option_row + val.optionId + '" value="' + val.optionId + '" name="product_custom_field[' + wkcustom_option_row + '][custom_field_value][]">' + val.optionValue + '</lable></div>';
+
+              } else {
+
+                html += '<div class="radio checkbox"><label for="' + wkcustom_option_row + val.optionId + '"><input type=' + fieldType + ' id="' + wkcustom_option_row + val.optionId + '" value="' + val.optionId + '" value="' + val.optionId + '" name="product_custom_field[' + wkcustom_option_row + '][custom_field_value][]">' + val.optionValue + '</lable></div>';
+
+              }
+            });
+            if (fieldType == "select") {
+              html += '<select class="form-control" name="product_custom_field[' + wkcustom_option_row + '][custom_field_value][]">' + innerHtml + '</select>';
+            }
+            addtoBody(html);
+          }
+        })
+      }
+    });
+
+    function addtoBody(html) {
+      html = '<div id="wktab-option-' + tabCount + '" class="tab-pane"><div class="alert alert-info"><i class="fa fa-info-circle"></i> ' + fieldDes + '</div>' + html + '</div></div></div>';
+      $('#wk_customfieldcontent').append(html);
+      $('#wkoption-' + tabCount).trigger('click');
+      tabCount++;
+      wkcustom_option_row++;
+
+      $('.date').datetimepicker({pickTime: false});
+
+      $('.time').datetimepicker({pickDate: false});
+
+      $('.datetime').datetimepicker({pickDate: true, pickTime: true});
+    }
+  </script>
+{% endif %}

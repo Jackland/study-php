@@ -1,0 +1,227 @@
+{% trans_default_category 'catalog/view/customerpartner/marketing_campaign/discount/index' %}
+<div id="limitedSalesPromotions">
+  <form action="#">
+    <div class="oris-row">
+      <div class="oris-col-3">
+        <label class="text-weight-normal" for="searchLimitedName">{{ __('活动名称') }}</label>
+        <input type="text" name="searchLimitedName" id="searchLimitedName" class="oris-input" autocomplete="off" value="{{ search.filter_event_name }}" />
+      </div>
+      <div class="oris-col-3 oris-select">
+        <label class="text-weight-normal" for="searchLimitedStatus">{{__('状态')}}</label>
+        <select class="oris-select-prerender" name="searchLimitedStatus" id="searchLimitedStatus">
+          <option value="">---{{ __('请选择', {}, 'common') }}---</option>
+          {% for index,status in discount_status_list %}
+          <option value="{{ index }}" {% if search.filter_status==index %}selected{% endif %}>{{ status }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="oris-col-6 p24-t">
+        <button id="limitedFilterBtn" type="button" class="oris-button oris-button-bigger width80">{{__('查询')}}</button>
+        {% if show_create_entrance %}
+        <button id="limitAddBtn" type="button" class="oris-button-light pull-right flex-layout">
+          <i class="giga icon-jia">&nbsp;</i>{{ __('添加活动') }}
+        </button>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+  <table class="oris-table m20-t">
+    <thead>
+      <tr>
+        <th class="oris-w270">{{ __('活动名称') }}</th>
+        <th class="oris-w120">{{ __('最大折扣') }}</th>
+        <th class="oris-w130">{{ __('交易方式intable') }}</th>
+        <th class="oris-w120 text-center">{{ __('最低购买量intable') }}</th>
+        <th class="oris-w340">{{ __('活动有效期间') }}</th>
+        <th class="oris-w160">{{ __('修改时间') }}</th>
+        <th class="oris-w180">{{__('状态')}}</th>
+        <th class="oris-w100 min-width-action">{{__('操作')}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if list|length %}
+      {% for e,item in list %}
+      <tr>
+        <td>
+          <span class="max-line2" title="{{ item.name }}">{{ item.name }}</span>
+        </td>
+        <td>{{ item.max_discount }}% OFF</td>
+        <td>{{ item.transaction_type_format }}</td>
+        <td class="text-center">{{ item.low_qty }}</td>
+        <td>{{item.effective_time}} - {{item.expiration_time}}</td>
+        <td>{{item.update_time}}</td>
+        <td>
+          <span class="oris-circle {{ item.color_status_name }}"></span>{{item.effective_status_name}}
+          {% if item.low_stock_num > 0 %}
+          <br><span class="low-qty">{{__(':num个产品库存不足', {'num': item.low_stock_num})}}</span>
+          {% endif %}
+        </td>
+        <td class="text-left fixed-right">
+          {% if item.can_update_stop %}
+            {% if show_create_entrance %}
+              <a href="javascript:void(0)" data-disountId="{{ item.id }}" class="btn-text action-edit">
+                <span><i class="giga icon-seller_bianji-01" data-toggle="tooltip" title="{{ __('编辑') }}"></i></span>
+              </a>&nbsp;
+            {% else %}
+              <a href="javascript:void(0)" data-disountId="{{ item.id }}" class="btn-text action-view">
+               <span><i class="giga icon-V10_chakan" data-toggle="tooltip" title="{{ __('查看') }}"></i></span>
+              </a>
+            {% endif %}
+          <a href="javascript:void(0)" data-disountId="{{item.id}}" class="btn-text action-stop">
+            <span>
+              <i class="giga icon-tingzhi" data-toggle="tooltip" title="{{__('停止')}}"></i>
+            </span>
+          </a>
+          {% else %}
+          <a href="javascript:void(0)" data-disountId="{{item.id}}" class="btn-text action-view">
+            <span>
+              <i class="giga icon-V10_chakan" data-toggle="tooltip" title="{{__('查看')}}"></i>
+            </span>
+          </a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+      <tr class="no-records">
+        <td colspan="7">{{__('没有数据')}}</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+  {% if list|length %}
+  {# 分页 #}
+  <div class="oris-row oris-pagination">
+    <ul id="limitedTablePagination"></ul>
+  </div>
+  {# 分页 #}
+  {% endif %}
+</div>
+{% apply script %}
+<script type="text/javascript">
+var URL_MAIN = '/index.php?route=customerpartner/marketing_campaign/time_limit_discount';
+var limitedData = {
+  list: {{ list }}, // 列表显示数据
+  tips: {
+    stopComfirm: "{{__('是否停止活动，停止后该活动不可重启。')}}",
+    stopSuccess: "{{__('操作成功')}}"
+  }
+};
+var limitedSalesPromotions = {
+  init: function() {
+    window.history.pushState({}, 0, "{{url('customerpartner/marketing_campaign/discount_tab/index')}}");
+    $('#searchLimitedStatus').selectpicker();
+    // 初始化分页
+    $('#limitedTablePagination').bootstrapPaginator({
+      /*当前使用的是3版本的bootstrap*/
+      bootstrapMajorVersion: 3,
+      /*配置的字体大小是小号*/
+      size: 'normal',
+      /*当前页*/
+      currentPage: {{ paginator.getPage() }},
+      /*一共多少页*/
+      totalPages: {{ max(paginator.getPageCount(), 1) }},
+      /*页面上最多显示几个含数字的分页按钮*/
+      numberOfPages: 5,
+      pageRange: [10, 20, 30, 50, 100],
+      rowsOfPage: {{ paginator.getPageSize() }},
+      total: {{ paginator.getTotalCount() }},
+      onPageClicked: function(event, originalEvent, type, page) {
+        block.blockUI();
+        limitedSalesPromotions.loadPage('{{ paginator.getUrlWithNoPage() }}&page_limit=' + originalEvent['page_info']['page_limit'] + '&page=' + page);
+      }
+    });
+  },
+  bindClick: function() {
+    // Filter查询
+    $('#limitedSalesPromtions').find('#limitedFilterBtn').bind('click', function() {
+      var params =
+        `&filter_status=${$('#searchLimitedStatus').val()}&filter_event_name=${$('#searchLimitedName').val()}`;
+      var url = URL_MAIN+'/index' + params;
+      block.blockUI();
+      limitedSalesPromotions.loadPage(url)
+    });
+    $('#limitedSalesPromtions').on('click', '#limitAddBtn', function() {
+    	// 新增
+    	window.open(`${URL_MAIN}/add`, '_blank');
+    }).on('click', '.action-view', function() {
+      // 查看
+      let discountId = $(this).attr('data-disountId');
+      window.open(`${URL_MAIN}/editView&time_limit_id=${discountId}`, '_blank');
+    }).on('click', '.action-stop', function() {
+      // 停止
+      limitedSalesPromotions.stopActivty($(this).attr('data-disountId'));
+    }).on('click', '.action-edit', function() {
+      // 编辑
+      let discountId = $(this).attr('data-disountId');
+      window.open(`${URL_MAIN}/add&time_limit_id=${discountId}`, '_blank');
+    })
+  },
+  loadPage: function(url) {
+    url = url || URL_MAIN + '/index';
+    $('#limitedSalesPromtions').load(url, function() {
+      block.unBlockUI();
+    });
+  },
+  stopActivty: function(id) {
+    let that = this;
+    layer.confirm(limitedData.tips.stopComfirm, {
+      title: "{{__('确认confirm')}}",
+      skin: 'oris-layer',
+      btn: ["{{__('确认')}}", "{{__('取消')}}"],
+      scrollbar: false
+    }, function(index) {
+      layer.close(index);
+      that.stopService(id);
+    }, function(index) {
+      layer.close(index);
+    });
+  },
+  stopService: function(id) {
+    block.blockUI();
+    $.ajax({
+      url: URL_MAIN + '/stop',
+      data: {
+        time_limit_id: id
+      },
+      method: 'post',
+      cache: false,
+      dataType: 'json',
+      success: function(res) {
+        if (res.code == 200) {
+          block.unBlockUI();
+          $.toast({
+            heading: false,
+            text: limitedData.tips.stopSuccess,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'success',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+          });
+          limitedSalesPromotions.loadPage();
+        } else {
+          block.unBlockUI();
+          $.toast({
+            heading: false,
+            text: res.msg,
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+          });
+        }
+      }
+    })
+  }
+};
+
+$(function() {
+  limitedSalesPromotions.init();
+  limitedSalesPromotions.bindClick();
+});
+</script>
+{% endapply %}

@@ -1,0 +1,178 @@
+{{ css(['css/common/common.css']) }}
+{{ cssOrigin(['catalog/view/javascript/layer/theme/yzc/layuiOris.css']) }}
+<div id="promiseGoodsPanel">
+  <div class="table-header table-fixed-title">
+    <table class="table">
+      <tr>
+        <th class="contract-type ">{{ text_agreement_type }}</th>
+        <th class="contract-id text-center">{{ text_agreement_id }}</th>
+        <th class="contract-qty text-center">{{ text_pending_purchase_quantity }}</th>
+        <th class="contract-status text-center">{{ text_agreement_status }}</th>
+        <th class="contract-days text-center">{{ text_days_left }}</th>
+        <th class="contract-wait-pay text-center">
+          {{ text_storage_fee_to_be_paid }}
+          <i class="giga icon-V10-wenhaotishi house-ques-icon " data-toggle="tooltip" title=""
+             data-original-title="{{ text_storage_fee_tips }}">
+          </i>
+        </th>
+        <th class="valid-action text-center">{{ text_action }}</th>
+      </tr>
+    </table>
+  </div>
+  <div class="table-body">
+    {% if list is not empty %}
+    <table class="table table-hover">
+      {% for detail in list %}
+        <tr>
+          <td class="contract-type"><span
+              class="{{ detail.type_id == 2 ? 'org-flag' : 'blue-flag' }}">{{ detail.type_desc }}</span></td>
+          <td class="contract-id text-center "><a onclick="parent.open('{{ detail.agreement_url }}')" class="link-color"
+                                                  >{{ detail.agreement_no }}</a></td>
+          <td class="contract-qty text-center">{{ detail.pending_purchase_quantity }}</td>
+          <td class="contract-status text-center">{{ detail.agreement_status_desc }}</td>
+          <td class="contract-days text-center"><span
+              class="{{ detail.diff_day <= 7 ? 'red-color' : '' }}">{{ detail.diff_day }}</span></td>
+          <td class="contract-wait-pay text-center inner-detail-table">
+            {% if detail.type_id == 3 %}
+              N/A
+            {% elseif detail.need_pay > 0 %}
+              <a href="javascript:void(0);"
+                 data-toggle="popover-html"
+                 data-placement="top"
+                 data-html='{% include 'yzcTheme/template/account/sales_order/fee_order_popover/fee.twig' %}'
+                 class="gray-color"
+                 title>
+                {{ detail.need_pay|formatPrice(currency) }}
+                <i class="giga icon-sidebar-unfold download-cart"></i>
+              </a>
+            {% else %}
+              {{ 0|formatPrice(currency) }}
+            {% endif %}
+          </td>
+          <td class="valid-action text-center">
+            {% if detail.add_cart %}
+              <span class="action-btn action-cart agreement-add-cart-btn"
+                    data-agreement-type="{{ detail.type_id }}" data-agreement-id="{{ detail.agreement_id }}"
+                    data-product-id="{{ detail.parent_product_id }}" data-qty="{{ detail.qty }}"
+                    data-delivery-type="{{ detail.delivery_type }}"
+                    data-advance-product-id = "{{ detail.advance_product_id }}" data-last-purchase-num = "{{ detail.last_purchase_num }}">
+                <i class="giga icon-V10_gouwuche"></i>
+              </span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <div class="order-row text-center">
+      {{ text_no_records }}
+    </div>
+    {% endif %}
+  </div>
+  <a href="" target="_blank"></a>
+</div>
+<script>
+  $(function () {
+    initPopover();
+  })
+  $(".agreement-add-cart-btn").on('click', function () {
+    let agreementType = parseInt($(this).data('agreement-type'));
+    let agreementId = $(this).data('agreement-id');
+    let productId = $(this).data('product-id');
+    let qty = $(this).data('qty');
+    let deliveryType = $(this).data('delivery-type');
+    let lastPurchaseNum = $(this).data('last-purchase-num');
+    if (agreementType === 2) {
+      //现货
+      agreementAddCart(productId, qty, agreementId, agreementType);
+    } else {
+      //期货
+      if (2 !== deliveryType && lastPurchaseNum) {
+        agreementAddCart(productId, lastPurchaseNum, agreementId, 3);//futures尾款
+      }
+    }
+  });
+
+  function agreementAddCart(productId, quantity, agreementId = 0, transactionType = 0) {
+    //loading
+    var loadingIndex = layer.load(1, {
+      shade: [0.3,'#000']
+    });
+
+    let transaction = '';
+    if (agreementId && transactionType) {
+      transaction = agreementId + '_' + transactionType;
+    }
+    $.ajax({
+      url: "{{ url('checkout/cart/add') }}",
+      type: 'post',
+      data: 'product_id=' + productId + '&quantity=' + quantity + '&transaction_type=' + transaction,
+      dataType: 'json',
+      success: function (json) {
+        $('.alert-dismissible, .text-danger').remove();
+        $('.form-group').removeClass('has-error');
+        if (json['error']) {
+          if (json['error']['transaction_type']) {
+            if (json['error'].hasOwnProperty('cartExistFuturesAgreement') && json['error']['cartExistFuturesAgreement'] == '1') {
+              layer.confirm(json['error']['transaction_type'], {
+                title: 'Message',
+                skin: 'oris-layer',
+                btn: ['Access', 'Cancel']
+              }, function () {
+                (typeof parent.openCartPage) == "function" ? parent.openCartPage() : (window.location.href = "{{ url('checkout/cart') }}");
+              });
+            } else {
+              myToastFn(json['error']['transaction_type'], 'error');
+            }
+            return false;
+          }
+          if (json['error']['seller']) {
+            layer.alert(json['error']['seller'], {
+              title: 'Message',
+              btn: 'OK',
+              btnAlign: 'c',
+              skin: 'oris-layer' //样式类名
+              , closeBtn: 0
+            }, function (index) {
+              layer.close(index);
+            });
+          }
+        }
+        if (json['success']) {
+          myToastFn(json['success'], 'success');
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+          title: 'Message',
+          btnAlign: 'c',
+          btn: 'OK',
+          skin: 'yzc_layer' //样式类名
+          , closeBtn: 0
+        });
+      },
+      complete: function () {
+        //无论成功还是失败 关闭弹窗
+        layer.close(loadingIndex);
+      }
+    });
+  }
+
+  //提示弹窗
+  function myToastFn(message, type) {
+    // 让a标签打开新窗口
+    message = message.replace(/<a/g, '<a target="_blank"');
+    $.toast({
+      heading:false,
+      text: message,
+      position: 'top-center',
+      showHideTransition: 'fade',
+      icon: type,
+      hideAfter: 5000,//5秒自动隐藏
+      allowToastClose: true,
+      loader:false,
+      afterHidden:function(){
+      }
+    });
+  }
+</script>

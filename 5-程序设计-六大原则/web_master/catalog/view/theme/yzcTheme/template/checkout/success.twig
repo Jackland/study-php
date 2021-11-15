@@ -1,0 +1,555 @@
+{{ header }}
+<link href="catalog/view/javascript/jquery/swiper/css/swiper.min.css" type="text/css" rel="stylesheet" media="screen">
+<link href="catalog/view/javascript/jquery/swiper/css/opencart.css" type="text/css" rel="stylesheet" media="screen">
+<script src="catalog/view/javascript/jquery/swiper/js/swiper.jquery.js" type="text/javascript"></script>
+<link href="/catalog/view/javascript/layer/theme/yzc/layuiOris.css" rel="stylesheet"/>
+<style>
+  #page-my-account{
+    margin-top: 40px;
+  }
+  .order-num{
+    color: #fA6400;
+    font-style: italic;
+    margin: 0 4px;
+  }
+  .link-color{
+    color: #3A75DC;
+  }
+  .link-color:hover{
+    text-decoration: underline;
+    cursor: pointer;
+  }
+</style>
+
+{# #4414 开始删除#}
+{#<div class="breadcrumb-wrapper text-center clearfix" style="text-align: left;padding-left: 245px">#}
+{#    {% include 'giga/template/_parts/breadcrumb.twig' %}#}
+{#      <h1 style="margin-top: 10px;font-size: 24px">Success</h1>#}
+{#</div>#}
+{# #4414 结束删除#}
+
+
+<div id="page-my-account" class="page-seller-portal">
+    <div class="container mb-4">
+        <div class="col-md-12 form-wrapper">
+            <div class="tab-content main">
+                <div role="tabpanel" class="tab-pane active" id="upload">
+                    <div class="background-white">
+                        {#            成功#}
+                        <div class="payment-success">
+                            <div class="payment-logo">
+                                <i class="gcl gclcomplete-order" style="font-size: 134px;color: #FA6400"></i>
+                            </div>
+                            <div class="payment-info">
+                                <p style="font-size: 36px;font-weight: 500">Payment Success !</p>
+                                <p style="font-size: 18px">Total Amount: {{ data.order.total }}</p>
+                                <p style="font-size: 18px">Payment Method: {{ data.order.payment_method }}</p>
+                            </div>
+                            <div class="payment-tips">
+                                <p>Your order has been placed! Thanks for shopping with us online!</p>
+                                {# #4414 开始删除#}
+{#                                <p>You can view your order history by going to the my account page.</p>#}
+                                {# #4414 结束删除#}
+                                {# #4414 开始新加的#}
+                              {% if feeToPayFlag %}
+                                  <p>Sales Order: <span class="order-num">{{ feeToPayStr }}</span> will not be processed for shipping because there are unpaid pending charges.  Please pay for them. <a class="link-color" href="{{ url('account/customer_order', {'initFilter': '1','tabIndex':'1'}) }}">Make payment</a> </p>
+                              {% endif %}
+                                {# #4414 结束新加的#}
+                                <p>
+                                    {% if asr_order_ids %}
+                                        {{ asr_order_ids }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="payment-buttons" style="width: 350px;">
+                                <a class="payment-button" type="button" href="{{ go_home }}"
+                                   style="background-color: #FCE7C8;margin-right: 10px">Go Home</a>
+                              {# MYAccout 变为 查看订单#}
+                                <a class="payment-button" style="width: 200px" type="button" href="{{ show_order }}">View Purchase Order</a>
+                              {# MYAccout 变为 查看订单#}
+                            </div>
+                        </div>
+                        {#              失败#}
+                        <div class="payment-failure" style="display: none">
+                            <div class="payment-logo">
+                                <i class="gcl gcltijiaochenggong" style="font-size: 134px;color: darkgray"></i>
+                            </div>
+                            <div class="payment-info">
+                                <p style="font-size: 36px;font-weight: 500;top: -60px;position:relative;">Payment
+                                    Failure !</p>
+                            </div>
+                            <div class="payment-tips">
+                                <p>Alert: The available sales quantity cannot satisfy the requirements in the agreement.
+                                    The transfer is failed. Please contact with our customer service to argue.</p>
+                            </div>
+                          <div class="payment-buttons" style="width: 350px;">
+                            <a class="payment-button" type="button" href="{{ go_home }}"
+                               style="background-color: #FCE7C8;margin-right: 10px">Go Home</a>
+                            {# MYAccout 变为 查看订单#}
+                            <a class="payment-button" style="width: 200px" type="button" href="{{ show_order }}">View Purchase Order</a>
+                            {# MYAccout 变为 查看订单#}
+                          </div>
+                        </div>
+
+                        {#              recommend#}
+                        {% if data.products|length >= 4 %}
+                            <div id="module-recommend-products" class="recommend-products">
+
+                                <div class="recommend-title"><i class="gcl gclicon_tuijian-xian"
+                                                                style="font-size: 25px;margin-right: 5px"></i><span>Recommend Products</span>
+                                </div>
+                                {% if data.products|length > 4 %}
+                                    <div id="payment-next" class="swiper-button-next">
+                                        <i class="giga icon-arrow-right-copy" style="font-size: 30px"></i>
+                                    </div>
+                                    <div id="payment-prev" class="swiper-button-prev">
+                                        <i class="giga icon-arrow-left" style="font-size: 30px"></i>
+                                    </div>
+                                {% endif %}
+
+                                <div id="payment-recommended" class="swiper-container" style="width: 90%">
+                                    <div class="swiper-wrapper">
+                                        {% for product in data.products %}
+                                            <div class="swiper-slide">
+                                                <div class="product-simple-grid">
+                                                    <div class="image">
+                                                        <a href="{{ product.href }}">
+                                                            {% if product.unsee == 0 %}
+                                                                <div class="con_img">
+                                                                    <img src="{{ product.thumb }}"
+                                                                         alt="{{ product.name }}"
+                                                                         title="{{ product.name }}"
+                                                                         class="img-responsive"/>
+                                                                    {% if download_csv_privilege %}
+                                                                        <input autocomplete="off" type="checkbox"
+                                                                               id="checkbox_{{ product.product_id }}"
+                                                                               onclick="checkSingleProduct(this,{{ products_total }})"
+                                                                               class="img_checkbox" name="checkbox"
+                                                                               data-labelauty="">
+                                                                    {% endif %}
+                                                                    {% if product.horn_mark == 'hot' %}
+                                                                        <div class="horn-mark-hot"></div>
+                                                                    {% elseif product.horn_mark == 'new' %}
+                                                                        <div class="horn-mark-new"></div>
+                                                                    {% elseif product.horn_mark == 'sale' %}
+                                                                        <div class="horn-mark-sale"></div>
+                                                                    {% endif %}
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="con_img">
+                                                                    <img src="{{ product.thumb }}"
+                                                                         alt="{{ product.name }}"
+                                                                         title="{{ product.name }}"
+                                                                         class="img-responsive"/>
+                                                                    {% if download_csv_privilege %}
+                                                                        <input autocomplete="off" type="checkbox"
+                                                                               class="img_checkbox"
+                                                                               id="checkbox_{{ product.product_id }}"
+                                                                               onclick="checkSingleProduct(this,{{ products_total }})"
+                                                                               name="checkbox" data-labelauty="">
+                                                                    {% endif %}
+                                                                    {% if product.horn_mark == 'hot' %}
+                                                                        <div class="horn-mark-hot"></div>
+                                                                    {% elseif product.horn_mark == 'new' %}
+                                                                        <div class="horn-mark-new"></div>
+                                                                    {% elseif product.horn_mark == 'sale' %}
+                                                                        <div class="horn-mark-sale"></div>
+                                                                    {% endif %}
+                                                                </div>
+                                                                <div class="shadow_img"></div>
+                                                                <div class="title_img">
+                                                                    <span style="color:white;font-size: 40px;text-align: center">Unavailable</span>
+                                                                </div>
+                                                            {% endif %}
+                                                        </a>
+
+                                                        <div class="button-group">
+                                                            {% if isLogin %}
+                                                                <a type="button" data-toggle="tooltip"
+                                                                   title="Download Material Package"
+                                                                   onclick="download_file(this, {{ product['product_id'] }},{{ product['seller_id'] }})">
+                                                                    <i class="giga icon-product-down download"></i>
+                                                                </a>
+                                                            {% endif %}
+
+                                                            {% if isLogin %}
+                                                                {#                              已登录#}
+                                                                {% if product['can_sell'] == 1 and product['unsee'] == 0 %}
+                                                                    {#                                可卖、可见#}
+                                                                    {% if product['productWishList'] %}
+                                                                        <a type="button" data-toggle="tooltip"
+                                                                           title="{{ button_wishlist_remove }}"
+                                                                           onclick="wishlist.remove('{{ product.product_id }}', this, 'home');">
+                                                                            <i class="giga fa-heart wishlist"></i>
+                                                                        </a>
+                                                                    {% else %}
+                                                                        <a type="button" data-toggle="tooltip"
+                                                                           title="{{ button_wishlist_add }}"
+                                                                           onclick="wishlist.add('{{ product.product_id }}', this, 'home');">
+                                                                            <i class="giga fa-heart-o wishlist"></i>
+                                                                        </a>
+                                                                    {% endif %}
+                                                                {% else %}
+                                                                    {% if product['productWishList'] %}
+                                                                        {#                                  14103要所有上过架的产品都可以被检索到，如果产品已失效，则在检索结果页和商品详情页标注出商品无效的原因#}
+                                                                        {% if product['unsee'] == 1 %}
+                                                                            <a type="button" data-toggle="tooltip"
+                                                                               title="{{ button_wishlist_remove }}"
+                                                                               onclick="wishlist.unavailable('{{ product.product_id }}', this);">
+                                                                                <i class="giga fa-heart wishlist"></i>
+                                                                            </a>
+                                                                        {% else %}
+                                                                            <a type="button" data-toggle="tooltip"
+                                                                               title="{{ button_wishlist_remove }}"
+                                                                               onclick="wishlist.remove('{{ product.product_id }}', this, 'home');">
+                                                                                <i class="giga fa-heart wishlist"></i>
+                                                                            </a>
+                                                                        {% endif %}
+
+                                                                    {% else %}
+                                                                        {#                                  14103要所有上过架的产品都可以被检索到，如果产品已失效，则在检索结果页和商品详情页标注出商品无效的原因#}
+                                                                        {% if product['unsee'] == 1 %}
+                                                                            <a type="button" data-toggle="tooltip"
+                                                                               title="{{ button_wishlist_add }}"
+                                                                               onclick="wishlist.unavailable('{{ product.product_id }}', this);">
+                                                                                <i class="giga fa-heart-o wishlist"></i>
+                                                                            </a>
+                                                                        {% else %}
+                                                                            <a type="button" data-toggle="tooltip"
+                                                                               title="{{ button_wishlist_add }}"
+                                                                               onclick="wishlist.add('{{ product.product_id }}', this, 'home');">
+                                                                                <i class="giga fa-heart-o wishlist"></i>
+                                                                            </a>
+                                                                        {% endif %}
+                                                                    {% endif %}
+
+                                                                    {#                                END 可卖、可见#}
+                                                                {% endif %}
+
+                                                                {#                              END 已登录#}
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="caption">
+                                                        <div class="code-price-wrapper">
+                                                            <div class="code-group">
+                                                                <strong
+                                                                        class="swiper-no-swiping">{{ product.sku }}</strong>
+                                                                {% if product['tag'] is not empty %}
+                                                                    {% for tag in product['tag'] %}
+                                                                        &nbsp;{{ tag }}
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            </div>
+
+                                                            <div class="price-group">
+                                                                {% if product['verify']['price_available'] %}
+                                                                    <span style="font-size: 20px;font-weight: bold;color: red;">
+                                  {% if product['min_price'] == product['max_price'] %}
+                                      {{ product['min_price_show'] }}
+                                  {% else %}
+                                      {{ product['min_price_show'] }}-{{ product['max_price_show'] }}
+                                  {% endif %}
+                                </span>
+                                                                    <span class="text-muted">/Unit</span>
+                                                                {% else %}
+                                                                    {% if isLogin %}
+                                                                        <span class="red">Seller Affiliation for pricing or available quantity</span>
+                                                                    {% else %}
+                                                                        <a href="{{ url('account/login') }}"><span class="red">Login/Register to get the price and quantity available</span></a>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            </div>
+
+                                                            {% if product['verify']['price_available'] %}
+                                                                <div class="price-group">
+                                <span class="text-muted">
+                                  {{ txt_运费 }}:&nbsp;{{ product.extra_fee }}
+                                </span>
+                                                                </div>
+                                                            {% endif %}
+
+                                                            {#                            <div class="tag-group text-muted">#}
+                                                            {#                              {% if product['rebate_status'] %}#}
+                                                            {#                                <span><i class="giga icon-check" aria-hidden="true"></i> Rebates</span>#}
+                                                            {#                              {% endif %}#}
+                                                            {#                              {% if product['margin_status'] %}#}
+                                                            {#                                <span><i class="giga icon-check" aria-hidden="true"></i> Margin</span>#}
+                                                            {#                              {% endif %}#}
+                                                            {#                              {% if product['future_status'] %}#}
+                                                            {#                                <span><i class="giga icon-check" aria-hidden="true"></i> Future</span>#}
+                                                            {#                              {% endif %}#}
+                                                            {#                            </div>#}
+
+                                                        </div>
+
+                                                        <div class="store-group-button">
+                                                            <div class="store-group">
+                                                                <div class="store to_store_home"
+                                                                     qa_rate="{{ product['qa_rate'] }}"
+                                                                     seller_id="{{ product['seller_id'] }}"
+                                                                     return_approval_rate="{{ product['return_approval_rate'] }}"
+                                                                     sku="{{ product['sku'] }}"
+                                                                     onclick="goToSellerStore({{ product['seller_id'] }})"
+                                                                >
+                                                                    <span class="store-home-name">{{ product['screenname'] }}&nbsp;
+                                                                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                                                    </span>
+                                                                    <div class="store-pop">
+                                                                        <!--100548-->
+                                                                        <div class="text">
+                                                                            Return
+                                                                            Rate: {{ product['store_return_rate_mark'] }}
+                                                                            {% if product['store_return_rate_mark'] == 'N/A' %}
+                                                                                <i class="giga icon-V10-wenhaotishi"
+                                                                                   data-toggle="tooltip"
+                                                                                   title="The volume of total units sold is not enough for judging return rate."></i>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                        <!--100548-->
+                                                                        <div class="text">
+                                                                            Return Approval Rate:
+                                                                            {% if product['return_approval_rate'] == 0 %}
+                                                                                N/A <i class="giga icon-V10-wenhaotishi"
+                                                                                       data-toggle="tooltip"
+                                                                                       title="No RMA records."></i>
+                                                                            {% elseif product['return_approval_rate'] > 90 %}
+                                                                                High
+                                                                            {% elseif product['return_approval_rate'] > 60 %}
+                                                                                Moderate
+                                                                            {% else %}
+                                                                                Low
+                                                                            {% endif %}
+                                                                        </div>
+                                                                        <!--100548-->
+                                                                        {% if product['store_response_rate_mark'] %}
+                                                                            <div class="text">
+                                                                                Response
+                                                                                Rate: {{ product['store_response_rate_mark'] }}
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        <!--100548-->
+                                                                    </div>
+                                                                </div>
+                                                                <a class="chat" style="display: none;"><i
+                                                                            class="giga icon-chat-inactive"></i></a>
+                                                                <a class="email" target="_blank"
+                                                                   href="index.php?route=message/seller/addMessage&receiver_id={{ product['seller_id'] }}&item_code={{ product['sku'] }}"><i
+                                                                            class="giga icon-email-grey {% if product['seller_status'] == 0 %}status_no{% endif %}"
+                                                                            data-toggle="tooltip" title="Message Seller"
+                                                                            aria-hidden="true">
+                                                                    </i></a>
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {#              去除分页器#}
+                                {#              {% if data.products|length > 4 %}#}
+                                {#              <div class="swiper-pagination swiper-pagination-outside-bottom" id="payment-pagination"></div>#}
+                                {#              {% endif %}#}
+                            </div>
+                        {% endif %}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .recommend-title {
+        margin: 0 auto 10px auto;
+        width: 90%;
+        color: #FA6400;
+        font-size: 20px;
+    }
+
+    #payment-recommended .product-simple-grid {
+        height: 350px;
+        float: left;
+        margin-bottom: 100px;
+    }
+
+    .product-card {
+        display: inline-block;
+        background-color: #fff;
+        height: 300px;
+        width: auto;
+        border: 1px solid;
+    }
+
+    .payment-success {
+        padding: 0px 30px;
+        width: 100%;
+        height: 400px;
+    }
+
+    .payment-failure {
+        padding: 0px 30px;
+        width: 100%;
+        height: 400px;
+    }
+
+    .payment-success p {
+        font-family: 'Lato Bold', 'Lato', sans-serif;
+        color: black;
+    }
+
+    .payment-failure p {
+        font-family: 'Lato Bold', 'Lato', sans-serif;
+        color: black;
+    }
+
+    .payment-logo {
+        height: 134px;
+        width: 134px;
+        display: inline-block;
+    }
+
+    .payment-info {
+        display: inline-block;
+    }
+
+    .payment-tips {
+        margin-top: 30px;
+        margin-left: 30px;
+    }
+
+    .payment-tips p {
+        font-family: 'Lato Bold', 'Lato', sans-serif;
+        font-weight: 400;
+        font-size: 14px;
+    }
+
+    .payment-tips p:last-child {
+        color: #FA6400;
+    }
+
+    .payment-buttons {
+        width: 280px;
+        margin: 40px auto 0 auto;
+    }
+
+    .payment-button {
+        display: inline-block;
+        width: 130px;
+        height: 40px;
+        border: 1px solid #FA6400;
+        border-radius: 4px;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 40px;
+        font-size: 16px;
+    }
+
+    .background-white {
+        background: #fff;
+        padding: 20px 50px 100px;
+    }
+
+    #module-recommend-products {
+        height: 460px;
+        background-color: #f7f7f7;
+        padding-top: 20px;
+    }
+
+    #module-recommend-products .swiper-pagination-bullet {
+        margin: 0 5px;
+    }
+
+    #module-recommend-products .swiper-button-next {
+        right: 75px;
+        top: 74%;
+    }
+
+    #module-recommend-products .swiper-button-next:before {
+        content: none;
+    }
+
+    #module-recommend-products .swiper-button-next:after {
+        color: #000000;
+        /*opacity: 0.2;*/
+    }
+
+    #module-recommend-products .swiper-button-prev {
+        left: 75px;
+        top: 74%;
+    }
+
+    #module-recommend-products .swiper-button-prev:before {
+        content: none;
+    }
+
+    #module-recommend-products .swiper-button-prev:after {
+        color: #000000;
+        /*opacity: 0.2;*/
+    }
+
+    #module-recommend-products :root {
+        --swiper-theme-color: none;
+    }
+
+    .icon-arrow-right-copy:before {
+        color: black;
+        opacity: 0.2;
+    }
+
+    .icon-arrow-left:before {
+        color: black;
+        opacity: 0.2;
+    }
+    .store-home-name:hover{
+        color: #fA6400;
+    }
+    .product-simple-grid .caption .store-group div.store .store-pop{
+        width: 202px;
+    }
+    .store-pop > div{
+        margin-right: 0;
+    }
+</style>
+<script type="text/javascript">
+    var feeToPayFlag = {{ feeToPayFlag ? 1 : 0 }};// 判断是否需要弹窗
+    var paymentSwiper = new Swiper('#payment-recommended', {
+        mode: 'horizontal',
+        slidesPerView: 4,
+        pagination: '#payment-pagination',
+        nextButton: '#payment-next',
+        prevButton: '#payment-prev',
+        paginationClickable: true,
+        spaceBetween: 20,
+        autoplay: 5000,
+        autoplayDisableOnInteraction: true,
+        loop: true
+    });
+    //弹窗（新增）
+    $(document).ready(function() {
+      if (feeToPayFlag) {
+        layer.open({
+          title: 'Attention',
+          skin: 'yzc_layer',
+          btnAlign: 'c',
+          area: 'auto',
+          maxHeight: 260,
+          content: 'Sales Order: <span class="order-num">' + '{{ feeToPayStr }}' + '</span> will not be processed for shipping because there are unpaid pending charges.  Please make the payment first.',
+          btn: ['Make payment', 'Pay later'],
+          btn1: function () {
+            window.open("{{ url('account/customer_order', {'initFilter': '1','tabIndex':'1'}) }}");
+          },
+        });
+      }
+    });
+    function goToSellerStore(sellerId) {
+        window.open('index.php?route=customerpartner/profile&id=' + sellerId,"_blank")
+    }
+</script>
+{{ footer }}

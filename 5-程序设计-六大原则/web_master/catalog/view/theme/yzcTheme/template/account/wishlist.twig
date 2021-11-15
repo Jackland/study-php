@@ -1,0 +1,650 @@
+{{ header }}
+<div id="page-saved-items" class="page-seller-portal">
+  {% include 'giga/template/_parts/breadcrumb_simple.twig' %}
+
+  <div class="container">
+    <div class="row mb-4">
+      <h1>My Saved Items</h1>
+      <div class="alert alert-warning alert-dismissible" style="margin-right: 10px;margin-left: 10px;">
+        {{ communication }}
+      </div>
+      {% if success %}
+        <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+      {% endif %}
+      {% if error %}
+        <div class="alert alert-warning alert-dismissible"><i class="fa fa-check-circle"></i> {{ error }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+      {% endif %}
+
+      <div class="col-md-12" id="content">
+        <div class="tab-content main">
+          <div role="tabpanel" class="tab-pane active" id="tab-3">
+            <div class="bg-white p-2 form-wrapper">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <div class="input-group">
+                      <input name="input-search" class="form-control" placeholder="Search Item Code or Product Name" onchange="changeName()">
+                      <span class="input-group-addon"><i class="giga icon-arrow-down"></i></span>
+                    </div>
+                  </div>
+                </div>
+
+
+                {#14408上门取货账号一键下载超大件库存分布列表#}
+                {% if isCollectionFromDomicile %}
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <div class="input-group">
+                      <label class="checkbox-inline" style="font-size: 14px;"><input type="checkbox" name="is_ltl" value="1" onclick="changeName()" />&nbsp;&nbsp;Oversized Items</label>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+
+
+                <div class="col-md-4 pull-right">
+                  <div class="form-group form-inline pull-right">
+                    <label for="input-sort" style="float: none;">Sort Store By:</label>
+                    <select name="input-sort" class="form-control" onchange="changeSort()">
+                      <option value="1" selected="selected">Default</option>
+                      <option value="2">Name (A - Z)</option>
+                      <option value="3">Name (Z - A)</option>
+                      <option value="4">Sales（High > Low）</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <ul class="nav nav-tabs main top-ul" role="tablist">
+                  <li role="presentation"  id="valid_li" class="active">
+                    <a href="#tab-valid" data-toggle="tab">{{ text_valid_items }}<span class="number ml-1" id="on_shelf">{{ validCount }}</span></a>
+                  </li>
+                  <li role="presentation" class="ml-1" id="expired_li">
+                    <a href="#tab-expired" data-toggle="tab">{{ text_expired_items }}<span class="number ml-1" id="off_shelf" >{{ invalidCount }}</span></a>
+                  </li>
+                </ul>
+              </div>
+
+
+
+              <div class="tab-content">
+                <div class="tab-pane active" id="tab-valid">
+                  <div id="valid_items"></div>
+                </div>
+                <div class="tab-pane" id="tab-expired">
+                  <div id="expired_items"></div>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="price-modal" class="modal fade" role="dialog" style="display: none;">
+  <div class="modal-dialog" style="margin-left: 21%">
+    <div class="modal-content" style="width: 900px">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h4 class="modal-title">Change in Unit Price</h4>
+      </div>
+      <div class="modal-body" style="overflow:auto;">
+        <div id="main" style="width: 750px;height:400px;"></div>
+        <div style="text-align: center">
+                          <span style="font-size: 14px;font-weight: bolder">
+                            Slide the red dots to check the unit price on specific dates.
+                          </span>
+        </div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+    {#var validCount = {{ search_vaild_count }};#}
+    {#var invalidCount = {{ search_invaild_count }};#}
+    {#if(invalidCount==0){#}
+        {#$('#tab-valid').addClass('active');#}
+        {#$('#tab-expired').removeClass('active');#}
+        {#$('#valid_items').addClass('active');#}
+        {#$('#expired_items').removeClass('active');#}
+    {#}else if(validCount == 0){#}
+        {#$('#tab-valid').removeClass('active');#}
+        {#$('#tab-expired').addClass('active');#}
+        {#$('#valid_items').removeClass('active');#}
+        {#$('#expired_items').addClass('active');#}
+    {#}#}
+  block.blockUI();
+  $('#valid_items').load('index.php?route=account/wishlist/validItems');
+  $('#expired_items').load('index.php?route=account/wishlist/expiredItems');
+  var rowNo = 0;
+
+
+
+  function selectAll(checkbox) {
+    $fulfillmentType = $("input[name=fulfillment]:checked").val();
+    if ($fulfillmentType == 1) {
+      var checked = $(checkbox).is(":checked");
+      var selectBox = $(checkbox).parent().parent().parent().parent().parent().find("[name='product_id[]']");
+      var length = selectBox.length;
+      if (checked) {
+        for (var i = 0; i < length; i++) {
+          var can_add_cart = selectBox.eq(i).parent().parent().parent().find("[name='can_add_cart']").eq(0).val();
+          if(can_add_cart == '1') {
+            selectBox.eq(i).prop('checked', true);
+          }
+        }
+      } else {
+        for (var i = 0; i < length; i++) {
+          selectBox.eq(i).removeAttr('checked');
+        }
+      }
+    }else{
+      var checked = $(checkbox).is(":checked");
+      var selectBox = $(checkbox).parent().parent().parent().parent().parent().find("[name='product_id[]']");
+      var length = selectBox.length;
+      if (checked) {
+        for (var i = 0; i < length; i++) {
+          selectBox.eq(i).prop('checked', true);
+        }
+      } else {
+        for (var i = 0; i < length; i++) {
+          selectBox.eq(i).removeAttr('checked');
+        }
+      }
+    }
+  }
+
+  function addSelected() {
+    $('.alert-dismissible, .text-warning').remove();
+    var length = $('.checkboxes').length;
+    var index = 0;
+    for (var i = 0; i < length; i++) {
+      if ($('.checkboxes').eq(i).is(":checked")) {
+        $fulfillmentType = $("input[name=fulfillment]:checked").val();
+        if ($fulfillmentType == 1) {
+          cart.add($('.checkboxes').eq(i).val(),1,'cwf');
+        }else{
+          cart.add($('.checkboxes').eq(i).val());
+        }
+        index++;
+      }
+    }
+    if (index == 0) {
+      /*$('#content').parent().before('<div class="alert alert-warning alert-dismissible"><i class="fa fa-check-circle"></i>{{ text_warning }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>');*/
+      var tmplayer = layer.alert('{{ text_warning }}', {
+        title: 'Message',
+        btn : 'OK',
+        skin: 'yzc_layer' //样式类名
+        ,closeBtn: 1
+      }, function(){
+        layer.close(tmplayer);
+      });
+    }
+  }
+
+  function removeSelected() {
+    var length = $('.checkboxes').length;
+    var arr = new Array();
+    for (var i = 0; i < length; i++) {
+      if ($('.checkboxes').eq(i).is(":checked")) {
+        arr.push($('.checkboxes').eq(i).val());
+      }
+    }
+     $.ajax({
+              url: 'index.php?route=account/wishlist/remove',
+              dataType: 'json',
+              type: 'post',
+              data: {productList: arr},
+              success: function (json) {
+                  if (json['success']) {
+                      window.location.href = 'index.php?route=account/wishlist';
+                  }
+              },
+              error: function (xhr, ajaxOptions, thrownError) {
+                  var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+                    title: 'Message',
+                    btn : 'OK',
+                    skin: 'yzc_layer' //样式类名
+                    ,closeBtn: 0
+                  }, function(){
+                    layer.close(tmplayer);
+                  });
+              }
+          });
+  }
+
+  function searchSeller(obj) {
+
+  }
+
+
+  function Value(product_id, remind_qty) {
+    $('#item_product_id').val(product_id);
+    $('#itemCode_remind_qty').val(remind_qty);
+  }
+
+  function qty(obj) {
+    obj.value = obj.value.replace(/[^\d]/g, ""); //清除"数字"和"."以外的字符
+    obj.value = obj.value.replace(/^[0]/g, ""); //验证第一个字符是0
+  }
+
+  function addRemind() {
+    var form = new FormData(document.getElementById("form-remind"));
+    $.ajax({
+      url: "index.php?route=account/wishlist/remind",
+      type: "post",
+      data: form,
+      processData: false,
+      contentType: false,
+      success: function (json) {
+        var tmplayer = layer.alert("Saved Successfully！", {
+          title: 'Message',
+          btn : 'OK',
+          skin: 'yzc_layer' //样式类名
+          ,closeBtn: 0
+        }, function(){
+          layer.close(tmplayer);
+        });
+        setTimeout(function(){
+          window.location.href = 'index.php?route=account/wishlist';
+        }, 1000);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+          title: 'Message',
+          btn : 'OK',
+          skin: 'yzc_layer' //样式类名
+          ,closeBtn: 0
+        }, function(){
+          layer.close(tmplayer);
+        });
+      }
+    });
+  }
+
+  function addItemRemind() {
+    var form = new FormData(document.getElementById("item-remind"));
+    $.ajax({
+      url: "index.php?route=account/wishlist/remind",
+      type: "post",
+      data: form,
+      processData: false,
+      contentType: false,
+      success: function (json) {
+         $('#item_remind_qty').modal('hide');
+          // window.location.href = 'index.php?route=account/wishlist';
+          var input_name = $('input[name=\'input-search\']').val();
+          $('#valid_items').load('index.php?route=account/wishlist/validItems');
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+          title: 'Message',
+          btn : 'OK',
+          skin: 'yzc_layer' //样式类名
+          ,closeBtn: 0
+        }, function(){
+          layer.close(tmplayer);
+        });
+      }
+    });
+  }
+
+  function getWishlistFilterValidUrl() {
+      let urlValid = 'index.php?route=account/wishlist/validItems';
+      let input_sort = $('select[name=\'input-sort\']').val();
+      if (input_sort) {
+          urlValid += '&sort=' + encodeURIComponent(input_sort);
+      }
+      let input_name = $('input[name=\'input-search\']').val();
+      if (input_name) {
+          urlValid += '&name=' + encodeURIComponent(input_name);
+      }
+      {% if isCollectionFromDomicile %}
+        let is_ltl = $('input[name=\'is_ltl\']').prop("checked");
+        if (is_ltl) {
+          urlValid += '&is_ltl=' + 1;
+        }
+      {% endif %}
+      return urlValid;
+  }
+
+  function getWishlistFilterExpiredUrl() {
+      let urlExpired = 'index.php?route=account/wishlist/expiredItems';
+      let input_sort = $('select[name=\'input-sort\']').val();
+      if (input_sort) {
+          urlExpired += '&sort=' + encodeURIComponent(input_sort);
+      }
+      let input_name = $('input[name=\'input-search\']').val();
+      if (input_name) {
+          urlExpired += '&name=' + encodeURIComponent(input_name);
+      }
+
+      {% if isCollectionFromDomicile %}
+        let is_ltl = $('input[name=\'is_ltl\']').prop("checked");
+        if (is_ltl) {
+          urlExpired += '&is_ltl=' + 1;
+        }
+      {% endif %}
+      return urlExpired;
+  }
+
+  function removeInValid() {
+      var length = $('.invalidbox').length;
+      var arr = new Array();
+      for (var i = 0; i < length; i++) {
+          if ($('.invalidbox').eq(i)) {
+              arr.push($('.invalidbox').eq(i).val());
+          }
+      }
+      layer.confirm('Are you sure you want to unsubscribe from all  items?', {
+          title: 'Message',
+          skin: 'yzc_layer', //样式类名
+          btn: ['Yes','No'] //按钮
+      }, function(){
+          $.ajax({
+              url: 'index.php?route=account/wishlist/remove',
+              dataType: 'json',
+              type: 'post',
+              data: {productList: arr},
+              success: function (json) {
+                  if (json['success']) {
+                      window.location.href = 'index.php?route=account/wishlist';
+                  }
+              },
+              error: function (xhr, ajaxOptions, thrownError) {
+                  var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+                    title: 'Message',
+                    btn : 'OK',
+                    skin: 'yzc_layer' //样式类名
+                    ,closeBtn: 0
+                  }, function(){
+                    layer.close(tmplayer);
+                  });
+              }
+          });
+      });
+  }
+</script>
+<script src="catalog/view/javascript/echarts/echarts.min.js"></script>
+<script>
+  function downloadValidWishList() {
+    url = 'index.php?route=account/wishlist/downloadWishListProduct&type=1';
+      let input_sort = $('select[name=\'input-sort\']').val();
+      if (input_sort) {
+          url += '&sort=' + encodeURIComponent(input_sort);
+      }
+      let input_name = $('input[name=\'input-search\']').val();
+      if (input_name) {
+          url += '&name=' + encodeURIComponent(input_name);
+      }
+      {% if isCollectionFromDomicile %}
+        let is_ltl = $('input[name=\'is_ltl\']').prop("checked");
+        if (is_ltl) {
+          url += '&is_ltl=' + 1;
+        }
+      {% endif %}
+    location = url;
+  }
+  function downloadInValidWishList() {
+      url = 'index.php?route=account/wishlist/downloadWishListProduct&type=2';
+      let input_sort = $('select[name=\'input-sort\']').val();
+      if (input_sort) {
+          url += '&sort=' + encodeURIComponent(input_sort);
+      }
+      let input_name = $('input[name=\'input-search\']').val();
+      if (input_name) {
+          url += '&name=' + encodeURIComponent(input_name);
+      }
+      {% if isCollectionFromDomicile %}
+        let is_ltl = $('input[name=\'is_ltl\']').prop("checked");
+        if (is_ltl) {
+          url += '&is_ltl=' + 1;
+        }
+      {% endif %}
+      location = url;
+  }
+
+  function showPriceHistory(product_id) {
+
+    $.ajax({
+      url: 'index.php?route=account/wishlist/getPriceHistory',
+      dataType: 'json',
+      type: 'post',
+      data: {product_id: product_id},
+      success: function (json) {
+        if (json['success']) {
+
+          Date.prototype.Format = function (fmt) {
+            var o = {
+              "M+": this.getMonth() + 1, //月份
+              "d+": this.getDate(), //日
+              "h+": this.getHours(), //小时
+              "m+": this.getMinutes(), //分
+              "s+": this.getSeconds(), //秒
+              "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+              "S": this.getMilliseconds() //毫秒
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+              if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+          };
+          var date = [];
+
+          var data = [];
+
+          for (var i = 0; i < json['data'].length; i++) {
+            var now = new Date(parseInt(json['data'][i]['add_date'] + "000")).Format("yy-MM-dd");
+            date.push(now);
+            // data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
+            data.push(json['data'][i]['price']);
+          }
+
+          // 基于准备好的dom，初始化echarts实例
+          var myChart = echarts.init(document.getElementById('main'));
+          myChart.setOption({
+            tooltip: {
+              // 当trigger为’item’时只会显示该点的数据，为’axis’时显示该列下所有坐标轴所对应的数据。
+              trigger: 'axis',
+              // 提示框的位置
+              position: function (pt) {
+                return [pt[0], '5%'];
+              }
+            },
+            title: {
+              left: 'center',
+              text: 'UNIT PRICE(' + json['currency'] + ')'
+            },
+            // toolbox：这是ECharts中的工具栏。内置有导出图片、数据视图、动态类型切换、数据区域缩放、重置五个工具。
+            toolbox: {
+              // feature 各工具配置项: dataZoom 数据区域缩放;restore 配置项还原;saveAsImage下载为图片;magicType动态类型切换
+              feature: {
+                // dataZoom: {
+                //     yAxisIndex: 'none'  // y轴不缩放，Index默认为0
+                // },
+                // restore: {},
+                saveAsImage: {
+                  name: json['item_code']
+                }
+
+                // ,magicType: {
+                //     type: ['bar', 'line']
+                // }
+              },
+              left: 700
+            },
+            xAxis: {
+              type: 'category', // category为一级分类,适用于离散的类目数据
+              boundaryGap: false,  // 无间隙
+              data: date
+            },
+            yAxis: {
+              type: 'value', // 'value' 数值轴，适用于连续数据。
+              boundaryGap: [0, '100%'] // 分别表示数据最小值和最大值的延伸范围，可以直接设置数值或者相对的百分比，
+            },
+            dataZoom: [{                 // 内置于坐标系中，使用户可以在坐标系上通过鼠标拖拽、鼠标滚轮、手指滑动（触屏上）来缩放或漫游坐标系
+              type: 'inside',
+              start: 0,
+              end: 100
+            }, {
+              start: 0,
+              end: 100,                  // handleIcon 手柄的 icon 形状，支持路径字符串
+              handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+              handleSize: '80%',        //  控制手柄的尺寸，可以是像素大小，也可以是相对于 dataZoom 组件宽度的百分比，默认跟 dataZoom 宽度相同。
+              handleStyle: {
+                color: 'pink',
+                shadowBlur: 3,      // shadowBlur图片阴影模糊值，shadowColor阴影的颜色
+                shadowColor: 'red',
+                shadowOffsetX: 2,
+                shadowOffsetY: 2
+              }
+            }],
+            series: [
+              {
+                name: 'Unit Price',
+                type: 'line',
+                smooth: true,  // 开启平滑处理。true的平滑程度相当于0.5
+                symbol: 'none', // 标记的图形。
+                sampling: 'average', //  取过滤点的平均值
+                itemStyle: {
+                  normal: {
+                    color: 'rgb(255, 70, 131)' //  图形的颜色。
+                  }
+                },
+                position: 'left',
+                data: data
+              }
+            ]
+          });
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        var tmplayer = layer.alert(thrownError + "<br>" + xhr.statusText + "<br>" + xhr.responseText, {
+          title: 'Message',
+          btn : 'OK',
+          skin: 'yzc_layer' //样式类名
+          ,closeBtn: 0
+        }, function(){
+          layer.close(tmplayer);
+        });
+      }
+    });
+  }
+
+  function changeSort() {
+      var urlValid = getWishlistFilterValidUrl();
+      var urlExpired = getWishlistFilterExpiredUrl();
+      $('#valid_items').load(urlValid);
+      $('#expired_items').load(urlExpired);
+  }
+
+  function changeName() {
+      var url_get = '{{ getWishListAmount }}';
+      var urlValid = getWishlistFilterValidUrl();
+      var urlExpired = getWishlistFilterExpiredUrl();
+      //生成两个ajax 去改变 valid item 和 invalid item
+      $('#valid_items').load(urlValid,function () {
+        $.ajax({
+          url: url_get,
+          type: 'post',
+          dataType: 'json',
+          success:function (res) {
+//            $('#off_shelf').text(res.off_shelf);
+            $('#on_shelf').text(res.on_shelf);
+          }
+        })
+
+      });
+      $('#expired_items').load(urlExpired,function () {
+        $.ajax({
+          url: url_get,
+          type: 'post',
+          dataType: 'json',
+          success:function (res) {
+            $('#off_shelf').text(res.off_shelf);
+//            $('#on_shelf').text(res.on_shelf);
+          }
+        })
+
+      });
+      //生成两个ajax 去改变 valid item 和 invalid item
+
+
+  }
+
+  function changeFulfillment(obj) {
+    $fulfillmentType = $("input[name=fulfillment]:checked").val();
+    if ($fulfillmentType == 1) {
+      $('[name=freight_cwf]').show();
+      $('[name=total_amount_cwf]').show();
+      $('[name=freight]').hide();
+      $('[name=total_amount]').hide();
+      $('[name=add_cart]').hide();
+      $('[name=cwf_add_cart]').show();
+      //cwf
+      var selectBox = $('[name="table_on_shelf"]').find("[name='product_id[]']");
+      var length = selectBox.length;
+        for (var i = 0; i < length; i++) {
+          var can_add_cart = selectBox.eq(i).parent().parent().parent().find("[name='can_add_cart']").eq(0).val();
+          selectBox.eq(i).attr('checked', false);
+          if(can_add_cart == '0') {
+            selectBox.eq(i).attr('disabled', true);
+            // selectBox.eq(i).css('width','30px')
+            selectBox.eq(i).parent().removeClass('check');
+            selectBox.eq(i).parent().addClass('cwf_check');
+          }
+        }
+    } else {
+      $('[name=freight_cwf]').hide();
+      $('[name=total_amount_cwf]').hide();
+      $('[name=freight]').show();
+      $('[name=total_amount]').show();
+      $('[name=add_cart]').show();
+      $('[name=cwf_add_cart]').hide();
+      var selectBox = $('[name="table_on_shelf"]').find("[name='product_id[]']");
+      var length = selectBox.length;
+      for (var i = 0; i < length; i++) {
+        selectBox.eq(i).attr('checked', false);
+          selectBox.eq(i).attr('disabled', false);
+        selectBox.eq(i).parent().removeClass('cwf_check');
+        selectBox.eq(i).parent().addClass('check');
+      }
+    }
+  }
+
+  function addCart(product_id) {
+    $fulfillmentType = $("input[name=fulfillment]:checked").val();
+    if ($fulfillmentType == 1) {
+      cart.add(product_id,1,'cwf')
+    }else{
+      cart.add(product_id)
+    }
+  }
+</script>
+<style>
+  .btn-grey {
+    color: #777;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    background-color: #e7e7e7;
+    background-image: linear-gradient(to bottom, #eeeeee, #dddddd);
+    background-repeat: repeat-x;
+    border-color: #dddddd #dddddd #b3b3b3 #b7b7b7;
+  }
+  a.change-color:hover{
+      color: #F88151
+  }
+</style>
+{{ footer }}

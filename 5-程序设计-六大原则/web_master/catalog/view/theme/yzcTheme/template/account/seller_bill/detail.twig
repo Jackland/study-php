@@ -1,0 +1,945 @@
+{% trans_default_category 'catalog/view/account/seller_bill/bill' %}
+{{ css(['/css/admin/app.css','/css/common/common.css','static/account/seller_bill/detail.css']) }}
+{{ cssOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css',
+  'admin/view/stylesheet/totalStyle.css',
+]) }}
+{{ jsOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js',
+]) }}
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.css">
+
+<style>
+</style>
+{{ header }}{{ separate_column_left }}
+<div class="container-fluid giga-content" id="content" style="margin-left:235px;font-size: 14px">
+  <!-- layer panels end -->
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  <div class="nav-oris">
+    <div class="row">
+      <div class="col-md-12">
+        <h1><span class="statement-number" id="statementNum"></span>{{ __('结算明细') }}</h1>
+      </div>
+      <div class="col-md-12">
+        {#Togglable tabs#}
+        <ul class="nav nav-tabs" role="tablist">
+          <li id="totalLi">
+            <a data-href="index.php?route=account/seller_bill/bill" data-toggle="tab">{{ __('结算总单') }}</a>
+          </li>
+          <li id="detailLi" class="active">
+            <a data-href="index.php?route=account/seller_bill/bill_detail" data-toggle="tab">{{ __('结算明细') }}</a>
+          </li>
+        </ul>
+        {#tab页对应内容#}
+        <div class="tab-content">
+          <div class="tab-pane" id="tabTotal">
+            <fieldset>
+              <div id="billTotal" class="ptb-2 overflow">
+              </div>
+            </fieldset>
+          </div>
+          <div class="tab-pane active" id="tabDetail">
+            <fieldset>
+              <div id="billDetail">
+                <div>
+                  <form action="#" id="seller_bill_detail_form">
+                      <div class="oris-row">
+                        <div class="oris-col-3 oris-select pos-rela z1000">
+                        <label class="text-weight-normal" for="filter_contract_no">{{ __('结算周期') }}</label>
+                        <select class="selectpicker" name="bill-period" id="billPeriod">
+                        </select>
+                        <input type="text" class="oris-input placeholder"/>
+                      </div>
+                        <div class="oris-col-3 oris-select pos-rela">
+                        <label class="text-weight-normal" for="">{{ __('明细类型') }}</label>
+                        <select class="selectpicker" name="bill-type" id="detailType">
+                        </select>
+                        <input type="text" class="oris-input placeholder"/>
+                      </div>
+                        <div id="newBill" class="oris-col-6 no-padding pull-right">
+                          <div class="oris-col-6 ">
+                            <label class="text-weight-normal" for="filter_code_mpn">{{ __('费用编号') }}</label>
+                            <input type="text" name="filter_code_mpn" value="" placeholder="" id="feeNumber" class="oris-input" autocomplete="off">
+                          </div>
+                          <div class="oris-col-6 no-padding">
+                          <label class="text-weight-normal">{{ __('发生时间') }}</label>
+                          <div class="datetimepicker-range">
+                            <div class="datetimepicker col-sm-6 ">
+                              <input type="text" name="beginDate" value=""
+                                     placeholder="Pick a date..."
+                                     id="beginDate" class="oris-input"/>
+                              <span class="icon"><i class="gcl gclriliriqi"></i></span>
+                            </div>
+                            <div class="datetimepicker col-sm-6 pr-0">
+                              <input type="text" name="endDate" value=""
+                                     placeholder="Pick a date..."
+                                     id="endDate" class="oris-input"/>
+                              <span class="icon"><i class="gcl gclriliriqi"></i></span>
+                            </div>
+                          </div>
+                        </div>
+                          <div class="oris-row pull-right m40-t">
+                            <a class="oris-button oris-button-bigger width80" data-toggle="tooltip" title="" id="filterDetails" data-original-title="{{ __('筛选') }}">{{ __('筛选') }} </a>
+                            <button type="button" onclick="func_download()" class="oris-button oris-button-default"
+                                    data-toggle="tooltip" title="" data-original-title="{{ __('下载') }}">
+                              <i class="giga icon-xiazai"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div id="oldBill" class="oris-col-6 no-padding none pull-right">
+                          <div class="oris-col-6 ">
+                            <label class="text-weight-normal" for="input-filter_sku_mpn">{{ __(' Item Code / MPN') }}</label>
+                            <input placeholder="Item Code / MPN" name="filter_sku_mpn" id="input-filter_sku_mpn" class="oris-input" autocomplete="off">
+                          </div>
+                          <div class="oris-col-6 no-padding">
+                          <label class="text-weight-normal" for="input-filter_order_id">{{ __(' Order Number') }}</label>
+                          <input placeholder="Order Number" name="filter_order_id" id="input-filter_order_id" class="oris-input" autocomplete="off">
+                        </div>
+                          <div  class="oris-row pull-right m40-t">
+                          <button
+                              type="button"
+                              onclick="filter();"
+                              id="rma-refund-application-filter"
+                              class="oris-button oris-button-bigger width80 filter"
+                              data-loading-text="Loading...">
+                            {{ __('筛选') }}
+                          </button>
+                          <button type="button" onclick="func_download();" class="oris-button oris-button-default download"
+                              data-toggle="tooltip"
+                              data-original-title="{{ __('下载') }}">
+                            <i class="giga icon-xiazai"></i>
+                          </button>
+                        </div>
+                        </div>
+                        {% if is_onsite_seller  %}
+                          <div id="orderFrozen" class="oris-col-3 oris-select pos-rela p40-r-i none m16-t">
+                          <label class="text-weight-normal" for="filter_contract_no">{{ __('订单是否冻结中') }}</label>
+                          <select class="selectpicker" name="bill-period" id="billFrozen">
+                            <option value="">{{ __('请选择', {}, 'common') }}</option>
+                            <option value="1">{{ __('是') }}</option>
+                            <option value="2">{{ __('否') }}</option>
+                          </select>
+                          <input type="text" class="oris-input placeholder"/>
+                        </div>
+                        {% endif %}
+                      </div>
+                    </form>
+                </div>
+                <div><table id="detailTable"></table></div>
+                <div><table id="detail_table"></table></div>
+                <div id="noContent" class="none text-most text-center m24-t">{{ __('暂无可查看的结算周期') }}</div>
+                <div id="clickToGet" class="none text-most text-center m24-t">{{ __('请点击“筛选”按钮获取数据') }}</div>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+        </div>
+    </div>
+
+  </div>
+
+</div>
+<div class="modal fade oris-modal frozen-list-modal" id="frozenListModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      {% include 'yzcTheme/template/account/seller_bill/frozen_list.twig' %}
+    </div>
+  </div>
+</div>
+<script src="https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.js"></script>
+<link rel="stylesheet" href="catalog/view/javascript/datetimepicker/css/bootstrap-datetimepicker.min.css">
+<script type="text/javascript" src="catalog/view/javascript/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+<script>
+  //页面切换带的参数
+  let exist,minDate,maxDate;
+  var change=0;
+  if (location.href.split("bill_id=")[1]){
+    var bill_id = location.href.split("bill_id=")[1].split("&")[0]
+  }
+  if (location.href.split("bill_type=")[1]){
+    var type_id = location.href.split("bill_type=")[1].split("&")[0];
+  }
+  if (location.href.split("version=")[1]){
+    var version = location.href.split("version=")[1].split("&")[0];
+  }
+  if (location.href.split("frozen_status=")[1]){
+    var frozen_status = location.href.split("frozen_status=")[1].split("&")[0];
+  }
+
+
+  $(document).ready(function () {
+    //初始化刷新数据
+    $(window).on('load', function() {
+      $('.selectpicker').selectpicker('refresh');
+      //初始化默认赋值
+      if (bill_id){
+        $('#billPeriod').selectpicker('val', bill_id);
+      }
+      if (type_id){
+        $('#detailType').selectpicker('val', type_id);
+      }
+      if (frozen_status){
+        $('#billFrozen').selectpicker('val', frozen_status);
+      }
+    });
+    loadBillList();   //获取周期，添加到select的里面
+    if (!location.href.split("bill_id=")[1] || !location.href.split("bill_type=")[1]){
+      getBilltype();  //获取类型
+    }
+
+    if (exist){
+      //老的结算周期
+      if(version=="V1" || version=="V2"){
+        filter()
+      }
+      //新的结算周期
+      else if (version=="V3" ){
+        newFilterDetails();
+      }
+      else{
+        $("#clickToGet").removeClass('none')
+      }
+    }
+  });
+
+  //此<script>以下为V1,V2,V3公用函数
+
+  //请求参数
+  let requestData;
+  //获取结算周期列表
+  function loadBillList(){
+    $.ajax({
+      url : "{{ url('account/seller_bill/bill_list/getSettlementCycle') }}",
+      type : 'post',
+      async : false,
+      datatype : 'json',
+      success : function(res) {
+        var data = res.data;
+        if(data.length > 0){
+          var billList =[];
+          for(var i=0;i<data.length;i++){
+            var index = data[i];
+            //拼接成多个<option><option/>
+            billList.push('<option value="'+index.id+'" data-number="'+index.serial_number+'" data-version="'+index.program_code+'" data-minDate="'+index.start_date+'" data-maxDate="'+index.end_date+'">'+index.date_format+'</option>')
+          }
+          $("#billPeriod").html(billList.join(' '));    //根据parkID(根据你自己的ID写)填充到select标签中
+          exist = true;
+          let serial_number = $($("#billPeriod").find("option:selected").selectpicker('val').get('0')).attr("data-number");
+          $("#statementNum").html(serial_number);
+        }else{
+          exist = false;
+          $("#noContent").removeClass('none');
+          $("#clickToGet").addClass('none');
+          return
+        }
+      },
+      error : function() {
+        alert('查询出错');
+      }
+    });
+  }
+
+  //监听结算周期切换
+  $("#billPeriod").on('changed.bs.select',function (e, clickedIndex, isSelected, previousValue) {
+    //切换周期清除浏览器参数
+    window.history.pushState(null,null,"{{ url('account/seller_bill/bill_detail') }}");
+    if (change==1){
+      bill_id=null;
+      version=null;
+      type_id=null;
+      frozen_status=null;
+      $('#billFrozen').selectpicker('val', '');
+    }
+    //根据周期获取日期选择选择范围
+    if (exist){
+      minDate= $($("#billPeriod").find("option:selected").selectpicker('val').get('0')).attr("data-minDate");
+      maxDate= $($("#billPeriod").find("option:selected").selectpicker('val').get('0')).attr("data-maxDate");
+    }else{
+      minDate='1999-01-01'
+      maxDate='2999-12-31'
+    }
+
+    $('#beginDate,#endDate').datetimepicker('setStartDate', minDate);
+    $('#beginDate,#endDate').datetimepicker('setEndDate', maxDate);
+    //根据周期获取明细类型
+    getBilltype();
+
+    //NO 值切换
+    let serial_number = $($("#billPeriod").find("option:selected").selectpicker('val').get('0')).attr("data-number");
+    $("#statementNum").html(serial_number);
+
+  });
+
+  //获取结算单分类
+  function getBilltype(){
+    var version = $($("#billPeriod").find("option:selected").selectpicker('val').get('0')).attr("data-version").toUpperCase();
+    //老的结算周期
+    if(version=="V1" || version=="V2"){
+      $("#oldBill").removeClass('none');
+      $("#newBill,#orderFrozen").addClass('none');
+    }
+    //新的结算周期
+    else{
+      $("#oldBill").addClass('none');
+      $("#newBill,#orderFrozen").removeClass('none');
+    }
+    var data = {
+      version:version,
+    }
+    $.ajax({
+      url : "{{ url('account/seller_bill/bill_detail/getSettlementType') }}",
+      type : 'post',
+      async : false,
+      data: JSON.stringify(data),
+      dataType:'json',
+      contentType:'application/json',
+      success : function(res) {
+        var data = res.data;
+        if(data){
+          var typeList =[];
+          for(var i=0;i<data.length;i++){
+            var index = data[i];
+            //拼接成多个<option><option/>
+            typeList.push('<option value="'+index.value+'" data-code="'+index.code+'">'+index.key+'</option>')
+          }
+          $("#detailType").html(typeList.join(' '));
+          $('.selectpicker').selectpicker('refresh');
+        }
+      },
+      complete:function(){
+        change=1
+      },
+      error : function() {
+        alert('查询出错');
+      }
+    });
+  }
+
+  //监听明细类型切换
+  $("#detailType").on('changed.bs.select',function (e, clickedIndex, isSelected, previousValue) {
+    //切换类型清除浏览器参数
+    window.history.pushState(null,null,"{{ url('account/seller_bill/bill_detail') }}");
+    type_id=null;
+    var val = Number(this.value);
+    if (val !=81){
+      $("#orderFrozen").addClass('none')
+      frozen_status = null;
+      $('#billFrozen').selectpicker('val', '');
+    }else{
+      $("#orderFrozen").removeClass('none')
+    }
+  });
+
+  //监听订单冻结状态切换
+  $("#billFrozen").on('changed.bs.select',function (e, clickedIndex, isSelected, previousValue) {
+    //切换类型清除浏览器参数
+    window.history.pushState(null,null,"{{ url('account/seller_bill/bill_detail') }}");
+    frozen_status = null;
+  });
+
+  // 获取请求参数
+  function getData(){
+    if(exist){
+      bill_id =bill_id || $("#billPeriod").find("option:selected").selectpicker('val').get('0').value;
+    }else{
+      return
+    }
+    version =version || $($("#billPeriod").find("option:selected").selectpicker('val').get('0')).attr("data-version");
+    type_id =type_id || $("#detailType").find("option:selected").selectpicker('val').get('0').value;
+    if ('{{ is_onsite_seller }}'){
+      frozen_status = frozen_status || $("#billFrozen").find("option:selected").selectpicker('val').get('0').value;
+    }
+    var type_code = $($("#detailType").find("option:selected").selectpicker('val').get('0')).attr("data-code");
+    var feeNumber = $("#feeNumber").val().trim();
+    var mpn = $("#input-filter_sku_mpn").val().trim();
+    var orderId = $("#input-filter_order_id").val().trim();
+    var start_date = $("#beginDate").val();
+    var end_date = $("#endDate").val();
+
+    var serial_number = $($("#billPeriod").find("option:selected").selectpicker('val').get('0')).attr("data-number");
+    $("#statementNum").html(serial_number);
+
+    let data = {
+      filter_settlement_cycle:bill_id,
+      filter_settlement_item:type_id,
+      frozen_status:frozen_status,
+      version:version,
+      cost_no:feeNumber ,
+      filter_sku_mpn: mpn,
+      filter_order_id:orderId ,
+      start_date: start_date,
+      end_date: end_date,
+      type_code:type_code,
+    }
+    return data;
+  }
+
+  //下载周期明细
+  function func_download() {
+    if (requestData){
+      delete requestData.page;
+      delete requestData.per_page;
+    }else{
+      return
+    }
+    let params = requestData;
+    $.ajax({
+      url: "{{ url('account/seller_bill/bill_detail/getList') }}",
+      type: 'post',
+      contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+      data: params,
+      success: function (res) {
+        if (res.total > 0){
+          window.location.href = 'index.php?route=account/seller_bill/bill_detail/download' + '&' + $.param(params);
+        }else {
+          $.toast({
+            heading: false,
+            text: "{{ __('无下载数据，请重新筛选') }}",
+            position: 'top-center',
+            showHideTransition: 'fade',
+            icon: 'error',
+            hideAfter: 3000,
+            allowToastClose: false,
+            loader: false,
+          });
+        }
+      }
+    });
+
+
+  }
+
+</script>
+<script>
+  //V1,V2特定参数
+  let form = $('#seller_bill_detail_form');
+  let $table = $('#detail_table');
+  let $filter_settlement_item = $('#detailType');
+  let $filter_sku_mpn = $('#input-filter_sku_mpn');
+
+  // V1,V2 查询表格
+  function filter() {
+    $("#clickToGet").addClass('none');
+    $("#detail_table").parent('div').show();
+    $("#detailTable").parent('div').hide();
+    requestData =getData();
+    let item = type_id || parseInt($filter_settlement_item.val());
+    item=Number(item);
+    let columns = [];
+    let $option = {
+      contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+      url: "{{ url('account/seller_bill/bill_detail/getList') }}",
+      method: 'post',
+      queryParams: function (params) {
+        requestData['sort'] = params['sort'];
+        requestData['order'] = params['order'];
+        requestData['page'] = (params['offset'] / params['limit'] + 1);
+        requestData['per_page'] = params['limit'];
+        return requestData;
+      },
+      classes: 'oris-table',
+      sidePagination: "server",
+      pagination: true,
+      pageNumber: 1,
+      pageSize: 50,
+      pageList: [5, 15, 20, 50, 100],
+      onSort:function(){
+        $('#detail_table').bootstrapTable("showLoading");
+      },
+      formatNoMatches: function () {
+        return 'No records.';
+      },
+      onLoadSuccess: function () {
+        $('#detail_table').bootstrapTable("hideLoading");
+        page_show_limit();
+        $('.info-click').on('click', function () {
+          let msg = $(this).attr('data-info');
+          msg = msg.replace(/\n/g, '</br>');
+          layer.confirm(msg, {title: 'Message', skin: 'yzc_layer', btn: false, area: '50%'});
+        })
+      },
+      onLoadError: function(){
+        $('#detail_table').bootstrapTable("hideLoading");
+      },
+      columns:[
+        {
+          field: 'produce_date',
+          title: 'Incurred Time',
+          align: 'left',
+          sortable: true,
+          sortName: 'sbd.produce_date'
+        },
+        {
+          field: 'type_name',
+          title: 'Bill Type',
+          align: 'left'
+        },
+        {
+          field: 'ord_num',
+          title: 'Order Number',
+          align: 'left',
+          formatter: function (value, row, index) {
+            let str='';
+            if(Number(row['delivery_type']) == 2){
+              str='<i class="giga icon-cwf" style="color: #1f5268" data-toggle="tooltip" data-original-title="Cloud Wholesale Fulfillment"></i>'
+            }
+            return  (row['ord_num_url'] || row['ord_num']|| 'UNKNOWN')+str;
+          },
+        },
+      ]
+    };
+    switch (item) {
+      case 34:
+      case 36:
+      case 3: {
+        columns = [
+          {
+            title: 'Charge Detail',
+            align: 'center',
+            formatter: function (value, row, index) {
+              if (row['show_charge_detail'] == 0) {
+                return 'N/A';
+              }
+              return '<a class="info-click click_for_detail pointer" data-info="'
+                  + row['spec_info']['charge_detail']
+                  + '">View Details</a>';
+            }
+          },
+          {
+            field: 'patch_files',
+            title: 'Patch Files',
+            align: 'left',
+          },
+          {
+            title: 'Remark',
+            align: 'center',
+            formatter: function (value, row, index) {
+              let $title = row['remark_s'];
+              if (row['show_remark_detail'] == 1) {
+                $title = '<a class="info-click click_for_detail "  data-info="'
+                    + row['spec_info']['remark']
+                    + '">' + $title
+                    + '</a>';
+              }
+              return $title;
+            }
+          },
+        ];
+        break;
+      }
+      default: {
+        columns = [
+          {
+            field: 'item_code',
+            title: 'Item Code MPN',
+            align: 'left',
+            formatter: function (value, row, index) {
+              let str = row['item_code_s'];
+              if (row.hasOwnProperty('is_rebate') && row['is_rebate'] == 1) {
+                str = '<img' +
+                    ' data-toggle="tooltip" data-original-title="Rebate"' +
+                    ' style="width: 15px;height: 15px;" ' +
+                    'src="image/product/rebate_15x15.png">' + str;
+              }
+              if (row.hasOwnProperty('mpn_s') && row['mpn_s']) {
+                str += '</br>' + row['mpn_s'];
+              }
+              return str;
+            }
+          },
+          {
+            field: 'quantity',
+            title: 'Quantity',
+            align: 'center',
+          },
+
+        ];
+        // 判断是不是收入和支出类型
+        if ([32, 33].includes(item)) {
+          let col = '';
+          if (item == 32) {
+            col = 'Fulfillment & packaging fees paid by Buyer';
+          } else {
+            col = 'Fulfillment & packaging fees returned to Buyer';
+          }
+          columns.push(...[
+            {
+              field: 'product_total',
+              title: 'Total Value of goods',
+              align: 'center',
+            },
+            {
+              field: 'logistics_fee_format',
+              title: col,
+              align: 'right',
+            }
+          ])
+        } else {
+          columns.push({
+            field: 'logistics_fee_format',
+            title: 'Fulfillment Fee',
+            align: 'right',
+          });
+        }
+        break;
+      }
+    }
+    $option['columns'].push(...columns, {
+      field: 'total_s',
+      title: 'Total',
+      align: 'right',
+      formatter: function (value, row, index) {
+        return `<div class="text-right no-wrap" style="min-width: 100px">${row.total_s}</div>`;
+      }
+
+    },);
+    refreshTable($option);
+  }
+  function refreshTable(options) {
+    $("#detailTable").bootstrapTable('destroy');
+    $table.bootstrapTable('destroy');
+    $table.bootstrapTable(options);
+  }
+</script>
+<script>
+  //V3日期选择初始化
+  $('#beginDate').datetimepicker({
+    minView: 2,
+    format: 'yyyy-mm-dd 00:00:00',
+    autoclose: true,
+    forceParse: true,
+    startDate: minDate,
+    endDate:maxDate,
+  });
+  $('#endDate').datetimepicker({
+    minView: 2,
+    format: 'yyyy-mm-dd 23:59:59',
+    autoclose: true,
+    forceParse: true,
+    startDate: minDate,
+    endDate:maxDate,
+  });
+</script>
+<script>
+  //查询明细
+  $("#filterDetails").on('click',function () {
+    newFilterDetails()
+  });
+
+  //查询明细表格V3
+  function newFilterDetails(){
+    $("#clickToGet").addClass('none');
+    $("#detail_table").parent('div').hide();
+    $("#detailTable").parent('div').show();
+    //获取请求参数
+    requestData =getData();
+    // let data = getData();
+    if (requestData){
+      var type_id = requestData.filter_settlement_item;
+    }else{
+      return
+    }
+    // 重置table
+    $table.bootstrapTable('destroy');
+    $("#detailTable").bootstrapTable('destroy');
+
+    //表格列
+    var showColumns;
+    if (type_id == 81){
+      var pageSize =50;
+      showColumns =[
+        {
+          field: 'date_format',
+          title:'{{ __('发生时间') }}',
+          sortable: true,
+          align:'left',
+          formatter: function (value, row, index) {
+            var date = row.date_format.day;
+            var time = row.date_format.time;
+            return `<div><div>${date}</div><div class="tips-color">${time}</div></div>`;
+          },
+
+        },
+        {
+          field: 'type_format',
+          title: "{{ __('订单项类型') }}",
+          align:'left',
+          formatter: function (value, row, index) {
+            var name = row.type_format.name;
+            var desc = row.type_format.desc;
+            if (desc){
+              desc =`<div class="m06-t">(${desc})</div>`
+            }
+            return `<div><div>${name}</div>${desc}</div>`;
+          }
+        },
+        {
+          field: 'no',
+          title: "{{ __('费用编号') }}",
+          align:'left',
+          formatter: function (value, row, index) {
+            var number = row.no.no;
+            var link = row.no.link;
+            var type = row.no.type;
+            var desc = row.no.no_desc;
+            if (type===0){
+              type=`<span class="account-type atype-ds">Drop Shipping</span>`
+            }else if(type==1){
+              type=`<span class="account-type atype-wc">Will Call</span>`
+            }else if(type==2){
+              type=`<span class="account-type atype-cwf">CWF</span>`
+            }else{
+              type=``
+            }
+            if (desc){
+              desc =`<div class="m06-t">(${desc})</div>`
+            }
+            if (link){
+              return `<div><div><a class="text-left link" href="${link}" target="_blank">${number}</a>${type}</div><a class="text-left link" href="${link}" target="_blank">${desc}</a></div`;
+            }else{
+              return `<div class="flex-layout"><div class="text-left">${number}</div>${type}<div>`;
+            }
+          }
+        },
+        {
+          field: 'item_code',
+          title: "{{ __('Item Code') }}",
+          align:'left',
+        },
+        {
+          field: 'show_quantity',
+          title: "{{ __('Quantity') }}"
+        },
+        {
+          field: 'price_value',
+          title: "{{ __('单件货值') }}",
+          align:'right',
+        },
+        {
+          field: 'package_fee_format',
+          title: "{{ __('单件打包费') }}",
+          align:'right',
+        },
+        {
+          field: 'fright_format',
+          title: "{{ __('单件运费') }}",
+          align:'right',
+        },
+        {
+          field: 'total_format',
+          title: "{{ __('小计') }}",
+          align:'right',
+          formatter: function (value, row, index) {
+            let desc = row.total_desc;
+            let format = row.total_format;
+            let dataId = row.id;
+            let date = row.date_format.day + ' ' + row.date_format.time;
+            let type = row.type_format.name;
+            if (row.type_format.desc) {
+              type = type + '(' + row.type_format.desc + ')';
+            }
+            let no = row.no.no;
+            if (row.no.no_desc) {
+              no = no + '(' + row.no.no_desc + ')';
+            }
+            let itemCode = row.item_code;
+            let quantity = row.show_quantity;
+            let unfrozen = row.surplus_frozen_total_format;
+
+            if (row.frozen_flag==1){
+              format =`<div class="view-frozen-list pointer btn-text" data-toggle="modal" data-target="#frozenListModal"
+                        data-id="${dataId}" data-date="${date}" data-type="${type}" data-no="${no}" data-itemCode="${itemCode}" data-quantity="${quantity}" data-unfrozen="${unfrozen}" data-total="${format}">${format}</div>`
+            }else{
+              format = `<div>${format}</div>`
+            }
+            return `<div>${format}<div>${desc}</div></div>`;
+          },
+        }
+      ]
+    }else{
+      var common = [
+        {
+          field: 'no',
+          title: "{{ __('费用编号') }}",
+          align:'left',
+          formatter: function (value, row, index) {
+            var number = row.no.no;
+            var link = row.no.link;
+            var type = row.no.type;
+            if (type===0){
+              type=`<span class="account-type atype-ds">Drop Shipping</span>`
+            }else if(type==1){
+              type=`<span class="account-type atype-wc">Will Call</span>`
+            }else if(type==2){
+              type=`<span class="account-type atype-cwf">CWF</span>`
+            }else{
+              type=``;
+            }
+            if (link){
+              return `<div class="flex-layout"><a class="text-left link" href="${link}" target="_blank">${number}</a>${type}<div>`;
+            }else{
+              return `<div class="flex-layout"><div class="text-left">${number}</div>${type}<div>`;
+            }
+          }
+        },
+        {
+          field: 'file_list',
+          title: "{{ __('Patch Files') }}",
+          align:'left',
+          formatter: function (value,row,index) {
+            var fileList = ``;
+            for(var i in row.file_list){
+              var link = row.file_list[i].link;
+              var name = row.file_list[i].name;
+              if (link){
+                fileList+= `<div><a class="text-left link limitVal" data-num="20" href="${link}" target="_blank" title="${name}">${name}</a><div>`;
+              }else{
+                fileList+= `<div class="text-left limitVal" data-num="20" title="${name}">${name}</div>`;
+              }
+            }
+            return`<div class="text-left" >${fileList}</div>`
+          }
+        },
+        {
+          field: 'cost_detail',
+          title: "{{ __('收费明细') }}",
+          align:'left',
+          formatter: function (value, row, index) {
+            return `<div class="text-left limitVal" data-num="20" title="${row.cost_detail}">${row.cost_detail}</div>`;
+          }
+        },
+        {
+          field: 'remark',
+          title: "{{ __('备注') }}",
+          formatter: function (value, row, index) {
+            return `<div class="limitVal" data-num="20" title="${row.remark}">${row.remark}</div>`;
+          }
+        },
+        {
+          field: 'total_format',
+          title: "{{ __('发生金额') }}",
+          align:'right',
+        },
+      ]
+      showColumns =[
+        {
+          field: 'date_format',
+          title:'{{ __('发生时间') }}',
+          sortable: true,
+          align:'left',
+          formatter: function (value, row, index) {
+            var date = row.date_format.day;
+            var time = row.date_format.time;
+            return `<div class="text-left"><div>${date}</div><div class="tips-color">${time}</div></div>`;
+          }
+        },
+      ]
+      if (type_id == 82){
+        showColumns.push( {
+          field: 'type_format',
+          title: "{{ __('垫付费用项类型') }}",
+          align:'left',
+          formatter: function (value, row, index) {
+            var type=row.type_format.name;
+            return`<div>${type}</div>`
+          }
+
+        })
+      }else if(type_id == 83){
+        showColumns.push(  {
+          field: 'type_format',
+          title: "{{ __('平台费类型') }}",
+          align:'left',
+          formatter: function (value, row, index) {
+            var type=row.type_format.name;
+            return`<div>${type}</div>`
+          }
+        },)
+
+      }else if (type_id == 84){
+        showColumns.push( {
+          field: 'type_format',
+          title: "{{ __('费用项类型') }}",
+          align:'left',
+          formatter: function (value, row, index) {
+            var name = row.type_format.name;
+            var desc = row.type_format.desc;
+            if (desc){
+              desc =`<div>(${desc})</div>`
+            }
+            return `<div class="text-left"><div>${name}</div>${desc}</div>`;
+          },
+        },)
+      }
+      showColumns = showColumns.concat(common)
+      var pageSize = 20;
+    }
+
+    $("#detailTable").bootstrapTable({
+      contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+      url:"{{ url('account/seller_bill/bill_detail/getList') }}",
+      method: 'post',
+      queryParams: function (params) {
+        requestData['sort'] = params['sort'];
+        requestData['order'] = params['order'];
+        requestData['page'] = (params['offset'] / params['limit'] + 1);
+        requestData['per_page'] = params['limit'];
+        return requestData;
+      },
+      onSort:function(){
+        $('#detailTable').bootstrapTable("showLoading");
+      },
+      onLoadSuccess: function(res){
+        page_show_limit();
+        $('#detailTable').bootstrapTable("hideLoading");
+        // $("#frozenListModal").modal()
+      },
+      onLoadError: function(){
+        $('#detailTable').bootstrapTable("hideLoading");
+      },
+      formatNoMatches:function(){
+        return "{{ __('暂无结算数据') }}";
+      },
+      sidePagination: "server",
+      striped: true, // 是否显示行间隔色
+      pagination: true,
+      pageNumber: 1,
+      pageSize: pageSize,
+      pageList: [5, 15, 20, 50, 100],
+      columns:showColumns,
+      classes: 'oris-table',
+    })
+
+  }
+
+  var page_show_limit  = function(){
+    //显示长度限制
+    $(".limitVal").each(function() {
+      var dataNum = $(this).data("num");
+      if ($.trim($(this).html()).length > dataNum) {
+        var str = $(this).html().trim().substring(0, dataNum) + '...';
+        $(this).html(str);
+        $(this).addClass('cursor-d')
+      } else {
+        $(this).attr("title", '')
+      }
+    });
+  };
+
+  // 跳转tab页
+  $('#totalLi').on('click', function () {
+    var exist = $("#billPeriod").find("option:selected").selectpicker('val').get('0')
+    if (exist){
+      var bill_id = $("#billPeriod").find("option:selected").selectpicker('val').get('0').value;
+      var href =  $(this).find('a').attr('data-href') +'&bill_id='+bill_id;
+    }else{
+      var href =  $(this).find('a').attr('data-href')
+    }
+    window.location.href = href;
+  })
+
+</script>
+{{ footer }}

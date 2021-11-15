@@ -1,0 +1,564 @@
+<style>
+  .image-additional a {
+    padding: 5px;
+    display: block;
+    border: 1px solid #ddd;
+  }
+
+  .btn-more {
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    margin-left: 6px;
+    margin-bottom: 6px;
+    /*font-size: 18px;*/
+  }
+</style>
+<script type="text/javascript" src="catalog/view/javascript/bootstrap/js/bootstrap-paginator.min.js"></script>
+<script src="catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js" type="text/javascript"></script>
+<link href="catalog/view/javascript/jquery/magnific/magnific-popup.css" type="text/css" rel="stylesheet"/>
+<div class="bg-white p-2 giga-content">
+  <div class="filter-wrapper mb-3">
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label class="control-label" for="filter_reshipment_id">Reshipment Order ID</label>
+          <input type="text" class="form-control" name="filter_reshipment_id" id="filter_reshipment_id"
+                 value="{{ filter_reshipment_id }}" placeholder="Reshipment Order ID"/>
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="filter_reshipment_order_status">
+            Reshipment Order Status
+          </label>
+          <select class="form-control" name="filter_reshipment_order_status" id="filter_reshipment_order_status">
+            <option value=""> --- {{ __('请选择', {}, 'common') }} ---</option>
+            <option value="1"{% if filter_reshipment_order_status == 1 %} selected{% endif %}>New Order</option>
+            <option value="2"{% if filter_reshipment_order_status == 2 %} selected{% endif %}>Being Processed</option>
+            <option value="16"{% if filter_reshipment_order_status == 16 %} selected{% endif %}>Canceled</option>
+            <option value="32"{% if filter_reshipment_order_status == 32 %} selected{% endif %}>Completed</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label class="control-label" for="filter_reshipment_sales_order_id">
+            Original order ID
+          </label>
+          <input type="text" class="form-control" name="filter_reshipment_sales_order_id"
+                 id="filter_reshipment_sales_order_id"
+                 value="{{ filter_reshipment_sales_order_id }}" placeholder="Original order ID"/>
+        </div>
+        <div class="form-group">
+          <label class="control-label">
+            Application Date
+          </label>
+          <div class="datetimepicker-range">
+            <div class="datetimepicker ">
+              <input type="text" class="form-control date start-date" placeholder="Pick a date..."
+                     name="filter_reshipment_applyDateFrom" value="{{ filter_reshipment_applyDateFrom }}"
+                     id="filter_reshipment_applyDateFrom"/>
+              <span class="title">From</span>
+              <span class="icon"><i class="giga icon-date-icon"></i></span>
+            </div>
+            <div class="datetimepicker ">
+              <input type="text" class="form-control date end-date" placeholder="Pick a date..."
+                     name="filter_reshipment_applyDateTo" value="{{ filter_reshipment_applyDateTo }}"
+                     id="filter_reshipment_applyDateTo"/>
+              <span class="title">To</span>
+              <span class="icon"><i class="giga icon-date-icon"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label class="control-label" for="filter_rma_id">
+            RMA ID
+          </label>
+          <input type="text" class="form-control" name="filter_reshipment_rma_id"
+                 id="filter_reshipment_rma_id" value="{{ filter_reshipment_rma_id }}" placeholder="RMA ID"/>
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="filter_reshipment_item_code">Item Code</label>
+          <input type="text" class="form-control" name="filter_reshipment_item_code" id="filter_reshipment_item_code"
+                 value="{{ filter_reshipment_item_code }}" placeholder="Item Code"/>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label class="control-label" for="filter_reshipmrnt_seller_status">Seller's Process Result</label>
+          <select class="form-control" name="filter_reshipment_seller_status" id="filter_reshipment_seller_status">
+            <option value="" {% if filter_reshipment_seller_status == -1 %} selected{% endif %}> --- {{ __('请选择', {}, 'common') }} ---
+            </option>
+            <option value="0"{% if filter_reshipment_seller_status == 0 %} selected{% endif %}>Hasn't Replied</option>
+            <option value="1"{% if filter_reshipment_seller_status == 1 %} selected{% endif %}>Agree</option>
+            <option value="2"{% if filter_reshipment_seller_status == 2 %} selected{% endif %}>Refuse</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="filter_reshipment_store">
+            Store
+          </label>
+          <select class="form-control" name="filter_reshipment_store" id="filter_reshipment_store">
+            <option value=""> --- {{ __('请选择', {}, 'common') }} ---</option>
+            {% for store in stores %}
+              <option value="{{ store.seller_id }}"
+                {% if filter_reshipment_store == store.seller_id %}
+                  selected
+                {% endif %}
+              >{{ store.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group pull-right">
+          <label class="control-label"></label>
+          <div>
+            <button type="button" onclick="filterReshipment(this);" class="btn btn-primary">Filter</button>
+            <button onclick="downloadOrderFulfillmentReshipment();" class="btn btn-default" data-toggle="tooltip"
+                    title="" data-original-title="">
+              <i class="fa fa-download"></i></button>
+            <button type="button" onclick="clrFilterReshipment(this);" class="btn btn-default">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="table-responsive" style="">
+      <table id="tableReshipmentOrder" class="table main table-hover">
+        <thead>
+        <tr>
+          <th class="text-left no-wrap">Reshipment ID <br> Original order ID</th>
+          <th class="text-left no-wrap">RMA ID</th>
+          <th class="text-left no-wrap">Reshipment<br>Item Code</th>
+          <th class="text-left no-wrap">Tracking Number</th>
+          <th class="text-left no-wrap">Reshipment <br>Order Status</th>
+          <th class="text-left no-wrap">Application <br>Date</th>
+          <th class="text-left no-wrap">Store</th>
+          <th class="text-left no-wrap">RMA Status<br>(Seller Result)</th>
+          <th class="text-center no-wrap" style="width: 90px">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if rmaOrders %}
+          {% for rmaOrder in rmaOrders %}
+            <tr>
+              <td class="text-left no-wrap">
+                <p class="p-clear-css">{{ rmaOrder.reshipment_id }}</p>
+                <p class="p-clear-css">
+                  <a
+                    class="hover-pointer hover-line"
+                    target="_blank"
+                    href="{{ rmaOrder.sales_order_link }}"
+                    style="color: #3A75DC">
+                    {{ rmaOrder.sales_order_id }}
+                  </a>
+                </p>
+              </td>
+              <td class="text-left no-wrap">
+                <a class="hover-line hover-a-blue" href="{{ rmaOrder.rma_id_link }}">
+                  {{ rmaOrder.rma_id }}
+                </a>
+              </td>
+              <td class="text-left no-wrap">
+                {% for k,itemCode in rmaOrder.item_code %}
+                  <p class="p-clear-css flex-layout">
+                    <span class="m04-r">{{ itemCode }}</span>
+                    {% if rmaOrder.tag[loop.index0]|length != 0 %}
+                      {% for tag in rmaOrder.tag[loop.index0] %}
+                        <img data-toggle="tooltip" class="{{ tag.icon_class }}" title="{{ tag.description }}" style="margin-left: 2px"
+                             src="{{ tag.icon_url }}">
+                      {% endfor %}
+                    {% endif %}
+                    {% if rmaOrder.type_id in [2,3] %}
+                      <a class="complex-icon" href="{{ rmaOrder.agreement_url }}" target="_blank">
+                        {{ rmaOrder.type_icon }}
+                      </a>
+                    {% endif %}
+                  </p>
+                {% endfor %}
+              </td>
+              <td class="text-left no-wrap" style="min-width: 150px;">
+                {% for ks,vs in rmaOrder.tracking_number %}
+                  {% if rmaOrder.carrier[ks] == 'Fedex'  and rmaOrder.tracking_status[ks] != 0 %}
+                    <a href="{{ text_fedex_homepage }}{{ vs }}" class="hover-line"
+                       style="color: #3A75DC">
+                      {{ vs }}&nbsp;({{ rmaOrder.carrier[ks] }})
+                    </a>
+                    <br/>
+                  {% else %}
+                    {{ vs }}&nbsp;({{ rmaOrder.carrier[ks] }})
+                    {% if rmaOrder.tracking_status[ks] == 0 %}
+                      {{ text_void_track }}
+                    {% endif %}
+                    <br/>
+                  {% endif %}
+                {% endfor %}
+              </td>
+
+              <td class="text-left no-wrap">
+                {% if rmaOrder.order_status_id == 1 %}
+                  <p class="p-clear-css text-light">New Order</p>
+                {% elseif rmaOrder.order_status_id == 2 %}
+                  <p class="p-clear-css text-success">{{ rmaOrder.order_status }}</p>
+                {% elseif rmaOrder.order_status_id == 32 %}
+                  <p class="p-clear-css text-light">{{ rmaOrder.order_status }}</p>
+                {% elseif rmaOrder.order_status_id == 16 %}
+                  <p class="p-clear-css text-warning">{{ rmaOrder.order_status }}</p>
+                {% endif %}
+              </td>
+              <td class="text-left no-wrap">
+                {{ rmaOrder.application_date | formatZone(country) | formatSpTime('p-clear-css','p-clear-css p-color-grey') }}
+              </td>
+              <td class="text-left no-wrap">
+                <a href="{{ rmaOrder.store_link }}" class="hover-line hover-a-blue">
+                  {{ rmaOrder.store }}
+                </a>
+              </td>
+              <td class="text-left no-wrap">
+                <p class="p-clear-css ">
+                  {% if rmaOrder.seller_status in [ 1 , 4 ] or rmaOrder.cancel_status %}
+                    {% if rmaOrder.seller_status == 1 and rmaOrder.cancel_status  == 0 %}
+                      Applied
+                    {% else %}
+                      Canceled
+                    {% endif %}
+                  {% else %}
+                    {% if rmaOrder.seller_status == 2 %}
+                      Processed
+                    {% else %}
+                      Pending
+                    {% endif %}
+                  {% endif %}
+                </p>
+                {% if rmaOrder.status_reshipment == 'Agree' %}
+                  <p class="p-clear-css " style="color: #008000">({{ rmaOrder.status_reshipment }})</p>
+                {% elseif rmaOrder.status_reshipment == 'Refuse' %}
+                  <p class="p-clear-css " style="color: #FA6400">({{ rmaOrder.status_reshipment }})</p>
+                {% else %}
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <div class="action-group" style="text-align: left">
+                  <a href="{{ rmaOrder.rma_id_link }}"
+                     target="_blank"
+                     class="btn btn-primary"
+                     data-toggle="tooltip"
+                     title="View Details">
+                    <i class="gcl gclchakan"></i>
+                  </a>
+                  {% if rmaOrder.canCancelOrEdit == 1 %}
+                    <a
+                      class="btn btn-primary"
+                      onclick="editRMA(this,{{ rmaOrder.order_type }},{{ rmaOrder.rma_order_id_s }})">
+                         <span data-toggle="tooltip" title="" data-original-title="Edit">
+                           <i class="gcl gcledit"></i>
+                         </span>
+                    </a>
+                  {% endif %}
+                  {% if rmaOrder.cancel_status == 0 and rmaOrder.canCancelOrEdit == 1 %}
+                    <a
+                      onclick="cancelReshipRma(this ,{{ rmaOrder.canCancelOrEdit }}, {{ rmaOrder.rma_id_s }})"
+                      class="btn btn-info"
+                      data-toggle="tooltip" title="Cancel">
+                      <i class="gcl gcllajitong"></i>
+                    </a>
+                  {% endif %}
+                  {% if (rmaOrder.create_timestamp +30*24*3600)>now and rmaOrder.seller_status==2 %}
+                    <a class="btn btn-primary btn1"
+                       data-toggle="tooltip"
+                       title="Arbitration"
+                       onclick="showModal('{{ rmaOrder.rma_id }}')">
+                      <i class="gcl gclshiwu-chuizi"></i>
+                    </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td class="text-center" colspan="11">{{ text_no_results }}</td>
+          </tr>
+        {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row" style="margin-right: 0;margin-top: 20px;">
+    <div class="col-sm-12 text-right">
+      <ul id="bos_pagination_reshipment"></ul>
+    </div>
+  </div>
+</div>
+<a id="redirectHref" href="" target="_blank" style="display: none"></a>
+<script>
+  layer.config({
+    btnAlign: 'c',
+  });
+</script>
+<script>
+  $('.start-date').datetimepicker({
+    pickDate: true,
+    pickTime: false,
+    format: 'YYYY-MM-DD 00:00:00'
+  });
+
+  $('.end-date').datetimepicker({
+    pickDate: true,
+    pickTime: false,
+    format: 'YYYY-MM-DD 23:59:59'
+  });
+
+  function init() {
+    //分页链接
+    reship_pagination();
+  }
+
+
+  function refreshReshipCount() {
+    let refund = $('#refund_count');
+    let reship = $('#reshipment_count')
+    let resolveZeroCount = function () {
+      if (Number.parseInt(refund.html()) === 0) {
+        refund.hide();
+      } else {
+        refund.show();
+      }
+      if (Number.parseInt(reship.html()) === 0) {
+        reship.hide();
+      } else {
+        reship.show();
+      }
+    }
+    refund.load('index.php?route=account/rma_management/getRefundUnResolveCount', resolveZeroCount)
+    reship.load('index.php?route=account/rma_management/getReshipUnResolveCount', resolveZeroCount);
+    $('#order-refund').load('index.php?route=account/rma_management/refund');
+  }
+
+  function clrFilterReshipment(button) {
+    block.blockUI();
+    let url = 'index.php?route=account/rma_management/reshipment';
+    $(button).button('loading');
+    $('#order-reshipment').load(url, function () {
+      block.unBlockUI();
+    });
+    refreshReshipCount();
+  }
+
+  function filterReshipment(button) {
+    block.blockUI();
+    var url = getUrlForReshipmentFilter();
+    $(button).button('loading');
+    $('#order-reshipment').load(url, function () {
+      block.unBlockUI();
+    });
+    refreshReshipCount();
+  }
+
+  function getUrlForReshipmentFilter(page) {
+    let url = 'index.php?route=account/rma_management/reshipment';
+    let filter_reshipment_id = $('input[name=\'filter_reshipment_id\']').val();
+    if (filter_reshipment_id) {
+      url += '&filter_reshipment_id=' + encodeURIComponent(filter_reshipment_id);
+    }
+    let filter_reshipment_seller_status = $('select[name=\'filter_reshipment_seller_status\']').val();
+    if (filter_reshipment_seller_status) {
+      url += '&filter_reshipment_seller_status=' + encodeURIComponent(filter_reshipment_seller_status);
+    }
+    let filter_reshipment_item_code = $('input[name=\'filter_reshipment_item_code\']').val();
+    if (filter_reshipment_item_code) {
+      url += '&filter_reshipment_item_code=' + encodeURIComponent(filter_reshipment_item_code);
+    }
+    let filter_reshipment_sales_order_id = $('input[name=\'filter_reshipment_sales_order_id\']').val();
+    if (filter_reshipment_sales_order_id) {
+      url += '&filter_reshipment_sales_order_id=' + encodeURIComponent(filter_reshipment_sales_order_id);
+    }
+    let filter_reshipment_order_status = $('select[name=\'filter_reshipment_order_status\']').val();
+    if (filter_reshipment_order_status) {
+      url += '&filter_reshipment_order_status=' + encodeURIComponent(filter_reshipment_order_status);
+    }
+    let filter_reshipment_store = $('select[name=\'filter_reshipment_store\']').val();
+    if (filter_reshipment_store) {
+      url += '&filter_reshipment_store=' + encodeURIComponent(filter_reshipment_store);
+    }
+    let filter_reshipment_rma_id = $('input[name=\'filter_reshipment_rma_id\']').val();
+    if (filter_reshipment_rma_id) {
+      url += '&filter_reshipment_rma_id=' + encodeURIComponent(filter_reshipment_rma_id);
+    }
+    let filter_reshipment_applyDateFrom = $('input[name=\'filter_reshipment_applyDateFrom\']').val();
+    if (filter_reshipment_applyDateFrom) {
+      url += '&filter_reshipment_applyDateFrom=' + encodeURIComponent(filter_reshipment_applyDateFrom);
+    }
+    let filter_reshipment_applyDateTo = $('input[name=\'filter_reshipment_applyDateTo\']').val();
+    if (filter_reshipment_applyDateTo) {
+      url += '&filter_reshipment_applyDateTo=' + encodeURIComponent(filter_reshipment_applyDateTo);
+    }
+    if (page) {
+      url += "&page_num=" + page;
+    }
+
+    return url;
+  }
+
+  function reship_pagination() {
+    if ({{ total_pages }}) {
+      $('#bos_pagination_reshipment').bootstrapPaginator({
+        /*当前使用的是3版本的bootstrap*/
+        bootstrapMajorVersion: 3,
+        /*配置的字体大小是小号*/
+        size: 'normal',
+        /*当前页*/
+        currentPage: {{ page_num }},
+        /*一共多少页*/
+        totalPages: {{ total_pages }},
+        /*页面上最多显示几个含数字的分页按钮*/
+        numberOfPages: 5,
+        total: {{ total_num }},
+        rowsOfPage: {{ page_limit }},
+        onPageClicked: function (event, originalEvent, type, page) {
+          block.blockUI();
+          let url = getUrlForReshipmentFilter(page);
+          $('#order-reshipment').load(url, function () {
+            block.unBlockUI();
+          });
+          refreshReshipCount();
+        }
+      });
+    }
+  }
+
+  function downloadOrderFulfillmentReshipment() {
+    let url = 'index.php?route=account/rma_management/downloadReshipmentInfo';
+    let filter_reshipment_id = $('input[name=\'filter_reshipment_id\']').val();
+    if (filter_reshipment_id) {
+      url += '&filter_reshipment_id=' + encodeURIComponent(filter_reshipment_id);
+    }
+    let filter_reshipment_seller_status = $('select[name=\'filter_reshipment_seller_status\']').val();
+    if (filter_reshipment_seller_status) {
+      url += '&filter_reshipment_seller_status=' + encodeURIComponent(filter_reshipment_seller_status);
+    }
+    let filter_reshipment_item_code = $('input[name=\'filter_reshipment_item_code\']').val();
+    if (filter_reshipment_item_code) {
+      url += '&filter_reshipment_item_code=' + encodeURIComponent(filter_reshipment_item_code);
+    }
+    let filter_reshipment_sales_order_id = $('input[name=\'filter_reshipment_sales_order_id\']').val();
+    if (filter_reshipment_sales_order_id) {
+      url += '&filter_reshipment_sales_order_id=' + encodeURIComponent(filter_reshipment_sales_order_id);
+    }
+    let filter_reshipment_order_status = $('select[name=\'filter_reshipment_order_status\']').val();
+    if (filter_reshipment_order_status) {
+      url += '&filter_reshipment_order_status=' + encodeURIComponent(filter_reshipment_order_status);
+    }
+    let filter_reshipment_store = $('select[name=\'filter_reshipment_store\']').val();
+    if (filter_reshipment_store) {
+      url += '&filter_reshipment_store=' + encodeURIComponent(filter_reshipment_store);
+    }
+    let filter_reshipment_rma_id = $('input[name=\'filter_reshipment_rma_id\']').val();
+    if (filter_reshipment_rma_id) {
+      url += '&filter_reshipment_rma_id=' + encodeURIComponent(filter_reshipment_rma_id);
+    }
+    let filter_reshipment_applyDateFrom = $('input[name=\'filter_reshipment_applyDateFrom\']').val();
+    if (filter_reshipment_applyDateFrom) {
+      url += '&filter_reshipment_applyDateFrom=' + encodeURIComponent(filter_reshipment_applyDateFrom);
+    }
+    let filter_reshipment_applyDateTo = $('input[name=\'filter_reshipment_applyDateTo\']').val();
+    if (filter_reshipment_applyDateTo) {
+      url += '&filter_reshipment_applyDateTo=' + encodeURIComponent(filter_reshipment_applyDateTo);
+    }
+    location = url;
+  }
+
+  // cancel rma
+  function cancelReshipRma(button, status, rmaId) {
+    if (status == 1) {
+      layer.confirm('Do you want to cancel the request?', {
+        title: 'Message',
+        skin: 'yzc_layer', //样式类名
+        btn: ['Yes', 'No'] //按钮
+      }, function (index) {
+        var data = {"rmaId": rmaId};
+        $.ajax({
+          url: 'index.php?route=account/rma_management/cancelRma',
+          method: 'POST',
+          dataType: 'json',
+          data: data,
+          success: function (json) {
+            layer.closeAll();
+            if (json.status == 'success') {
+              block.blockUI();
+              let url = getUrlForReshipmentFilter();
+              $('#order-reshipment').load(url, function () {
+                block.unBlockUI();
+              });
+              refreshReshipCount();
+            } else if (json.error) {
+              layer.alert(json.error, {
+                title: 'Error',
+                btn: 'OK',
+                skin: 'yzc_layer',
+                closeBtn: 0
+              });
+            }
+          }
+        });
+      });
+    }
+  }
+
+  // edit rma
+  function editRMA(button, orderType, rmaId) {
+    if (orderType == 1) {
+      var data = {"rmaOrderId": rmaId};
+      $.ajax({
+        url: 'index.php?route=account/rma_management/checkCanEditRma',
+        method: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function (json) {
+          if (json.status) {
+            redirect('index.php?route=account/rma_management/editRma&rma_order_id=' + rmaId);
+          } else {
+            layer.alert(json.error, {
+              title: 'Error',
+              btn: 'OK',
+              skin: 'yzc_layer',
+              closeBtn: 0
+            });
+          }
+        }
+      });
+    } else {
+      var data = {"rmaOrderId": rmaId};
+      $.ajax({
+        url: 'index.php?route=account/rma_management/checkCanEditRma',
+        method: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function (json) {
+          if (json.status) {
+            redirect('index.php?route=account/rma/purchaseorderrma/editRma&rma_order_id=' + rmaId);
+          } else {
+            layer.alert(json.error, {
+              title: 'Error',
+              btn: 'OK',
+              skin: 'yzc_layer',
+              closeBtn: 0
+            });
+          }
+        }
+      });
+    }
+  }
+
+  function redirect(url) {
+    let a_redirect = $('#redirectHref');
+    a_redirect.attr('href', url);
+    a_redirect[0].click();
+  }
+
+  init();
+
+</script>
+
+

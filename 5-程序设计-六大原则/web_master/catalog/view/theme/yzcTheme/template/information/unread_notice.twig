@@ -1,0 +1,63 @@
+<li id="unread_notice" data-toggle="tooltip" data-placement="bottom" title="Platform Notice">
+  <a href="{{ notice_action }}">
+      <i class="fa fa-volume-up fa-lg"></i>
+    {% if is_separate_view %}
+      <span style="display: none" class="label label-danger pull-left"></span>
+    {% else %}
+      <span style="display: none" class="notice-badge-dot"></span>
+    {% endif %}
+  </a>
+</li>
+<style>
+  .notice-badge-dot {
+    position: relative;
+    display: inline-block;
+    font-size: 12px;
+    text-align: center;
+    background-color: #FF5722;
+    color: #fff;
+    width: 6px;
+    height: 6px;
+    padding: 0;
+    border-radius: 50%;
+    top: -5px;
+    margin: -7px 3px 0 1px;
+  }
+</style>
+<script>
+    $(function () {
+        var countUnreadNotice = function (byCache=true) {
+            var unread_notice_time = localStorage.getItem('unread_notice_time');
+            var now_time = new Date().getTime();
+            var diff = (now_time - unread_notice_time) / 1000;
+            if (byCache && diff < {{ notice_count_unread_period }}) {
+                showNoticeIcon(localStorage.getItem('unread_notice_count'));
+            } else {
+                $.get('{{ notice_count_unread_action }}', function (count = 0) {
+                        count = parseInt(count);
+                        localStorage.setItem('unread_notice_time', new Date().getTime() + "");
+                        localStorage.setItem('unread_notice_count', count);
+                        showNoticeIcon(count);
+                    }
+                )
+            }
+        };
+
+        var showNoticeIcon = function (count = 0) {
+            var $icon = $('#unread_notice').find('span');
+            if (count <= 0) {
+                $icon.hide();
+            } else {
+                $icon.show();
+              {% if is_separate_view %}
+                $icon.html(count);
+              {% endif %}
+            }
+        };
+        window.countUnreadNotice = countUnreadNotice;
+        countUnreadNotice(false);
+        setInterval(function () {
+            countUnreadNotice()
+        }, 5000);
+    });
+</script>

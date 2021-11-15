@@ -1,0 +1,81 @@
+{% if product_option_list|length > 1 %}{# 代码要写在这个标签中 #}
+<div class="option mt-1 mb-1" style="overflow: hidden">
+    <div class="col-sm-11">
+        <div class="text-muted col-sm-3 p-0">Option</div>
+        <div class="col-sm-9 option-list min-list p-0" id="optionList">
+          {% for item in product_option_list %}
+            <div class="option-row">
+              <a href="{{ url('product/product') }}&product_id={{ item.product_id }}" class="flex-layout option-tag  {% if item.product_id == product_id%}active{% endif %}" data-toggle="tooltip" title="{{ item.title }}">
+                <img class="mr-1" src="{{ item.thumb }}">
+                <div class="product-specs">{{ item.title_html }}</div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+        {% if product_option_list|length > 3 %}
+        <div class="col-sm-offset-3 col-sm-9 p-0 option-more mt-2" id="opctionMore">
+            All {{ product_option_list|length }} Options <i class="giga icon-V10_shouyeyouxiadown text-small"></i>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<script>
+    $("#opctionMore").on('click',function () {
+        $(this).hide();
+        $("#optionList").removeClass('min-list').addClass('all-list')
+    })
+</script>
+<style>
+    .text-small{
+        font-size: 12px;
+    }
+    .option .col-sm-11{
+        display: initial;
+    }
+    .option .text-muted{
+        line-height: 48px;
+    }
+    .min-list{
+        max-height: 158px;
+        overflow: hidden;
+    }
+    .all-list{
+        height: auto;
+    }
+
+    .option-list .option-row{
+      display: block;
+    }
+
+    .option-list .option-tag{
+        display: inline-flex;
+        padding: 4px;
+        height: 48px;
+        background-color: #f7f7f7;
+        border: solid 1px #dbdbdb;
+        margin-bottom: 6px;
+    }
+    .option-list .option-tag.active{
+        border-color: #FA6400;
+    }
+    .option-list img{
+        max-width: 40px;
+        max-height: 40px;
+    }
+    .option-list .product-specs{
+        overflow:hidden;
+        text-overflow:ellipsis;
+        word-break: break-all;
+        display:-webkit-box;
+        -webkit-box-orient:vertical;
+        -webkit-line-clamp:1;
+    }
+    .option-more{
+        cursor: pointer;
+        color: #0041bc;
+    }
+    .option-tag{
+        cursor: pointer;
+    }
+</style>
+{% endif %}

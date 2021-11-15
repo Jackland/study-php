@@ -1,0 +1,99 @@
+{% trans_default_category 'catalog/view/seller_store/home/index' %}
+{{ this.title('Store Home') }}
+{{ this.params('breadcrumbs', 'hide') }}
+{{ css(['static/seller_store/home/common.css','static/seller_store/home/index.css']) }}
+
+{% if preview_key is not null %}
+{{ css(['css/common/common.css']) }}
+{{ jsOrigin(['catalog/view/javascript/product/axios.min.js'], 1) }}
+{{ js(['static/customerpartner/seller_store/util/publish_helper.js'])}}
+{% include 'yzcTheme/template/customerpartner/seller_store/publish_config.twig' %}
+{% endif %}
+
+<div id="page-index" class="store-module">
+  {% if modules|length>0 %}
+    {% for mIndex,module in modules %}
+    {% if module.type == 'banner' %}
+    {% if module.data.banners|length > 0 %}
+    {% include 'yzcTheme/template/seller_store/home/_modules/banner.twig' %}
+    {% endif %}
+    {% elseif module.type == 'main_product' %}
+    {% include 'yzcTheme/template/seller_store/home/_modules/main_products.twig' %}
+    {% elseif module.type == 'product_recommend' %}
+    {% include 'yzcTheme/template/seller_store/home/_modules/product_recommend.twig' %}
+    {% elseif module.type == 'complex_transaction' %}
+    {% include 'yzcTheme/template/seller_store/home/_modules/complex_transaction.twig' %}
+    {% elseif module.type == 'product_type' %}
+    {% include 'yzcTheme/template/seller_store/home/_modules/product_categories.twig' %}
+    {% elseif module.type == 'product_rank' %}
+    {% include 'yzcTheme/template/seller_store/home/_modules/best_selling.twig' %}
+    {% elseif module.type == 'store_introduction' %}
+    {% include 'yzcTheme/template/seller_store/home/_modules/store_information.twig' %}
+    {% endif %}
+    {% endfor %}
+  {% else %}
+    {# 未装修 #}
+    <div class="nothing-set">
+      <i class="giga icon-V10_mfb-01"></i>
+      <div class="text-larger text-bold p10-t">Nothing set for this page.</div>
+      <div class="text-larger p10-t"><a class="link-hover pointer" href="{{ url('seller_store/products', {id: seller_id}) }}">View more</a></div>
+    </div>
+  {% endif %}
+</div>
+{# 预览发布 #}
+{% if preview_key is not null %}
+<div class="preview-top">
+  <span>Currently in preview mode. Settings with no content will not be displayed.</span>
+  <button type="button" class="btn" id="storeInfoPub">Publish</button>
+</div>
+{% apply script %}
+<script type="text/javascript">
+$(initIntroPreview);
+
+function initIntroPreview() {
+  $('body').on('click', '#storeInfoPub', function() {
+    let that = this;
+    var data = {
+        modules: eval({{ preview_data_json|json_encode() }}),
+        tab: 'preview',
+        type: 'publish',
+        preview_key: '{{ preview_key }}'
+    }
+    PublishHelper.instance('home').publish(data);
+  })
+}
+</script>
+{% endapply %}
+{% endif %}
+{% apply script %}
+<script type="text/javascript">
+$(initStorePage);
+
+function initStorePage() {
+  initmainProducts();
+  initChangeTabs();
+}
+
+// 初始化主推产品
+function initmainProducts() {
+  // 主推产品点击图片切换主图
+  $('section.mainprod-module').on('click', '.action-mp-change', function() {
+    var $section = $(this).closest('section');
+    var mIndex = $(this)[0].getAttribute('data-mIndex');
+    $section.find(`#mp${mIndex}`).removeClass('none').addClass('module-flex')
+      .siblings().removeClass('module-flex').addClass('none')
+  })
+}
+
+// 初始化复杂交易和产品分类切页
+function initChangeTabs() {
+  $('section').on('click', '.action-tab', function() {
+    var $section = $(this).closest('section');
+    var mIndex = $(this)[0].getAttribute('data-mIndex');
+    $(this).addClass('active').siblings().removeClass('active');
+    $section.find(`.tab${mIndex}`).removeClass('none').addClass('module-flex')
+      .siblings().removeClass('module-flex').addClass('none')
+  })
+}
+</script>
+{% endapply %}

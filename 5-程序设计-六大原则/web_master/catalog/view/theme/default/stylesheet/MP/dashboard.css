@@ -1,0 +1,54 @@
+.low_stock_row{
+  margin: 5px;
+}
+
+.wk_lowstock_header {
+    background-color: #ffffff;
+    height: 105px;
+}
+
+.wk_lowstock_title {
+    font-size: 20px;
+    color: #2A2A2A;
+    text-align: center;
+}
+
+.wk_lowstock_icon{
+  text-align: center;
+  padding: 15px;
+  height: 80px;
+}
+
+.wk_lowstock_more {
+    font-size: 16px;
+    color: #EE7439;
+    border-radius: 15px;
+    border: 2px solid #ee7439;
+    text-align: center;
+    margin: 25px 20px 0px;
+    padding: 5px;
+}
+
+.wk_lowstock_quantity {
+  font-size: 20px;
+  text-align: center;
+  color: #3A92E2;
+}
+
+.wk_lowstock_more > a{
+    color: #EE7439;
+}
+
+.wk_lowstock_more:hover {
+  background-color: #e56d33;
+}
+
+.wk_lowstock_more:hover a{
+  color: #FFFFFF;
+}
+
+.wk_lowstock_footer {
+    background-color: #F5F5F5;
+    height: 105px;
+    padding: 20px;
+}

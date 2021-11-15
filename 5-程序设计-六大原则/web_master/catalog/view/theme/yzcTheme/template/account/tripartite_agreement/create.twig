@@ -1,0 +1,546 @@
+{% if info %}
+  {% if renew %}
+    {{ this.title('Renew the agreement') }}
+  {% else %}
+    {{ this.title('Edit the Agreement') }}
+  {% endif %}
+{% else %}
+  {{ this.title('Create a New Agreement') }}
+{% endif %}
+
+{{ this.params('breadcrumbs', [
+  'home',
+  {
+    text: 'Sales and Purchase Agreement',
+    href: url('account/tripartite_agreement'),
+  },
+  'current'
+]) }}
+{{ this.params('pageTitle', {show: true}) }}
+{{ css(['static/account/tripartite_agreement/create.css','css/common/multSelect.css']) }}
+{{ js(['js/common/toolString.js', 'js/common/orisComponents.js','js/common/multSelect.js']) }}
+{{ cssOrigin(['/catalog/view/javascript/bootstrap-select18/bootstrap-select.min.css',
+  'catalog/view/javascript/datetimepicker/css/bootstrap-datetimepicker.min.css']) }}
+{{ jsOrigin(['catalog/view/javascript/bootstrap-select18/bootstrap-select.min.js',
+  'catalog/view/javascript/datetimepicker/bootstrap-datetimepicker.min.js']) }}
+
+<div id="pageCreate" class="buyer-page">
+  <div>
+    <div class="oris-row">
+      <div class="full-width">
+        <label for="searchName">Agreement Name:</label>
+        <input type="text" name="agreementName" placeholder="Please Input" id="agreementName"
+               class="oris-input" autocomplete="off" value="{{ info.title }}" maxlength="200"/>
+      </div>
+      <div class="text-danger mt-02"></div>
+    </div>
+    <div class="oris-row p14-t">
+      <div class="oris-col-6">
+        <label class="text-weight-normal flex-layout" for="">
+          Agreement Validity:
+          <i class="giga icon-V10-wenhaotishi ml-octal1I" data-toggle="tooltip" title="Local Time"></i>
+        </label>
+        <div class="oris-ingroup action-clear">
+          <input type="text" name="filter_agreement_date_from" id="input_agreement_date_from" class="oris-input"
+                 value="{{ info.effect_time |formatZone(country,null,'Y-m-d')  }}"
+                 placeholder="Please Input" autocomplete="off" readonly/>
+          <i class="giga icon-v10quxiao-01 oris-clear"></i>
+        </div>
+        <div class="text-danger mt-02"></div>
+      </div>
+
+      <div class="oris-col-6" style="margin-top: 27px">
+        <div class="oris-ingroup action-clear">
+          <input type="text" name="filter_agreement_date_to" id="input_agreement_date_to" class="oris-input"
+                 value="{{ info.expire_time |formatZone(country,null,'Y-m-d')  }}"
+                 placeholder="Please Input" autocomplete="off" readonly/>
+          <i class="giga icon-v10quxiao-01 oris-clear"></i>
+        </div>
+        <div class="text-danger mt-02"></div>
+      </div>
+
+    </div>
+    <div class="oris-row p14-t">
+      <div class="full-width oris-select">
+        <label class="flex-layout">
+          Agreement Seller:
+          <i class="giga icon-V10-wenhaotishi ml-octal1I" data-toggle="tooltip"
+             title="If more than one seller is selected, the agreement will be initiated to each seller respectively, and the first selected seller will be a sample in the agreement."></i>
+        </label>
+        <select id="shopSelect" title="{{ __('请选择', {}, 'common') }}" multiple class="oris-select-prerender">
+          {% for val in sellerList %}
+            <option value="{{ val.seller_id }}" {% if val.seller_id == info.seller_id %}selected{% endif %}>{{  val.seller.screenname }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="text-danger mt-02"></div>
+    </div>
+  </div>
+  <div class="p14-t">
+    <div class="nav-oris">
+      <div class="oris-row">
+        <label class="flex-layout" for="searchName">
+          Agreement Contents:
+          <i class="giga icon-V10-wenhaotishi ml-octal1I" data-toggle="tooltip" title="Only the underlined fields in the blank can be edited."></i>
+        </label>
+        {% if template_list|length == 2 %}
+        <ul class="nav nav-tabs main " role="tablist">
+          <li role="presentation" class="template-tab {% if template_list|length == 2 %} active {% endif %}">
+            <a href="#customTemplate" role="tab" data-toggle="tab">
+              Self-defined Template
+            </a>
+          </li>
+          <li role="presentation" class="template-tab {% if template_list|length == 1 %} active {% endif %}">
+            <a href="#platformTemplate" role="tab" data-toggle="tab">
+              Default Template
+            </a>
+          </li>
+        </ul>
+        {% endif %}
+      </div>
+      {#tab页对应内容#}
+      {% if info %}
+        <div class="tab-content m10-b" id="templateContent">
+          <div role="tabpanel" class="tab-pane agreementTemplate active"
+               id="platformTemplate" data-templateId="{{ info.template_id }}">
+            <div>{{ info.content }}</div>
+          </div>
+        </div>
+      {% else %}
+        <div class="tab-content m10-b" id="templateContent">
+          <div role="tabpanel" class="tab-pane agreementTemplate {% if template_list|length == 2 %} active {% endif %}"
+               id="customTemplate" data-templateId="{{ template_list.config.id }}">
+            <div>{{ template_list.config.content }}</div>
+          </div>
+          <div role="tabpanel" class="tab-pane agreementTemplate {% if template_list|length == 1 %} active {% endif %}"
+               id="platformTemplate" data-templateId="{{ template_list.default.id }}">
+            <div>{{ template_list.default.content }}</div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {% if info.id %}
+  <input id="agreementId" type="hidden" value="{{ info.id }}">
+  {% else %}
+    <input id="agreementId" type="hidden" value="0">
+  {% endif %}
+  <div class="suction-footer fix-footer text-center" id="suctionFooter">
+    <button class="oris-button oris-button-default oris-button-bigger" type="button" id="cancelBtn">Cancel</button>
+    <button class="oris-button oris-button-bigger m10-l" type="button" id="submitBtn">Submit</button>
+  </div>
+</div>
+
+{% apply script %}
+  <script type="text/javascript">
+    $(function () {
+      var checkTop = $("footer").offset()['top'];
+      createAgreement.initComponents();
+      createAgreement.showTemplate();
+      createAgreement.bindClick();
+      createAgreement.bindChange();
+      createAgreement.scrollFooter(checkTop);
+    });
+    var agreementDateForm = $("#input_agreement_date_from").val();
+    var agreementDateTo = $("#input_agreement_date_to").val();
+    var content =new Object();
+    var createAgreement = {
+      data: {
+        agreementData: {
+          agreement_id: $("#agreementId").val(),
+          title: $("#agreementName").val(),
+          effect_time: $("#input_agreement_date_from").val() +' 00:00:00',
+          expire_time: $("#input_agreement_date_to").val() +' 23:59:59',
+          template_id: $(".agreementTemplate.active").attr('data-templateId'),
+          seller_id: $("#shopSelect").val(),
+          template_replace_value:'',
+        },
+        tipstext: {
+          name: 'Please enter the Agreement Name',
+          dateTime1: 'Please select an Agreement Validity',
+          dateTime2:'End Time must be later than Start Time.',
+          shopName:'Please select an Agreement Seller',
+          agreement:'请完善协议内容',
+        }
+      },
+      //获取模板信息并展示
+      showTemplate: function(){
+        {#//协议期限#}
+        var dateVal1 = $("#templateContent").find(".AgreementValidity01").html();
+        var AgreementDate1 = `<input class="AgreementDate-input text-input date-form" type="text" disabled value="${dateVal1}" >`
+        $("#templateContent").find(".AgreementValidity01").html(AgreementDate1);
+        var dateVal2 = $("#templateContent").find(".AgreementValidity02").html();
+        var AgreementDate2 = `<input class="AgreementDate-input text-input date-to" type="text" disabled value="${dateVal2}" >`
+        $("#templateContent").find(".AgreementValidity02").html(AgreementDate2);
+
+        var edit = {{ info |js_json }};
+        var defaultParameter = {{ template_list.default.replace_value_input|js_json }};
+        var configParameter = {{ template_list.config.replace_value_input|js_json }};
+        var editParameter = {{  info.replace_value_input|js_json }};
+        let idName = '';
+        if(edit.length == undefined){
+          idName='platformTemplate';
+          createAgreement.replaceContent(editParameter,idName);
+        }else{
+          if (defaultParameter){
+            idName='platformTemplate';
+            createAgreement.replaceContent(defaultParameter,idName);
+          }
+          if (configParameter){
+            idName='customTemplate';
+            createAgreement.replaceContent(configParameter,idName);
+          }
+        }
+        createAgreement.data.agreementData.template_replace_value = content;
+      },
+      //替换模板参数
+      replaceContent: function(list,idName){
+        var len = list.length
+        for (let i=0;i < len;i++){
+          var className = list[i];
+          var val = $("#templateContent").children('#'+idName).find('.'+className).html() || '';
+          var parameter = `<input class="parameter-input text-input" type="text" value="${val}" maxlength="50" data-key="${className}">`
+          $("#templateContent").children('#'+idName).find('.' +className ).html(parameter);
+        }
+      },
+      // 初始化组建
+      initComponents: function () {
+        if (location.href.split("renew=")[1]){
+          var minDate = moment($("#input_agreement_date_to").val()).add(+1, 'days').format('YYYY-MM-DD');
+          var formDate =  moment($("#input_agreement_date_to").val()).add(+1, 'days').format('YYYY-MM-DD');
+          $("#input_agreement_date_from").val(formDate);
+          agreementDateForm = formDate;
+          $("#input_agreement_date_to").val('')
+        }else{
+          var minDate = moment(new Date()).add(-1, 'days').format('YYYY-MM-DD');
+        }
+
+        block.unBlockUI();
+        $('#input_agreement_date_from').datetimepicker({
+          pickDate: true,
+          pickTime: false,
+          format: 'yyyy-mm-dd',
+          startDate: minDate,
+          minView: 2,
+          autoclose: true,
+        });
+        $('#input_agreement_date_to').datetimepicker({
+          pickDate: true,
+          pickTime: false,
+          format: 'yyyy-mm-dd',
+          minView: 2,
+          startDate: minDate,
+          autoclose: true,
+        });
+
+        let option = {};
+        //创建协议
+        if (location.href.split("agreement_id=")[1]) {
+          option = {
+            readonly: true
+          }
+        }else {
+          option = {
+            selectAll: true,
+            searchable: true,
+            limitCount: 10,
+            choice: function () {
+              createAgreement.shopIsInvalid()
+            }
+          }
+        }
+        $('#shopSelect').multselect(option);
+      },
+      bindClick: function () {
+        $("#pageCreate")
+          .on('click','.oris-clear',function (){
+          $(".agreementTemplate.active").find('.AgreementDate-input').val('');
+          createAgreement.date1IsInvalid();
+          createAgreement.date2IsInvalid();
+        })
+          .on('click','.template-tab',function () {
+           setTimeout(function () {
+             if (agreementDateForm && agreementDateTo){
+               $(".agreementTemplate.active").find('.AgreementDate-input.date-form').val(agreementDateForm);
+               $(".agreementTemplate.active").find('.AgreementDate-input.date-to').val(agreementDateTo);
+             }
+             createAgreement.data.agreementData.template_id = $(".agreementTemplate.active").attr('data-templateId');
+             var checkTop = $("footer").offset()['top'];
+             createAgreement.scrollFooter(checkTop);
+           },200)
+        })
+          .on('click','#submitBtn',function () {
+           createAgreement.submitService()
+          })
+        .on('click','#cancelBtn',function () {
+          block.blockUI();
+          window.location.href = '{{ url('account/tripartite_agreement') }}';
+        })
+      },
+      bindChange: function(){
+        $("#pageCreate")
+          .on('change','#agreementName',function () {
+            createAgreement.nameIsInvalid()
+        })
+          .on('change','#input_agreement_date_from',function () {
+          agreementDateForm = $(this).val();
+          if (agreementDateForm && agreementDateTo){
+            content[`AgreementValidity01`] = agreementDateForm;
+            content[`AgreementValidity02`] = agreementDateTo;
+            $(".agreementTemplate.active").find('.AgreementDate-input.date-form').val(agreementDateForm);
+            $(".agreementTemplate.active").find('.AgreementDate-input.date-to').val(agreementDateTo)
+          }else{
+            $(".agreementTemplate.active").find('.AgreementDate-input.date-form').val('');
+            $(".agreementTemplate.active").find('.AgreementDate-input.date-to').val('');
+          }
+            createAgreement.date1IsInvalid();
+        })
+          .on('change','#input_agreement_date_to',function () {
+          agreementDateTo = $(this).val();
+          if (agreementDateForm && agreementDateTo){
+            content[`AgreementValidity01`] = agreementDateForm;
+            content[`AgreementValidity02`] = agreementDateTo;
+            $(".agreementTemplate.active").find('.AgreementDate-input.date-form').val(agreementDateForm);
+            $(".agreementTemplate.active").find('.AgreementDate-input.date-to').val(agreementDateTo)
+          }else{
+            $(".agreementTemplate.active").find('.AgreementDate-input.date-form').val('');
+            $(".agreementTemplate.active").find('.AgreementDate-input.date-to').val('');
+          }
+            createAgreement.date2IsInvalid();
+        })
+          .on('change','.parameter-input',function () {
+            var parameterVal = $(this).val().length;
+            var len = parameterVal * 16;
+            len = len > 50 ? len : 50;
+            $(this).width(len)
+          })
+      },
+      scrollFooter: function(checkTop){
+        let winHeight = $(window).height();
+        $(window).scroll(function () {
+          //scrollTop就是触发滚轮事件时滚轮的高度
+          let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (winHeight + scrollTop < checkTop) {
+            $("#suctionFooter").addClass('fix-footer');
+          } else {
+            $("#suctionFooter").removeClass('fix-footer');
+          }
+        })
+      },
+      doValidator: function () {
+        var result = false;
+        // 以下举例多个字段校验
+        result = createAgreement.nameIsInvalid() || result;
+        result = createAgreement.date1IsInvalid() || result;
+        result = createAgreement.date2IsInvalid() || result;
+        result = createAgreement.shopIsInvalid() || result;
+        result = createAgreement.contentIsInvalid() || result;
+        return  result;
+      },
+      // 名称校验
+      nameIsInvalid: function () {
+        let result = false;
+        let name = $('#agreementName').val().trim();
+        if (!name) {
+          // 红色错误提示
+          $("#agreementName").addClass('error-border');
+          $('#agreementName').parentsUntil('.oris-row').next('.text-danger').html(this.data.tipstext.name);
+          $('body,html').animate({scrollTop: 0},800);
+          return true;
+        }
+        this.data.agreementData.title = name;
+        $("#agreementName").removeClass('error-border');
+        $('#agreementName').parentsUntil('.oris-row').next('.text-danger').html('');
+        return result;
+      },
+      // 日期校验
+      date1IsInvalid: function(){
+        let result = false;
+        let date1 = $('#input_agreement_date_from').val();
+        let date2 = $('#input_agreement_date_to').val();
+        let startTime = new Date(date1).getTime();
+        let endTime = new Date(date2).getTime();
+        if (!date1) {
+          $("#input_agreement_date_from").addClass('error-border');
+          $('#input_agreement_date_from').parentsUntil('.oris-col-6').next('.text-danger').html(this.data.tipstext.dateTime1);
+          $('body,html').animate({scrollTop: 0},800);
+          return true;
+        }
+        if (!date2){
+          return true;
+        }
+        if (date1 && date2 && startTime>endTime){
+          $("#input_agreement_date_from,#input_agreement_date_to").addClass('error-border');
+          $('#input_agreement_date_from,#input_agreement_date_to').parentsUntil('.oris-col-6').next('.text-danger').html(this.data.tipstext.dateTime2);
+          $(".agreementTemplate.active").find('.AgreementDate-input').val('')
+          $('body,html').animate({scrollTop: 0},800);
+          return true;
+        }
+        this.data.agreementData.effect_time = date1 + ' 00:00:00';
+        $("#input_agreement_date_from,#input_agreement_date_to").removeClass('error-border');
+        $('#input_agreement_date_from,#input_agreement_date_to').parentsUntil('.oris-row').next('.text-danger').html('');
+        content[`AgreementValidity01`] = date1;
+        content[`AgreementValidity02`] = date2;
+        return result;
+      },
+      date2IsInvalid: function(){
+        let result = false;
+        let date1 = $('#input_agreement_date_from').val();
+        let date2 = $('#input_agreement_date_to').val();
+        let startTime = new Date(date1).getTime();
+        let endTime = new Date(date2).getTime();
+        if (!date2) {
+          $("#input_agreement_date_to").addClass('error-border');
+          $('#input_agreement_date_to').parentsUntil('.oris-col-6').next('.text-danger').html(this.data.tipstext.dateTime1);
+          $('body,html').animate({scrollTop: 0},800);
+          return true;
+        }
+        if (!date1){
+          return true
+        }
+        if (date1 && date2 && startTime>endTime){
+          $("#input_agreement_date_from,#input_agreement_date_to").addClass('error-border');
+          $('#input_agreement_date_from,#input_agreement_date_to').parentsUntil('.oris-col-6').next('.text-danger').html(this.data.tipstext.dateTime2);
+          $(".agreementTemplate.active").find('.AgreementDate-input').val('');
+          $('body,html').animate({scrollTop: 0},800);
+          return true;
+        }
+        this.data.agreementData.expire_time = date2 + ' 23:59:59';
+        $("#input_agreement_date_from,#input_agreement_date_to").removeClass('error-border');
+        $("#input_agreement_date_from,#input_agreement_date_to").parentsUntil('.oris-row').next('.text-danger').html('');
+        content[`AgreementValidity01`] = date1;
+        content[`AgreementValidity02`] = date2;
+        return result;
+      },
+      //协议店铺校验
+      shopIsInvalid:function(){
+        let result = false;
+        let shop = $("#shopSelect").val();
+        if (!shop) {
+          $('#shopSelect').parentsUntil('.oris-row').next('.text-danger').html(this.data.tipstext.shopName);
+         $('body,html').animate({scrollTop: 0},800);
+          return true;
+        }
+        if ($("#shopSelect").val()){
+          this.data.agreementData.seller_id = shop;
+        }else{
+          this.data.agreementData.seller_id[0] = shop;
+        }
+        $('#shopSelect').parentsUntil('.oris-row').next('.text-danger').html('');
+        return result;
+      },
+      //协议内容校验
+      contentIsInvalid: function(){
+        let result = false;
+        var top = 0;
+        $(".agreementTemplate.active  input.parameter-input").each(function (index) {
+          var val = $(this).val().trim();
+          var key = $(this).attr('data-key')
+          content[`${key}`] = val;
+          if (!val){
+            $(this).addClass('error-border');
+            top = top || $(this).offset().top;
+            result = true
+          }else{
+            $(this).removeClass('error-border');
+          }
+        });
+        if (!result){
+          this.data.agreementData.template_replace_value = content;
+        } else {
+          var check = false;
+          check = createAgreement.nameIsInvalid() || check;
+          check = createAgreement.date1IsInvalid() || check;
+          check = createAgreement.date2IsInvalid() || check;
+          check = createAgreement.shopIsInvalid() || check;
+          if (!check){
+            $('body,html').animate({scrollTop: top - 200},800);
+          }
+        }
+        return result
+      },
+
+      submitService: function() {
+        var flag = createAgreement.doValidator();
+        if (flag) {
+          return;
+        }
+        var data = this.data.agreementData;
+        if (location.href.split("renew=")[1]){
+          var postUrl= '{{ url('account/tripartite_agreement/create&renew=1') }}'
+        }else{
+          var postUrl= '{{ url('account/tripartite_agreement/create') }}'
+        }
+        var save = layer.confirm('Do you confirm to submit this agreement? You will agree to sign this agreement by your confirmation.', {
+          title: 'Confirm',
+          skin: 'oris-layer',
+          btn: ['OK', 'Cancel'] //按钮
+        }, function () {
+          layer.close(save);
+          $.ajax({
+            url: postUrl,
+            data: data,
+            method: 'post',
+            cache: false,
+            dataType: 'json',
+            beforeSend: function() {
+              block.blockUI();
+              $("#submitBtn").attr('disabled','disabled')
+            },
+            complete: function() {
+              $("#submitBtn").removeAttr('disabled')
+            },
+            success: function(res) {
+              if (res.code == 200){
+                $.toast({
+                  heading: false,
+                  text: res.msg,
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'success',
+                  hideAfter: false,
+                  allowToastClose: false,
+                  loader: false,
+                  hideAfter: 3000,
+                  afterHidden: function () {
+                    window.location.href = '{{ url('account/tripartite_agreement') }}';
+                  }
+                });
+              }else if (res.code == 404){
+                var invalid = layer.confirm(res.msg,{
+                  title: 'Confirm',
+                  skin: 'oris-layer',
+                  btn: ['OK'] //按钮
+                },function () {
+                  layer.close(invalid);
+                  window.location.reload();
+                })
+              }else{
+                $.toast({
+                  heading: false,
+                  text: res.msg,
+                  position: 'top-center',
+                  showHideTransition: 'fade',
+                  icon: 'error',
+                  hideAfter: false,
+                  allowToastClose: false,
+                  loader: false,
+                  hideAfter: 3000,
+
+                });
+                block.unBlockUI();
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              block.unBlockUI();
+              alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+          })
+        }, function () {
+          layer.close(save);
+        });
+      },
+    };
+  </script>
+{% endapply %}
+

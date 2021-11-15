@@ -1,0 +1,357 @@
+<link href="/catalog/view/javascript/datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet"
+      media="screen">
+<style>
+  .account-balance {
+    display: flex;
+  }
+
+  .account-balance div {
+    flex: 1;
+    text-align: center;
+  }
+
+  .account-balance div p {
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #9a9a9a;
+  }
+
+  .account-balance div span {
+    font-size: 22px;
+  }
+
+  .account-balance .green {
+    color: #6dd400;
+  }
+
+  .account-balance .orange {
+    color: #fa6400;
+  }
+
+  .account-balance .blue {
+    color: #183464;
+  }
+
+  .form-wrapper label.radio-inline input[type="radio"]::before {
+    font-size: 16px;
+  }
+
+  .form-wrapper label.radio-inline span {
+    margin-left: 0;
+  }
+
+  .form-wrapper label.radio-inline input[type="radio"] {
+    line-height: 32px;
+  }
+
+  .form-wrapper label.radio-inline span {
+    line-height: 46px;
+  }
+
+  .form-wrapper .form-control {
+    border: 1px solid #ccc;
+  }
+
+  .form-wrapper .datetimepicker-range .datetimepicker span.icon i {
+    font-size: 18px;
+    line-height: 31px;
+  }
+
+  .form-wrapper .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-wrapper .form-group > label {
+    font-size: 14px;
+    text-transform: capitalize;
+    color: #333;
+    font-weight: initial;
+    margin-left: 4px;
+  }
+
+  .methodRemark:hover {
+    color: #3A75DC !important;
+  }
+
+  .fontw {
+    font-weight: bold;
+  }
+
+  .nearly {
+    margin-right: 10px;
+  }
+  .max-w3{
+    max-width: 250px;
+    word-break: break-word;
+  }
+</style>
+<div class="tab-content main">
+  <div role="tabpanel" class="tab-pane active" id="tab">
+    <div class="bg-white p-2">
+
+      {#大块#}
+      <div class="filter-wrapper form-wrapper">
+        <div class="row">
+          {#查询条件#}
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label class="control-label" style="width: 100%">
+                CREDIT LINE FLOW
+              </label>
+              <select class="form-control" name="filterType" id="filterType">
+                <option value="3" {% if 3 == filterType %} selected {% endif %}>All</option>
+                <option value="1" {% if 1 == filterType %} selected {% endif %}>Received Credits</option>
+                <option value="2" {% if 2 == filterType %} selected {% endif %}>Payments</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" style="width: 100%">
+                EXCHANGE HOUR
+                <div id="dateError" style="display: none;float: right">{{ error_date }}</div>
+              </label>
+              <div class="datetimepicker-range">
+                <div class="datetimepicker">
+                  <input id="effectTimeFrom" type="text" class="form-control date" placeholder="Pick a date..."
+                         name="filter_effectTimeFrom"/>
+                  <span class="title">From</span>
+                  <span class="icon"><i class="giga icon-date-icon"></i></span>
+                </div>
+                <div class="datetimepicker">
+                  <input id="effectTimeTo" type="text" class="form-control date" placeholder="Pick a date..."
+                         name="filter_effectTimeTo"/>
+                  <span class="title">To</span>
+                  <span class="icon"><i class="giga icon-date-icon"></i></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <div style=" margin-top: 50px">
+                <a class="nearly week" id="week1">ONE WEEK</a>
+                <a class="nearly month" id="month1">ONE MONTH</a>
+                <a class="nearly year" id="year1">ONE YEAR</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <div class="form-group pull-right">
+              <label class="control-label" style="width: 100%">&nbsp;</label>
+              <button type="button" onclick="filterBa(this);" class="btn btn-primary">{{ button_filter }}</button>
+              <a onclick="cleanFilterBa(this);" class="btn btn-default"
+                 data-toggle="tooltip" title="Reset"><i class="giga icon-reset3 fontw"></i></a>
+              <button onclick="download();" class="btn btn-default" data-toggle="tooltip" title="{{ button_download }}">
+                <i class="giga icon-xiazai fontw"></i></button>
+            </div>
+          </div>
+          {#END 查询条件#}
+        </div>
+      </div>
+      {#END 大块#}
+
+      {#      <h2>Detail List</h2>#}
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th class="text-center">Record Number</th>
+          <th class="text-center">Date</th>
+          <th class="text-right max-w3">Method | Remark</th>
+          <th class="text-center">Received Credits</th>
+          <th class="text-center">Payments</th>
+          <th class="text-center">Balance</th>
+          <th class="text-center">Currency</th>
+          {#<th class="text-center">Memo</th>#}
+        </tr>
+        </thead>
+        <tbody>
+        {% if amendantRecords %}
+          {% for amendantRecord in amendantRecords %}
+            <tr>
+              <td class="text-center color-blank-gray">{{ amendantRecord.serialNumber }}</td>
+              <td class="text-center">{{ amendantRecord.date_added }}</td>
+              <td class="text-right max-w3">
+                {{ amendantRecord.remark }}
+                {% if amendantRecord.msg %}
+                  <br/>
+                  <a class="methodRemark" {% if amendantRecord.url %} href="{{ amendantRecord.url }}"{% endif %}
+                     style="font-size: 12px;color: #ccc">
+                    {{ amendantRecord.msg }}
+                  </a>
+                {% endif %}
+              </td>
+              <td class="text-right ">{{ amendantRecord.revenue }}</td>
+              <td class="text-right ">{{ amendantRecord.payment }}</td>
+              <td class="text-right color-blank-gray" style="font-weight: bold">{{ amendantRecord.balance }}</td>
+              <td class="text-center ">{{ currency }}</td>
+              {#<td class="text-center"></td>#}
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="6" class="text-center">No Record.</td>
+          </tr>
+        {% endif %}
+        </tbody>
+      </table>
+
+      <div class="row" style="margin-right: 0">
+        <div class="col-sm-12 text-right">
+          <ul id="bos_pagination"></ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="/catalog/view/javascript/datetimepicker/bootstrap-datetimepicker.min.js"
+        charset="UTF-8"></script>
+<script>
+  $('#effectTimeFrom').datetimepicker({
+    minView: 2,
+    format: 'yyyy-mm-dd',
+    autoclose: true,
+    forceParse: true
+  });
+
+  $('#effectTimeTo').datetimepicker({
+    minView: 2,
+    format: 'yyyy-mm-dd',
+    autoclose: true,
+    forceParse: true
+  });
+
+  {% if TimeFrom %}
+  var time_1 = "{{ TimeFrom }}";
+  time_1 = time_1.split(" ")[0];
+  $('#effectTimeFrom').val(time_1);
+  {% endif %}
+  {% if TimeTo %}
+  var time_2 = "{{ TimeTo }}";
+  time_2 = time_2.split(" ")[0];
+  $('#effectTimeTo').val(time_2);
+  {% endif %}
+
+  var now = new Date();
+  $("#week1").on('click', function () {
+    var weektime = new Date().setDate((new Date().getDate() - 7));
+    $('#effectTimeFrom').datetimepicker('setDate', new Date(weektime));
+    $('#effectTimeTo').datetimepicker('setDate', new Date());
+  });
+  $("#month1").on('click', function () {
+    var monthtime = new Date().setMonth((new Date().getMonth() - 1));
+    $('#effectTimeFrom').datetimepicker('setDate', new Date(monthtime));
+    $('#effectTimeTo').datetimepicker('setDate', new Date());
+  });
+  $("#year1").on('click', function () {
+    var yeartime = new Date().setFullYear((new Date().getFullYear() - 1));
+    $('#effectTimeFrom').datetimepicker('setDate', new Date(yeartime));
+    $('#effectTimeTo').datetimepicker('setDate', new Date());
+  });
+
+
+  let account_balance_url = 'index.php?route=account/balance/buyer_balance/tab_account_balance';
+
+  $('#headerRevenue').text('{{ revenue }}');
+  $('#headerPayment').text('{{ payment }}');
+
+  $(function () {
+    block.unBlockUI();
+    pagination();
+    {#var b="{{ filterType }}";#}
+    {#$("input[name='filterType']").get(b-1).checked = true;#}
+    // if($("input[name='timeSpace']:checked").val()==4){
+    //   $("#effectTimeFrom").attr("disabled",false);
+    //   $("#effectTimeTo").attr("disabled",false);
+    // }else{
+    //   $("#effectTimeFrom").val("");
+    //   $("#effectTimeTo").val("");
+    //   $("#effectTimeFrom").attr("disabled",true);
+    //   $("#effectTimeTo").attr("disabled",true);
+    // }
+  });
+
+  function pagination() {
+    if ({{ total_pages }}) {
+      //total_pages
+      $('#bos_pagination').bootstrapPaginator({
+        /*当前使用的是3版本的bootstrap*/
+        bootstrapMajorVersion: 3,
+        /*配置的字体大小是小号*/
+        size: 'normal',
+        /*当前页*/
+        currentPage: {{ page_num }},
+        /*一共多少页*/
+        totalPages: {{ total_pages }},
+        /*页面上最多显示几个含数字的分页按钮*/
+        numberOfPages: 5,
+        total: {{ total }},
+        rowsOfPage: {{ page_limit | default(100) }},
+
+        onPageClicked: function (event, originalEvent, type, page) {
+          block.blockUI();
+          let url = getUrl(account_balance_url, page);
+          $('#bid-account_balance').load(url);
+        }
+      });
+    }
+  }
+
+
+  $('input[type=radio][name=timeSpace]').change(function () {
+    // if($("input[name='timeSpace']:checked").val()==4){
+    //   $("#effectTimeFrom").attr("disabled",false);
+    //   $("#effectTimeTo").attr("disabled",false);
+    // }else{
+    //   $("#effectTimeFrom").val("");
+    //   $("#effectTimeTo").val("");
+    //   $("#effectTimeFrom").attr("disabled",true);
+    //   $("#effectTimeTo").attr("disabled",true);
+    // }
+  });
+
+  function getUrl(url, page) {
+    // let filterType = $("input[name='filterType']:checked").val();
+    let filterType = $("#filterType option:selected").val();
+    if (filterType) {
+      url += '&filterType=' + encodeURIComponent(filterType);
+    }
+    let timeSpace = $("input[name='timeSpace']:checked").val();
+    if (timeSpace) {
+      url += '&timeSpace=' + encodeURIComponent(timeSpace);
+    }
+    let timeFrom = $("input[name='filter_effectTimeFrom']").val();
+    if (timeFrom) {
+      url += '&timeFrom=' + encodeURIComponent(timeFrom + " 00:00:00");
+    }
+    let timeTo = $("input[name='filter_effectTimeTo']").val();
+    if (timeTo) {
+      url += '&timeTo=' + encodeURIComponent(timeTo + " 23:59:59");
+    }
+    if (page) {
+      url += "&page_num=" + page;
+    }
+    return url;
+  }
+
+  function cleanFilterBa(button) {
+    block.blockUI();
+    $('#bid-account_balance').load(account_balance_url);
+    // $(button).button('loading');
+  }
+
+  function filterBa(button) {
+    let url = getUrl(account_balance_url);
+    block.blockUI();
+    $('#bid-account_balance').load(url);
+    // $(button).button('loading');
+  }
+
+  function download() {
+    var url = 'index.php?route=account/balance/buyer_balance/downloadAccountBalance';
+    url = getUrl(url);
+    location = url;
+  }
+</script>

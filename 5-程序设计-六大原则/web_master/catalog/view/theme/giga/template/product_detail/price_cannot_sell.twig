@@ -1,0 +1,16 @@
+{#Buyer 不可购买 第一条价格展示#}
+<div class="price">
+    <div class="col-sm-11">
+        <span class="text-muted col-sm-3">
+            <span name="price_value" id="price_value">
+                {{ text_current_price }}
+            </span>
+        </span>
+        <span class="col-sm-3 pcs">
+            <span id="price_price_value">
+                <strong>{% if isSeller != 1 %}{{ price }}{% else %}**{% endif %}</strong>
+              <span class="text-muted">/{{ text_unit }}</span>
+            </span>
+        </span>
+    </div>
+</div>

@@ -1,0 +1,263 @@
+{{ header }}{{ separate_column_left }}
+<style>
+  .dropdown-menu {
+    position: absolute !important;
+  }
+  .review-filter label[for="input-status"] {
+    margin-left:15%;
+  }
+  .review-filter .input-group-btn > .button {
+    line-height: 20px;
+  }
+  @media only screen and (max-width: 767px) {
+    #input-status {
+      margin-left: 0;
+      margin-right: 0;
+      width: 95%;
+    }
+    .oc2 .form-horizontal .form-group label {
+      width: auto;
+    }
+    .oc2 fieldset label + input.form-control, #input-status, .oc2 .form-horizontal .form-group label + div {
+      width: 95%;
+      float: none;
+      /* check */
+    }
+    .pull-right {
+      float: right;
+      /* check */
+    }
+    #content #button-filter {
+      margin: 15px 5%;
+    }
+    .review-filter label[for="input-status"] {
+      margin-left: 0;
+    }
+    .review-filter .date > input {
+      min-width: auto;
+    }
+    .table-responsive {
+      overflow: auto;
+    }
+  }
+  @media only screen and (max-width: 480px) {
+    #input-status {
+      margin-left: 0;
+      margin-right: 0;
+      width: 100%;
+    }
+    button[onclick="clearfilter();"] {
+        margin-top: 0px !important;
+    }
+    fieldset .table-responsive {
+      overflow: auto !important;
+    }
+    .pull-right {
+      float: none !important;
+      /* check */
+    }
+    #content #button-filter {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  @media only screen and (min-width: 480px) {
+    .col-sm-4{
+      width: 33.33%;
+    }
+    .review-filter .row:first-child{
+      display: inline-flex;
+    }
+  }
+</style>
+{% if separate_view is defined and separate_view %}
+  <div class="container-fluid" id="content" style="margin-left: 18%">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li>
+        <a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-check-circle"></i> {{ error_warning }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>
+  {% endif %}
+  {% if success %}
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>
+  {% endif %}
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+      {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+      {% set class = 'col-sm-9' %}
+    {% else %}
+      {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">{{ content_top }}
+      {% if chkIsPartner %}
+      <h1>{{ heading_title }}
+        <div class="pull-right">
+          {% if marketplace_sellereditreview %}
+            <button type="button" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger" onclick="confirm('{{ text_confirm }}') ? $('#form-review').submit() : false;"><i class="fa fa-trash-o"></i></button>
+          {% endif %}
+        </div>
+      </h1>
+      <div class="well">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" for="input-author">{{ entry_customer }}</label>
+              <input type="text" name="filter_customer" value="{{ filter_customer }}" placeholder="{{ entry_customer }}" id="input-author" class="form-control" />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" for="input-status">{{ entry_status }}</label>
+              <select name="filter_status" id="input-status" class="form-control">
+                <option value="*"></option>
+                {% if filter_status %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                {% endif %}
+                {% if not filter_status and not filter_status is null %}
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% else %}
+                <option value="0">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="control-label" for="input-date-added">{{ entry_createdate }}</label>
+              <div class="input-group date">
+                <input type="text" name="filter_createdate" value="{{ filter_createdate }}" placeholder="{{ entry_createdate }}" data-date-format="YYYY-MM-DD" id="input-date-added" class="form-control" />
+                <span class="input-group-btn">
+                <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                </span></div>
+            </div>
+            <button type="button" id="button-filter" class="btn btn-primary pull-right"><i class="fa fa-search"></i> {{ button_filter }}</button>
+            <button type="button" onclick="clearfilter();" class="btn btn-danger pull-right" style="margin-right:5%;"><i class="fa fa-search"></i> {{ button_clear_filter }}</button>
+          </div>
+        </div>
+      </div>
+      <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-review">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <td style="width: 1px;" class="text-center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></td>
+                <td class="text-left">{% if sort == 'r.author' %}
+                  <a href="{{ sort_customer }}" class="{{ order|lower }}">{{ column_customer }}</a>
+                  {% else %}
+                  <a href="{{ sort_customer }}">{{ column_customer }}</a>
+                  {% endif %}</td>
+                <td class="text-left">{% if sort == 'r.status' %}
+                  <a href="{{ sort_status }}" class="{{ order|lower }}">{{ column_status }}</a>
+                  {% else %}
+                  <a href="{{ sort_status }}">{{ column_status }}</a>
+                  {% endif %}</td>
+                <td class="text-left">{% if sort == 'r.createdate' %}
+                  <a href="{{ sort_createdate }}" class="{{ order|lower }}">{{ column_createdate }}</a>
+                  {% else %}
+                  <a href="{{ sort_createdate }}">{{ column_createdate }}</a>
+                  {% endif %}</td>
+                <td class="text-right">{{ column_action }}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% if reviews %}
+              {% for review in reviews %}
+              <tr>
+                <td class="text-center">{% if review['review_id'] in selected %}
+                  <input type="checkbox" name="selected[]" value="{{ review['review_id'] }}" checked="checked" />
+                  {% else %}
+                  <input type="checkbox" name="selected[]" value="{{ review['review_id'] }}" />
+                  {% endif %}</td>
+                <td class="text-left">{{ review['customer_name'] }}</td>
+                <td class="text-left">{{ review['status'] }}</td>
+                <td class="text-left">{{ review['createdate'] }}</td>
+                <td class="text-right"><a href="{{ review['edit'] }}" data-toggle="tooltip" title="{{ button_edit }}" class="btn btn-primary"><i class="fa fa-pencil"></i></a></td>
+              </tr>
+              {% endfor %}
+              {% else %}
+              <tr>
+                <td class="text-center" colspan="5">{{ text_no_results }}</td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </form>
+      <div class="row">
+        <div class="col-sm-6 text-left">{{ pagination }}</div>
+        <div class="col-sm-6 text-right">{{ results }}</div>
+      </div>
+      {% else %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ warning_become_seller }}<button type="button" class="close" data-dismiss="alert">×</button> </div>
+      {% endif %}
+      {{ content_bottom }}</div>
+    {{ column_right }}</div>
+</div>
+<script type="text/javascript"><!--
+
+function clearfilter() {
+  url = 'index.php?route=account/customerpartner/review';
+  location = url;
+}
+
+$('#button-filter').on('click', function() {
+url = 'index.php?route=account/customerpartner/review';
+
+var filter_customer = $('input[name=\'filter_customer\']').val();
+
+if (filter_customer) {
+  url += '&filter_customer=' + encodeURIComponent(filter_customer);
+}
+
+var filter_status = $('select[name=\'filter_status\']').val();
+
+if (filter_status != '*') {
+  url += '&filter_status=' + encodeURIComponent(filter_status);
+}
+
+var filter_createdate = $('input[name=\'filter_createdate\']').val();
+
+if (filter_createdate) {
+  url += '&filter_createdate=' + encodeURIComponent(filter_createdate);
+}
+
+location = url;
+});
+//--></script>
+<script type="text/javascript"><!--
+$('.date').datetimepicker({
+pickTime: false
+});
+//--></script>
+<script>
+  $('input[name=\'filter_customer\']').autocomplete({
+  'source': function(request, response) {
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/review/autocomplete&filter_customer=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['customer_id']
+          }
+        }));
+      }
+    });
+  },
+  'select': function(item) {
+    $('input[name=\'filter_customer\']').val(item['label']);
+  }
+});
+</script>
+{{ footer }}

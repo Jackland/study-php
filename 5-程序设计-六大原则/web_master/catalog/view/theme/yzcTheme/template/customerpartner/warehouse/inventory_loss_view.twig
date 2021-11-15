@@ -1,0 +1,462 @@
+{% trans_default_category 'catalog/view/customerpartner/warehouse/inventory' %}
+{{ header }}
+{{ separate_column_left }}
+{{ css(['css/common/common.css']) }}
+<link href="/catalog/view/theme/yzcTheme/stylesheet/customerpartner/warehouse/inventory_manage_list.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="/catalog/view/javascript/bootstrap-table/bootstrap-table.min.css">
+<script src="/catalog/view/javascript/bootstrap-table/bootstrap-table.min.js"></script>
+<div class="container-fluid" id="content" style="margin-left: 235px;">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+    <h1>
+        {{ __('盘亏管理') }}
+
+        <span class="pull-right">
+             {% if page_type=='edit' and  adjust.status==5 %}
+            <button class="btn btn-primary" onclick="submitForm()" data-toggle="tooltip" title="{{ __('保存') }}"><i class="fa fa-save"></i></button>
+            {% endif %}
+            <button class="btn btn-primary" onclick="returnList()" data-toggle="tooltip" title="{{ __('返回') }}"><i class="fa fa-reply"></i></button>
+        </span>
+
+    </h1>
+    <div class="box-shadow inventory-view-box" style="margin-right: 0;padding-bottom: 20px" id="viewBox">
+      <p class="inventory-p">
+        {{ __('批次号') }}：<span style="margin-right: 100px" id="batchNumber">{{ adjust.batch_number }}</span>
+        {{ __('处理状态') }}：<span>{{ adjust.status_show }}</span>
+      </p>
+      {# 凭证 #}
+      {% if adjust.warehouse_files  %}
+        <p class="inventory-p-title">{{ __('凭证') }}</p>
+        <table class="table table-bordered myFileTable" style="width: 100%;">
+            <thead>
+            <tr>
+              <th style="width: 25%">{{ __('文件名') }}</th>
+              <th>{{ __('大小') }}</th>
+              <th>{{ __('状态') }}</th>
+              <th>{{ __('操作') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in adjust.warehouse_files %}
+            <tr>
+              <td>{{ item.fileName }}</td>
+              <td>{{ item.fileSize }}Kb</td>
+              <td>{{ __('已上传') }}</td>
+              <td><a class="btn btn-default" href="{{ item.downloadUrl }}" data-toggle="tooltip" title="{{ __('下载') }}"><i class="giga icon-xiazai"></i></a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+      {% endif %}
+      {#备注#}
+      <p class="inventory-p-title">{{ __('备注') }}</p>
+      <textarea name="" id="" style="width:100%;height: 100px" disabled>{{ adjust.remark }}</textarea>
+      {#盘亏库存明细#}
+      <p class="inventory-p-title">{{ __('盘亏库存明细') }}</p>
+      <table class="table table-bordered myFileTable" border="1">
+        <thead>
+          <tr>
+            <th class="text-center">{{ __('序号') }}</th>
+            <th class="text-center">{{ __('Item Code') }}</th>
+            <th class="text-center">{{ __('MPN') }}</th>
+            <th class="text-center">{{ __('数量') }}</th>
+            {% if adjust.version == 1 %}
+              {% if adjust.status!=5 or  page_type=='edit' %}
+                <th class="text-center">{{ __('Seller申报金额/件') }}({{ currency }})</th>
+                <th class="text-center">{{ __('Seller申报金额（Item合计）') }}({{ currency }})</th>
+              {% endif %}
+              {% if adjust.status==6 or adjust.status==7 %}
+                <th class="text-center">{{ __('平台申报金额') }}（$330/m³）({{ currency }})</th>
+                <th class="text-center">{{ __('最终赔偿金额') }}({{ currency }})</th>
+              {% endif %}
+            {% endif %}
+            {% if adjust.version != 1 %}
+              <th class="text-center">{{ __('赔偿金额') }}({{ currency }})</th>
+              <th class="text-center">{{ __('平台申报金额') }}({{ currency }})</th>
+              <th class="text-center">{{ __('最终赔偿金额') }}({{ currency }})</th>
+            {% endif %}
+          </tr>
+        </thead>
+          <tbody>
+          {% for key,item in adjust.adjustDetail %}
+            <tr>
+              <td class="text-center" width="10%">{{ key+1 }}</td>
+              <td class="text-center" width="10%">{{ item.sku }}</td>
+              <td class="text-center" width="10%">{{ item.mpn }}</td>
+              <td class="text-center"  width="10%" class="sellerQty">{{ item.qty }}</td>
+              {% if adjust.version == 1 %}
+                {% if page_type=='edit' and  adjust.status==5 %}
+                  <td class="text-center">
+                      <input type="text" value="{{ item.seller_declaration_amount }}" class="form-control sellerAmount text-center" oninput="value=value.replace(/[^\d\.]/g,'')">
+                      <span class="sellerAlert" style="color: #e3503e;display: none">{{ __('Seller申报金额不能为空') }}</span>
+                      <span class="sellerAlert2" style="color: #e3503e;display: none"></span>
+                  </td>
+                    <td class="text-center" class="sellerSum">{{ item.seller_declaration_amount * item.qty }}</td>
+                {% elseif adjust.status!=5 %}
+                  <td class="text-center">{{ item.seller_declaration_amount }}</td>
+                  <td class="text-center">{{ item.seller_declaration_amount * item.qty  }}</td>
+                {% endif %}
+                {% if adjust.status==6 or adjust.status==7 %}
+                  <td class="text-center">{{ item.platform_declaration_amount* item.qty }}</td>
+                  <td class="text-center">{{ item.damages * item.qty }}</td>
+                {% endif %}
+              {% endif %}
+              {% if adjust.version != 1 %}
+                {% set pc = item.compensate_amount * item.qty %}
+                {% set pt = item.platform_declaration_amount * item.qty %}
+                <td class="text-center">{{ pc }}</td>
+                <td class="text-center">{{ pt }}</td>
+                {% if adjust.status == 2 or adjust.status == 6 or adjust.status == 7 %}
+                  <td class="text-center">{{ item.damages * item.qty }}</td>
+                {% else %}
+                  {% if pc > pt %}
+                      <td class="text-center">{{ pc }}</td>
+                  {% else %}
+                      <td class="text-center">{{ pt }}</td>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% if adjust.version == 1 %}
+            {% if adjust.status==6 or adjust.status==7 %}
+                <p class="text-right"><span class="text-title">{{ __('赔偿金额合计') }}：</span>{{ total }}</p>
+            {% endif %}
+        {% else %}
+            <p class="text-right"><span class="text-title">{{ __('赔偿金额合计') }}：</span>{{ total }}</p>
+        {% endif %}
+
+      {#Seller申报资料 -- 只有version1 版本的存在 #}
+      {% if adjust.version == 1 %}
+        <p class="inventory-p-title"><span style="color: red">*</span>{{ __('Seller申报资料') }}</p>
+        <div class="seller-info">
+          {% if page_type=='edit' and  adjust.status==5 %}
+            <button id="uploadFile" class="btn btn-primary" style="margin-bottom: 20px">
+              <i class="giga icon-shangchuan"></i>{{ __('上传文件') }}
+            </button>
+          {% endif %}
+          <input type="file" style="display: none" id="myFiles"  multiple="multiple">
+          {#     展示上传的文件    #}
+          <table id="tableList4" class="table table-bordered myFileTable" style="width: 100%;"></table>
+        </div>
+      {% endif %}
+    </div>
+</div>
+{{ footer }}
+
+<script>
+
+    let filesArrList = [];
+    // 初始化
+    $(function () {
+        // 初始化申报资料
+        sellerTable();
+    });
+
+    // 监听申报金额
+    $(".sellerAmount").on('blur',function () {
+        $(this).parent().find('.sellerAlert').hide();
+        $(this).parent().find('.sellerAlert2').hide();
+        // 获取数量
+        var number = parseInt($(this).parent().prev()[0].textContent);
+        var amount = parseFloat($(this).val());
+        if($(this).val()!=''){
+            var country = '{{ country }}';
+            var title = "{{ __('Seller申报金额范围为') }}"+" 0-99999999.99";
+            // 日本
+            if(country=='JPY'){
+                var reg = /^([1-9][0-9]{0,7}|0)$/;
+                title = "{{ __('Seller申报金额范围为') }}"+ ' 0-99999999';
+            }else{
+                // 正则检验-非日本 0-99999999.99
+                var reg = /^([1-9][0-9]{0,7}|[0]\.\d{1,2}|0|[1-9][0-9]{0,7}\.\d{1,2})$/;
+            }
+
+            if(!reg.test($(this).val())){
+                $(this).parent().find('.sellerAlert2').text(title);
+                $(this).parent().find('.sellerAlert2').show();
+                // $(this).val('');
+                setTimeout('$(this).parent().find(\'.sellerAlert2\').hide()',1000);
+            }else{
+                $(this).css('border','1px solid #ccc');
+                $(this).parent().find('.sellerAlert').hide();
+                $(this).parent().find('.sellerAlert2').hide();
+                var result = accMul(amount,number);
+                $(this).parent().next()[0].textContent=result;
+            }
+        }
+
+    });
+
+
+    var fileDataList = {{ adjust.seller_files|json_encode }}.map(function (item, index) {
+      return {
+        id: index,
+        file_name: item.fileName,
+        size: item.fileSize,
+        status: 1,
+        download: item.downloadUrl
+      }
+    });
+
+    // 上传文件
+    $("#uploadFile").click(function () {
+        $("#myFiles").click();
+    });
+
+    // 监听上传文件
+    $("#myFiles").on('change',function (e) {
+        var files = e.target.files;
+
+        var index = files[0].name.lastIndexOf('.')+1;
+        // 判断文件是否符合要求
+        var lastName = files[0].name.substr(index);
+
+        var reg =RegExp(/(?:doc|docx|pdf|xls|xlsx|jpg|png|jpeg)$/)
+        if(!reg.test(lastName.toLowerCase())){
+            layer.msg("{{ __('选择的文件包含不支持的格式') }}");
+            return false;
+        }
+
+        var fileSize = files[0].size;
+        if(fileSize>20*1024*1024){
+            layer.msg("{{ __('文件大小超过20M，无法上传') }}");
+            return false;
+        }
+
+        var index = fileDataList.length;
+
+        for(var i=0;i<files.length;i++){
+            var obj = {
+                id: '',
+                code: '',
+                file_name: '',
+                size: '',
+                status: 2
+            };
+            obj.id = index+1;
+            obj.code = files[i].lastModified;
+            obj.file_name = files[i].name;
+            obj.size = (files[i].size/1024).toFixed(2);
+            fileDataList.push(obj);
+            index++;
+            filesArrList.push(files[i]);
+        }
+
+        // seller申报资料
+        sellerTable();
+
+        $(".del-btn").tooltip();
+    });
+
+
+    // seller申报资料渲染
+    function sellerTable() {
+        // 渲染前先销毁
+        $("#tableList4").bootstrapTable('destroy');
+        // seller申报资料
+        $("#tableList4").bootstrapTable({
+            data: fileDataList,
+            columns: [
+                {
+                    field: 'file_name',
+                    title: '{{ __('文件名') }}',
+                    width : '25%',
+                },
+                {
+                    field: 'size',
+                    title: '{{ __('大小') }}',
+                    width : '25%',
+                    formatter:function (value) {
+                        return value + 'Kb';
+                    }
+                },
+                {
+                    field: 'status',
+                    title: ' {{ __('状态') }}',
+                    width : '25%',
+                    formatter:function (value) {
+                        return value === 1 ? '{{ __('已上传') }}' : '{{ __('等待上传') }}';
+                    }
+                },
+                {
+                    title: '{{ __('操作') }}',
+                    width : '25%',
+                    formatter:function (value,row) {
+                        if(row.status === 1){
+                            return '<div><a class="btn btn-danger del-btn" href="'+row.download+'" onMouseOver="$(this).tooltip(\'show\')" data-toggle="tooltip" title="{{ __("下载") }}" download="'+row.file_name+'"><i class="giga icon-xiazai"></i></a></div>';
+                        }else{
+                            return '<div><button class="btn btn-danger del-btn" style="background: #e3503e;color: #fff" onclick="delFile(\''+row.id+'\',\''+row.code+'\')" data-toggle="tooltip" title="{{ __('删除')  }}"><i class="giga icon-error"></i></button></div>';
+                        }
+                    }
+                }
+            ],
+            formatNoMatches:function () {
+                return '';
+            },
+        });
+    }
+
+    // 删除上传文件
+    function delFile(id,code) {
+        // 文件输入框置空
+        $("#myFiles").val('');
+
+        // 移除某一行
+        $("#tableList4").bootstrapTable('remove',{
+            field: 'id',
+            values: [parseInt(id)]
+        });
+
+        // 从filesArrList数组中删除该值文件
+        let arr = [];
+        for(var i=0;i<filesArrList.length;i++){
+            if(filesArrList[i].lastModified != code){
+                arr.push((filesArrList[i]));
+            }
+        }
+        filesArrList = arr;
+
+        $(".del-btn").tooltip();
+    }
+
+
+    // 保存编辑
+    function submitForm() {
+
+        var result = false;
+        $('.sellerAmount').each(function () {
+            $(this).parent().find('.sellerAlert2').hide();
+           if($(this).val()==''){
+               $(this).css('border','1px solid #e3503e');
+               $(this).focus();
+               $(this).parent().find('.sellerAlert').show();
+                result = true;
+           }else{
+               var country = '{{ country }}';
+               var title = "{{ __('Seller申报金额范围为') }}"+' 0-99999999.99';
+               // 日本
+               if(country=='JPY'){
+                   var reg = /^([1-9][0-9]{0,7}|0)$/;
+                   title = "{{ __('Seller申报金额范围为') }}"+ ' 0-99999999';
+               }else{
+                   // 正则检验-非日本 0-99999999.99
+                   var reg = /^([1-9][0-9]{0,7}|[0]\.\d{1,2}|0|[1-9][0-9]{0,7}\.\d{1,2})$/;
+               }
+
+               if(!reg.test($(this).val())){
+                   $(this).parent().find('.sellerAlert2').text(title);
+                   $(this).parent().find('.sellerAlert2').show();
+                   setTimeout('$(this).parent().find(\'.sellerAlert2\').hide()',1000);
+                   result = true;
+               }
+           }
+        });
+
+
+        if(result){
+            return false;
+        }
+
+        // 获取seller申报资料
+        var sellerFiles = document.getElementById('myFiles').files;
+
+        if(sellerFiles.length==0&&fileDataList.length==0){
+            layer.msg("{{ __('seller申报资料不能为空') }}");
+            return false;
+        };
+
+        if(fileDataList.length>5){
+            layer.msg("{{ __('Seller申报资料最多只能上传5个') }}");
+            return false;
+        }
+
+        // 批次号
+      var batchNumber = $("#batchNumber").text();
+      let str = "{{ __('你确认提交批次为:number的盘亏申报金额和资料吗？') }}"
+      str = str.replace(':number', batchNumber)
+      layer.confirm(str, {
+            title: '{{ __('确认') }}',
+            btn:['{{ __('是') }}','{{ __('否') }}'],
+            btnAlign: 'c',
+            skin: 'yzc_layer',
+            yes:function (index) {
+                confirmForm(index);
+            }
+        })
+    }
+
+    // 提交
+    function confirmForm(index) {
+        // 获取seller申报资料
+        var sellerFiles = document.getElementById('myFiles').files;
+
+        // 获取seller申报金额
+        var sellerAmontList = $(".sellerAmount");
+
+        // formData表单
+        let data = new FormData();
+        for(var i=0;i<filesArrList.length;i++){
+            data.append('files['+i+']',filesArrList[i]);
+        }
+
+
+        // 获取列表数据
+        var detailList = {{ adjust.adjustDetail|json_encode }};
+
+        for (var i = 0; i < sellerAmontList.length; i++) {
+            data.append('details[' + i + '][inventory_line_id]', detailList[i].inventory_line_id)
+            data.append('details[' + i + '][seller_declaration_amount]', sellerAmontList[i].value)
+        }
+        data.append('inventory_id','{{ adjust.inventory_id }}');
+
+        let loadingIndex=layer.load(1,{shade: [0.3,'#000']});
+        $.ajax({
+            url: '{{ url('customerpartner/warehouse/inventory_loss/doEdit') }}',
+            type: 'post',
+            dataType: 'json',
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+              if (res.code == 200) {
+                location.reload();
+              }
+                layer.close(index);
+            },
+            error:function () {
+
+            },
+            complete:function () {
+                layer.close(loadingIndex);
+            }
+        });
+    }
+
+    // 返回盘亏管理列表页
+    function returnList() {
+      location.href = '{{ url('customerpartner/warehouse/inventory_loss') }}';
+    }
+    
+    
+    // 浮点运算，乘法
+    function accMul(arg1,arg2) {
+        var m=0,s1=arg1.toString(),s2=arg2.toString();
+        try{
+            if(s1.split(".")[1] != undefined )
+                m+=s1.split(".")[1].length
+        }catch(e){}
+        try{
+            if(s2.split(".")[1] != undefined )
+                m+=s2.split(".")[1].length
+        }catch(e){}
+        return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m)
+    }
+
+</script>
