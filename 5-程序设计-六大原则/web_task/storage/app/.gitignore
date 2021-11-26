@@ -1,6 +1,0 @@
-*
-!public/
-!.gitignore
-!sphinx.bat
-!sphinx_merge.bat
-!sphinx_merge_test.bat

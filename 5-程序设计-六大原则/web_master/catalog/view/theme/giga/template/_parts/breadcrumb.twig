@@ -1,9 +1,0 @@
-<ul class="breadcrumb">
-  {% for breadkey,breadcrumb in breadcrumbs %}
-   	{% if breadkey < breadcrumbs|length-1 %}
-  		<li><a href="{{ breadcrumb.href }}" >{{ breadcrumb.text }}</a></li>
-	  {% else %}
-	  	<li><a>{{ breadcrumb.text }}</a></li>
-	  {% endif %}
-  {% endfor %}
-</ul>

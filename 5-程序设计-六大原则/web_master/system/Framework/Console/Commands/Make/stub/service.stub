@@ -1,8 +1,0 @@
-<?php
-
-namespace App\Services{{namespace}};
-
-class {{className}}
-{
-    // TODO 增、删、改 方法
-}

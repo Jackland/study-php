@@ -1,2 +1,0 @@
-cd /d D:\\project\yzc_task_work
-php artisan schedule:run 1>> NUL 2>&1

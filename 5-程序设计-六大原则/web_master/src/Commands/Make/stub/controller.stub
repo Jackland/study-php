@@ -1,8 +1,0 @@
-<?php
-
-use App\Catalog\Controllers\AuthBuyerController;
-
-class {{className}} extends AuthBuyerController
-{
-{{actions}}
-}

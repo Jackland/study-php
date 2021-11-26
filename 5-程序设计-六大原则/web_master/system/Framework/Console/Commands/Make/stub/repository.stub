@@ -1,8 +1,0 @@
-<?php
-
-namespace App\Repositories{{namespace}};
-
-class {{className}}
-{
-    // TODO 查询、判断、校验等方法
-}

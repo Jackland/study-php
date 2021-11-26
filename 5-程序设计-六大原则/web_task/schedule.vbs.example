@@ -1,2 +1,0 @@
-Set ws = CreateObject("Wscript.Shell")   
-ws.run "cmd /c D:\project\yzc_task_work\schedule.bat",0
