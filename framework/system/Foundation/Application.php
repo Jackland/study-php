@@ -12,10 +12,8 @@ namespace System\Foundation;
 
 use Illuminate\Container\Container;
 use Illuminate\Events\EventServiceProvider;
-use Illuminate\Log\LogServiceProvider;
-use Illuminate\Routing\RoutingServiceProvider;
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Illuminate\Support\Arr;
+use Illuminate\Support\ServiceProvider;
 
 class Application extends Container
 {
@@ -31,6 +29,14 @@ class Application extends Container
      * @var \Illuminate\Support\ServiceProvider[]
      */
     protected $serviceProviders = [];
+
+
+    /**
+     * Indicates if the application has "booted".
+     *
+     * @var bool
+     */
+    protected $booted = false;
 
     /**
      * The names of the loaded service providers.
@@ -52,13 +58,13 @@ class Application extends Container
         $this->registerBaseServiceProviders();
 
 
-        dd($this);
     }
 
 
     protected function registerBaseBindings()
     {
         static::setInstance($this);
+
         $this->instance('app', $this);
 
         $this->instance('appTest', $this);//测试
@@ -124,6 +130,29 @@ class Application extends Container
         return $provider;
     }
 
+
+    /**
+     * Boot the given service provider.
+     *
+     * @param  \Illuminate\Support\ServiceProvider  $provider
+     * @return mixed
+     */
+    protected function bootProvider(ServiceProvider $provider)
+    {
+        if (method_exists($provider, 'boot')) {
+            return $this->call([$provider, 'boot']);
+        }
+    }
+
+    /**
+     * Determine if the application has booted.
+     *
+     * @return bool
+     */
+    public function isBooted()
+    {
+        return $this->booted;
+    }
 
 
 
