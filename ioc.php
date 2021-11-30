@@ -3,6 +3,9 @@
 ///简单的 ios
 class Container
 {
+    /**
+     * @throws ReflectionException
+     */
     public static function getInstance($class_name, $params = [])
     {
         // 获取反射实例
@@ -59,5 +62,9 @@ class B
     }
 }
 
-$b = Container::getInstance(B::class, [10]);
+try {
+    $b = Container::getInstance(B::class, [10]);
+} catch (ReflectionException $e) {
+    echo $e->getMessage();
+}
 var_dump($b->getCount()); // result is 110
