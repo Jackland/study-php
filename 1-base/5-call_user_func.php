@@ -20,10 +20,7 @@ $columns = [
         'label' => 'test02',
         'value' => function(baseInfo $info) {
             return $info->getAge();
-        },
-        'area' => function(baseInfo $info) {
-            return $info->getArae();
-        },
+        }
     ],
 ];
 class baseInfo{
@@ -42,7 +39,7 @@ $baseInfo = new baseInfo();
 
 
 $aa = array_map(function ($item) use ($baseInfo) {
-    return call_user_func($item['area'], $baseInfo);
+    return call_user_func($item['value'], $baseInfo);
 }, $columns);
 var_dump($aa).PHP_EOL;
 echo '===========================';
