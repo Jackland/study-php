@@ -12,6 +12,9 @@ use App\name;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
+
+\Acme\callStatic::write('aaaa', 88888, [111111]);
+die(1111);
 //"Fuyunnan\\Study\\": "src/",
 
 view::getView();

@@ -16,3 +16,6 @@ echo "<br>======<br>";
 var_dump($a !== $b);//true
 echo "<br>======<br>";
 var_dump(!NULL);
+
+
+// function(?int $a)   表示 $a 可以为int 也可以为null

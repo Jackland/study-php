@@ -19,4 +19,9 @@ class Farmer extends Person
     {
         return '农名坐公交赶集';
     }
+
+    public function sleep()
+    {
+        return '田间地头';
+    }
 }

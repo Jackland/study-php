@@ -12,14 +12,13 @@ abstract class Person{
     
     abstract function work();
 
-
     public static function type()
     {
         return [
             (new Farmer())->goBus(),
+            (new Farmer())->sleep(),
             Teacher::class
         ];
-
     }
 
     public function goBus()
@@ -30,6 +29,11 @@ abstract class Person{
     public function goBicycle()
     {
         return 'on bike';
+    }
+
+    public function sleep()
+    {
+        return '';
     }
 
 }
