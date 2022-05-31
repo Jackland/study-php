@@ -13,6 +13,10 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 
+var_dump((new \Acme\AbstractTest\testJob())->index());
+
+die;
+
 \Acme\callStatic::write('aaaa', 88888, [111111]);
 die(1111);
 //"Fuyunnan\\Study\\": "src/",
