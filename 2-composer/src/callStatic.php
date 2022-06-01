@@ -14,16 +14,13 @@ namespace Acme;
  *
  * @package Acme
  */
-
-
-
 class callStatic
 {
 
     public static function __callStatic(string $name, array $arguments)
     {
         var_dump($arguments);
-       var_dump(new callStaticDrive($name));
+        var_dump(new callStaticDrive($name));
     }
 }
 
@@ -37,6 +34,7 @@ class callStaticDrive
             return self::write();
         }
     }
+
     /**
      * @return mixed
      */
