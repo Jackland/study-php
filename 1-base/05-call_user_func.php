@@ -39,6 +39,8 @@ $baseInfo = new baseInfo();
 
 
 $aa = array_map(function ($item) use ($baseInfo) {
+    echo '<pre>';
+    var_dump($item['value']);
     return call_user_func($item['value'], $baseInfo);
 }, $columns);
 var_dump($aa).PHP_EOL;
